@@ -1,13 +1,18 @@
 
 const yargs = require('yargs');
 
-const options = yargs
-	.command('* [source]', 'regularize automatically', {
-		'dryRun': {
-			alias: [ 'dry-run', 'n'],
-			type: 'boolean',
-			default: false
-		}
+const options = {
+	dryrun: false
+};
+
+options.initialize = function initialize() {
+	Object.assign(options, yargs
+		.command('* [source]', 'regularize automatically', {
+			'dryRun': {
+				alias: [ 'dry-run', 'dryrun', 'n'],
+				type: 'boolean',
+				default: false
+			}
 		// // Manual options only:
 		// 'forceTimestampedCanonicalFilename': {
 		// 	alias: 'force-timestamped-canonical-filename',
@@ -20,15 +25,16 @@ const options = yargs
 		// 	type: 'boolean',
 		// 	describe: 'Manual: override the comment from the tag'
 		// },
-	})
-	.help()
-	.recommendCommands()
-	.strict()
+		})
+		.help()
+		.recommendCommands()
+		.strict()
 	// .wrap(Math.min(120, yargs.terminalWidth()))
-	.argv;
+		.argv);
 
-if (!('source' in options)) {
-	options.source = '.';
-}
+	if (!('source' in options)) {
+		options.source = '.';
+	}
+};
 
 module.exports = options;

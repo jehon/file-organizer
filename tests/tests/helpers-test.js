@@ -4,12 +4,6 @@ const fs = require('fs');
 const { rootPath, dataPath, tempPath, createFileGeneric } = require('./helpers.js');
 
 describe('helpers-test', function() {
-	it('should have a root path', function() {
-		expect(fs.existsSync(rootPath())).toBeTruthy();
-		expect(fs.existsSync(rootPath('tests/data'))).toBeTruthy();
-		expect(fs.existsSync(rootPath('tests', 'data'))).toBeTruthy();
-	});
-
 	it('should have a data path', function() {
 		expect(fs.existsSync(dataPath())).toBeTruthy();
 		expect(fs.existsSync(dataPath('..', 'data'))).toBeTruthy();

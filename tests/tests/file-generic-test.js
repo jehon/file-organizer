@@ -2,11 +2,11 @@
 const path = require('path');
 
 const { tempPath, createFileGeneric, dataPath } = require('./helpers.js');
-const { fileDelete, fileExists } = require('../../file-utils.js');
+const { fileDelete, fileExists } = require('../../regularize/file-utils.js');
 const FileGeneric = require('../../regularize/file-generic.js');
 
 // For mock
-const fileUtils = require('../../file-utils.js');
+const fileUtils = require('../../regularize/file-utils.js');
 
 describe('file-generic-test', () => {
 	// it('should give an indexedFilename', async () => {

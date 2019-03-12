@@ -2,9 +2,11 @@
 const path = require('path');
 const fs = require('fs-extra');
 
+const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))), ...args);
+
 // Test
-exports.dataPath = (...args) => exports.rootPath('tests', 'data', ...args);
-exports.tempPath = (...args) => exports.rootPath('tests', 'tmp', ...args);
+exports.dataPath = (...args) => rootPath('tests', 'data', ...args);
+exports.tempPath = (...args) => rootPath('tests', 'tmp', ...args);
 
 const FileFactory = require('../../regularize/file-factory.js');
 

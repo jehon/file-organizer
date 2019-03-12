@@ -1,7 +1,6 @@
 
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FilePicture = require('../../regularize/file-picture.js');
-const { fileDelete } = require('../../file-utils.js');
 
 // For mock
 const FileTimestamped = require('../../regularize/file-timestamped.js');
