@@ -1,27 +1,34 @@
 
-const path = require('path');
-
-const { dataPath, tempPath } = require('./helpers.js');
+const { tempPath, createFileGeneric } = require('./helpers.js');
 const FileTimestamped = require('../../regularize/file-timestamped.js');
 const FileGeneric = require('../../regularize/file-generic.js');
 
 describe('file-timestamped-test', () => {
-	it('should calculate a canonicalFilename', () => {
-		expect((new FileTimestamped('2018-02-04')).getCanonicalFilename()).toBe('2018-02-04');
-		expect((new FileTimestamped('2018-02-04 13-17-50 canon')).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
-		expect((new FileTimestamped('2020-01-19 01-24-02 petitAppPhoto')).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
-	});
-
 	it('should get the timestamp', function() {
-		const new1 = new FileTimestamped(path.join(dataPath(), '20150306_153340 Cable internet dans la rue.jpg'));
+		const new1 = new FileTimestamped('20150306_153340 Cable internet dans la rue.jpg');
 		expect(new1.calculatedTS.TS()).toBe('2015-03-06 15-33-40');
 
 		const new2 = new FileTimestamped('IMG_20150306_153340.jpg');
 		expect(new2.calculatedTS.TS()).toBe('2015-03-06 15-33-40');
 
-		// already tagged file
-		const new3 = new FileTimestamped('2015-03-06 15-33-40 anything bla bla bla IMG_20150306_153340.jpg');
-		expect(new3.calculatedTS.TS()).toBe('2015-03-06 15-33-40');
+		const new3 = new FileTimestamped('2015-03/DSC00001.jpg');
+		console.log(new3.calculatedTS);
+		console.log(new3.parent);
+		expect(new3.calculatedTS.original).toBe('DSC00001');
+
+	});
+
+	// TODO
+	it('should set calculated ts', () => {
+		const new1 = createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
+
+		expect(new1.calculatedTS.TS()).toBe('2015-03-06 15-33-40');
+	});
+
+	it('should calculate a canonicalFilename', () => {
+		expect((new FileTimestamped('2018-02-04')).getCanonicalFilename()).toBe('2018-02-04');
+		expect((new FileTimestamped('2018-02-04 13-17-50 canon')).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
+		expect((new FileTimestamped('2020-01-19 01-24-02 petitAppPhoto')).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
 	});
 
 	// TODO: test setCalculatedTSToIfMatching
@@ -41,12 +48,12 @@ describe('file-timestamped-test', () => {
 				expect(FileGeneric.prototype.check).toHaveBeenCalledTimes(1);
 			});
 
-			it('should be ko when no file date and with folder date', async() => {
-				const new1 = new FileTimestamped(tempPath('1998-12-31 virtual', 'canon.jpg'));
-				await new1.check();
-				expect(FileGeneric.prototype.checkMsg).toHaveBeenCalledTimes(1);
-				expect(FileGeneric.prototype.check).toHaveBeenCalledTimes(1);
-			});
+			// it('should be ko when no file date and with folder date', async() => {
+			// 	const new1 = new FileTimestamped(tempPath('1998-12-31 virtual', 'canon.jpg'));
+			// 	await new1.check();
+			// 	expect(FileGeneric.prototype.checkMsg).toHaveBeenCalledTimes(1);
+			// 	expect(FileGeneric.prototype.check).toHaveBeenCalledTimes(1);
+			// });
 
 			it('should be ok when file date and folder date are coherent', async() => {
 				const new1 = new FileTimestamped(tempPath('1998-12-31 virtual', '1998-12-31 12-13-24 test.jpg'));

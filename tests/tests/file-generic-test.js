@@ -9,6 +9,28 @@ const FileGeneric = require('../../regularize/file-generic.js');
 const fileUtils = require('../../regularize/file-utils.js');
 
 describe('file-generic-test', () => {
+	describe('attributes', () => {
+		it('should get attributes', async () => {
+			const fpath = path.join(dataPath(), 'test.txt');
+			let new1 = new FileGeneric(fpath);
+
+			expect(new1.getFilename()).toBe('test');
+			expect(new1.getExtension()).toBe('.txt');
+			expect(new1.getRelativePath()).toBe(fpath);
+		});
+
+		it('should get the parent', function() {
+			expect((new FileGeneric(path.join(dataPath(), 'test.txt')))
+				.parent.getRelativePath())
+				.toBe(dataPath());
+			expect((new FileGeneric('.'))
+				.parent.getRelativePath())
+				.toBe(path.dirname(process.cwd()));
+			expect((new FileGeneric('/')).parent).toBeNull();
+		});
+
+	});
+
 	// it('should give an indexedFilename', async () => {
 	// 	const new1 = createFileGeneric('jh-patch-file-patch.txt');
 
@@ -21,46 +43,37 @@ describe('file-generic-test', () => {
 	// 	await fileDelete(new1.getRelativePath());
 	// });
 
-	it('should changeFilename', async () => {
-		const new1 = createFileGeneric('jh-patch-file-patch.txt');
+	describe('crud', () => {
+		it('should changeFilename', async () => {
+			const new1 = createFileGeneric('jh-patch-file-patch.txt');
 
-		await new1.changeFilename('file-generic-test-1');
-		expect(new1.getFilename()).toBe('file-generic-test-1');
-		expect(new1.parent.getRelativePath()).toBe(tempPath());
+			await new1.changeFilename('file-generic-test-1');
+			expect(new1.getFilename()).toBe('file-generic-test-1');
+			expect(new1.getExtension()).toBe('.txt');
+			expect(new1.parent.getRelativePath()).toBe(tempPath());
 
-		await fileDelete(new1.getRelativePath());
-	});
-
-	it('should remove the file', async function() {
-		const new1 = createFileGeneric('jh-patch-file-patch.txt');
-
-		let filename = new1.getRelativePath();
-
-		expect(await fileExists(filename)).toBeTruthy();
-		await new1.remove();
-		expect(await fileExists(filename)).toBeFalsy();
-	});
-
-	it('should get the parent', function() {
-		expect((new FileGeneric(path.join(dataPath(), 'test.txt')))
-			.parent.getRelativePath())
-			.toBe(dataPath());
-		expect((new FileGeneric('.'))
-			.parent.getRelativePath())
-			.toBe(path.dirname(process.cwd()));
-		expect((new FileGeneric('/')).parent).toBeNull();
-	});
-
-	it('should fix extensions', async () => {
-		spyOn(fileUtils, 'fileRename');
-
-		const new1 = new FileGeneric('canon.JPG', tempPath());
-		await new1.check({
-			genericExtension: true
+			await fileDelete(new1.getRelativePath());
 		});
-		expect(fileUtils.fileRename).toHaveBeenCalledTimes(1);
-		expect(new1.getFilename()).toBe('canon');
-		expect(new1.getExtension()).toBe('.jpg');
+
+		it('should fix extensions', async () => {
+			spyOn(fileUtils, 'fileRename');
+
+			const new1 = new FileGeneric('canon.JPG', tempPath());
+			await new1.check();
+			expect(fileUtils.fileRename).toHaveBeenCalledTimes(1);
+			expect(new1.getFilename()).toBe('canon');
+			expect(new1.getExtension()).toBe('.jpg');
+		});
+
+		it('should remove the file', async function() {
+			const new1 = createFileGeneric('jh-patch-file-patch.txt');
+
+			let filename = new1.getRelativePath();
+
+			expect(await fileExists(filename)).toBeTruthy();
+			await new1.remove();
+			expect(await fileExists(filename)).toBeFalsy();
+		});
 	});
 
 	it('should iterate', (done) => {

@@ -24,6 +24,10 @@ class FileTimestamped extends FileGeneric {
 		this.calculatedTS = this.filenameTS.clone();
 	}
 
+	getTSFromFileModificationDate() {
+		return tsFromDate(fs.statSync(this.getRelativePath()).birthtime);
+	}
+
 	setCalculatedTSToIfMatching(newTS, category) {
 		if (!newTS.matchLithe(this.calculatedTS)) {
 			return this.checkMsg(`${category} timestamp incoherent to calculated timestamp`,
@@ -36,10 +40,6 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		return true;
-	}
-
-	getTSFromFileModificationDate() {
-		return tsFromDate(fs.statSync(this.getRelativePath()).birthtime);
 	}
 
 	getCanonicalFilename() {
@@ -58,28 +58,29 @@ class FileTimestamped extends FileGeneric {
 			return false;
 		}
 
-		{
-			// Check filename according to parent folder TS
-			if (this.parentTS.year > 0) {
-				if (!this.calculatedTS.matchLithe(this.parentTS)) {
-					return this.checkMsg('calculated timestamp incoherent to parent folder',
-						`${this.calculatedTS.TS()} / ${this.parentTS.TS()}`,
-						null);
+		if (this.calculatedTS.year > 0) {
+			{
+				// Check filename according to parent folder TS
+				if (this.parentTS.year > 0) {
+					if (!this.calculatedTS.matchLithe(this.parentTS)) {
+						return this.checkMsg('calculated timestamp incoherent to parent folder',
+							`${this.calculatedTS.TS()} / ${this.parentTS.TS()}`,
+							null);
+					}
+				}
+			}
+
+			{
+				// Rename to the canonical filename
+				const proposedFilename = this.getCanonicalFilename();
+				if (proposedFilename != this.getFilename()) {
+					await this.checkMsg('canonize filename',
+						proposedFilename,
+						() => this.changeFilename(proposedFilename)
+					);
 				}
 			}
 		}
-
-		{
-			// Rename to the canonical filename
-			const proposedFilename = this.getCanonicalFilename();
-			if (proposedFilename != this.getFilename()) {
-				await this.checkMsg('canonize filename',
-					proposedFilename,
-					() => this.changeFilename(proposedFilename)
-				);
-			}
-		}
-
 		return true;
 	}
 }

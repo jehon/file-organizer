@@ -112,12 +112,17 @@ module.exports = class FilePicture extends FileTimestamped {
 	}
 
 	async check() {
+		let res = false;
 		if (!this.exiv_date) {
-			return this.checkMsg('Exiv: no date found');
+			res = res & this.checkMsg('Exiv: no date found');
 		}
 
 		if (!this.exiv_comment) {
-			return this.checkMsg('Exiv: no comment found');
+			res = res & this.checkMsg('Exiv: no comment found');
+		}
+
+		if (!res) {
+			return res;
 		}
 
 		// const proposedComment = this.getFilenameTimestamp().comment;

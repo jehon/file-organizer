@@ -28,19 +28,23 @@ let lastLogFile = false;
 class FileGeneric {
 	constructor(filePath) {
 		this._relativePath = filePath;
+		this._parent = null;
 	}
 
 	get parent() {
-		const FileFolder = require('./file-folder.js');
-		let parentDir = path.dirname(this._relativePath);
-		if (parentDir == '.') {
+		if (this._parent == null) {
+			const FileFolder = require('./file-folder.js');
+			let parentDir = path.dirname(this._relativePath);
+			if (parentDir == '.') {
 			// switch to absolute path
-			parentDir = path.dirname(this._getAbsolutePath());
+				parentDir = path.dirname(this._getAbsolutePath());
+			}
+			if (parentDir == '/') {
+				return null;
+			}
+			this._parent = new FileFolder(parentDir);
 		}
-		if (parentDir == '/') {
-			return null;
-		}
-		return new FileFolder(parentDir);
+		return this._parent;
 	}
 
 	_getAbsolutePath() {
@@ -101,6 +105,12 @@ class FileGeneric {
 		return await FileUtils.fileDelete(this.getRelativePath());
 	}
 
+	async iterate(apply) {
+		const res = [];
+		res.push(await apply(this));
+		return res;
+	}
+
 	/**
 	 * !! Await on this one: await this.checkMsg(...)
 	 */
@@ -153,7 +163,7 @@ class FileGeneric {
 				skippedCount++;
 			}
 		} else {
-			msg += '⚑'.yellow;
+			msg += '⚑'.red;
 			impossibleCount++;
 		}
 
@@ -167,12 +177,6 @@ class FileGeneric {
 
 		process.stdout.write(msg + '\n');
 		FileGeneric.checkMessages += msg;
-		return res;
-	}
-
-	async iterate(apply) {
-		const res = [];
-		res.push(await apply(this));
 		return res;
 	}
 
