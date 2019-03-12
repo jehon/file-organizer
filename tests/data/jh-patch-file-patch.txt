@@ -1,0 +1,7 @@
+#
+# Tag: test
+# File: /tmp/jh-patch-file-original.txt
+#
+#
+
+Hello world

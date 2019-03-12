@@ -1,0 +1,28 @@
+
+const path = require('path');
+const fs = require('fs-extra');
+
+// Test
+exports.dataPath = (...args) => exports.rootPath('tests', 'data', ...args);
+exports.tempPath = (...args) => exports.rootPath('tests', 'tmp', ...args);
+
+const FileFactory = require('../../regularize/file-factory.js');
+
+// FileGeneric: copy to
+exports.createFileGeneric = function(subPath, { folder, newName, factory } = {
+	folder: exports.tempPath(),
+	newName: subPath,
+	factory: FileFactory
+}) {
+	fs.copySync(
+		exports.dataPath(subPath),
+		folder + path.sep + newName
+	);
+	return factory(path.join(folder, newName));
+};
+
+// Clean up the temp folder !
+beforeAll(function(done) {
+	fs.emptyDir(exports.tempPath()) // fs-extra dependency
+		.then(done);
+});

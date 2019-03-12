@@ -1,0 +1,43 @@
+
+const { dataPath } = require('./helpers.js');
+const FileFactory = require('../../regularize/file-factory.js');
+const FileFolder  = require('../../regularize/file-folder.js');
+
+const FileDelete  = require('../../regularize/file-delete.js');
+const FileGeneric = require('../../regularize/file-generic.js');
+const FileHidden  = require('../../regularize/file-hidden.js');
+const FileMovie   = require('../../regularize/file-movie.js');
+const FilePicture = require('../../regularize/file-picture.js');
+
+describe('file-factory-test', () => {
+	it('should work for non-existing files', () => {
+		expect(FileFactory('anything')).toEqual(jasmine.any(FileGeneric));
+	});
+
+	it('should give the correct type for folders', () => {
+		expect(FileFactory('.')).toEqual(jasmine.any(FileFolder));
+		expect(FileFactory(dataPath())).toEqual(jasmine.any(FileFolder));
+	});
+
+	it('should give the correct type for delete', () => {
+		expect(FileFactory('.picasa.ini')).toEqual(jasmine.any(FileDelete));
+		expect(FileFactory('Thumbs.db')).toEqual(jasmine.any(FileDelete));
+	});
+
+	it('should give the correct type for hidden', () => {
+		expect(FileFactory('@eaDir')).toEqual(jasmine.any(FileHidden));
+	});
+
+	it('should give the correct type for images', () => {
+		expect(FileFactory('test.JPG')).toEqual(jasmine.any(FilePicture));
+		expect(FileFactory('test.jpg')).toEqual(jasmine.any(FilePicture));
+		expect(FileFactory('test.jpeg')).toEqual(jasmine.any(FilePicture));
+	});
+
+	it('should give the correct type for movies', () => {
+		expect(FileFactory('test.mpg')).toEqual(jasmine.any(FileMovie));
+		expect(FileFactory('test.MPG')).toEqual(jasmine.any(FileMovie));
+		expect(FileFactory('test.AVI')).toEqual(jasmine.any(FileMovie));
+		expect(FileFactory('test.mov')).toEqual(jasmine.any(FileMovie));
+	});
+});
