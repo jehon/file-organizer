@@ -2,10 +2,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const FileGeneric = require('./file-generic.js');
+const FileTimestamped = require('./file-timestamped.js');
 const FileHidden = require('./file-hidden.js');
 
-class FileFolder extends FileGeneric {
+class FileFolder extends FileTimestamped {
 	getList() {
 		const FileFactory = require('./file-factory.js');
 

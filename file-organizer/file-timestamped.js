@@ -1,4 +1,5 @@
 
+
 const fs = require('fs');
 
 const FileGeneric = require('./file-generic.js');
@@ -12,7 +13,6 @@ class FileTimestamped extends FileGeneric {
 
 	calculate() {
 		this.filenameTS = tsFromString(this.getFilename());
-		this.parentTS = tsFromString(this.parent.getFilename());
 
 		// Parse the original filename to see if we can get some data
 		if (this.filenameTS.original) {
@@ -61,10 +61,10 @@ class FileTimestamped extends FileGeneric {
 		if (this.calculatedTS.year > 0) {
 			{
 				// Check filename according to parent folder TS
-				if (this.parentTS.year > 0) {
-					if (!this.calculatedTS.matchLithe(this.parentTS)) {
+				if (this.parent.calculatedTS.year > 0) {
+					if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
 						return this.checkMsg('calculated timestamp incoherent to parent folder',
-							`${this.calculatedTS.TS()} / ${this.parentTS.TS()}`,
+							`${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()}`,
 							null);
 					}
 				}
