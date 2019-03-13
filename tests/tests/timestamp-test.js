@@ -1,5 +1,5 @@
 
-const { regexps, tsFromDate, tsFromString, defaultValues } = require('../../regularize/timestamp.js');
+const { regexps, tsFromDate, tsFromString, defaultValues } = require('../../file-organizer/timestamp.js');
 
 function d(data) {
 	return Object.assign({}, defaultValues, data);

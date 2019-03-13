@@ -1,17 +1,17 @@
 
 const { tempPath, createFileGeneric } = require('./helpers.js');
-const FileTimestamped = require('../../regularize/file-timestamped.js');
-const FileGeneric = require('../../regularize/file-generic.js');
+const FileTimestamped = require('../../file-organizer/file-timestamped.js');
+const FileGeneric = require('../../file-organizer/file-generic.js');
 
 describe('file-timestamped-test', () => {
-	it('should get the timestamp', function() {
+	xit('should get the timestamp', function() {
 		const new1 = new FileTimestamped('20150306_153340 Cable internet dans la rue.jpg');
 		expect(new1.calculatedTS.TS()).toBe('2015-03-06 15-33-40');
 
 		const new2 = new FileTimestamped('IMG_20150306_153340.jpg');
 		expect(new2.calculatedTS.TS()).toBe('2015-03-06 15-33-40');
 
-		const new3 = new FileTimestamped('2015-03/DSC00001.jpg');
+		const new3 = new FileTimestamped('2015-03/test [DSC00001].jpg');
 		console.log(new3.calculatedTS);
 		console.log(new3.parent);
 		expect(new3.calculatedTS.original).toBe('DSC00001');

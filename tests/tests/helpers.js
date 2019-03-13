@@ -8,7 +8,7 @@ const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))),
 exports.dataPath = (...args) => rootPath('tests', 'data', ...args);
 exports.tempPath = (...args) => rootPath('tests', 'tmp', ...args);
 
-const FileFactory = require('../../regularize/file-factory.js');
+const FileFactory = require('../../file-organizer/file-factory.js');
 
 // FileGeneric: copy to
 exports.createFileGeneric = function(subPath, { folder, newName, factory } = {

@@ -1,6 +1,6 @@
 
 const { createFileGeneric } = require('./helpers.js');
-const { fileExists, fileDelete, findIndexedFilename, fileExec  } = require('../../regularize/file-utils.js');
+const { fileExists, fileDelete, findIndexedFilename, fileExec  } = require('../../file-organizer/file-utils.js');
 
 describe('file-utils-test', function() {
 	it('should findIndexedFilename', async function() {

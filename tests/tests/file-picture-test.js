@@ -1,12 +1,12 @@
 
 const { dataPath, createFileGeneric } = require('./helpers.js');
-const FilePicture = require('../../regularize/file-picture.js');
+const FilePicture = require('../../file-organizer/file-picture.js');
 
 // For mock
-const FileTimestamped = require('../../regularize/file-timestamped.js');
-const FileGeneric = require('../../regularize/file-generic.js');
+const FileTimestamped = require('../../file-organizer/file-timestamped.js');
+const FileGeneric = require('../../file-organizer/file-generic.js');
 
-describe('file-picture-test', () => {
+xdescribe('file-picture-test', () => {
 	it('should get exiv from files', () => {
 		expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).exivReadDate()).toBe('2015-03-06 15-33-40');
 		expect((new FilePicture(dataPath('canon.JPG'))).exivReadDate()).toBe('2018-02-04 13-17-50');

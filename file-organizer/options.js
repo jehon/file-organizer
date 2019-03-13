@@ -7,7 +7,7 @@ const options = {
 
 options.initialize = function initialize() {
 	Object.assign(options, yargs
-		.command('* [source]', 'regularize automatically', {
+		.command('* [source]', 'organize automatically', {
 			'dryRun': {
 				alias: [ 'dry-run', 'dryrun', 'n'],
 				type: 'boolean',

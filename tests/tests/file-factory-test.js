@@ -1,13 +1,13 @@
 
 const { dataPath } = require('./helpers.js');
-const FileFactory = require('../../regularize/file-factory.js');
-const FileFolder  = require('../../regularize/file-folder.js');
+const FileFactory = require('../../file-organizer/file-factory.js');
+const FileFolder  = require('../../file-organizer/file-folder.js');
 
-const FileDelete  = require('../../regularize/file-delete.js');
-const FileGeneric = require('../../regularize/file-generic.js');
-const FileHidden  = require('../../regularize/file-hidden.js');
-const FileMovie   = require('../../regularize/file-movie.js');
-const FilePicture = require('../../regularize/file-picture.js');
+const FileDelete  = require('../../file-organizer/file-delete.js');
+const FileGeneric = require('../../file-organizer/file-generic.js');
+const FileHidden  = require('../../file-organizer/file-hidden.js');
+const FileMovie   = require('../../file-organizer/file-movie.js');
+const FilePicture = require('../../file-organizer/file-picture.js');
 
 describe('file-factory-test', () => {
 	it('should work for non-existing files', () => {

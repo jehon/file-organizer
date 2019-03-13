@@ -2,11 +2,11 @@
 const path = require('path');
 
 const { tempPath, createFileGeneric, dataPath } = require('./helpers.js');
-const { fileDelete, fileExists } = require('../../regularize/file-utils.js');
-const FileGeneric = require('../../regularize/file-generic.js');
+const { fileDelete, fileExists } = require('../../file-organizer/file-utils.js');
+const FileGeneric = require('../../file-organizer/file-generic.js');
 
 // For mock
-const fileUtils = require('../../regularize/file-utils.js');
+const fileUtils = require('../../file-organizer/file-utils.js');
 
 describe('file-generic-test', () => {
 	describe('attributes', () => {

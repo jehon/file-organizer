@@ -1,5 +1,5 @@
 
-const { ellipseLeft } = require('../../regularize/string-utils');
+const { ellipseLeft } = require('../../file-organizer/string-utils');
 
 describe('string-utils-test', function() {
 	it('should elipseLeft', function() {

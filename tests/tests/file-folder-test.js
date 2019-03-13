@@ -1,7 +1,7 @@
 
 const { dataPath } = require('./helpers.js');
-const FileFolder = require('../../regularize/file-folder.js');
-const FileGeneric = require('../../regularize/file-generic.js');
+const FileFolder = require('../../file-organizer/file-folder.js');
+const FileGeneric = require('../../file-organizer/file-generic.js');
 
 describe('file-folder-test', () => {
 	it('should pass on all files', () => {
