@@ -1,7 +1,7 @@
 
 const fs = require('fs');
 
-const { rootPath, dataPath, tempPath, createFileGeneric } = require('./helpers.js');
+const { dataPath, tempPath, createFileGeneric } = require('./helpers.js');
 
 describe('helpers-test', function() {
 	it('should have a data path', function() {

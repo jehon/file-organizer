@@ -10,38 +10,41 @@ function parseInfo(obj, k, def) {
 	return def;
 }
 
-
-const yearsMonthsDays = /(?<ymd>(?<year>(19|20)[0-9][0-9])(-(?<month>[0-1][0-9])(-(?<day>[0-3][0-9]))?)?)/;
-
-const reHour = /(?<hour>[0-2][0-9])/;
-const reMin = /(?<minute>[0-5][0-9])/;
-const reSecs = /(?<second>[0-5][0-9])/;
-
 // TODO (one shot?) later: remove "h" / "m" possibilities ?
-const hoursMinsSecs = new RegExp('(?<hms>' + reHour.source + '(h|-)' + reMin.source + '(m|-)' + reSecs.source + ')');
+const ts = /(?<year>(19|20)[0-9][0-9])(-(?<month>[0-1][0-9])(-(?<day>[0-3][0-9]))?)?( (?<hour>[0-2][0-9])(h|-)(?<minute>[0-5][0-9])(m|-)(?<second>[0-5][0-9]))?/;
 
 const rest = /(?<rest>([ ][ -]*(?<_tag>((?<comment>.*)?( - )?(?<original>([A-Z0-9_]{8}|(IMG|VID)_[0-9]{8}_[0-9]{6})))|(?<comment2>.*))|))?/;
 
 const yearUnammed = /(19|20)[0-9][0-9]/;
 
+//
 // The matchers:
+//
+
+// TODO: insert comment and original
+// /^(?!.*foo|.*bar).*$/
+
+const final = new RegExp(`^${ts.source}( (?<comment>(?!.* - )[^[]+))?( \\[(?<original>.+)\\])?$`);
 
 const android = /^(?<original>(VID|IMG)_(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))$/;
 
 const screen = /^(?<original>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))(?<_tag>(?<comment>.*))?$/;
 
-const partialDate = new RegExp(`^(?<_ts>${yearsMonthsDays.source}( ${hoursMinsSecs.source})?)?${rest.source}$`);
 
-const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})${rest.source}$`);
+const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})( (?<comment>.*))?$`);
+
+const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( - (?<original>.*))$`);
 
 const invalid = /^(?<_tag>(?<comment>.*$))/;
 
 const matchers = {
+	version1, // Legacy
+	final,
 	android,
 	screen,
-	partialDate,
 	yearRange,
-	invalid
+
+	invalid // fallback
 };
 
 exports.defaultValues = {
@@ -209,7 +212,5 @@ exports.tsFromDate = function(date) {
 
 exports.Timestamp = Timestamp;
 exports.regexps = {
-	yearsMonthsDays,
-	hoursMinsSecs,
 	android
 };

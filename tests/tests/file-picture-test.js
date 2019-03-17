@@ -6,7 +6,7 @@ const FilePicture = require('../../file-organizer/file-picture.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
 const FileGeneric = require('../../file-organizer/file-generic.js');
 
-xdescribe('file-picture-test', () => {
+describe('file-picture-test', () => {
 	it('should get exiv from files', () => {
 		expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).exivReadDate()).toBe('2015-03-06 15-33-40');
 		expect((new FilePicture(dataPath('canon.JPG'))).exivReadDate()).toBe('2018-02-04 13-17-50');
@@ -76,9 +76,11 @@ xdescribe('file-picture-test', () => {
 
 		it('should rotate pictures when necessary', async() => {
 			const new1 = createFileGeneric('rotated-bottom-left.jpg');
+			new1.exiv_date = '2018-01-02';
+			new1.exiv_comment = 'test';
 			expect(new1.exivReadOrientation()).toBe(270);
 			await new1.check();
-			expect(FileGeneric.prototype.checkMsg).toHaveBeenCalled();
+			expect(FileTimestamped.prototype.check).toHaveBeenCalled();
 			expect(new1.exivReadOrientation()).toBe(0);
 			new1.remove();
 		});

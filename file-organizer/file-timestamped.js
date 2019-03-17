@@ -28,10 +28,10 @@ class FileTimestamped extends FileGeneric {
 		return tsFromDate(fs.statSync(this.getRelativePath()).birthtime);
 	}
 
-	setCalculatedTSToIfMatching(newTS, category) {
-		if (!newTS.matchLithe(this.calculatedTS)) {
+	setCalculatedTSToIfMatching(newTS, category = 'internal') {
+		if (!newTS.matchLithe(this.parent.calculatedTS)) {
 			return this.checkMsg(`${category} timestamp incoherent to calculated timestamp`,
-				`${newTS.TS()} / ${this.calculatedTS.TS()}`,
+				`${newTS.TS()} / ${this.parent.calculatedTS.TS()}`,
 				null);
 		}
 

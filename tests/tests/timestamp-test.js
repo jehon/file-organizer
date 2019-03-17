@@ -12,68 +12,132 @@ describe('timestamp', function() {
 		// Parsing
 		//
 		//
+		it('should parse "final" elements', function() {
+			expect(tsFromString('2018')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018
+			})));
 
-		// TODO: parse timestamps: rework the tests from real cases
-
-		it('should parse timestamps', function() {
-			// TODO: parse the old format ...
-			// expect(tsFromString('2010-12-30 09-09-51 Vie de famille - DSC_0155.jpg')).toEqual(jasmine.objectContaining(d({
-			// 	type: 'partialDate',
-			// 	year: 2010,
-			// 	month: 12,
-			// 	day: 30,
-			// 	hour: 9,
-			// 	minute: 9,
-			// 	second: 51,
-			// 	comment: 'Vie de famille',
-			// 	original: 'DSC_0155',
-			// })));
-
-			expect(tsFromString('2018 bonjour 2019')).toEqual(jasmine.objectContaining(d({
-				type: 'partialDate',
+			expect(tsFromString('2018-09-08')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
 				year: 2018,
-				comment: 'bonjour 2019',
-			})));
-
-			expect(tsFromString('2018 - bonjour 2019')).toEqual(jasmine.objectContaining(d({
-				type: 'partialDate',
-				year: 2018,
-				comment: 'bonjour 2019',
-			})));
-
-			expect(tsFromString('2018-01 bonjour 2019')).toEqual(jasmine.objectContaining(d({
-				type: 'partialDate',
-				year: 2018,
-				month: 1,
-				comment: 'bonjour 2019',
-			})));
-
-			expect(tsFromString('2018-01-15 bonjour 2019')).toEqual(jasmine.objectContaining(d({
-				type: 'partialDate',
-				year: 2018,
-				month: 1,
-				day: 15,
-				comment: 'bonjour 2019',
-			})));
-
-			expect(tsFromString('1665-12-50 bonjour 2019')).toEqual(jasmine.objectContaining(d({
-				type: 'invalid',
-				comment: '1665-12-50 bonjour 2019',
-			})));
-
-			expect(tsFromString('2018-01-02-03')).toEqual(jasmine.objectContaining(d({
-				type: 'invalid',
-				comment: '2018-01-02-03',
-			})));
-
-			expect(tsFromString('1999-09-09 12-00-01')).toEqual(jasmine.objectContaining(d({
-				type: 'partialDate',
-				year: 1999,
 				month: 9,
-				day: 9,
-				hour: 12,
-				minute: 0,
-				second: 1,
+				day: 8,
+			})));
+
+			expect(tsFromString('2018-09-08 13-14-15')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				month: 9,
+				day: 8,
+				hour: 13,
+				minute: 14,
+				second: 15
+			})));
+
+			expect(tsFromString('2018-09-08 13-14-15 test')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				month: 9,
+				day: 8,
+				hour: 13,
+				minute: 14,
+				second: 15,
+				comment: 'test'
+			})));
+
+			expect(tsFromString('2018-09-08 13-14-15 [file]')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				month: 9,
+				day: 8,
+				hour: 13,
+				minute: 14,
+				second: 15,
+				original: 'file'
+			})));
+
+			expect(tsFromString('2018-09-08 13-14-15 test [file]')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				month: 9,
+				day: 8,
+				hour: 13,
+				minute: 14,
+				second: 15,
+				comment: 'test',
+				original: 'file'
+			})));
+
+			expect(tsFromString('2018-09-08 test [file]')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				month: 9,
+				day: 8,
+				comment: 'test',
+				original: 'file'
+			})));
+
+			expect(tsFromString('2018 test [file]')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				comment: 'test',
+				original: 'file'
+			})));
+
+			expect(tsFromString('2018 test')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				comment: 'test',
+			})));
+		});
+
+		it('should parse "android" elements', function() {
+			expect(tsFromString('VID_20180102_030405')).toEqual(jasmine.objectContaining(d({
+				type: 'android',
+				year: 2018,
+				month: 1,
+				day: 2,
+				hour: 3,
+				minute: 4,
+				second: 5,
+
+				original: 'VID_20180102_030405'
+			})));
+
+			expect(tsFromString('IMG_20180102_030405')).toEqual(jasmine.objectContaining(d({
+				type: 'android',
+				year: 2018,
+				month: 1,
+				day: 2,
+				hour: 3,
+				minute: 4,
+				second: 5,
+
+				original: 'IMG_20180102_030405'
+			})));
+
+			// other legacy tests
+			expect(tsFromString('VID_20181124_183350').TS()).toBe('2018-11-24 18-33-50');
+			expect(tsFromString('IMG_20181124_183350').TS()).toBe('2018-11-24 18-33-50');
+
+			expect(regexps.android.test('IMG_20180304_050607')).toBeTruthy();
+			expect(regexps.android.test('VID_20121215_111704')).toBeTruthy();
+		});
+
+		it('should parse "screen" elements', function() {
+			expect(tsFromString('20150306_153340')).toEqual(jasmine.objectContaining(d({
+				type: 'screen',
+				year: 2015,
+				month: 3,
+				day: 6,
+				hour: 15,
+				minute: 33,
+				second: 40,
+
+				original: '20150306_153340',
+
+				comment: '',
 			})));
 
 			expect(tsFromString('20150306_153340 Cable internet dans la rue')).toEqual(jasmine.objectContaining(d({
@@ -89,24 +153,101 @@ describe('timestamp', function() {
 
 				comment: 'Cable internet dans la rue',
 			})));
-
 		});
 
-		it('should separate tag into original and comment', function() {
-		// Tags
-			expect(tsFromString('2018-01-15 bonjour AB')).toEqual(jasmine.objectContaining({
-				type: 'partialDate',
-				comment: 'bonjour AB'
-			}));
+		it('should parse "yearRange" elements', function() {
+			expect(tsFromString('2015-2016')).toEqual(jasmine.objectContaining(d({
+				type: 'yearRange',
+				yearMin: 2015,
+				yearMax: 2016,
+				year: 0,
 
-			expect(tsFromString('2018-01-15 bonjour ABCDE123')).toEqual(jasmine.objectContaining({
-				type: 'partialDate',
+				comment: '',
+			})));
+
+			expect(tsFromString('2015-2016 with comment')).toEqual(jasmine.objectContaining(d({
+				type: 'yearRange',
+				yearMin: 2015,
+				yearMax: 2016,
+				year: 0,
+
+				comment: 'with comment',
+			})));
+		});
+
+		it('should detect invalid formats', function() {
+			expect(tsFromString('1665-12-50 bonjour 2019')).toEqual(jasmine.objectContaining(d({
+				type: 'invalid',
+				comment: '1665-12-50 bonjour 2019',
+			})));
+
+			expect(tsFromString('2018-01-02-03')).toEqual(jasmine.objectContaining(d({
+				type: 'invalid',
+				comment: '2018-01-02-03',
+			})));
+		});
+
+		it('should parse legacy tests', function() {
+			//
+			// LEGACY tests
+			//
+
+			expect(tsFromString('2018 bonjour 2019')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				comment: 'bonjour 2019',
+			})));
+
+			expect(tsFromString('2018-01 bonjour 2019')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				month: 1,
+				comment: 'bonjour 2019',
+			})));
+
+			expect(tsFromString('2018-01-15 bonjour 2019')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 2018,
+				month: 1,
+				day: 15,
+				comment: 'bonjour 2019',
+			})));
+
+			expect(tsFromString('1999-09-09 12-00-01')).toEqual(jasmine.objectContaining(d({
+				type: 'final',
+				year: 1999,
+				month: 9,
+				day: 9,
+				hour: 12,
+				minute: 0,
+				second: 1,
+			})));
+		});
+	});
+
+	describe('parsing legacy format', function() {
+		it('should parse version1* formats', function() {
+			expect(tsFromString('2010-12-30 09-09-51 Vie de famille - DSC_0155')).toEqual(jasmine.objectContaining(d({
+				type: 'version1',
+				year: 2010,
+				month: 12,
+				day: 30,
+				hour: 9,
+				minute: 9,
+				second: 51,
+				comment: 'Vie de famille',
+				original: 'DSC_0155',
+			})));
+
+			// Tags
+			expect(tsFromString('2018-01-15 bonjour - ABCDE123')).toEqual(jasmine.objectContaining({
+				type: 'version1',
 				comment: 'bonjour',
 				original: 'ABCDE123'
 			}));
 
-			expect(tsFromString('2018-01-15 bonjour DSC_0101')).toEqual(jasmine.objectContaining({
-				type: 'partialDate',
+			expect(tsFromString('2018-01-15 bonjour - DSC_0101')).toEqual(jasmine.objectContaining({
+				type: 'version1',
 				comment: 'bonjour',
 				original: 'DSC_0101'
 			}));
@@ -117,19 +258,6 @@ describe('timestamp', function() {
 				original: ''
 			}));
 		});
-
-		it('should read android data', function() {
-			expect(tsFromString('VID_20181124_183350').TS()).toBe('2018-11-24 18-33-50');
-			expect(tsFromString('IMG_20181124_183350').TS()).toBe('2018-11-24 18-33-50');
-
-			expect(regexps.android.test('IMG_20180304_050607')).toBeTruthy();
-			expect(regexps.android.test('VID_20121215_111704')).toBeTruthy();
-		});
-
-		it('should read pure date', () => {
-			expect(tsFromDate(new Date('2019-01-02T03:04:05Z')).TS()).toBe('2019-01-02 03-04-05');
-		});
-
 	});
 
 	describe('functionnalities', function() {
@@ -138,6 +266,9 @@ describe('timestamp', function() {
 		// Functionnal stuffs
 		//
 		//
+		it('should read pure date', () => {
+			expect(tsFromDate(new Date('2019-01-02T03:04:05Z')).TS()).toBe('2019-01-02 03-04-05');
+		});
 
 		it('should be clonable', function() {
 			let ts0 = tsFromString('2018-01-02');

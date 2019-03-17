@@ -1,7 +1,8 @@
 
-const { tempPath, createFileGeneric } = require('./helpers.js');
+const { tempPath } = require('./helpers.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
 const FileGeneric = require('../../file-organizer/file-generic.js');
+const { tsFromString } = require('../../file-organizer/timestamp.js');
 
 describe('file-timestamped-test', () => {
 	it('should get the timestamp', function() {
@@ -13,11 +14,11 @@ describe('file-timestamped-test', () => {
 	});
 
 	// TODO: setCalculatedTS
-	fit('should set calculated ts', () => {
-		const new3 = new FileTimestamped('2015-03/test [DSC00001].jpg');
+	it('should set calculated ts', () => {
+		const new3 = new FileTimestamped('test [DSC00001].jpg');
 		expect(new3.calculatedTS.TS()).toBe('');
-		expect(new3.parent.calculatedTS.TS()).toBe('2015-03');
-
+		new3.setCalculatedTSToIfMatching(tsFromString('2018-01-02 03-04-05'));
+		expect(new3.calculatedTS.TS()).toBe('2018-01-02 03-04-05');
 	});
 
 	it('should calculate a canonicalFilename', () => {

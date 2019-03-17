@@ -112,7 +112,7 @@ module.exports = class FilePicture extends FileTimestamped {
 	}
 
 	async check() {
-		let res = false;
+		let res = true;
 		if (!this.exiv_date) {
 			res = res & this.checkMsg('Exiv: no date found');
 		}
@@ -158,6 +158,5 @@ module.exports = class FilePicture extends FileTimestamped {
 				() => this.exivRotatePicture()
 			);
 		}
-
 	}
 };
