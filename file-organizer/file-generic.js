@@ -113,6 +113,15 @@ class FileGeneric {
 
 	/**
 	 * !! Await on this one: await this.checkMsg(...)
+	 *
+	 * @param description(string): free text
+	 *
+	 * @param newInfo(null/string): the new information (display only)
+	 *
+	 * @param action(null/true/function):
+	 *    null: action impossible
+	 *    true: info message of success
+	 *    fn: fix function
 	 */
 	async checkMsg(description, newInfo = null, action = null) {
 		let msg = '';
@@ -139,7 +148,12 @@ class FileGeneric {
 		let res = false;
 		// This will be changed by the 'action'
 
-		if (action != null) {
+		if (action === null) {
+			msg += '⚑'.red;
+			impossibleCount++;
+		} else if (action === true) {
+			msg += '✓'.green;
+		} else {
 			if (!options.dryrun) {
 				try {
 					res = await action();
@@ -162,18 +176,13 @@ class FileGeneric {
 				msg +=  '⚐'.orange;
 				skippedCount++;
 			}
-		} else {
-			msg += '⚑'.red;
-			impossibleCount++;
 		}
 
 		msg += ' ';
 		msg += (description).padEnd(30, ' ').yellow.bold;
 
 		msg += ' ';
-		msg += (action != null
-			? (newInfo != null ? ('' + newInfo).blue : '')
-			: '!!! impossible !!!'.red).bold;
+		msg += (newInfo != null ? ('' + newInfo).blue : '');
 
 		process.stdout.write(msg + '\n');
 		FileGeneric.checkMessages += msg;
