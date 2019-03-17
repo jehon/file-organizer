@@ -13,7 +13,6 @@ describe('file-timestamped-test', () => {
 		expect(new2.calculatedTS.TS()).toBe('2015-03-06 15-33-40');
 	});
 
-	// TODO: setCalculatedTS
 	it('should set calculated ts', () => {
 		const new3 = new FileTimestamped('test [DSC00001].jpg');
 		expect(new3.calculatedTS.TS()).toBe('');
@@ -26,8 +25,6 @@ describe('file-timestamped-test', () => {
 		expect((new FileTimestamped('2018-02-04 13-17-50 canon')).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
 		expect((new FileTimestamped('2020-01-19 01-24-02 petitAppPhoto')).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
 	});
-
-	// TODO: test setCalculatedTSToIfMatching
 
 	describe('check', () => {
 		beforeEach(() => {
