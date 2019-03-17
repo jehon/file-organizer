@@ -12,6 +12,11 @@ options.initialize = function initialize() {
 				alias: [ 'dry-run', 'dryrun', 'n'],
 				type: 'boolean',
 				default: false
+			},
+			'guessComment': {
+				alias: [ 'guess-comment', 'gc' ],
+				type: 'boolean',
+				default: false
 			}
 		// // Manual options only:
 		// 'forceTimestampedCanonicalFilename': {

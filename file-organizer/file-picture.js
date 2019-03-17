@@ -1,6 +1,7 @@
 
 var spawnSync = require('child_process').spawnSync;
 
+const options = require('./options.js');
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const { fileExec, fileRename, fileDelete } = require('./file-utils.js');
@@ -117,8 +118,17 @@ module.exports = class FilePicture extends FileTimestamped {
 			res = res & this.checkMsg('Exiv: no date found');
 		}
 
-		if (!this.exiv_comment) {
-			res = res & this.checkMsg('Exiv: no comment found');
+		if (options.guessComment) {
+			let c = this.calculatedTS.comment;
+			if (!c) {
+				c = this.parent.calculatedTS.comment;
+			}
+			// TODO: to be tested...
+			res = res & this.checkMsg('guess and write comment', c, () => this.exivWriteComment(c));
+		} else {
+			if (!this.exiv_comment) {
+				res = res & this.checkMsg('Exiv: no comment found');
+			}
 		}
 
 		if (!res) {
@@ -127,7 +137,7 @@ module.exports = class FilePicture extends FileTimestamped {
 
 		// const proposedComment = this.getFilenameTimestamp().comment;
 		// if (comment == '') {
-		// 	await this.checkMsg(allOptions.pictureFixCommentWhenEmpty,
+		// 	await this.checkMsg(
 		// 		'Set the comment of the picture',
 		// 		proposedComment,
 		// 		() => this.exivWriteComment(proposedComment)
@@ -143,9 +153,6 @@ module.exports = class FilePicture extends FileTimestamped {
 		// 		);
 		// 	}
 		// }
-
-		// TODO: check that the exiv data is coherent to filename
-		//   and update the calculatedTS accordingly
 
 		if (!await super.check()) {
 			return false;
