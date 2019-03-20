@@ -27,14 +27,18 @@ function runExiv(...params) {
 }
 
 module.exports = class FilePicture extends FileTimestamped {
-	async calculate() {
-		super.calculate();
+	constructor(filePath) {
+		super(filePath);
 
 		this.exiv_date        = this.exivReadDate();
 		this.exiv_comment     = this.exivReadComment();
 		this.exiv_orientation = this.exivReadOrientation();
 
 		this.exiv_ts          = tsFromString(this.exivReadDate());
+
+		this.addInfo('picture.exiv.date',        this.exiv_date);
+		this.addInfo('picture.exiv.comment',     this.exiv_comment);
+		this.addInfo('picture.exiv.orientation', this.exiv_orientation);
 	}
 
 	exivReadDate() {

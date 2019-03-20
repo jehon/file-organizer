@@ -8,10 +8,7 @@ const { tsFromString, tsFromDate } = require('./timestamp.js');
 class FileTimestamped extends FileGeneric {
 	constructor(filePath) {
 		super(filePath);
-		this.calculate();
-	}
 
-	calculate() {
 		this.filenameTS = tsFromString(this.getFilename());
 
 		// Parse the original filename to see if we can get some data
@@ -22,6 +19,8 @@ class FileTimestamped extends FileGeneric {
 			}
 		}
 		this.calculatedTS = this.filenameTS.clone();
+
+		this.addInfo('timestamp.filename', this.filenameTS);
 	}
 
 	getTSFromFileModificationDate() {

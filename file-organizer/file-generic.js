@@ -29,6 +29,26 @@ class FileGeneric {
 	constructor(filePath) {
 		this._relativePath = filePath;
 		this._parent = null;
+		this._infos = {};
+
+		this.addInfo('file.name',          this.getFilename());
+		this.addInfo('file.extension',     this.getExtension());
+		this.addInfo('file.path.relative', this.getRelativePath());
+		this.addInfo('file.path.absolute', this._getAbsolutePath());
+		if (this.parent != null) {
+			this.addInfo('file.parent.name',   this.parent.getFilename());
+		}
+	}
+
+	addInfo(key, val) {
+		this._infos[key] = val;
+	}
+
+	getInfo(key) {
+		if (key in this._infos) {
+			return this._infos[key];
+		}
+		return false;
 	}
 
 	get parent() {
@@ -36,7 +56,7 @@ class FileGeneric {
 			const FileFolder = require('./file-folder.js');
 			let parentDir = path.dirname(this._relativePath);
 			if (parentDir == '.') {
-			// switch to absolute path
+				// switch to absolute path
 				parentDir = path.dirname(this._getAbsolutePath());
 			}
 			if (parentDir == '/') {
