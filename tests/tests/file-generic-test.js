@@ -36,6 +36,9 @@ describe('file-generic-test', () => {
 			let new1 = new FileGeneric('test');
 			expect(new1.getInfo('file.name')).toBe('test');
 			expect(new1.getInfo('does.not.exists')).toBeFalsy();
+
+			new1.addInfo('does.not.exists', 1);
+			expect(new1.getInfo('does.not.exists')).toBe(1);
 		});
 	});
 
