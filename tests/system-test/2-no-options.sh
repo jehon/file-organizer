@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
+T="$(basename "${BASH_SOURCE[0]}")"
 . ./helpers.sh
 
-setup()
-
-tearDown()
+setup "$T"
