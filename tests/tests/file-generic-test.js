@@ -31,6 +31,14 @@ describe('file-generic-test', () => {
 
 	});
 
+	describe('infos', () => {
+		it('should get infos', () => {
+			let new1 = new FileGeneric('test');
+			expect(new1.getInfo('file.name')).toBe('test');
+			expect(new1.getInfo('does.not.exists')).toBeFalsy();
+		});
+	});
+
 	// it('should give an indexedFilename', async () => {
 	// 	const new1 = createFileGeneric('jh-patch-file-patch.txt');
 

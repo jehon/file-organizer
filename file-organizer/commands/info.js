@@ -10,6 +10,5 @@ exports.builder = {
 };
 
 exports.handler = function (options) {
-	console.log(options.file.getInfo(options.key));
-	// do something with argv.
+	console.info(options.file.getInfo(options.key));
 };
