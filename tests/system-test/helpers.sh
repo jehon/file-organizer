@@ -26,10 +26,14 @@ setup() {
     rsync -r --delete "$ORIG_DATA" "$TEST_DATA"
 }
 
-runIt() {
-    pushd "$TEST_DATA"
-    $EXEC "$@"
-    popd
+runItAndCapture() {
+    pushd "$TEST_DATA" >/dev/null
+    HEADER="$1"
+    shift
+    capture "Run $HEADER" "$EXEC" "$@"
+    RES=$?
+    popd >/dev/null
+    return $RES
 }
 
 checkConsistency() {

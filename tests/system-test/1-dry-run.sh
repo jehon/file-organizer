@@ -8,4 +8,11 @@ setup "$T"
 
 checkConsistency
 
-runIt -n
+runItAndCapture "help" --help
+assert_captured_success
+
+runItAndCapture "dry-run" -n
+assert_captured_success
+
+runItAndCapture "incorrect arguments" -blabla
+assert_true "Should be in error" "$( [[ $CAPTURED_EXITCODE -gt 0 ]] )"
