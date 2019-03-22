@@ -11,14 +11,10 @@ exports.builder = {
 	},
 };
 
-exports.handler = function (argv) {
-	console.log('> main', argv);
-
-	// TODO: reactivate the default entry point
-
-	// options.file.iterate(async function(f) {
-	// 	await f.check();
-	// }).then(() => {
-	// 	console.info('\n\nDone');
-	// });
+exports.handler = function (options) {
+	options.file.iterate(async function(f) {
+		await f.check();
+	}).then(() => {
+		console.info('\n\nDone');
+	});
 };
