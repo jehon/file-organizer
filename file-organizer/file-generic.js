@@ -143,7 +143,7 @@ class FileGeneric {
 	 *    true: info message of success
 	 *    fn: fix function
 	 */
-	async checkMsg(description, newInfo = null, action = null) {
+	async checkMsg(code, description, newInfo = null, action = null) {
 		let msg = '';
 
 		// Force being at the beginnning of the line
@@ -220,7 +220,7 @@ class FileGeneric {
 			// Lowercase extension
 			if (this.getExtension().toLowerCase() != this.getExtension()) {
 				let proposedFN = this.getFilename() + this.getExtension().toLowerCase();
-				res = res && await this.checkMsg('uppercase extension',
+				res = res && await this.checkMsg('ERR', 'uppercase extension',
 					proposedFN,
 					() => this.rename(proposedFN)
 				);

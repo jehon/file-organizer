@@ -119,7 +119,7 @@ module.exports = class FilePicture extends FileTimestamped {
 	async check() {
 		let res = true;
 		if (!this.exiv_date) {
-			res = res & this.checkMsg('Exiv: no date found');
+			res = res & this.checkMsg('ERR', 'Exiv: no date found');
 		}
 
 		if (options.guessComment) {
@@ -128,10 +128,10 @@ module.exports = class FilePicture extends FileTimestamped {
 				c = this.parent.calculatedTS.comment;
 			}
 			// TODO: to be tested...
-			res = res & this.checkMsg('guess and write comment', c, () => this.exivWriteComment(c));
+			res = res & this.checkMsg('ERR', 'guess and write comment', c, () => this.exivWriteComment(c));
 		} else {
 			if (!this.exiv_comment) {
-				res = res & this.checkMsg('Exiv: no comment found');
+				res = res & this.checkMsg('ERR', 'Exiv: no comment found');
 			}
 		}
 
@@ -164,7 +164,7 @@ module.exports = class FilePicture extends FileTimestamped {
 
 		// Rotate according to exiv tag
 		if (this.exiv_orientation != 0) {
-			await this.checkMsg('rotate picture',
+			await this.checkMsg('ERR', 'rotate picture',
 				this.exiv_orientation,
 				() => this.exivRotatePicture()
 			);

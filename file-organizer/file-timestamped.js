@@ -29,7 +29,7 @@ class FileTimestamped extends FileGeneric {
 
 	setCalculatedTSToIfMatching(newTS, category = 'internal') {
 		if (!newTS.matchLithe(this.parent.calculatedTS)) {
-			return this.checkMsg(`${category} timestamp incoherent to calculated timestamp`,
+			return this.checkMsg('ERR', `${category} timestamp incoherent to calculated timestamp`,
 				`${newTS.TS()} / ${this.parent.calculatedTS.TS()}`,
 				null);
 		}
@@ -62,7 +62,7 @@ class FileTimestamped extends FileGeneric {
 				// Check filename according to parent folder TS
 				if (this.parent.calculatedTS.year > 0) {
 					if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
-						return this.checkMsg('calculated timestamp incoherent to parent folder',
+						return this.checkMsg('ERR', 'calculated timestamp incoherent to parent folder',
 							`${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()}`,
 							null);
 					}
@@ -73,7 +73,7 @@ class FileTimestamped extends FileGeneric {
 				// Rename to the canonical filename
 				const proposedFilename = this.getCanonicalFilename();
 				if (proposedFilename != this.getFilename()) {
-					await this.checkMsg('canonize filename',
+					await this.checkMsg('ERR', 'canonize filename',
 						proposedFilename,
 						() => this.changeFilename(proposedFilename)
 					);
