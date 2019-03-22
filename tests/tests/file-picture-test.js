@@ -1,4 +1,5 @@
 
+const options = require('../../file-organizer/options.js');
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FilePicture = require('../../file-organizer/file-picture.js');
 
@@ -47,21 +48,6 @@ describe('file-picture-test', () => {
 		new2.remove();
 	});
 
-	// xit('should getDataTimestamp correctly', () => {
-	// 	expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).getDataTimestamp().TS()).toBe('2015-03-06 15-33-40');
-	// 	expect((new FilePicture(dataPath('canon.JPG'))).getDataTimestamp().TS()).toBe('2018-02-04 13-17-50');
-	// 	expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).getDataTimestamp().TS()).toBe('2020-01-19 01-24-02');
-
-	// 	// No exiv
-	// 	expect(() => (new FilePicture(dataPath('no_exiv.jpg'))).getDataTimestamp()).toThrowError(FilePicture.InvalidDataError);
-	// });
-
-	// xit('should calculate a canonicalFilename', () => {
-	// 	// folder = data
-	// 	expect((new FilePicture(dataPath('canon.JPG'))).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
-	// 	expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
-	// });
-
 	describe('check', () => {
 		beforeEach(() => {
 			spyOn(FileTimestamped.prototype, 'check').and.returnValue(true);
@@ -85,14 +71,18 @@ describe('file-picture-test', () => {
 			new1.remove();
 		});
 
-		// xit('should set comment if necessary', async() => {
-		// 	const new1 = createFileGeneric('no_exiv.jpg');
-		// 	expect(new1.exivReadComment()).toBe('');
-		// 	await new1.check();
-		// 	expect(FileGeneric.prototype.checkMsg).toHaveBeenCalledTimes(2);
-		// 	expect(new1.exivReadComment()).toBe('no_exiv');
-		// 	new1.remove();
-		// });
+		it('should set comment if necessary', async() => {
+			options.guessComment = true;
+
+			const new1 = createFileGeneric('no_exiv.jpg');
+			expect(new1.exivReadComment()).toBe('');
+			await new1.check();
+			expect(FileGeneric.prototype.checkMsg).toHaveBeenCalledTimes(2);
+			expect(new1.exivReadComment()).toBe('no_exiv');
+			new1.remove();
+
+			options.resetToDefault();
+		});
 
 		// xit('should force comment', async() => {
 		// 	const new1 = createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
