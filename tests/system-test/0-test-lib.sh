@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-T="$(basename "${BASH_SOURCE[0]}")"
-D="$(dirname "${BASH_SOURCE[0]}")"
+. "$(dirname "${BASH_SOURCE[0]}")/helpers.sh"
 
-. "$D/helpers.sh"
-
-setup "$T"
+setup "$(basename "${BASH_SOURCE[0]}")"
 
 checkConsistency
 checkFileExists    "other test/1.jpeg"

@@ -2,12 +2,10 @@
 
 . jh-lib.sh
 
-SELF="$(dirname "${BASH_SOURCE[0]}" )"
-TEST_ROOT="$SELF/.."
-ROOT="$TEST_ROOT/.."
+SELF="$(realpath "$(dirname "${BASH_SOURCE[0]}" )" )"
+ROOT="$(dirname "$( dirname "$SELF" )" )"
 TMP="$ROOT/tmp"
-TEST_DATA=$( realpath --relative-to "$ROOT" "$TMP/st" )
-ORIG_DATA="$TEST_ROOT/data/system_test/"
+ORIG_DATA="$ROOT/tests/data/system_test/"
 
 EXEC="$ROOT/file-organizer/main.js"
 
@@ -20,12 +18,18 @@ log_debug "[$T] EXEC:      $EXEC"
 
 assert_true "[$T] Exec $EXEC is runnable" "$([[ -x "$EXEC" ]])"
 
-
 setup() {
-    echo "## setup $1"
+    log_info "## setup $1"
+    T="$1"
+    TEST_DATA="$TMP/$T/st"
     mkdir -p "$TEST_DATA"
     rsync -r --delete "$ORIG_DATA" "$TEST_DATA"
-    T="$1"
+}
+
+runIt() {
+    pushd "$TEST_DATA"
+    $EXEC "$@"
+    popd
 }
 
 checkConsistency() {
