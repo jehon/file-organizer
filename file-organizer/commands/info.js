@@ -10,5 +10,8 @@ exports.builder = {
 };
 
 exports.handler = function (options) {
-	console.info(options.file.getInfo(options.key));
+	let i = options.file.getInfo(options.key);
+	if (i) {
+		console.info(i);
+	}
 };

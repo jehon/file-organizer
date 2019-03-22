@@ -36,7 +36,7 @@ module.exports = class FilePicture extends FileTimestamped {
 
 		this.exiv_ts          = tsFromString(this.exivReadDate());
 
-		this.addInfo('picture.exiv.date',        this.exiv_date);
+		this.addInfo('picture.exiv.timestamp',   this.exiv_date);
 		this.addInfo('picture.exiv.comment',     this.exiv_comment);
 		this.addInfo('picture.exiv.orientation', this.exiv_orientation);
 	}
