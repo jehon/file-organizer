@@ -8,7 +8,9 @@
     "jasmine": "^3.2.0"
   },
   "scripts": {
-    "test": "jasmine --config=tests/jasmine.json",
+    "test": "npm run test-unit && npm run test-system",
+    "test-unit": "jasmine --config=tests/jasmine.json",
+    "test-system": "./tests/system-test/all.sh",
     "test-watch": "while true; do clear; jasmine --config=tests/jasmine.json; sleep 5s; done"
   },
   "dependencies": {
