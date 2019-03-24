@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 . jh-lib.sh
 
 SELF="$(realpath "$(dirname "${BASH_SOURCE[0]}" )" )"
@@ -37,9 +38,9 @@ runItAndCapture() {
 }
 
 checkConsistency() {
-    ON=$(find "$ORIG_DATA/2018 test" -type f | wc -l)
-    TN=$(find "$TEST_DATA/2018 test" -type f | wc -l)
-    assert_true "[$T] 2018 test: same number of files" "$([ "$ON" == "$TN" ])"
+    ON=$(find "$ORIG_DATA/2019 test" -type f | wc -l)
+    TN=$(find "$TEST_DATA/2019 test" -type f | wc -l)
+    assert_true "[$T] 2019 test: same number of files" "$([ "$ON" == "$TN" ])"
 
     ON=$(find "$ORIG_DATA/other test" -type f | wc -l)
     TN=$(find "$TEST_DATA/other test" -type f | wc -l)
