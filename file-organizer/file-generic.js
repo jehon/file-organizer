@@ -38,6 +38,8 @@ class FileGeneric {
 		if (this.parent != null) {
 			this.addInfo('file.parent.name',   this.parent.getFilename());
 		}
+
+		this.errors = [];
 	}
 
 	addInfo(key, val) {
@@ -145,6 +147,8 @@ class FileGeneric {
 	 */
 	async checkMsg(code, description, newInfo = null, action = null) {
 		let msg = '';
+
+		this.errors.push(code);
 
 		if (options.interactive) {
 			// Force being at the beginnning of the line

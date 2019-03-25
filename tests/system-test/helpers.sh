@@ -9,19 +9,16 @@ ORIG_DATA="$ROOT/tests/data/system_test/"
 
 EXEC="$ROOT/file-organizer/main.js"
 
-T="init"
+log_debug "ROOT:      $ROOT"
+log_debug "TEST_DATA: $TEST_DATA"
+log_debug "ORIG_DATA: $ORIG_DATA"
+log_debug "EXEC:      $EXEC"
 
-log_debug "[$T] ROOT:      $ROOT"
-log_debug "[$T] TEST_DATA: $TEST_DATA"
-log_debug "[$T] ORIG_DATA: $ORIG_DATA"
-log_debug "[$T] EXEC:      $EXEC"
-
-assert_true "[$T] Exec $EXEC is runnable" "$([[ -x "$EXEC" ]])"
+assert_true "Exec $EXEC is runnable" "$([[ -x "$EXEC" ]])"
 
 setup() {
     log_info "## setup $1"
-    T="$1"
-    TEST_DATA="$TMP/$T/st"
+    TEST_DATA="$TMP/$T"
     mkdir -p "$TEST_DATA"
     rsync -r --delete "$ORIG_DATA" "$TEST_DATA"
 }
@@ -39,11 +36,11 @@ runItAndCapture() {
 checkConsistency() {
     ON=$(find "$ORIG_DATA/2019 test" -type f | wc -l)
     TN=$(find "$TEST_DATA/2019 test" -type f | wc -l)
-    assert_true "[$T] 2019 test: same number of files" "$([ "$ON" == "$TN" ])"
+    assert_true "2019 test: same number of files" "$([ "$ON" == "$TN" ])"
 
     ON=$(find "$ORIG_DATA/other test" -type f | wc -l)
     TN=$(find "$TEST_DATA/other test" -type f | wc -l)
-    assert_true "[$T] other test: same number of files" "$([ "$ON" == "$TN" ])"
+    assert_true "other test: same number of files" "$([ "$ON" == "$TN" ])"
 }
 
 checkFileExists() {
@@ -51,17 +48,17 @@ checkFileExists() {
     if [ "$2" == "" ]; then
         F="$1"
     fi
-    assert_true "[$T] $1: exists" "$([[ -r "$TEST_DATA/$F" ]])"
+    assert_true "$1: exists" "$([[ -r "$TEST_DATA/$F" ]])"
 }
 
 checkExivTimestamp() {
     checkFileExists "$1: checkExivTimestamp" "$1"
     D="$( $EXEC info "picture.exiv.timestamp" "$TEST_DATA/$1" )"
-    assert_equal "[$T] $1: Exiv timestamp" "$2" "$D"
+    assert_equal "$1: Exiv timestamp" "$2" "$D"
 }
 
 checkExivComment() {
     checkFileExists "$1: checkExivComment" "$1"
     D="$( $EXEC info "picture.exiv.comment" "$TEST_DATA/$1" )"
-    assert_equal "[$T] $1: Exiv comment" "$2" "$D"
+    assert_equal "$1: Exiv comment" "$2" "$D"
 }

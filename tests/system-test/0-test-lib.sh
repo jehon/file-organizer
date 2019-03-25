@@ -2,7 +2,9 @@
 
 . "$(dirname "${BASH_SOURCE[0]}")/helpers.sh"
 
-setup "$(basename "${BASH_SOURCE[0]}")"
+T="$(basename "${BASH_SOURCE[0]}")"
+
+setup "$T"
 
 checkConsistency
 checkFileExists    "other test/1.jpeg"
