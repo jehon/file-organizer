@@ -12,6 +12,10 @@ Object.assign(options, yargs
 			type: 'boolean',
 			default: false
 		},
+		'interactive': {
+			type: 'boolean',
+			default: true
+		},
 		'file': {
 			type: 'string',
 			default: '.',

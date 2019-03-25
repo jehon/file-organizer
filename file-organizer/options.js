@@ -1,6 +1,7 @@
 
 
 const defaultOptions = {};
+defaultOptions.interactive = false;
 
 const options = {};
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 . jh-lib.sh
 
 SELF="$(realpath "$(dirname "${BASH_SOURCE[0]}" )" )"
@@ -31,7 +30,7 @@ runItAndCapture() {
     pushd "$TEST_DATA" >/dev/null
     HEADER="$1"
     shift
-    capture "Run $HEADER" "$EXEC" "$@"
+    capture "Run $HEADER" "$EXEC" "--no-interactive" "$@"
     RES=$?
     popd >/dev/null
     return $RES

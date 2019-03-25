@@ -10,10 +10,10 @@ const process = require('process');
 
 const ansiEscapes = require('ansi-escapes');
 const getCursorPosition = require('get-cursor-position');
-require('colors');
+const chalk = require('chalk');
 
 const options = require('./options.js');
-const { ellipseLeft } = require('./string-utils.js');
+// const { ellipseLeft } = require('./string-utils.js');
 const FileUtils = require('./file-utils.js');
 const BusinessError = require('./business-error.js');
 
@@ -146,19 +146,18 @@ class FileGeneric {
 	async checkMsg(code, description, newInfo = null, action = null) {
 		let msg = '';
 
-		// Force being at the beginnning of the line
-		const cursorPos = getCursorPosition.sync();
-		if (cursorPos.col >  0) {
-			process.stdout.write(ansiEscapes.eraseLine);
-			process.stdout.write(ansiEscapes.cursorTo(0));
+		if (options.interactive) {
+			// Force being at the beginnning of the line
+			const cursorPos = getCursorPosition.sync();
+			if (cursorPos.col >  0) {
+				process.stdout.write(ansiEscapes.eraseLine);
+				process.stdout.write(ansiEscapes.cursorTo(0));
+			}
 		}
 
 		if (lastLogFile != this) {
 			msg += '\n';
-			msg += (this.getFilename() + this.getExtension());
-			msg += ' ';
-			msg += ellipseLeft(this.parent.getRelativePath() + '/ ', 60).gray;
-			msg += '\n';
+			msg += (this.getFilename() + this.getExtension()) + ' /' + chalk.gray(this.parent.getRelativePath()) + '/\n';
 
 			lastLogFile = this;
 		}
@@ -169,10 +168,10 @@ class FileGeneric {
 		// This will be changed by the 'action'
 
 		if (action === null) {
-			msg += '⚑'.red;
+			msg += chalk.red('⚑');
 			impossibleCount++;
 		} else if (action === true) {
-			msg += '✓'.green;
+			msg += chalk.green('✓');
 		} else {
 			if (!options.dryrun) {
 				try {
@@ -186,34 +185,39 @@ class FileGeneric {
 					}
 				}
 				if (res == undefined || res) {
-					msg += '✓'.green;
+					msg += chalk.green('✓');
 					fixesCount++;
 				} else {
-					msg += '✘'.red.bold;
+					msg += chalk.red.bold('✘');
 					errorsCount++;
 				}
 			} else {
-				msg +=  '⚐'.orange;
+				msg +=  chalk.magenta('⚐');
 				skippedCount++;
 			}
 		}
 
 		msg += ' ';
-		msg += (description).padEnd(30, ' ').yellow.bold;
+		msg += chalk.yellow.bold((description).padEnd(30, ' '));
 
 		msg += ' ';
-		msg += (newInfo != null ? ('' + newInfo).blue : '');
+		msg += (newInfo != null ? chalk.blue('' + newInfo) : '');
 
-		process.stdout.write(msg + '\n');
-		FileGeneric.checkMessages += msg;
+		if (options.interactive) {
+			process.stdout.write(msg + '\n');
+		} else {
+			process.stdout.write(msg + '\n');
+		}
 		return res;
 	}
 
 	async check() {
 		filesCount++;
 
-		// Write infos on one line, erase it after
-		process.stdout.write(`\rCurrent files: ${filesCount} - fixes: ${fixesCount} - skipped: ${skippedCount} - errors: ${errorsCount} - impossible: ${impossibleCount}` + ansiEscapes.eraseEndLine + '\r');
+		if (options.interactive) {
+			// Write infos on one line, erase it after
+			process.stdout.write(`\rCurrent files: ${filesCount} - fixes: ${fixesCount} - skipped: ${skippedCount} - errors: ${errorsCount} - impossible: ${impossibleCount}` + ansiEscapes.eraseEndLine + '\r');
+		}
 
 		let res = true;
 		{
