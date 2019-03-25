@@ -119,7 +119,7 @@ module.exports = class FilePicture extends FileTimestamped {
 	async check() {
 		let res = true;
 		if (!this.exiv_date) {
-			res = res & this.checkMsg('ERR', 'Exiv: no date found');
+			res = res & this.checkMsg('PICT_NO_DATE', 'Exiv: no date found');
 		}
 
 		if (options.guessComment) {
@@ -128,25 +128,16 @@ module.exports = class FilePicture extends FileTimestamped {
 				c = this.parent.calculatedTS.comment;
 			}
 			// TODO: to be tested...
-			res = res & this.checkMsg('ERR', 'guess and write comment', c, () => this.exivWriteComment(c));
+			res = res & this.checkMsg('PICT_WRITE_COMMENT', 'guess and write comment', c, () => this.exivWriteComment(c));
 		} else {
 			if (!this.exiv_comment) {
-				res = res & this.checkMsg('ERR', 'Exiv: no comment found');
+				res = res & this.checkMsg('PICT_NO_COMMENT', 'Exiv: no comment found');
 			}
 		}
 
 		if (!res) {
 			return res;
 		}
-
-		// const proposedComment = this.getFilenameTimestamp().comment;
-		// if (comment == '') {
-		// 	await this.checkMsg(
-		// 		'Set the comment of the picture',
-		// 		proposedComment,
-		// 		() => this.exivWriteComment(proposedComment)
-		// 	);
-		// }
 
 		// if (options.forcePictureOverrideComment) {
 		// 	if (comment != proposedComment) {
@@ -164,7 +155,7 @@ module.exports = class FilePicture extends FileTimestamped {
 
 		// Rotate according to exiv tag
 		if (this.exiv_orientation != 0) {
-			await this.checkMsg('ERR', 'rotate picture',
+			await this.checkMsg('PICT_ROTATE', 'rotate picture',
 				this.exiv_orientation,
 				() => this.exivRotatePicture()
 			);

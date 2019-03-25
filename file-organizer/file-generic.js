@@ -224,7 +224,7 @@ class FileGeneric {
 			// Lowercase extension
 			if (this.getExtension().toLowerCase() != this.getExtension()) {
 				let proposedFN = this.getFilename() + this.getExtension().toLowerCase();
-				res = res && await this.checkMsg('ERR', 'uppercase extension',
+				res &= await this.checkMsg('FILE_UPPERCASE_EXT', 'uppercase extension',
 					proposedFN,
 					() => this.rename(proposedFN)
 				);

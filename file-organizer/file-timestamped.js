@@ -57,12 +57,13 @@ class FileTimestamped extends FileGeneric {
 			return false;
 		}
 
+		let res = true;
 		if (this.calculatedTS.year > 0) {
 			{
 				// Check filename according to parent folder TS
 				if (this.parent.calculatedTS.year > 0) {
 					if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
-						return this.checkMsg('ERR', 'calculated timestamp incoherent to parent folder',
+						return this.checkMsg('TS_PARENT_INCOHERENT', 'calculated timestamp incoherent to parent folder',
 							`${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()}`,
 							null);
 					}
@@ -73,14 +74,14 @@ class FileTimestamped extends FileGeneric {
 				// Rename to the canonical filename
 				const proposedFilename = this.getCanonicalFilename();
 				if (proposedFilename != this.getFilename()) {
-					await this.checkMsg('ERR', 'canonize filename',
+					res &= await this.checkMsg('TS_CANONIZE', 'canonize filename',
 						proposedFilename,
 						() => this.changeFilename(proposedFilename)
 					);
 				}
 			}
 		}
-		return true;
+		return res;
 	}
 }
 
