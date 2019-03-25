@@ -10,7 +10,13 @@ Object.assign(options, yargs
 		'dryRun': {
 			alias: [ 'dry-run', 'dryrun', 'n'],
 			type: 'boolean',
-			default: false
+			default: false,
+			coerce: (val) => {
+				if (val) {
+					console.info('Using dry run mode');
+				}
+				return val;
+			}
 		},
 		'interactive': {
 			type: 'boolean',

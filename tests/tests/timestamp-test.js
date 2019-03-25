@@ -175,16 +175,33 @@ describe('timestamp', function() {
 			})));
 		});
 
+		it('should parse minimal format', function() {
+			expect(tsFromString('canon')).toEqual(jasmine.objectContaining({
+				type: 'minimal',
+				comment: 'canon'
+			}));
+	
+			expect(tsFromString('canon brol')).toEqual(jasmine.objectContaining({
+				type: 'minimal',
+				comment: 'canon brol'
+			}));
+	
+		});
+	
 		it('should detect invalid formats', function() {
-			expect(tsFromString('1665-12-50 bonjour 2019')).toEqual(jasmine.objectContaining(d({
-				type: 'invalid',
-				comment: '1665-12-50 bonjour 2019',
-			})));
-
 			expect(tsFromString('2018-01-02-03')).toEqual(jasmine.objectContaining(d({
 				type: 'invalid',
 				comment: '2018-01-02-03',
+				original: '2018-01-02-03'
 			})));
+
+			expect(tsFromString('brol - machin')).toEqual(jasmine.objectContaining({
+				type: 'invalid'
+			}));
+
+			expect(tsFromString('brol 2018-01-02 machin')).toEqual(jasmine.objectContaining({
+				type: 'invalid'
+			}));
 		});
 
 		it('should parse legacy tests', function() {
@@ -252,11 +269,6 @@ describe('timestamp', function() {
 				original: 'DSC_0101'
 			}));
 
-			expect(tsFromString('canon')).toEqual(jasmine.objectContaining({
-				type: 'invalid',
-				comment: 'canon',
-				original: ''
-			}));
 		});
 	});
 

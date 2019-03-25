@@ -66,16 +66,6 @@ describe('file-generic-test', () => {
 			await fileDelete(new1.getRelativePath());
 		});
 
-		it('should fix extensions', async () => {
-			spyOn(fileUtils, 'fileRename');
-
-			const new1 = new FileGeneric('canon.JPG', tempPath());
-			await new1.check();
-			expect(fileUtils.fileRename).toHaveBeenCalledTimes(1);
-			expect(new1.getFilename()).toBe('canon');
-			expect(new1.getExtension()).toBe('.jpg');
-		});
-
 		it('should remove the file', async function() {
 			const new1 = createFileGeneric('jh-patch-file-patch.txt');
 
@@ -84,6 +74,30 @@ describe('file-generic-test', () => {
 			expect(await fileExists(filename)).toBeTruthy();
 			await new1.remove();
 			expect(await fileExists(filename)).toBeFalsy();
+		});
+	});
+
+	describe("check", () => {
+		it('should fix extensions', async () => {
+			spyOn(fileUtils, 'fileRename');
+
+			const new1 = new FileGeneric('canon.JPG', tempPath());
+			await new1.check();
+			expect(new1.errors).toContain('FILE_EXT_UPPERCASE');
+			expect(fileUtils.fileRename).toHaveBeenCalledTimes(1);
+			expect(new1.getFilename()).toBe('canon');
+			expect(new1.getExtension()).toBe('.jpg');
+		});
+
+		it('should normalize extensions when necessary', async() => {
+			const new1 = createFileGeneric('rotated-bottom-left.jpg');
+			await new1.rename('test.jpeg')
+			new1.exiv_date = '2018-01-02';
+			new1.exiv_comment = 'test';
+			await new1.check();
+			expect(new1.errors).toContain('FILE_EXT_NORMALIZE');
+			expect(new1.getExtension()).toBe('.jpg');
+			new1.remove();
 		});
 	});
 

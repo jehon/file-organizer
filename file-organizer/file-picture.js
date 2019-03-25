@@ -30,11 +30,19 @@ module.exports = class FilePicture extends FileTimestamped {
 	constructor(filePath) {
 		super(filePath);
 
-		this.exiv_date        = this.exivReadDate();
-		this.exiv_comment     = this.exivReadComment();
-		this.exiv_orientation = this.exivReadOrientation();
+		this.exiv_date             = this.exivReadDate();
+		this.exiv_comment          = this.exivReadComment();
+		this.exiv_orientation      = this.exivReadOrientation();
 
-		this.exiv_ts          = tsFromString(this.exivReadDate());
+		this.exiv_ts               = tsFromString(this.exivReadDate());
+
+		this.setCalculatedTSToIfMatching(this.exiv_ts);
+		if (this.exiv_comment) {
+			this.calculatedTS.comment = this.exiv_comment;
+		}
+		// this.calculatedTS.comment  = this.exiv_comment;
+		// this.calculatedTS.original = this.filenameTS.original;
+		// console.log(this.getRelativePath(), this.calculatedTS);
 
 		this.addInfo('picture.exiv.timestamp',   this.exiv_date);
 		this.addInfo('picture.exiv.comment',     this.exiv_comment);
@@ -95,6 +103,8 @@ module.exports = class FilePicture extends FileTimestamped {
 
 	exivWriteComment(msg) {
 		runExiv('modify', '-M set Exif.Photo.UserComment ' + msg, this.getRelativePath());
+		this.exiv_comment = msg;
+		this.calculatedTS.comment = msg;
 	}
 
 	async exivRotatePicture() {
@@ -113,13 +123,15 @@ module.exports = class FilePicture extends FileTimestamped {
 		await fileExec('touch', [ '-r', orig, temp]);
 		await fileDelete(orig);
 		await fileRename(temp, orig);
+
+		this.exiv_orientation = 0;
 		return true;
 	}
 
 	async check() {
 		let res = true;
 		if (!this.exiv_date) {
-			res = res & this.checkMsg('PICT_NO_DATE', 'Exiv: no date found');
+			res = res && await this.checkMsg('PICT_NO_DATE', 'Exiv: no date found');
 		}
 
 		if (options.guessComment) {
@@ -127,11 +139,14 @@ module.exports = class FilePicture extends FileTimestamped {
 			if (!c) {
 				c = this.parent.calculatedTS.comment;
 			}
+			if (!c) {
+				return this.checkMsg('NO_PICT_COMMENT_GUESS', 'guess comment', c, null);
+			}
 			// TODO: to be tested...
-			res = res & this.checkMsg('PICT_WRITE_COMMENT', 'guess and write comment', c, () => this.exivWriteComment(c));
+			res = res && await this.checkMsg('PICT_WRITE_COMMENT', 'write comment', c, () => this.exivWriteComment(c));
 		} else {
 			if (!this.exiv_comment) {
-				res = res & this.checkMsg('PICT_NO_COMMENT', 'Exiv: no comment found');
+				res = res && await this.checkMsg('PICT_NO_COMMENT', 'Exiv: no comment found');
 			}
 		}
 

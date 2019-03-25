@@ -49,15 +49,10 @@ describe('file-picture-test', () => {
 	});
 
 	describe('check', () => {
-		beforeEach(() => {
-			spyOn(FileTimestamped.prototype, 'check').and.returnValue(true);
-			spyOn(FileGeneric.prototype, 'checkMsg').and.callThrough();
-		});
-
 		it('should be problems when no exiv is present', async() => {
 			const new1 = new FilePicture(dataPath('no_exiv.jpg'));
 			await new1.check();
-			expect(FileGeneric.prototype.checkMsg).toHaveBeenCalled();
+			expect(new1.errors).toContain("PICT_NO_DATE");
 		});
 
 		it('should rotate pictures when necessary', async() => {
@@ -66,7 +61,7 @@ describe('file-picture-test', () => {
 			new1.exiv_comment = 'test';
 			expect(new1.exivReadOrientation()).toBe(270);
 			await new1.check();
-			expect(FileTimestamped.prototype.check).toHaveBeenCalled();
+			expect(new1.errors).toContain("PICT_ROTATE");
 			expect(new1.exivReadOrientation()).toBe(0);
 			new1.remove();
 		});
@@ -75,9 +70,10 @@ describe('file-picture-test', () => {
 			options.guessComment = true;
 
 			const new1 = createFileGeneric('no_exiv.jpg');
+			new1.exiv_date = '2018-01-02';
 			expect(new1.exivReadComment()).toBe('');
 			await new1.check();
-			expect(FileGeneric.prototype.checkMsg).toHaveBeenCalledTimes(2);
+			expect(new1.errors).toContain("PICT_WRITE_COMMENT");
 			expect(new1.exivReadComment()).toBe('no_exiv');
 			new1.remove();
 
@@ -88,6 +84,7 @@ describe('file-picture-test', () => {
 		// 	const new1 = createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
 		// 	expect(new1.exivReadComment()).toBe('User comments');
 		// 	await new1.check();
+		// expect(new1.errors).toContain("PICT_WRITE_COMMENT");
 		// 	expect(FileGeneric.prototype.checkMsg).toHaveBeenCalledTimes(2);
 		// 	expect(new1.exivReadComment()).toBe('Cable internet dans la rue');
 		// 	new1.remove();

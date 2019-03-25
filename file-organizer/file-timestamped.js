@@ -42,7 +42,10 @@ class FileTimestamped extends FileGeneric {
 	}
 
 	getCanonicalFilename() {
-		let proposedFilename = this.calculatedTS.TS();
+		let proposedFilename = '';
+		if (this.calculatedTS.TS() > '') {
+			proposedFilename += this.calculatedTS.TS();
+		}
 		if (this.calculatedTS.comment > '') {
 			proposedFilename += ' ' + this.calculatedTS.comment;
 		}
@@ -53,11 +56,25 @@ class FileTimestamped extends FileGeneric {
 	}
 
 	async check() {
+		if (this.calculatedTS.type == 'invalid') {
+			return this.checkMsg('TS_FILENAME_INVALID', 'filename is not parsable');
+		}
+
 		if (!await super.check()) {
 			return false;
 		}
 
 		let res = true;
+
+		// TODO: is this intelligent?
+		if (this.calculatedTS.comment == this.calculatedTS.original) {
+			this.calculatedTS;
+			res = res && await this.checkMsg('TS_DUP_COMMENT', 'remove duplicate comment/original',
+				'remove original filename',
+				() => { this.calculatedTS.original = ''; return true; }
+			);
+		}
+
 		if (this.calculatedTS.year > 0) {
 			{
 				// Check filename according to parent folder TS
@@ -65,22 +82,24 @@ class FileTimestamped extends FileGeneric {
 					if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
 						return this.checkMsg('TS_PARENT_INCOHERENT', 'calculated timestamp incoherent to parent folder',
 							`${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()}`,
-							null);
+						);
 					}
 				}
 			}
 
-			{
-				// Rename to the canonical filename
-				const proposedFilename = this.getCanonicalFilename();
-				if (proposedFilename != this.getFilename()) {
-					res &= await this.checkMsg('TS_CANONIZE', 'canonize filename',
-						proposedFilename,
-						() => this.changeFilename(proposedFilename)
-					);
-				}
+		}
+
+		{
+			// Rename to the canonical filename
+			const proposedFilename = this.getCanonicalFilename();
+			if (proposedFilename != this.getFilename()) {
+				res = res && await this.checkMsg('TS_CANONIZE', 'canonize filename',
+					proposedFilename,
+					() => this.changeFilename(proposedFilename)
+				);
 			}
 		}
+
 		return res;
 	}
 }

@@ -23,7 +23,7 @@ setup() {
     rsync -r --delete "$ORIG_DATA" "$TEST_DATA"
 }
 
-runItAndCapture() {
+run_and_capture() {
     pushd "$TEST_DATA" >/dev/null
     HEADER="$1"
     shift
@@ -33,7 +33,7 @@ runItAndCapture() {
     return $RES
 }
 
-checkConsistency() {
+assert_consistency() {
     ON=$(find "$ORIG_DATA/2019 test" -type f | wc -l)
     TN=$(find "$TEST_DATA/2019 test" -type f | wc -l)
     assert_true "2019 test: same number of files" "$([ "$ON" == "$TN" ])"
@@ -43,7 +43,7 @@ checkConsistency() {
     assert_true "other test: same number of files" "$([ "$ON" == "$TN" ])"
 }
 
-checkFileExists() {
+assert_file_exists() {
     local F="$2"
     if [ "$2" == "" ]; then
         F="$1"
@@ -51,14 +51,22 @@ checkFileExists() {
     assert_true "$1: exists" "$([[ -r "$TEST_DATA/$F" ]])"
 }
 
-checkExivTimestamp() {
-    checkFileExists "$1: checkExivTimestamp" "$1"
+assert_file_not_exists() {
+    local F="$2"
+    if [ "$2" == "" ]; then
+        F="$1"
+    fi
+    assert_true "$1: not exists" "$([[ ! -r "$TEST_DATA/$F" ]])"
+}
+
+assert_exiv_timestamp() {
+    assert_file_exists "$1: assert_exiv_timestamp" "$1"
     D="$( $EXEC info "picture.exiv.timestamp" "$TEST_DATA/$1" )"
     assert_equal "$1: Exiv timestamp" "$2" "$D"
 }
 
-checkExivComment() {
-    checkFileExists "$1: checkExivComment" "$1"
+assert_exiv_comment() {
+    assert_file_exists "$1: assert_exiv_comment" "$1"
     D="$( $EXEC info "picture.exiv.comment" "$TEST_DATA/$1" )"
     assert_equal "$1: Exiv comment" "$2" "$D"
 }

@@ -188,7 +188,10 @@ class FileGeneric {
 						errorsCount++;
 					}
 				}
-				if (res == undefined || res) {
+				if (res === undefined) {
+					res = true;
+				}
+				if (res) {
 					msg += chalk.green('✓');
 					fixesCount++;
 				} else {
@@ -228,12 +231,22 @@ class FileGeneric {
 			// Lowercase extension
 			if (this.getExtension().toLowerCase() != this.getExtension()) {
 				let proposedFN = this.getFilename() + this.getExtension().toLowerCase();
-				res &= await this.checkMsg('FILE_UPPERCASE_EXT', 'uppercase extension',
+				res = res && await this.checkMsg('FILE_EXT_UPPERCASE', 'uppercase extension',
 					proposedFN,
 					() => this.rename(proposedFN)
 				);
 			}
 		}
+
+		{
+			if (this.getExtension() == '.jpeg') {
+				res = res && await this.checkMsg('FILE_EXT_NORMALIZE', 'align extension to 3 char',
+					'jpg',
+					() => this.rename(this.getFilename() + '.jpg')
+				);
+			}
+		}
+
 		return res;
 	}
 }
