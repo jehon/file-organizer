@@ -169,5 +169,6 @@ module.exports = class FilePicture extends FileTimestamped {
 				() => this.exivRotatePicture()
 			);
 		}
+		return res;
 	}
 };
