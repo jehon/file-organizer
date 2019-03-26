@@ -16,7 +16,7 @@ describe('file-timestamped-test', () => {
 	it('should set calculated ts', () => {
 		const new3 = new FileTimestamped('test [DSC00001].jpg');
 		expect(new3.calculatedTS.TS()).toBe('');
-		new3.setCalculatedTSToIfMatching(tsFromString('2018-01-02 03-04-05'));
+		new3.setCalculatedTS(tsFromString('2018-01-02 03-04-05'));
 		expect(new3.calculatedTS.TS()).toBe('2018-01-02 03-04-05');
 	});
 

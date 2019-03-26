@@ -43,6 +43,12 @@ class FileGeneric {
 	}
 
 	addInfo(key, val) {
+		if (!val) {
+			return;
+		}
+		if (typeof(val) != 'string') {
+			val = '' + val;
+		}
 		this._infos[key] = val;
 	}
 
@@ -50,7 +56,7 @@ class FileGeneric {
 		if (key in this._infos) {
 			return this._infos[key];
 		}
-		return false;
+		return '';
 	}
 
 	get parent() {

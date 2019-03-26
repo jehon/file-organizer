@@ -37,8 +37,8 @@ describe('file-generic-test', () => {
 			expect(new1.getInfo('file.name')).toBe('test');
 			expect(new1.getInfo('does.not.exists')).toBeFalsy();
 
-			new1.addInfo('does.not.exists', 1);
-			expect(new1.getInfo('does.not.exists')).toBe(1);
+			new1.addInfo('does.not.exists', '1');
+			expect(new1.getInfo('does.not.exists')).toBe('1');
 		});
 	});
 
@@ -77,7 +77,7 @@ describe('file-generic-test', () => {
 		});
 	});
 
-	describe("check", () => {
+	describe('check', () => {
 		it('should fix extensions', async () => {
 			spyOn(fileUtils, 'fileRename');
 
@@ -91,7 +91,7 @@ describe('file-generic-test', () => {
 
 		it('should normalize extensions when necessary', async() => {
 			const new1 = createFileGeneric('rotated-bottom-left.jpg');
-			await new1.rename('test.jpeg')
+			await new1.rename('test.jpeg');
 			new1.exiv_date = '2018-01-02';
 			new1.exiv_comment = 'test';
 			await new1.check();

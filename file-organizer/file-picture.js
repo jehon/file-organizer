@@ -36,13 +36,10 @@ module.exports = class FilePicture extends FileTimestamped {
 
 		this.exiv_ts               = tsFromString(this.exivReadDate());
 
-		this.setCalculatedTSToIfMatching(this.exiv_ts);
+		this.setCalculatedTS(this.exiv_ts);
 		if (this.exiv_comment) {
 			this.calculatedTS.comment = this.exiv_comment;
 		}
-		// this.calculatedTS.comment  = this.exiv_comment;
-		// this.calculatedTS.original = this.filenameTS.original;
-		// console.log(this.getRelativePath(), this.calculatedTS);
 
 		this.addInfo('picture.exiv.timestamp',   this.exiv_date);
 		this.addInfo('picture.exiv.comment',     this.exiv_comment);
@@ -134,20 +131,8 @@ module.exports = class FilePicture extends FileTimestamped {
 			res = res && await this.checkMsg('PICT_NO_DATE', 'Exiv: no date found');
 		}
 
-		if (options.guessComment) {
-			let c = this.calculatedTS.comment;
-			if (!c) {
-				c = this.parent.calculatedTS.comment;
-			}
-			if (!c) {
-				return this.checkMsg('NO_PICT_COMMENT_GUESS', 'guess comment', c, null);
-			}
-			// TODO: to be tested...
-			res = res && await this.checkMsg('PICT_WRITE_COMMENT', 'write comment', c, () => this.exivWriteComment(c));
-		} else {
-			if (!this.exiv_comment) {
-				res = res && await this.checkMsg('PICT_NO_COMMENT', 'Exiv: no comment found');
-			}
+		if (!options.guessComment && !this.calculatedTS.comment) {
+			res = res && await this.checkMsg('PICT_NO_COMMENT', 'Exiv: no comment found');
 		}
 
 		if (!res) {
@@ -166,6 +151,11 @@ module.exports = class FilePicture extends FileTimestamped {
 
 		if (!await super.check()) {
 			return false;
+		}
+
+		if (this.exiv_comment != this.calculatedTS.comment && this.calculatedTS.comment) {
+			const c = this.calculatedTS.comment;
+			res = res && await this.checkMsg('PICT_WRITE_COMMENT', 'Write comment', c, () => this.exivWriteComment(c));
 		}
 
 		// Rotate according to exiv tag

@@ -4,6 +4,7 @@ const fs = require('fs');
 
 const FileGeneric = require('./file-generic.js');
 const { tsFromString, tsFromDate } = require('./timestamp.js');
+const options = require('./options.js');
 
 class FileTimestamped extends FileGeneric {
 	constructor(filePath) {
@@ -27,13 +28,7 @@ class FileTimestamped extends FileGeneric {
 		return tsFromDate(fs.statSync(this.getRelativePath()).birthtime);
 	}
 
-	setCalculatedTSToIfMatching(newTS, category = 'internal') {
-		if (!newTS.matchLithe(this.parent.calculatedTS)) {
-			return this.checkMsg('ERR', `${category} timestamp incoherent to calculated timestamp`,
-				`${newTS.TS()} / ${this.parent.calculatedTS.TS()}`,
-				null);
-		}
-
+	setCalculatedTS(newTS, category = 'internal') {
 		for(const k of [ 'year', 'month', 'day', 'hour', 'minute', 'second']) {
 			this.calculatedTS[k] = newTS[k];
 		}
@@ -56,6 +51,8 @@ class FileTimestamped extends FileGeneric {
 	}
 
 	async check() {
+		let res = true;
+
 		if (this.calculatedTS.type == 'invalid') {
 			return this.checkMsg('TS_FILENAME_INVALID', 'filename is not parsable');
 		}
@@ -64,8 +61,6 @@ class FileTimestamped extends FileGeneric {
 			return false;
 		}
 
-		let res = true;
-
 		// TODO: is this intelligent?
 		if (this.calculatedTS.comment == this.calculatedTS.original) {
 			this.calculatedTS;
@@ -73,6 +68,22 @@ class FileTimestamped extends FileGeneric {
 				'remove original filename',
 				() => { this.calculatedTS.original = ''; return true; }
 			);
+		}
+
+		// TODO: test this
+		if (options.guessComment) {
+			let c = this.calculatedTS.comment;
+			if (!c) {
+				c = this.parent.calculatedTS.comment;
+			}
+			if (!c) {
+				return this.checkMsg('TS_COMMENT_GUESS_FAILED', 'guess comment', c);
+			}
+			res = res && await this.checkMsg('TS_GUESS_COMMENT', 'Updating comment', c, () => { this.calculatedTS.comment = c; return true; });
+		} else {
+			if (!this.calculatedTS.comment) {
+				res = res && await this.checkMsg('TS_NO_COMMENT', 'No comment found');
+			}
 		}
 
 		if (this.calculatedTS.year > 0) {

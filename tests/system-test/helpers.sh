@@ -27,7 +27,12 @@ run_and_capture() {
     pushd "$TEST_DATA" >/dev/null
     HEADER="$1"
     shift
-    capture "Run $HEADER" "$EXEC" "--no-interactive" "$@"
+    CMD="$1"
+    if [ -z "$CMD" ]; then
+        CMD="regularize"
+    fi
+    shift
+    capture "Run $HEADER" "$EXEC" "$CMD" "--no-interactive" "$@"
     RES=$?
     popd >/dev/null
     return $RES

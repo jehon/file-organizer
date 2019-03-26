@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
 D="$(dirname "${BASH_SOURCE[0]}")"
+. "$D"/helpers.sh
 
 set -e
+set -o pipefail
 
-for f in "$D"/[0-9]-*.sh; do
-    echo "Launching $f ---"
-    $f 2>&1 3>&1 | jh-tag-stdin.sh "$( basename "$f" )"
+for f in "$D"/[0-9][0-9]-*.sh; do
+    echo "Launching $f"
+    if ! $f 2>&1 3>&1 ; then
+        log_failure "Running $f failure"
+        exit 5
+    fi | jh-tag-stdin.sh "$( basename "$f" )"
+    log_success "Running $f done"
 done
-
-# run-parts --regex="^[0-9]+-[a-z0-9\-]+\.sh$" --exit-on-error --verbose "$D"
-
