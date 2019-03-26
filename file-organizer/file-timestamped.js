@@ -30,7 +30,7 @@ class FileTimestamped extends FileGeneric {
 		return tsFromDate(fs.statSync(this.getRelativePath()).birthtime);
 	}
 
-	setCalculatedTS(newTS, category = 'internal') {
+	setCalculatedTS(newTS) {
 		for(const k of [ 'year', 'month', 'day', 'hour', 'minute', 'second']) {
 			this.calculatedTS[k] = newTS[k];
 		}
