@@ -21,7 +21,9 @@ class FileTimestamped extends FileGeneric {
 		}
 		this.calculatedTS = this.filenameTS.clone();
 
-		this.addInfo('timestamp.filename', this.filenameTS);
+		this.addInfo('timestamp.filename', this.filenameTS.TS());
+		this.addInfo('timestamp.comment',  this.filenameTS.comment);
+		this.addInfo('timestamp.original', this.filenameTS.original);
 	}
 
 	getTSFromFileModificationDate() {
