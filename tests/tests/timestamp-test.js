@@ -180,14 +180,14 @@ describe('timestamp', function() {
 				type: 'minimal',
 				comment: 'canon'
 			}));
-	
+
 			expect(tsFromString('canon brol')).toEqual(jasmine.objectContaining({
 				type: 'minimal',
 				comment: 'canon brol'
 			}));
-	
+
 		});
-	
+
 		it('should detect invalid formats', function() {
 			expect(tsFromString('2018-01-02-03')).toEqual(jasmine.objectContaining(d({
 				type: 'invalid',
@@ -269,6 +269,24 @@ describe('timestamp', function() {
 				original: 'DSC_0101'
 			}));
 
+			expect(tsFromString('2012-08-07 10-03-05 Muguette Donnay - Plaine de jeux des chansons - IMG_6893')).toEqual(jasmine.objectContaining({
+				comment: 'Muguette Donnay - Plaine de jeux des chansons',
+				original: 'IMG_6893'
+			}));
+
+			expect(tsFromString('2012-11-04 12-13-27 VID_20121104_121327')).toEqual(jasmine.objectContaining({
+				type: 'version0',
+				year: 2012,
+				comment: '',
+				original: 'VID_20121104_121327'
+			}));
+
+			expect(tsFromString('2012-05-26 11-37-24 vie de famille - VID_20120526_113724')).toEqual(jasmine.objectContaining({
+				type: 'version1',
+				year: 2012,
+				comment: 'vie de famille',
+				original: 'VID_20120526_113724'
+			}));
 		});
 	});
 

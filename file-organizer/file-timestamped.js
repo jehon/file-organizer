@@ -11,6 +11,7 @@ class FileTimestamped extends FileGeneric {
 		super(filePath);
 
 		this.filenameTS = tsFromString(this.getFilename());
+		const comment = this.filenameTS.comment;
 
 		// Parse the original filename to see if we can get some data
 		if (this.filenameTS.original) {
@@ -19,6 +20,7 @@ class FileTimestamped extends FileGeneric {
 				this.filenameTS = ts2;
 			}
 		}
+		this.filenameTS.comment = comment;
 		this.calculatedTS = this.filenameTS.clone();
 
 		this.addInfo('timestamp.filename', this.filenameTS.TS());
@@ -65,7 +67,6 @@ class FileTimestamped extends FileGeneric {
 
 		// TODO: is this intelligent?
 		if (this.calculatedTS.comment == this.calculatedTS.original) {
-			this.calculatedTS;
 			res = res && await this.checkMsg('TS_DUP_COMMENT', 'remove duplicate comment/original',
 				'remove original filename',
 				() => { this.calculatedTS.original = ''; return true; }

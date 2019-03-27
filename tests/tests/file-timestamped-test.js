@@ -27,12 +27,18 @@ describe('file-timestamped-test', () => {
 	});
 
 	describe('check', () => {
+		it('should parse original file', async () => {
+			const new1 = new FileTimestamped('2015-05-26 11-37-24 vie de famille - VID_20120526_113724');
+			expect(new1.filenameTS.year).toBe(2012);
+			expect(new1.filenameTS.comment).toBe('vie de famille');
+		});
+
 		describe('should check coherence with parent folder', () => {
 			it('should be ok when no file date and no folder date', async() => {
 				// already ok: no file date and no folder date
 				const new1 = new FileTimestamped(tempPath('canon.jpg'));
 				await new1.check();
-				expect(new1.errors).not.toContain("TS_PARENT_INCOHERENT");
+				expect(new1.errors).not.toContain('TS_PARENT_INCOHERENT');
 			});
 
 			// it('should be ko when no file date and with folder date', async() => {
@@ -45,19 +51,19 @@ describe('file-timestamped-test', () => {
 			it('should be ok when file date and folder date are coherent', async() => {
 				const new1 = new FileTimestamped(tempPath('1998-12-31 virtual', '1998-12-31 12-13-24 test.jpg'));
 				await new1.check();
-				expect(new1.errors).not.toContain("TS_PARENT_INCOHERENT");
+				expect(new1.errors).not.toContain('TS_PARENT_INCOHERENT');
 			});
 
 			it('should be ok when file date and folder range date are coherent', async() => {
 				const new1 = new FileTimestamped(tempPath('1996-2000 virtual', '1998-12-31 12-13-24 test.jpg'));
 				await new1.check();
-				expect(new1.errors).not.toContain("TS_PARENT_INCOHERENT");
+				expect(new1.errors).not.toContain('TS_PARENT_INCOHERENT');
 			});
 
 			it('should report when file and folder date incoherent', async () => {
 				const new1 = new FileTimestamped(tempPath('1998-12-31 virtual', '1999-09-09 12-00-00 test.jpg'));
 				await new1.check();
-				expect(new1.errors).toContain("TS_PARENT_INCOHERENT");
+				expect(new1.errors).toContain('TS_PARENT_INCOHERENT');
 			});
 		});
 	});
