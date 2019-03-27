@@ -53,10 +53,6 @@ module.exports = class FilePicture extends FileTimestamped {
 			.split('\n').join('')
 			.split(':').join('-');
 
-		if (res == '(Binary value suppressed)') {
-			res = false;
-		}
-
 		return res ? res : null;
 	}
 
@@ -67,6 +63,10 @@ module.exports = class FilePicture extends FileTimestamped {
 			.split('\n').join('')
 			.replace(/\0/g, '')
 			.trim();
+
+		if (res == '(Binary value suppressed)') {
+			res = '';
+		}
 
 		return res ? res : '';
 	}
