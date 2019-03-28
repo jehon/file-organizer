@@ -112,11 +112,11 @@ class FileGeneric {
 				this.getRelativePath(),
 				newPath
 			);
+			this._relativePath = newPath;
+			return true;
 		} catch(e) {
 			throw new BusinessError('Error while renaming file: ', this.getRelativePath(), e);
 		}
-		this._relativePath = newPath;
-		return true;
 	}
 
 	async remove() {

@@ -4,6 +4,7 @@ const options = require('../../file-organizer/options.js');
 const { tempPath, createFileGeneric } = require('./helpers.js');
 const FileFactory = require('../../file-organizer/file-factory.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
+const FileFolder = require('../../file-organizer/file-folder.js');
 const { tsFromString } = require('../../file-organizer/timestamp.js');
 
 describe('file-timestamped-test', () => {
@@ -69,7 +70,7 @@ describe('file-timestamped-test', () => {
 			});
 		});
 
-		fdescribe('should guess comment', () => {
+		describe('should guess comment', () => {
 			beforeEach(() => {
 				options.guessComment = true;
 			});
@@ -78,14 +79,39 @@ describe('file-timestamped-test', () => {
 				options.resetToDefault();
 			});
 
-			xit('should take the new comment from file', async () => {
-				// TODO: test this
+			it('should take the new comment from file', async () => {
+				const new1 = createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
+				new1.exivWriteComment('');
 
+				// new2 is a virtual alias of new1 with fields initialized
+				const new2 = FileFactory(new1.getRelativePath());
+				expect(new2.getInfo('picture.exiv.comment')).toBe('');
+				expect(new2.getInfo('timestamp.comment')).toBe('exivok01');
+
+				await new2.check();
+				expect(new2.exivReadComment()).toBe('exivok01');
+				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 exivok01');
+
+				new2.remove();
 			});
 
-			xit('should take the new comment from the folder', async () => {
-				// TODO: test this
+			it('should take the new comment from the folder', async () => {
+				const new1 = createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
+				new1.exivWriteComment('');
+				await new1.changeFilename('1998-12-31 12-10-11');
 
+				// new2 is a virtual alias of new1 with fields initialized
+				const new2 = FileFactory(new1.getRelativePath());
+				expect(new2.getInfo('picture.exiv.comment')).toBe('');
+				expect(new2.getInfo('timestamp.comment')).toBe('');
+				new2._parent = new FileFolder('1998 parent comment');
+				expect(new2.parent.getInfo('timestamp.comment')).toBe('parent comment');
+
+				await new2.check();
+				// !! new2 is in a non-existant folder
+				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 parent comment');
+
+				new1.remove();
 			});
 
 			it('should keep original comment', async () => {
@@ -117,7 +143,7 @@ describe('file-timestamped-test', () => {
 			await new2.check();
 			expect(new2.errors).toContain('TS_DUP_FILES');
 
-			new1.C();
+			new1.remove();
 			new2.remove();
 		});
 
