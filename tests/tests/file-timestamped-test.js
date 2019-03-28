@@ -2,6 +2,7 @@
 const options = require('../../file-organizer/options.js');
 
 const { tempPath, createFileGeneric } = require('./helpers.js');
+const FileFactory = require('../../file-organizer/file-factory.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
 const { tsFromString } = require('../../file-organizer/timestamp.js');
 
@@ -77,25 +78,32 @@ describe('file-timestamped-test', () => {
 				options.resetToDefault();
 			});
 
+			xit('should take the new comment from file', async () => {
+				// TODO: test this
+
+			});
+
+			xit('should take the new comment from the folder', async () => {
+				// TODO: test this
+
+			});
+
 			it('should keep original comment', async () => {
-				// TODO: test this
 				const new1 = createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
-				expect(new1.exivReadComment()).toBe('xxx');
-				new1.calculatedTS.year = 2018;
-				new1.calculatedTS.comment = 'duplicate test';
-				await new1.check();
-				expect();
+				new1.exivWriteComment('x test');
+
+				// new2 is a virtual alias of new1 with fields initialized
+				const new2 = FileFactory(new1.getRelativePath());
+				expect(new2.exivReadComment()).toBe('x test');
+				expect(new2.getInfo('picture.exiv.comment')).toBe('x test');
+
+				await new2.check();
+				expect(new2.exivReadComment()).toBe('x test');
+				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 x test');
+
+				new2.remove();
 			});
 
-			it('should take the new comment from file', async () => {
-				// TODO: test this
-
-			});
-
-			it('should take the new comment from the folder', async () => {
-				// TODO: test this
-
-			});
 		});
 
 		it('should detect duplicate files', async() => {
@@ -109,7 +117,7 @@ describe('file-timestamped-test', () => {
 			await new2.check();
 			expect(new2.errors).toContain('TS_DUP_FILES');
 
-			new1.remove();
+			new1.C();
 			new2.remove();
 		});
 
