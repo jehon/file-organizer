@@ -9,7 +9,7 @@ exports.builder = {
 		type: 'boolean',
 		default: false
 	},
-	'setComment': { // TODO
+	'setComment': {
 		alias: [ 'set-comment', 'sc' ],
 		type: 'string',
 		default: ''

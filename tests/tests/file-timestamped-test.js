@@ -1,4 +1,6 @@
 
+const options = require('../../file-organizer/options.js');
+
 const { tempPath, createFileGeneric } = require('./helpers.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
 const { tsFromString } = require('../../file-organizer/timestamp.js');
@@ -63,6 +65,36 @@ describe('file-timestamped-test', () => {
 				const new1 = new FileTimestamped(tempPath('1998-12-31 virtual', '1999-09-09 12-00-00 test.jpg'));
 				await new1.check();
 				expect(new1.errors).toContain('TS_PARENT_INCOHERENT');
+			});
+		});
+
+		fdescribe('should guess comment', () => {
+			beforeEach(() => {
+				options.guessComment = true;
+			});
+
+			afterEach(() => {
+				options.resetToDefault();
+			});
+
+			it('should keep original comment', async () => {
+				// TODO: test this
+				const new1 = createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
+				expect(new1.exivReadComment()).toBe('xxx');
+				new1.calculatedTS.year = 2018;
+				new1.calculatedTS.comment = 'duplicate test';
+				await new1.check();
+				expect();
+			});
+
+			it('should take the new comment from file', async () => {
+				// TODO: test this
+
+			});
+
+			it('should take the new comment from the folder', async () => {
+				// TODO: test this
+
 			});
 		});
 

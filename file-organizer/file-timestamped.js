@@ -71,14 +71,13 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		if (options.setComment) {
-			// TODO
+			// TODO: test this
 			await this.checkMsg('TS_SET_COMMENT', 'set the comment',
 				'set the comment',
 				() => this.calculatedTS.comment = options.setComment
 			);
 		}
 
-		// TODO: test this
 		if (!this.calculatedTS.comment && options.guessComment) {
 			let c = this.parent.calculatedTS.comment;
 			if (!c) {
@@ -119,7 +118,6 @@ class FileTimestamped extends FileGeneric {
 			// Rename to the canonical filename
 			const proposedFilename = this.getCanonicalFilename();
 			if (proposedFilename != this.getFilename()) {
-				// TODO: test this
 				if (await fileExists(path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension()))) {
 					res = res && await this.checkMsg('TS_DUP_FILES', 'file already exists',
 						proposedFilename
