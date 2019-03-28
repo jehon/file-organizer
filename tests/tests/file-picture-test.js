@@ -55,7 +55,7 @@ describe('file-picture-test', () => {
 			const new1 = createFileGeneric('rotated-bottom-left.jpg');
 			new1.exiv_date = '2018-01-02';
 			new1.calculatedTS.year = 2018;
-			new1.exiv_comment = 'test';
+			new1.calculatedTS.comment = 'should rotate pictures when necessary';
 			expect(new1.exivReadOrientation()).toBe(270);
 			await new1.check();
 			expect(new1.errors).toContain('PICT_ROTATE');
@@ -71,8 +71,9 @@ describe('file-picture-test', () => {
 			expect(new1.exivReadDate()).toBeNull();
 
 			new1.exiv_date = '2018-01-02';
-			new1.calculatedTS.comment = 'override comment';
+
 			new1.calculatedTS.year = 2018;
+			new1.calculatedTS.comment = 'override comment';
 
 			await new1.check();
 			expect(new1.errors).toContain('PICT_WRITE_COMMENT');

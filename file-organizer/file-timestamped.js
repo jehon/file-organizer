@@ -1,6 +1,9 @@
 
 
 const fs = require('fs');
+const path = require('path');
+
+const { fileExists } = require('./file-utils');
 
 const FileGeneric = require('./file-generic.js');
 const { tsFromString, tsFromDate } = require('./timestamp.js');
@@ -116,10 +119,18 @@ class FileTimestamped extends FileGeneric {
 			// Rename to the canonical filename
 			const proposedFilename = this.getCanonicalFilename();
 			if (proposedFilename != this.getFilename()) {
-				res = res && await this.checkMsg('TS_CANONIZE', 'canonize filename',
-					proposedFilename,
-					() => this.changeFilename(proposedFilename)
-				);
+				// TODO: test this
+				if (await fileExists(path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension()))) {
+					res = res && await this.checkMsg('TS_DUP_FILES', 'file already exists',
+						proposedFilename
+					);
+
+				} else {
+					res = res && await this.checkMsg('TS_CANONIZE', 'canonize filename',
+						proposedFilename,
+						() => this.changeFilename(proposedFilename)
+					);
+				}
 			}
 		}
 

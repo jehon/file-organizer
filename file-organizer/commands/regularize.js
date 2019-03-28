@@ -9,6 +9,11 @@ exports.builder = {
 		type: 'boolean',
 		default: false
 	},
+	'setComment': { // TODO
+		alias: [ 'set-comment', 'sc' ],
+		type: 'string',
+		default: ''
+	},
 };
 
 exports.handler = function (options) {

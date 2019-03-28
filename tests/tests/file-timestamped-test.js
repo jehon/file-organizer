@@ -1,7 +1,6 @@
 
-const { tempPath } = require('./helpers.js');
+const { tempPath, createFileGeneric } = require('./helpers.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
-const FileGeneric = require('../../file-organizer/file-generic.js');
 const { tsFromString } = require('../../file-organizer/timestamp.js');
 
 describe('file-timestamped-test', () => {
@@ -66,5 +65,21 @@ describe('file-timestamped-test', () => {
 				expect(new1.errors).toContain('TS_PARENT_INCOHERENT');
 			});
 		});
+
+		it('should detect duplicate files', async() => {
+			const new1 = createFileGeneric('rotated-bottom-left.jpg');
+			new1.calculatedTS.year = 2018;
+			new1.calculatedTS.comment = 'duplicate test';
+			await new1.check();
+
+			const new2 = createFileGeneric('rotated-bottom-left.jpg');
+			new2.calculatedTS = new1.calculatedTS;
+			await new2.check();
+			expect(new2.errors).toContain('TS_DUP_FILES');
+
+			new1.remove();
+			new2.remove();
+		});
+
 	});
 });
