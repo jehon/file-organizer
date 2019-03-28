@@ -182,6 +182,7 @@ class FileGeneric {
 			impossibleCount++;
 		} else if (action === true) {
 			msg += chalk.green('✓');
+			res = true;
 		} else {
 			if (!options.dryrun) {
 				try {

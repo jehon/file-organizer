@@ -1,7 +1,6 @@
 
 var spawnSync = require('child_process').spawnSync;
 
-const options = require('./options.js');
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const { fileExec, fileRename, fileDelete } = require('./file-utils.js');
@@ -135,23 +134,9 @@ module.exports = class FilePicture extends FileTimestamped {
 			res = res && await this.checkMsg('PICT_NO_DATE', 'Exiv: no date found');
 		}
 
-		if (!options.guessComment && !this.calculatedTS.comment) {
-			res = res && await this.checkMsg('PICT_NO_COMMENT', 'Exiv: no comment found');
-		}
-
 		if (!res) {
 			return res;
 		}
-
-		// if (options.forcePictureOverrideComment) {
-		// 	if (comment != proposedComment) {
-		// 		await this.checkMsg(allOptions.forcePictureOverrideComment,
-		// 			'Override the comment of the picture',
-		// 			proposedComment,
-		// 			() => this.exivWriteComment(proposedComment)
-		// 		);
-		// 	}
-		// }
 
 		if (!await super.check()) {
 			return false;

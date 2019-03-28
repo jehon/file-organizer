@@ -55,52 +55,61 @@ class FileTimestamped extends FileGeneric {
 	}
 
 	async check() {
-		let res = true;
-
 		if (this.calculatedTS.type == 'invalid') {
 			return this.checkMsg('TS_FILENAME_INVALID', 'filename is not parsable');
 		}
 
-		if (!await super.check()) {
-			return false;
+		let res = true;
+		if (this.calculatedTS.comment != '' && this.calculatedTS.comment == this.calculatedTS.original) {
+			await this.checkMsg('TS_DUP_COMMENT', 'remove duplicate comment/original',
+				'remove original filename',
+				() => this.calculatedTS.original = ''
+			);
 		}
 
-		// TODO: is this intelligent?
-		if (this.calculatedTS.comment == this.calculatedTS.original) {
-			res = res && await this.checkMsg('TS_DUP_COMMENT', 'remove duplicate comment/original',
-				'remove original filename',
-				() => { this.calculatedTS.original = ''; return true; }
+		if (options.setComment) {
+			// TODO
+			await this.checkMsg('TS_SET_COMMENT', 'set the comment',
+				'set the comment',
+				() => this.calculatedTS.comment = options.setComment
 			);
 		}
 
 		// TODO: test this
-		if (options.guessComment) {
-			let c = this.calculatedTS.comment;
-			if (!c) {
-				c = this.parent.calculatedTS.comment;
-			}
+		if (!this.calculatedTS.comment && options.guessComment) {
+			let c = this.parent.calculatedTS.comment;
 			if (!c) {
 				return this.checkMsg('TS_COMMENT_GUESS_FAILED', 'guess comment', c);
 			}
-			res = res && await this.checkMsg('TS_GUESS_COMMENT', 'Updating comment', c, () => { this.calculatedTS.comment = c; return true; });
-		} else {
-			if (!this.calculatedTS.comment) {
-				res = res && await this.checkMsg('TS_NO_COMMENT', 'No comment found');
-			}
+			await this.checkMsg('TS_GUESS_COMMENT', 'Updating comment', c, () => this.calculatedTS.comment = c);
 		}
 
 		if (this.calculatedTS.year > 0) {
-			{
-				// Check filename according to parent folder TS
-				if (this.parent.calculatedTS.year > 0) {
-					if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
-						return this.checkMsg('TS_PARENT_INCOHERENT', 'calculated timestamp incoherent to parent folder',
-							`${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()}`,
-						);
-					}
+			// Check filename according to parent folder TS
+			if (this.parent.calculatedTS.year > 0) {
+				if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
+					res = res && await this.checkMsg('TS_PARENT_INCOHERENT',
+						'calculated timestamp incoherent to parent folder',
+						`${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()}`
+					);
 				}
 			}
+		}
 
+		if (!this.calculatedTS.comment) {
+			res = res && await this.checkMsg('TS_NO_COMMENT', 'No comment found');
+		}
+
+		if (this.calculatedTS.TS() == '') {
+			res = res && await this.checkMsg('TS_NO_TIMESTAMP', 'No timestamp found');
+		}
+
+		if (!res) {
+			return res;
+		}
+
+		if (!await super.check()) {
+			return false;
 		}
 
 		{

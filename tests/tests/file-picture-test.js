@@ -3,10 +3,6 @@ const options = require('../../file-organizer/options.js');
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FilePicture = require('../../file-organizer/file-picture.js');
 
-// For mock
-const FileTimestamped = require('../../file-organizer/file-timestamped.js');
-const FileGeneric = require('../../file-organizer/file-generic.js');
-
 describe('file-picture-test', () => {
 	it('should get exiv from files', () => {
 		expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).exivReadDate()).toBe('2015-03-06 15-33-40');
@@ -52,16 +48,17 @@ describe('file-picture-test', () => {
 		it('should be problems when no exiv is present', async() => {
 			const new1 = new FilePicture(dataPath('no_exiv.jpg'));
 			await new1.check();
-			expect(new1.errors).toContain("PICT_NO_DATE");
+			expect(new1.errors).toContain('PICT_NO_DATE');
 		});
 
 		it('should rotate pictures when necessary', async() => {
 			const new1 = createFileGeneric('rotated-bottom-left.jpg');
 			new1.exiv_date = '2018-01-02';
+			new1.calculatedTS.year = 2018;
 			new1.exiv_comment = 'test';
 			expect(new1.exivReadOrientation()).toBe(270);
 			await new1.check();
-			expect(new1.errors).toContain("PICT_ROTATE");
+			expect(new1.errors).toContain('PICT_ROTATE');
 			expect(new1.exivReadOrientation()).toBe(0);
 			new1.remove();
 		});
@@ -70,11 +67,16 @@ describe('file-picture-test', () => {
 			options.guessComment = true;
 
 			const new1 = createFileGeneric('no_exiv.jpg');
-			new1.exiv_date = '2018-01-02';
 			expect(new1.exivReadComment()).toBe('');
+			expect(new1.exivReadDate()).toBeNull();
+
+			new1.exiv_date = '2018-01-02';
+			new1.calculatedTS.comment = 'override comment';
+			new1.calculatedTS.year = 2018;
+
 			await new1.check();
-			expect(new1.errors).toContain("PICT_WRITE_COMMENT");
-			expect(new1.exivReadComment()).toBe('no_exiv');
+			expect(new1.errors).toContain('PICT_WRITE_COMMENT');
+			expect(new1.exivReadComment()).toBe('override comment');
 			new1.remove();
 
 			options.resetToDefault();
