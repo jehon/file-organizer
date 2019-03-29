@@ -109,20 +109,26 @@ module.exports.checkMsg = async function (file, code, description, newInfo = nul
 	return res;
 };
 
-module.exports.oneLine = function (file, result) {
+module.exports.oneLine = async function (file, cb) {
 	let icon = IconTodo;
-	switch(result) {
-	case true:
-		icon = IconSuccess;
-		break;
-	case false:
-		icon = IconFailure;
-		break;
-	case null:
-		icon = IconSkipped;
-		break;
+	try {
+		const result = await cb(file);
+		switch(result) {
+		case undefined:
+		case true:
+			icon = IconSuccess;
+			break;
+		case false:
+			icon = IconFailure;
+			break;
+		case null:
+			icon = IconSkipped;
+			break;
+		}
+		console.info(`${icon} ${file.getRelativePath()}`);
+	} catch(e) {
+		console.info(`${IconFailure} ${file.getRelativePath()}: ${chalk.red(e.getMessage())}`);
 	}
-	console.info(`${icon} ${file.getRelativePath()}`);
 };
 
 

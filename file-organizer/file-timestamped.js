@@ -70,14 +70,6 @@ class FileTimestamped extends FileGeneric {
 			);
 		}
 
-		if (options.setComment) {
-			// TODO: test this
-			await this.checkMsg('TS_SET_COMMENT', 'set the comment',
-				'set the comment',
-				() => this.calculatedTS.comment = options.setComment
-			);
-		}
-
 		if (!this.calculatedTS.comment && options.guessComment) {
 			let c = this.parent.calculatedTS.comment;
 			if (!c) {

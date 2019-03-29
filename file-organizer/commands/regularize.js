@@ -8,12 +8,7 @@ exports.builder = {
 		alias: [ 'guess-comment', 'gc' ],
 		type: 'boolean',
 		default: false
-	},
-	'setComment': {
-		alias: [ 'set-comment', 'sc' ],
-		type: 'string',
-		default: ''
-	},
+	}
 };
 
 exports.handler = function (options) {
