@@ -5,12 +5,16 @@
   "license": "ISC",
   "devDependencies": {
     "eslint": "^5.1.0",
-    "jasmine": "^3.2.0"
+    "istanbul": "^0.4.5",
+    "jasmine": "^3.2.0",
+    "nyc": "^13.3.0",
+    "opn-cli": "^4.0.0"
   },
   "scripts": {
-    "clean": "rm -fr tmp",
+    "clean": "rm -fr tmp target",
     "test": "npm run clean && npm run test-unit && npm run test-system",
-    "test-unit": "jasmine --config=test/jasmine.json",
+    "view-cover": "opn target/unit-coverage/index.html",
+    "test-unit": "nyc jasmine --config=test/jasmine.json",
     "test-system": "./test/system-test/all.sh"
   },
   "dependencies": {
@@ -20,5 +24,13 @@
     "fs-extra": "^7.0.1",
     "get-cursor-position": "^1.0.5",
     "yargs": "^12.0.5"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "temp-dir": "./tmp/coverage",
+    "report-dir": "./target/unit-coverage"
   }
 }
