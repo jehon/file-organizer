@@ -5,7 +5,7 @@
 SELF="$(realpath "$(dirname "${BASH_SOURCE[0]}" )" )"
 ROOT="$(dirname "$( dirname "$SELF" )" )"
 TMP="$ROOT/tmp"
-ORIG_DATA="$ROOT/tests/data/system_test/"
+ORIG_DATA="$ROOT/test/data/system_test/"
 
 EXEC="$ROOT/file-organizer/main.js"
 

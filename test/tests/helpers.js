@@ -5,8 +5,8 @@ const fs = require('fs-extra');
 const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))), ...args);
 
 // Test
-exports.dataPath = (...args) => rootPath('tests', 'data', ...args);
-exports.tempPath = (...args) => rootPath('tests', 'tmp', ...args);
+exports.dataPath = (...args) => rootPath('test', 'data', ...args);
+exports.tempPath = (...args) => rootPath('test', 'tmp', ...args);
 
 const FileFactory = require('../../file-organizer/file-factory.js');
 

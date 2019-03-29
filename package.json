@@ -10,9 +10,8 @@
   "scripts": {
     "clean": "rm -fr tmp",
     "test": "npm run clean && npm run test-unit && npm run test-system",
-    "test-unit": "jasmine --config=tests/jasmine.json",
-    "test-system": "./tests/system-test/all.sh",
-    "test-watch": "while true; do clear; jasmine --config=tests/jasmine.json; sleep 5s; done"
+    "test-unit": "jasmine --config=test/jasmine.json",
+    "test-system": "./test/system-test/all.sh"
   },
   "dependencies": {
     "ansi-escapes": "^3.1.0",
