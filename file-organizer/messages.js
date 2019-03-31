@@ -9,8 +9,8 @@ const BusinessError = require('./business-error.js');
 
 const IconSuccess = chalk.green('✓');
 const IconFailure = chalk.red.bold('✘');
-const IconTodo    = chalk.red('⚑');
 const IconSkipped = chalk.magenta('⚐');
+const IconImpossible = chalk.red('⚑');
 
 const stats = {
 	filesCount: 0,
@@ -23,8 +23,52 @@ module.exports.stats = stats;
 
 let lastLogFile = false;
 
+module.exports.fileInfo = function(file, code, description, newInfo = null) {
+	module.exports.fileMsg(file, code, description, newInfo, IconSuccess);
+	return true;
+};
+
+module.exports.fileCommit = async function(file, code, description, newInfo = null, action = null) {
+	let res = false;
+	let msg = IconSkipped;
+
+	if (options.dryRun) {
+		options.skippedCount++;
+	} else {
+		try {
+			res = await action();
+		} catch (e) {
+			if (e instanceof BusinessError) {
+				console.error('Error: ', e.getMessage ? e.getMessage() : '');
+			} else {
+				console.error('Error: ', e);
+				stats.errorsCount++;
+			}
+		}
+		if (res === undefined) {
+			res = true;
+		}
+		if (res) {
+			msg = IconSuccess;
+			stats.fixesCount++;
+		} else {
+			msg = IconFailure;
+			stats.errorsCount++;
+		}
+	}
+
+	module.exports.fileMsg(file, code, description, newInfo, msg);
+	return res;
+};
+
+module.exports.fileImpossible = function(file, code, description) {
+	stats.impossibleCount++;
+	module.exports.fileMsg(file, code, description, null, IconImpossible);
+	return false;
+};
+
 /**
- * !! Await on this one: await file.checkMsg(...)
+ * !! Await on this one: await file.message(...)
  *
  * @param description(string): free text
  *
@@ -35,7 +79,7 @@ let lastLogFile = false;
  *    true: info message of success
  *    fn: fix function
  */
-module.exports.checkMsg = async function (file, code, description, newInfo = null, action = null) {
+module.exports.fileMsg = function (file, code, description, newInfo = null, action = null) {
 	let msg = '';
 
 	file.errors.push(code);
@@ -57,43 +101,7 @@ module.exports.checkMsg = async function (file, code, description, newInfo = nul
 	}
 
 	msg += '  ';
-
-	let res = false;
-	// This will be changed by the 'action'
-
-	if (action === null) {
-		msg += IconTodo;
-		stats.impossibleCount++;
-	} else if (action === true) {
-		msg += IconSuccess;
-		res = true;
-	} else {
-		if (!options.dryrun) {
-			try {
-				res = await action();
-			} catch (e) {
-				if (e instanceof BusinessError) {
-					console.error('Error: ', e.getMessage ? e.getMessage() : '');
-				} else {
-					console.error('Error: ', e);
-					stats.errorsCount++;
-				}
-			}
-			if (res === undefined) {
-				res = true;
-			}
-			if (res) {
-				msg += IconSuccess;
-				stats.fixesCount++;
-			} else {
-				msg += IconFailure;
-				stats.errorsCount++;
-			}
-		} else {
-			msg +=  IconSkipped;
-			stats.skippedCount++;
-		}
-	}
+	msg += action;
 
 	msg += ' ';
 	msg += chalk.yellow.bold((description).padEnd(30, ' '));
@@ -106,11 +114,10 @@ module.exports.checkMsg = async function (file, code, description, newInfo = nul
 	} else {
 		process.stdout.write(msg + '\n');
 	}
-	return res;
 };
 
 module.exports.oneLine = async function (file, cb) {
-	let icon = IconTodo;
+	let icon = IconImpossible;
 	try {
 		const result = await cb(file);
 		switch(result) {

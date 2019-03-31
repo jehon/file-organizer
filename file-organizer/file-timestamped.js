@@ -5,6 +5,7 @@ const path = require('path');
 
 const { fileExists } = require('./file-utils');
 
+const messages = require('./messages.js');
 const FileGeneric = require('./file-generic.js');
 const { tsFromString, tsFromDate } = require('./timestamp.js');
 const options = require('./options.js');
@@ -59,14 +60,14 @@ class FileTimestamped extends FileGeneric {
 
 	async check() {
 		if (this.calculatedTS.type == 'invalid') {
-			return this.checkMsg('TS_FILENAME_INVALID', 'filename is not parsable');
+			return messages.fileImpossible(this, 'TS_FILENAME_INVALID', 'filename is not parsable');
 		}
 
 		let res = true;
 		if (this.calculatedTS.comment != '' && this.calculatedTS.comment == this.calculatedTS.original) {
-			await this.checkMsg('TS_DUP_COMMENT', 'remove duplicate comment/original',
-				'remove original filename',
-				() => this.calculatedTS.original = ''
+			this.calculatedTS.original = '';
+			messages.fileInfo(this, 'TS_DUP_COMMENT', 'remove duplicate comment/original',
+				'remove original filename'
 			);
 		}
 
@@ -82,7 +83,7 @@ class FileTimestamped extends FileGeneric {
 			// Check filename according to parent folder TS
 			if (this.parent.calculatedTS.year > 0) {
 				if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
-					res = res && await this.checkMsg('TS_PARENT_INCOHERENT',
+					res = res && messages.fileImpossible(this, 'TS_PARENT_INCOHERENT',
 						'calculated timestamp incoherent to parent folder',
 						`${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()}`
 					);
@@ -91,11 +92,11 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		if (!this.calculatedTS.comment) {
-			res = res && await this.checkMsg('TS_NO_COMMENT', 'No comment found');
+			res = res && messages.fileImpossible(this, 'TS_NO_COMMENT', 'No comment found');
 		}
 
 		if (this.calculatedTS.TS() == '') {
-			res = res && await this.checkMsg('TS_NO_TIMESTAMP', 'No timestamp found');
+			res = res && messages.fileImpossible(this, 'TS_NO_TIMESTAMP', 'No timestamp found');
 		}
 
 		if (!res) {
@@ -111,12 +112,12 @@ class FileTimestamped extends FileGeneric {
 			const proposedFilename = this.getCanonicalFilename();
 			if (proposedFilename != this.getFilename()) {
 				if (await fileExists(path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension()))) {
-					res = res && await this.checkMsg('TS_DUP_FILES', 'file already exists',
+					res = res && messages.fileImpossible(this, 'TS_DUP_FILES', 'file already exists',
 						proposedFilename
 					);
 
 				} else {
-					res = res && await this.checkMsg('TS_CANONIZE', 'canonize filename',
+					res = res && await messages.fileCommit(this, 'TS_CANONIZE', 'canonize filename',
 						proposedFilename,
 						() => this.changeFilename(proposedFilename)
 					);

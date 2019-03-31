@@ -1,6 +1,7 @@
 
 var spawnSync = require('child_process').spawnSync;
 
+const messages = require('./messages.js');
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const { fileExec, fileRename, fileDelete } = require('./file-utils.js');
@@ -135,7 +136,7 @@ module.exports = class FilePicture extends FileTimestamped {
 	async check() {
 		let res = true;
 		if (!this.exiv_date) {
-			res = res && await this.checkMsg('PICT_NO_DATE', 'Exiv: no date found');
+			res = res && messages.fileImpossible(this, 'PICT_NO_DATE', 'Exiv: no date found');
 		}
 
 		if (!res) {
@@ -148,12 +149,12 @@ module.exports = class FilePicture extends FileTimestamped {
 
 		if (this.exiv_comment != this.calculatedTS.comment && this.calculatedTS.comment) {
 			const c = this.calculatedTS.comment;
-			res = res && await this.checkMsg('PICT_WRITE_COMMENT', 'Write comment', c, () => this.exivWriteComment(c));
+			res = res && await messages.fileCommit(this, 'PICT_WRITE_COMMENT', 'Write comment', c, () => this.exivWriteComment(c));
 		}
 
 		// Rotate according to exiv tag
 		if (this.exiv_orientation != 0) {
-			await this.checkMsg('PICT_ROTATE', 'rotate picture',
+			await messages.fileCommit(this, 'PICT_ROTATE', 'rotate picture',
 				this.exiv_orientation,
 				() => this.exivRotatePicture()
 			);

@@ -129,22 +129,6 @@ class FileGeneric {
 		return res;
 	}
 
-	/**
-	 * !! Await on this one: await this.checkMsg(...)
-	 *
-	 * @param description(string): free text
-	 *
-	 * @param newInfo(null/string): the new information (display only)
-	 *
-	 * @param action(null/true/function):
-	 *    null: action impossible
-	 *    true: info message of success
-	 *    fn: fix function
-	 */
-	async checkMsg(code, description, newInfo = null, action = null) {
-		return messages.checkMsg(this, code, description, newInfo, action);
-	}
-
 	async check() {
 		messages.stats.filesCount++;
 
@@ -158,7 +142,7 @@ class FileGeneric {
 			// Lowercase extension
 			if (this.getExtension().toLowerCase() != this.getExtension()) {
 				let proposedFN = this.getFilename() + this.getExtension().toLowerCase();
-				res = res && await this.checkMsg('FILE_EXT_UPPERCASE', 'uppercase extension',
+				res = res && await messages.fileCommit(this, 'FILE_EXT_UPPERCASE', 'uppercase extension',
 					proposedFN,
 					() => this.rename(proposedFN)
 				);
@@ -167,7 +151,7 @@ class FileGeneric {
 
 		{
 			if (this.getExtension() == '.jpeg') {
-				res = res && await this.checkMsg('FILE_EXT_NORMALIZE', 'align extension to 3 char',
+				res = res && await messages.fileCommit(this, 'FILE_EXT_NORMALIZE', 'align extension to 3 char',
 					'jpg',
 					() => this.rename(this.getFilename() + '.jpg')
 				);
