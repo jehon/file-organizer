@@ -71,14 +71,28 @@ class FileTimestamped extends FileGeneric {
 			);
 		}
 
-		if (!this.calculatedTS.comment && options.guessComment) {
-			let c = this.parent.calculatedTS.comment;
-			if (!c) {
-				return this.checkMsg('TS_COMMENT_GUESS_FAILED', 'guess comment', c);
+		{
+			let c = this.calculatedTS.comment;
+			if (options.setComment) {
+				c = options.setComment;
+			} else if (options.fixCommentFromFolder) {
+				c = this.parent.filenameTS.comment;
+			} else {
+				if ((!this.calculatedTS.comment && options.guessComment) || options.fixComment){
+					let c = this.filenameTS.comment;
+					if (!c) {
+						c = this.parent.calculatedTS.comment;
+					}
+				}
 			}
-			await this.checkMsg('TS_GUESS_COMMENT', 'Updating comment', c, () => this.calculatedTS.comment = c);
+			if (!c) {
+				return messages.fileImpossible(this, 'TS_COMMENT_UPDATE_FAILED', 'Updating comment is empty', c);
+			}
+			if (this.calculatedTS.comment != c) {
+				this.calculatedTS.comment = c;
+				messages.fileInfo(this, 'TS_UPDATE_COMMENT', 'Updating comment', c);
+			}
 		}
-
 		if (this.calculatedTS.year > 0) {
 			// Check filename according to parent folder TS
 			if (this.parent.calculatedTS.year > 0) {
