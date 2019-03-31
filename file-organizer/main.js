@@ -8,7 +8,7 @@ const FileFactory = require('./file-factory.js');
 Object.assign(options, yargs
 	.options({
 		'dryRun': {
-			alias: [ 'dry-run', 'dryrun', 'n'],
+			alias: [ 'dry-run', 'n'],
 			type: 'boolean',
 			default: false,
 			coerce: (val) => {
