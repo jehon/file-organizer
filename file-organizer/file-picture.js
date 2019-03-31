@@ -129,10 +129,6 @@ module.exports = class FilePicture extends FileTimestamped {
 		return true;
 	}
 
-	setComment(msg) {
-		return this.exivWriteComment(msg);
-	}
-
 	async check() {
 		let res = true;
 		if (!this.exiv_date) {
