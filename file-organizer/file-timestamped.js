@@ -78,8 +78,8 @@ class FileTimestamped extends FileGeneric {
 			} else if (options.fixCommentFromFolder) {
 				c = this.parent.filenameTS.comment;
 			} else {
-				if ((!this.calculatedTS.comment && options.guessComment) || options.fixComment){
-					let c = this.filenameTS.comment;
+				if ((!this.calculatedTS.comment && options.guessComment) || options.fixComment) {
+					c = this.filenameTS.comment;
 					if (!c) {
 						c = this.parent.calculatedTS.comment;
 					}
@@ -89,8 +89,8 @@ class FileTimestamped extends FileGeneric {
 				return messages.fileImpossible(this, 'TS_COMMENT_UPDATE_FAILED', 'Updating comment is empty', c);
 			}
 			if (this.calculatedTS.comment != c) {
-				this.calculatedTS.comment = c;
 				messages.fileInfo(this, 'TS_UPDATE_COMMENT', 'Updating comment', c);
+				this.calculatedTS.comment = c;
 			}
 		}
 		if (this.calculatedTS.year > 0) {

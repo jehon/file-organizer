@@ -1,9 +1,16 @@
 
+const options = require('../options.js');
+
 exports.command = [ '$0 [file]', 'regularize [file]' ];
 
 exports.describe = 'Regularize the files';
 
 exports.builder = {
+	'setComment': {
+		alias: [ 'set-comment', 'sc' ],
+		type: 'string',
+		default: ''
+	},
 	'guessComment': {
 		alias: [ 'guess-comment', 'gc' ],
 		type: 'boolean',
@@ -21,11 +28,12 @@ exports.builder = {
 	}
 };
 
-exports.handler = function (options) {
-	if(options.fixComment) {
+exports.handler = function (noptions) {
+	Object.assign(options, noptions);
+
+	if (options.fixComment) {
 		options.guessComment = true;
 	}
-
 
 	options.file.iterate(async function(f) {
 		await f.check();
