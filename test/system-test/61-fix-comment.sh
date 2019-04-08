@@ -8,11 +8,11 @@ setup "$T"
 
 run_and_capture "fix-comment" "regularize" "--fix-comment"
 assert_captured_success
-capture_dump
+# capture_dump
 capture_dump_to_file $TEST_DATA/output.log
 capture_empty
 
-find "$TEST_DATA" -type f
+# find "$TEST_DATA" -type f
 
 assert_consistency
 
