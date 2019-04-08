@@ -5,11 +5,11 @@ const FilePicture = require('../../file-organizer/file-picture.js');
 
 describe('file-picture-test', () => {
 	it('should get exiv from files', () => {
-		expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).exivReadDate()).toBe('2015-03-06 15-33-40');
-		expect((new FilePicture(dataPath('canon.JPG'))).exivReadDate()).toBe('2018-02-04 13-17-50');
-		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exivReadDate()).toBe('2020-01-19 01-24-02');
+		expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).exivReadTimestamp()).toBe('2015-03-06 15-33-40');
+		expect((new FilePicture(dataPath('canon.JPG'))).exivReadTimestamp()).toBe('2018-02-04 13-17-50');
+		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exivReadTimestamp()).toBe('2020-01-19 01-24-02');
 
-		expect(new FilePicture(dataPath('no_exiv.jpg')).exivReadDate()).toBeNull();
+		expect(new FilePicture(dataPath('no_exiv.jpg')).exivReadTimestamp()).toBeNull();
 	});
 
 	it('should get exiv rotation from files', () => {
@@ -28,6 +28,19 @@ describe('file-picture-test', () => {
 		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exivReadComment()).toBe('');
 
 		expect(new FilePicture(dataPath('no_exiv.jpg')).exivReadComment()).toBe('');
+	});
+
+	it('should write timestamps correctly', async() =>  {
+		const new1 = createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
+		expect(new1.exivReadTimestamp()).toBe('2015-03-06 15-33-40');
+
+		new1.exivWriteTimestamp('2016-02-04 01-02-03');
+		expect(new1.exivReadTimestamp()).toBe('2016-02-04 01-02-03');
+
+		new1.exivWriteTimestamp('2014-05-06');
+		expect(new1.exivReadTimestamp()).toBe('2014-05-06 00-00-00');
+
+		new1.remove();
 	});
 
 	it('should write comments correctly', async() =>  {
@@ -53,7 +66,7 @@ describe('file-picture-test', () => {
 
 		it('should rotate pictures when necessary', async() => {
 			const new1 = createFileGeneric('rotated-bottom-left.jpg');
-			new1.exiv_date = '2018-01-02';
+			new1.exiv_timestamp = '2018-01-02';
 			new1.calculatedTS.year = 2018;
 			new1.calculatedTS.comment = 'should rotate pictures when necessary';
 			expect(new1.exivReadOrientation()).toBe(270);
@@ -68,9 +81,9 @@ describe('file-picture-test', () => {
 
 			const new1 = createFileGeneric('no_exiv.jpg');
 			expect(new1.exivReadComment()).toBe('');
-			expect(new1.exivReadDate()).toBeNull();
+			expect(new1.exivReadTimestamp()).toBeNull();
 
-			new1.exiv_date = '2018-01-02';
+			new1.exiv_timestamp = '2018-01-02';
 
 			new1.calculatedTS.year = 2018;
 			new1.calculatedTS.comment = 'override comment';
