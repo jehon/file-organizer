@@ -30,23 +30,23 @@ module.exports = class FilePicture extends FileTimestamped {
 	constructor(filePath) {
 		super(filePath);
 
-		this.exiv_date             = this.exivReadDate();
+		this.exiv_timestamp        = this.exivReadTimestamp();
 		this.exiv_comment          = this.exivReadComment();
 		this.exiv_orientation      = this.exivReadOrientation();
 
-		this.exiv_ts               = tsFromString(this.exivReadDate());
+		this.exiv_ts               = tsFromString(this.exivReadTimestamp());
 
 		this.setCalculatedTS(this.exiv_ts);
 		if (this.exiv_comment) {
 			this.calculatedTS.comment = this.exiv_comment;
 		}
 
-		this.addInfo('picture.exiv.timestamp',   this.exiv_date);
+		this.addInfo('picture.exiv.timestamp',   this.exiv_timestamp);
 		this.addInfo('picture.exiv.comment',     this.exiv_comment);
 		this.addInfo('picture.exiv.orientation', this.exiv_orientation);
 	}
 
-	exivReadDate() {
+	exivReadTimestamp() {
 		const data = runExiv('-g', 'Exif.Photo.DateTimeOriginal', this.getRelativePath());
 		let res = data
 			.substr(60)
@@ -102,6 +102,18 @@ module.exports = class FilePicture extends FileTimestamped {
 		}
 	}
 
+	exivWriteTimestamp(ts) {
+		const empty = '0000-00-01 00-00-00';
+		if (ts.length < empty.length) {
+			ts = ts + empty.substr(ts.length);
+			messages.fileInfo(this, 'PICT_UPGRADE_TIMESTAMP', 'Update timestamp to ' + ts);
+		}
+
+		runExiv('modify', '-M set Exif.Photo.DateTimeOriginal ' + ts.split('-').join(':'), this.getRelativePath());
+		this.exiv_timestamp = ts;
+		this.setCalculatedTS(ts);
+	}
+
 	exivWriteComment(msg) {
 		runExiv('modify', '-M set Exif.Photo.UserComment ' + msg, this.getRelativePath());
 		this.exiv_comment = msg;
@@ -131,7 +143,7 @@ module.exports = class FilePicture extends FileTimestamped {
 
 	async check() {
 		let res = true;
-		if (!this.exiv_date) {
+		if (!this.exiv_timestamp) {
 			res = res && messages.fileImpossible(this, 'PICT_NO_DATE', 'Exiv: no date found');
 		}
 
@@ -146,6 +158,10 @@ module.exports = class FilePicture extends FileTimestamped {
 		if (this.exiv_comment != this.calculatedTS.comment && this.calculatedTS.comment) {
 			const c = this.calculatedTS.comment;
 			res = res && await messages.fileCommit(this, 'PICT_WRITE_COMMENT', 'Write comment', c, () => this.exivWriteComment(c));
+		}
+
+		if (this.exiv_timestamp != this.calculatedTS.TS() && this.calculatedTS.TS()) {
+			res = res && await messages.fileCommit(this, 'PICT_WRITE_TIMESTAMP', 'Write timestamp', this.calculatedTS.TS(), () => this.exivWriteTimestamp(this.calculatedTS.TS()));
 		}
 
 		// Rotate according to exiv tag

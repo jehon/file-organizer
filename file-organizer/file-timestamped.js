@@ -37,6 +37,10 @@ class FileTimestamped extends FileGeneric {
 	}
 
 	setCalculatedTS(newTS) {
+		if (typeof newTS == 'string') {
+			newTS = tsFromString(newTS);
+		}
+
 		for(const k of [ 'year', 'month', 'day', 'hour', 'minute', 'second']) {
 			this.calculatedTS[k] = newTS[k];
 		}
@@ -93,6 +97,21 @@ class FileTimestamped extends FileGeneric {
 				this.calculatedTS.comment = c;
 			}
 		}
+
+		{
+			let ts = this.calculatedTS;
+			if (options.setTimestampFromFile) {
+				ts = this.filenameTS;
+			}
+			if (!ts.year) {
+				return messages.fileImpossible(this, 'TS_TIMESTAMP_UPDATE_FAILED', 'Updating timestamp is empty', ts.TS());
+			}
+			if (this.calculatedTS.TS() != ts.TS()) {
+				messages.fileInfo(this, 'TS_UPDATE_TIMESTAMP', 'Updating timestamp', ts.TS());
+				this.setCalculatedTS(ts);
+			}
+		}
+
 		if (this.calculatedTS.year > 0) {
 			// Check filename according to parent folder TS
 			if (this.parent.calculatedTS.year > 0) {

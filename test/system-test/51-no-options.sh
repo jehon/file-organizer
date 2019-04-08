@@ -8,11 +8,11 @@ setup "$T"
 
 run_and_capture "no options" "regularize"
 assert_captured_success
-capture_dump
+# capture_dump
 capture_dump_to_file $TEST_DATA/output.log
 capture_empty
 
-#find "$TEST_DATA" -type f
+# find "$TEST_DATA" -type f
 
 assert_consistency
 assert_file_exists "2019 test/2018-01-02 03-04-05 my incoherent comment [my original name].jpg" # bad parent

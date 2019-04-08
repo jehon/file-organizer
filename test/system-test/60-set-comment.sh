@@ -8,7 +8,7 @@ setup "$T"
 
 run_and_capture "set-comment" "regularize" "--set-comment" "test"
 assert_captured_success
-#capture_dump
+# capture_dump
 capture_dump_to_file $TEST_DATA/output.log
 capture_empty
 

@@ -92,7 +92,7 @@ describe('file-generic-test', () => {
 		it('should normalize extensions when necessary', async() => {
 			const new1 = createFileGeneric('rotated-bottom-left.jpg');
 			await new1.rename('test.jpeg');
-			new1.exiv_date = '2018-01-02';
+			new1.exiv_timestamp = '2018-01-02';
 			new1.exiv_comment = 'comment';
 			await FileGeneric.prototype.check.call(new1); // new1.check();
 			expect(new1.errors).toContain('FILE_EXT_NORMALIZE');

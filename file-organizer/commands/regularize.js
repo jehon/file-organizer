@@ -25,6 +25,12 @@ exports.builder = {
 		alias: [ 'fix-comment-from-folder', 'fcff' ],
 		type: 'boolean',
 		default: false
+	},
+
+	'setTimestampFromFile': {
+		alias: [ 'set-timestamp', 'sts' ],
+		type: 'boolean',
+		default: false
 	}
 };
 
