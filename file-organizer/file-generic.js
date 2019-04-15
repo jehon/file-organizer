@@ -8,11 +8,6 @@
 const path = require('path');
 const process = require('process');
 
-const ansiEscapes = require('ansi-escapes');
-const iterateLimit = require('p-limit')(10);
-
-
-const options = require('./options.js');
 const messages = require('./messages.js');
 const FileUtils = require('./file-utils.js');
 const BusinessError = require('./business-error.js');
@@ -126,7 +121,7 @@ class FileGeneric {
 	}
 
 	async iterate(apply) {
-		return iterateLimit(() => Promise.resolve()
+		return messages.concurrencyLimit(() => Promise.resolve()
 			.then(() => apply(this))
 			.then((res) => { messages.printCachedMessages(this); return res; })
 		);
@@ -134,11 +129,6 @@ class FileGeneric {
 
 	async check() {
 		messages.stats.filesCount++;
-
-		if (options.interactive) {
-			// Write infos on one line, erase it after
-			process.stdout.write(`\rCurrent files: ${messages.stats.filesCount} - fixes: ${messages.stats.fixesCount} - skipped: ${messages.stats.skippedCount} - errors: ${messages.stats.errorsCount} - impossible: ${messages.stats.impossibleCount}` + ansiEscapes.eraseEndLine + '\r');
-		}
 
 		let res = true;
 		{

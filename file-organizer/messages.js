@@ -1,7 +1,7 @@
 
 const ansiEscapes = require('ansi-escapes');
-const getCursorPosition = require('get-cursor-position');
 const chalk = require('chalk');
+const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
 
 const options = require('./options.js');
 const BusinessError = require('./business-error.js');
@@ -11,6 +11,9 @@ const IconSuccess = chalk.green('✓');
 const IconFailure = chalk.red.bold('✘');
 const IconSkipped = chalk.magenta('⚐');
 const IconImpossible = chalk.red('⚑');
+
+const concurrencyLimit = pLimit(10);
+module.exports.concurrencyLimit = concurrencyLimit;
 
 const stats = {
 	filesCount: 0,
@@ -22,7 +25,31 @@ const stats = {
 module.exports.stats = stats;
 
 const messagesPerFiles = {};
-let lastLogFile = false;
+
+function cleanLine() {
+	if (options.interactive) {
+		// Force being at the beginnning of the line
+		process.stdout.write(ansiEscapes.eraseLine);
+		process.stdout.write(ansiEscapes.cursorTo(0));
+	}
+
+}
+
+function dumpStats() {
+	if (options.interactive) {
+		cleanLine();
+
+		// Write infos on one line, erase it after
+		process.stdout.write(
+			`${concurrencyLimit.activeCount} : ${concurrencyLimit.pendingCount}`
+			+ ` - Current files: ${stats.filesCount}`
+			+ ` - fixes: ${stats.fixesCount}`
+			+ ` - skipped: ${stats.skippedCount}`
+			+ ` - errors: ${stats.errorsCount}`
+			+ ` - impossible: ${stats.impossibleCount}`
+		);
+	}
+}
 
 module.exports.fileInfo = function(file, code, description, newInfo = null) {
 	module.exports.fileMsg(file, code, description, newInfo, IconSuccess);
@@ -97,23 +124,19 @@ module.exports.fileMsg = function (file, code, description, newInfo = null, acti
 
 	messagesPerFiles[k] += ' ';
 	messagesPerFiles[k] += (newInfo != null ? chalk.blue('' + newInfo) : '');
+
+	dumpStats();
 };
 
 module.exports.printCachedMessages = function(file) {
 	const k = file.getRelativePath();
 	if (k in messagesPerFiles) {
+		cleanLine();
 
-		if (options.interactive) {
-		// 	// Force being at the beginnning of the line
-		// 	const cursorPos = getCursorPosition.sync();
-		// 	if (cursorPos.col >  0) {
-			process.stdout.write(ansiEscapes.eraseLine);
-			process.stdout.write(ansiEscapes.cursorTo(0));
-		// 	}
-		}
 		process.stdout.write(messagesPerFiles[k] + '\n\n');
 		delete messagesPerFiles[k];
 	}
+	dumpStats();
 };
 
 module.exports.oneLine = async function (file, cb) {
