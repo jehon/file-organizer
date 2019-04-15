@@ -101,13 +101,13 @@ describe('file-generic-test', () => {
 		});
 	});
 
-	it('should iterate', (done) => {
-		let ff = new FileGeneric(path.join(dataPath(), 'test.txt'));
+	// it('should iterate', (done) => {
+	// 	let ff = new FileGeneric(path.join(dataPath(), 'test.txt'));
 
-		ff.iterate(f => f.getFilename()).then((res) => {
-			expect(res.length).toBe(1);
-			expect(res[0]).toBe('test');
-			done();
-		});
-	});
+	// 	ff.iterate(f => f.getFilename()).then((res) => {
+	// 		expect(res.length).toBe(1);
+	// 		expect(res[0]).toBe('test');
+	// 		done();
+	// 	});
+	// });
 });

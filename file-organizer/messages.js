@@ -21,6 +21,7 @@ const stats = {
 };
 module.exports.stats = stats;
 
+const messagesPerFiles = {};
 let lastLogFile = false;
 
 module.exports.fileInfo = function(file, code, description, newInfo = null) {
@@ -80,39 +81,38 @@ module.exports.fileImpossible = function(file, code, description) {
  *    fn: fix function
  */
 module.exports.fileMsg = function (file, code, description, newInfo = null, action = null) {
-	let msg = '';
+	const k = file.getRelativePath();
 
 	file.errors.push(code);
 
-	if (options.interactive) {
-		// Force being at the beginnning of the line
-		const cursorPos = getCursorPosition.sync();
-		if (cursorPos.col >  0) {
+	if (!(k in messagesPerFiles)) {
+		messagesPerFiles[k] = (file.getFilename() + file.getExtension()) + ' /' + chalk.gray(file.parent.getRelativePath()) + '/\n';
+	}
+
+	messagesPerFiles[k] += '  ';
+	messagesPerFiles[k] += action;
+
+	messagesPerFiles[k] += ' ';
+	messagesPerFiles[k] += chalk.yellow.bold((description).padEnd(30, ' '));
+
+	messagesPerFiles[k] += ' ';
+	messagesPerFiles[k] += (newInfo != null ? chalk.blue('' + newInfo) : '');
+};
+
+module.exports.printCachedMessages = function(file) {
+	const k = file.getRelativePath();
+	if (k in messagesPerFiles) {
+
+		if (options.interactive) {
+		// 	// Force being at the beginnning of the line
+		// 	const cursorPos = getCursorPosition.sync();
+		// 	if (cursorPos.col >  0) {
 			process.stdout.write(ansiEscapes.eraseLine);
 			process.stdout.write(ansiEscapes.cursorTo(0));
+		// 	}
 		}
-	}
-
-	if (lastLogFile != file) {
-		msg += '\n';
-		msg += (file.getFilename() + file.getExtension()) + ' /' + chalk.gray(file.parent.getRelativePath()) + '/\n';
-
-		lastLogFile = file;
-	}
-
-	msg += '  ';
-	msg += action;
-
-	msg += ' ';
-	msg += chalk.yellow.bold((description).padEnd(30, ' '));
-
-	msg += ' ';
-	msg += (newInfo != null ? chalk.blue('' + newInfo) : '');
-
-	if (options.interactive) {
-		process.stdout.write(msg + '\n');
-	} else {
-		process.stdout.write(msg + '\n');
+		process.stdout.write(messagesPerFiles[k] + '\n\n');
+		delete messagesPerFiles[k];
 	}
 };
 
@@ -137,5 +137,3 @@ module.exports.oneLine = async function (file, cb) {
 		console.info(`${IconFailure} ${file.getRelativePath()}: ${chalk.red(e.getMessage())}`);
 	}
 };
-
-

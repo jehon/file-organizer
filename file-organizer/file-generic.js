@@ -9,6 +9,8 @@ const path = require('path');
 const process = require('process');
 
 const ansiEscapes = require('ansi-escapes');
+const iterateLimit = require('p-limit')(10);
+
 
 const options = require('./options.js');
 const messages = require('./messages.js');
@@ -124,9 +126,10 @@ class FileGeneric {
 	}
 
 	async iterate(apply) {
-		const res = [];
-		res.push(await apply(this));
-		return res;
+		return Promise.resolve()
+			.then(() => apply(this))
+			.then((res) => { messages.printCachedMessages(this); return res; })
+		;
 	}
 
 	async check() {
