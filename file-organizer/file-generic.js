@@ -126,10 +126,10 @@ class FileGeneric {
 	}
 
 	async iterate(apply) {
-		return Promise.resolve()
+		return iterateLimit(() => Promise.resolve()
 			.then(() => apply(this))
 			.then((res) => { messages.printCachedMessages(this); return res; })
-		;
+		);
 	}
 
 	async check() {
