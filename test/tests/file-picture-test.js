@@ -9,7 +9,7 @@ describe('file-picture-test', () => {
 		expect((new FilePicture(dataPath('canon.JPG'))).exiv_timestamp).toBe('2018-02-04 13-17-50');
 		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exiv_timestamp).toBe('2020-01-19 01-24-02');
 
-		expect(new FilePicture(dataPath('no_exiv.jpg')).exiv_timestamp).toBeNull();
+		expect(new FilePicture(dataPath('no_exiv.jpg')).exiv_timestamp).toBe('');
 	});
 
 	it('should get exiv rotation from files', () => {
@@ -81,7 +81,7 @@ describe('file-picture-test', () => {
 
 			const new1 = createFileGeneric('no_exiv.jpg');
 			expect(new1.exiv_comment).toBe('');
-			expect(new1.exiv_timestamp).toBeNull();
+			expect(new1.exiv_timestamp).toBe('');
 
 			new1.exiv_timestamp = '2018-01-02';
 

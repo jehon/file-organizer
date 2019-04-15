@@ -29,6 +29,57 @@ function runExiv(...params) {
 	return '';
 }
 
+function exivWrite(file, tag, value){
+	return runExiv('modify',`-M set ${tag} ${value}`, file.getRelativePath());
+}
+
+function exivReadAll(file) {
+	const data = runExiv('-g', 'Exif.*', file.getRelativePath());
+	const result = {
+		'Exif.Photo.UserComment': '',
+		'Exif.Photo.DateTimeOriginal': '',
+		'Exif.Image.Orientation': ''
+	};
+	data.split('\n').forEach(line => {
+		const k = line.split(' ')[0].trim();
+		let v = line.substr(60).replace(/\0/g, '').trim();
+		if (v == '(Binary value suppressed)') {
+			v = '';
+		}
+		if (v) {
+			result[k] = v;
+		}
+	});
+	return result;
+}
+
+function translateRotation(rotation) {
+	switch(rotation) {
+	// What is the top-left corner?
+	case 'left, bottom':
+		// https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_8.jpg
+		return 270;
+
+	case 'right, top':
+		// https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_6.jpg
+		return 90;
+
+	case 'bottom, right':
+		// https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_3.jpg
+		return 180;
+
+	case 'top, left':
+	case '':
+	case '(0)':
+		// No information given
+		return 0;
+
+	default:
+		throw new BusinessError(`exivReadRotation: could not understand value: ${rotation}`);
+	}
+
+}
+
 module.exports = class FilePicture extends FileTimestamped {
 	constructor(filePath) {
 		super(filePath);
@@ -42,70 +93,16 @@ module.exports = class FilePicture extends FileTimestamped {
 	}
 
 	exivReload(){
-		this.exiv_timestamp        = this._exivReadTimestamp();
-		this.exiv_comment          = this._exivReadComment();
-		this.exiv_orientation      = this._exivReadOrientation();
+		const exivData = exivReadAll(this);
+
+		this.exiv_timestamp        = exivData['Exif.Photo.DateTimeOriginal'].split(':').join('-');
+		this.exiv_comment          = exivData['Exif.Photo.UserComment'];
+		this.exiv_orientation      = translateRotation(exivData['Exif.Image.Orientation']);
 		this.exiv_ts               = tsFromString(this.exiv_timestamp);
 
 		this.addInfo('picture.exiv.timestamp',   this.exiv_timestamp);
 		this.addInfo('picture.exiv.comment',     this.exiv_comment);
 		this.addInfo('picture.exiv.orientation', this.exiv_orientation);
-	}
-
-	_exivReadTimestamp() {
-		const data = runExiv('-g', 'Exif.Photo.DateTimeOriginal', this.getRelativePath());
-		let res = data
-			.substr(60)
-			.split('\n').join('')
-			.split(':').join('-');
-
-		return res ? res : null;
-	}
-
-	_exivReadComment() {
-		const data = runExiv('-g', 'Exif.Photo.UserComment', this.getRelativePath());
-		let res = data
-			.substr(60)
-			.split('\n').join('')
-			.replace(/\0/g, '')
-			.trim();
-
-		if (res == '(Binary value suppressed)') {
-			res = '';
-		}
-
-		return res ? res : '';
-	}
-
-	_exivReadOrientation() {
-		const data = runExiv('-g', 'Exif.Image.Orientation', this.getRelativePath());
-		let res = data
-			.substr(60)
-			.split('\n').join('');
-
-		switch(res) {
-		// What is the top-left corner?
-		case 'left, bottom':
-			// https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_8.jpg
-			return 270;
-
-		case 'right, top':
-			// https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_6.jpg
-			return 90;
-
-		case 'bottom, right':
-			// https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_3.jpg
-			return 180;
-
-		case 'top, left':
-		case '':
-		case '(0)':
-			// No information given
-			return 0;
-
-		default:
-			throw new BusinessError(`exivReadRotation: could not understand value: ${res} in ${this.getRelativePath()}`);
-		}
 	}
 
 	exivWriteTimestamp(ts) {
@@ -115,13 +112,13 @@ module.exports = class FilePicture extends FileTimestamped {
 			messages.fileInfo(this, 'PICT_UPGRADE_TIMESTAMP', 'Update timestamp to ' + ts);
 		}
 
-		runExiv('modify', '-M set Exif.Photo.DateTimeOriginal ' + ts.split('-').join(':'), this.getRelativePath());
+		exivWrite(this, 'Exif.Photo.DateTimeOriginal', ts.split('-').join(':'));
 		this.exiv_timestamp = ts;
 		this.setCalculatedTS(ts);
 	}
 
 	exivWriteComment(msg) {
-		runExiv('modify', '-M set Exif.Photo.UserComment ' + msg, this.getRelativePath());
+		exivWrite(this, 'Exif.Photo.UserComment', msg);
 		this.exiv_comment = msg;
 		this.calculatedTS.comment = msg;
 	}
