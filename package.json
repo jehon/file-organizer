@@ -14,7 +14,8 @@
     "clean": "rm -fr tmp target",
     "test": "npm run clean && npm run test-unit && npm run test-system",
     "view-cover": "opn target/unit-coverage/index.html",
-    "test-unit": "nyc jasmine --config=test/jasmine.json",
+    "test-unit": "jasmine --config=test/jasmine.json",
+    "test-unit-cover": "nyc jasmine --config=test/jasmine.json",
     "test-system": "./test/system-test/all.sh"
   },
   "dependencies": {

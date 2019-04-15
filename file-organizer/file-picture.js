@@ -8,6 +8,9 @@ const { fileExec, fileRename, fileDelete } = require('./file-utils.js');
 const BusinessError = require('./business-error.js');
 
 function runExiv(...params) {
+	//
+	// Error here ? check exiv is installed :-)
+	//
 	let processResult = spawnSync('exiv2', params);
 	switch(processResult.status) {
 	case 0:   // ok, continue
