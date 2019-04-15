@@ -89,7 +89,8 @@ describe('file-timestamped-test', () => {
 				expect(new2.getInfo('timestamp.comment')).toBe('exivok01');
 
 				await new2.check();
-				expect(new2.exivReadComment()).toBe('exivok01');
+				new2.exivReload();
+				expect(new2.exiv_comment).toBe('exivok01');
 				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 exivok01');
 
 				new2.remove();
@@ -120,11 +121,12 @@ describe('file-timestamped-test', () => {
 
 				// new2 is a virtual alias of new1 with fields initialized
 				const new2 = FileFactory(new1.getRelativePath());
-				expect(new2.exivReadComment()).toBe('x test');
+				expect(new2.exiv_comment).toBe('x test');
 				expect(new2.getInfo('picture.exiv.comment')).toBe('x test');
 
 				await new2.check();
-				expect(new2.exivReadComment()).toBe('x test');
+				new2.exivReload();
+				expect(new2.exiv_comment).toBe('x test');
 				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 x test');
 
 				new2.remove();

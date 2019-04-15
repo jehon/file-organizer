@@ -33,23 +33,26 @@ module.exports = class FilePicture extends FileTimestamped {
 	constructor(filePath) {
 		super(filePath);
 
-		this.exiv_timestamp        = this.exivReadTimestamp();
-		this.exiv_comment          = this.exivReadComment();
-		this.exiv_orientation      = this.exivReadOrientation();
-
-		this.exiv_ts               = tsFromString(this.exivReadTimestamp());
+		this.exivReload();
 
 		this.setCalculatedTS(this.exiv_ts);
 		if (this.exiv_comment) {
 			this.calculatedTS.comment = this.exiv_comment;
 		}
+	}
+
+	exivReload(){
+		this.exiv_timestamp        = this._exivReadTimestamp();
+		this.exiv_comment          = this._exivReadComment();
+		this.exiv_orientation      = this._exivReadOrientation();
+		this.exiv_ts               = tsFromString(this.exiv_timestamp);
 
 		this.addInfo('picture.exiv.timestamp',   this.exiv_timestamp);
 		this.addInfo('picture.exiv.comment',     this.exiv_comment);
 		this.addInfo('picture.exiv.orientation', this.exiv_orientation);
 	}
 
-	exivReadTimestamp() {
+	_exivReadTimestamp() {
 		const data = runExiv('-g', 'Exif.Photo.DateTimeOriginal', this.getRelativePath());
 		let res = data
 			.substr(60)
@@ -59,7 +62,7 @@ module.exports = class FilePicture extends FileTimestamped {
 		return res ? res : null;
 	}
 
-	exivReadComment() {
+	_exivReadComment() {
 		const data = runExiv('-g', 'Exif.Photo.UserComment', this.getRelativePath());
 		let res = data
 			.substr(60)
@@ -74,7 +77,7 @@ module.exports = class FilePicture extends FileTimestamped {
 		return res ? res : '';
 	}
 
-	exivReadOrientation() {
+	_exivReadOrientation() {
 		const data = runExiv('-g', 'Exif.Image.Orientation', this.getRelativePath());
 		let res = data
 			.substr(60)

@@ -5,55 +5,55 @@ const FilePicture = require('../../file-organizer/file-picture.js');
 
 describe('file-picture-test', () => {
 	it('should get exiv from files', () => {
-		expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).exivReadTimestamp()).toBe('2015-03-06 15-33-40');
-		expect((new FilePicture(dataPath('canon.JPG'))).exivReadTimestamp()).toBe('2018-02-04 13-17-50');
-		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exivReadTimestamp()).toBe('2020-01-19 01-24-02');
+		expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).exiv_timestamp).toBe('2015-03-06 15-33-40');
+		expect((new FilePicture(dataPath('canon.JPG'))).exiv_timestamp).toBe('2018-02-04 13-17-50');
+		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exiv_timestamp).toBe('2020-01-19 01-24-02');
 
-		expect(new FilePicture(dataPath('no_exiv.jpg')).exivReadTimestamp()).toBeNull();
+		expect(new FilePicture(dataPath('no_exiv.jpg')).exiv_timestamp).toBeNull();
 	});
 
 	it('should get exiv rotation from files', () => {
-		expect((new FilePicture(dataPath('rotated.jpg'))).exivReadOrientation()).toBe(270);
-		expect((new FilePicture(dataPath('rotated-ok.jpg'))).exivReadOrientation()).toBe(0);
-		expect((new FilePicture(dataPath('rotated-bottom-left.jpg'))).exivReadOrientation()).toBe(270);
-		expect((new FilePicture(dataPath('rotated-right-top.jpg'))).exivReadOrientation()).toBe(90);
+		expect((new FilePicture(dataPath('rotated.jpg'))).exiv_orientation).toBe(270);
+		expect((new FilePicture(dataPath('rotated-ok.jpg'))).exiv_orientation).toBe(0);
+		expect((new FilePicture(dataPath('rotated-bottom-left.jpg'))).exiv_orientation).toBe(270);
+		expect((new FilePicture(dataPath('rotated-right-top.jpg'))).exiv_orientation).toBe(90);
 
-		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exivReadOrientation()).toBe(0);
-		expect(new FilePicture(dataPath('no_exiv.jpg')).exivReadOrientation()).toBe(0);
+		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exiv_orientation).toBe(0);
+		expect(new FilePicture(dataPath('no_exiv.jpg')).exiv_orientation).toBe(0);
 	});
 
 	it('should get comment from files', () => {
-		expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).exivReadComment()).toBe('User comments');
-		expect((new FilePicture(dataPath('canon.JPG'))).exivReadComment()).toBe('');
-		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exivReadComment()).toBe('');
+		expect((new FilePicture(dataPath('20150306_153340 Cable internet dans la rue.jpg'))).exiv_comment).toBe('User comments');
+		expect((new FilePicture(dataPath('canon.JPG'))).exiv_comment).toBe('');
+		expect((new FilePicture(dataPath('petitAppPhoto.jpg'))).exiv_comment).toBe('');
 
-		expect(new FilePicture(dataPath('no_exiv.jpg')).exivReadComment()).toBe('');
+		expect(new FilePicture(dataPath('no_exiv.jpg')).exiv_comment).toBe('');
 	});
 
 	it('should write timestamps correctly', async() =>  {
 		const new1 = createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
-		expect(new1.exivReadTimestamp()).toBe('2015-03-06 15-33-40');
+		expect(new1.exiv_timestamp).toBe('2015-03-06 15-33-40');
 
 		new1.exivWriteTimestamp('2016-02-04 01-02-03');
-		expect(new1.exivReadTimestamp()).toBe('2016-02-04 01-02-03');
+		expect(new1.exiv_timestamp).toBe('2016-02-04 01-02-03');
 
 		new1.exivWriteTimestamp('2014-05-06');
-		expect(new1.exivReadTimestamp()).toBe('2014-05-06 00-00-00');
+		expect(new1.exiv_timestamp).toBe('2014-05-06 00-00-00');
 
 		new1.remove();
 	});
 
 	it('should write comments correctly', async() =>  {
 		const new1 = createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
-		expect(new1.exivReadComment()).toBe('User comments');
+		expect(new1.exiv_comment).toBe('User comments');
 		new1.exivWriteComment('My new comment with àn accent');
-		expect(new1.exivReadComment()).toBe('My new comment with àn accent');
+		expect(new1.exiv_comment).toBe('My new comment with àn accent');
 		new1.remove();
 
 		const new2 = createFileGeneric('canon.JPG');
-		expect(new2.exivReadComment()).toBe('');
+		expect(new2.exiv_comment).toBe('');
 		new2.exivWriteComment('My other comment with àn accent');
-		expect(new2.exivReadComment()).toBe('My other comment with àn accent');
+		expect(new2.exiv_comment).toBe('My other comment with àn accent');
 		new2.remove();
 	});
 
@@ -69,10 +69,10 @@ describe('file-picture-test', () => {
 			new1.exiv_timestamp = '2018-01-02';
 			new1.calculatedTS.year = 2018;
 			new1.calculatedTS.comment = 'should rotate pictures when necessary';
-			expect(new1.exivReadOrientation()).toBe(270);
+			expect(new1.exiv_orientation).toBe(270);
 			await new1.check();
 			expect(new1.errors).toContain('PICT_ROTATE');
-			expect(new1.exivReadOrientation()).toBe(0);
+			expect(new1.exiv_orientation).toBe(0);
 			new1.remove();
 		});
 
@@ -80,8 +80,8 @@ describe('file-picture-test', () => {
 			options.guessComment = true;
 
 			const new1 = createFileGeneric('no_exiv.jpg');
-			expect(new1.exivReadComment()).toBe('');
-			expect(new1.exivReadTimestamp()).toBeNull();
+			expect(new1.exiv_comment).toBe('');
+			expect(new1.exiv_timestamp).toBeNull();
 
 			new1.exiv_timestamp = '2018-01-02';
 
@@ -90,7 +90,7 @@ describe('file-picture-test', () => {
 
 			await new1.check();
 			expect(new1.errors).toContain('PICT_WRITE_COMMENT');
-			expect(new1.exivReadComment()).toBe('override comment');
+			expect(new1.exiv_comment).toBe('override comment');
 			new1.remove();
 
 			options.resetToDefault();
@@ -98,11 +98,11 @@ describe('file-picture-test', () => {
 
 		// xit('should force comment', async() => {
 		// 	const new1 = createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
-		// 	expect(new1.exivReadComment()).toBe('User comments');
+		// 	expect(new1.exiv_comment).toBe('User comments');
 		// 	await new1.check();
 		// expect(new1.errors).toContain("PICT_WRITE_COMMENT");
 		// 	expect(FileGeneric.prototype.checkMsg).toHaveBeenCalledTimes(2);
-		// 	expect(new1.exivReadComment()).toBe('Cable internet dans la rue');
+		// 	expect(new1.exiv_comment).toBe('Cable internet dans la rue');
 		// 	new1.remove();
 		// });
 	});
