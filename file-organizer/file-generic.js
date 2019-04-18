@@ -121,15 +121,15 @@ class FileGeneric {
 	}
 
 	async iterate(apply) {
+		messages.fileStart(this);
+
 		return messages.concurrencyLimit(() => Promise.resolve()
 			.then(() => apply(this))
-			.then((res) => { messages.printCachedMessages(this); return res; })
+			.then((res) => { messages.fileEnd(this); return res; })
 		);
 	}
 
 	async check() {
-		messages.stats.filesCount++;
-
 		let res = true;
 		{
 			// Lowercase extension

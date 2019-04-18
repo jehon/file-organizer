@@ -41,8 +41,8 @@ function dumpStats() {
 
 		// Write infos on one line, erase it after
 		process.stdout.write(
-			`${concurrencyLimit.activeCount} : ${concurrencyLimit.pendingCount}`
-			+ ` - Current files: ${stats.filesCount}`
+			(concurrencyLimit.pendingCount > 0 ? concurrencyLimit.pendingCount + ': ' : '')
+			+ `Current files: ${stats.filesCount}`
 			+ ` - fixes: ${stats.fixesCount}`
 			+ ` - skipped: ${stats.skippedCount}`
 			+ ` - errors: ${stats.errorsCount}`
@@ -50,6 +50,26 @@ function dumpStats() {
 		);
 	}
 }
+
+module.exports.fileStart = function(file) {
+	messagesPerFiles[file.getRelativePath()] = '';
+	stats.filesCount++;
+	dumpStats();
+}
+
+module.exports.fileEnd = function(file) {
+	const k = file.getRelativePath();
+	if (messagesPerFiles[k]) {
+		cleanLine();
+
+		header = (file.getFilename() + file.getExtension()) + ' /' + chalk.gray(file.parent.getRelativePath()) + '/';
+	
+		process.stdout.write(header + messagesPerFiles[k] + '\n\n');
+	}
+	delete messagesPerFiles[k];
+	dumpStats();
+};
+
 
 module.exports.fileInfo = function(file, code, description, newInfo = null) {
 	module.exports.fileMsg(file, code, description, newInfo, IconSuccess);
@@ -112,11 +132,7 @@ module.exports.fileMsg = function (file, code, description, newInfo = null, acti
 
 	file.errors.push(code);
 
-	if (!(k in messagesPerFiles)) {
-		messagesPerFiles[k] = (file.getFilename() + file.getExtension()) + ' /' + chalk.gray(file.parent.getRelativePath()) + '/\n';
-	}
-
-	messagesPerFiles[k] += '  ';
+	messagesPerFiles[k] += '\n  ';
 	messagesPerFiles[k] += action;
 
 	messagesPerFiles[k] += ' ';
@@ -125,17 +141,6 @@ module.exports.fileMsg = function (file, code, description, newInfo = null, acti
 	messagesPerFiles[k] += ' ';
 	messagesPerFiles[k] += (newInfo != null ? chalk.blue('' + newInfo) : '');
 
-	dumpStats();
-};
-
-module.exports.printCachedMessages = function(file) {
-	const k = file.getRelativePath();
-	if (k in messagesPerFiles) {
-		cleanLine();
-
-		process.stdout.write(messagesPerFiles[k] + '\n\n');
-		delete messagesPerFiles[k];
-	}
 	dumpStats();
 };
 
