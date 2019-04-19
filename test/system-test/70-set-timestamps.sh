@@ -18,4 +18,4 @@ capture_empty
 
 assert_consistency
 
-assert_exiv_timestamp "other test/2019-03 other test [IMG_20190300_000000].jpg" "2019-03-01 00-00-00"
+assert_exiv_timestamp "other test/2019-03 other test [IMG_20190300_000000].jpg" "2019-03-01"

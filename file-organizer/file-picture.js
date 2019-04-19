@@ -86,7 +86,7 @@ module.exports = class FilePicture extends FileTimestamped {
 
 		this.exivReload();
 
-		this.setCalculatedTS(this.exiv_ts);
+		this.setCalculatedTS(this.exiv_timestamp);
 		if (this.exiv_comment) {
 			this.calculatedTS.comment = this.exiv_comment;
 		}
@@ -95,14 +95,15 @@ module.exports = class FilePicture extends FileTimestamped {
 	exivReload(){
 		const exivData = exivReadAll(this);
 
-		this.exiv_timestamp        = exivData['Exif.Photo.DateTimeOriginal'].split(':').join('-');
+		this.exiv_timestamp_raw    = exivData['Exif.Photo.DateTimeOriginal'];
+		this.exiv_timestamp        = tsFromString(exivData['Exif.Photo.DateTimeOriginal'].split(':').join('-'));
 		this.exiv_comment          = exivData['Exif.Photo.UserComment'];
 		this.exiv_orientation      = translateRotation(exivData['Exif.Image.Orientation']);
-		this.exiv_ts               = tsFromString(this.exiv_timestamp);
 
-		this.addInfo('picture.exiv.timestamp',   this.exiv_timestamp);
-		this.addInfo('picture.exiv.comment',     this.exiv_comment);
-		this.addInfo('picture.exiv.orientation', this.exiv_orientation);
+		this.addInfo('picture.exiv.timestamp_raw', this.exiv_timestamp_raw);
+		this.addInfo('picture.exiv.timestamp',     this.exiv_timestamp.TS());
+		this.addInfo('picture.exiv.comment',       this.exiv_comment);
+		this.addInfo('picture.exiv.orientation',   this.exiv_orientation);
 	}
 
 	exivWriteTimestamp(ts) {
@@ -113,8 +114,8 @@ module.exports = class FilePicture extends FileTimestamped {
 		}
 
 		exivWrite(this, 'Exif.Photo.DateTimeOriginal', ts.split('-').join(':'));
-		this.exiv_timestamp = ts;
-		this.setCalculatedTS(ts);
+		this.exiv_timestamp = tsFromString(ts);
+		this.setCalculatedTS(tsFromString(ts));
 	}
 
 	exivWriteComment(msg) {
@@ -146,7 +147,7 @@ module.exports = class FilePicture extends FileTimestamped {
 
 	async check() {
 		let res = true;
-		if (!this.exiv_timestamp) {
+		if (!this.exiv_timestamp.TS()) {
 			res = res && messages.fileImpossible(this, 'PICT_NO_DATE', 'Exiv: no date found');
 		}
 
@@ -163,7 +164,7 @@ module.exports = class FilePicture extends FileTimestamped {
 			res = res && await messages.fileCommit(this, 'PICT_WRITE_COMMENT', 'Write comment', c, () => this.exivWriteComment(c));
 		}
 
-		if (this.exiv_timestamp != this.calculatedTS.TS() && this.calculatedTS.TS()) {
+		if (this.exiv_timestamp.TS() != this.calculatedTS.TS() && this.calculatedTS.TS()) {
 			res = res && await messages.fileCommit(this, 'PICT_WRITE_TIMESTAMP', 'Write timestamp', this.calculatedTS.TS(), () => this.exivWriteTimestamp(this.calculatedTS.TS()));
 		}
 
