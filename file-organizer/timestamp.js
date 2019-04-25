@@ -25,7 +25,8 @@ const yearUnammed = /[0-9][0-9][0-9][0-9]/;
 //
 
 const version0 = new RegExp(`^${ts.source} (?<original>[A-Z0-9_]*)$`); // Legacy
-const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( - (?<original>[A-Z0-9_]*))$`); // Legacy
+//const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( - (?<original>[A-Z0-9_]*))$`); // Legacy
+const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( (- )?(?<original>[A-Z0-9_]{6,}))$`); // Legacy
 
 const final = new RegExp(`^${ts.source}( (?<comment>(?!.* - )[^[]+))?( \\[(?<original>.+)\\])?$`);
 const final2 = new RegExp(`^${ts.source} (?<comment>.*) \\[(?<original>.+)\\]$`);
