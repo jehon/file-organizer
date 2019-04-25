@@ -88,7 +88,9 @@ module.exports = class FilePicture extends FileTimestamped {
 
 		this.setCalculatedTS(this.exiv_timestamp);
 		if (this.exiv_comment) {
-			this.calculatedTS.comment = this.exiv_comment;
+			this.calculatedTS.comment = this.exiv_comment
+				.replace(/( |-|[0-9]{2,10})+$/, '')
+			;
 		}
 	}
 
