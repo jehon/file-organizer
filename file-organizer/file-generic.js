@@ -124,7 +124,7 @@ class FileGeneric {
 		return await FileUtils.fileDelete(this.getRelativePath());
 	}
 
-	async iterate(apply) {
+	iterate(apply) {
 		messages.fileStart(this);
 
 		return messages.concurrencyLimit(() => Promise.resolve()

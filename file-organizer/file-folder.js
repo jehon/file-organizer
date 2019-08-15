@@ -24,12 +24,12 @@ class FileFolder extends FileTimestamped {
 		return res;
 	}
 
-	async iterate(apply) {
+	iterate(apply) {
 		const res = [];
 		for(const f of this.getList()) {
 			res.push(f.iterate(apply));
 		}
-		return Promise.all(res);
+		return res;
 	}
 }
 
