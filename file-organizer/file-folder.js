@@ -24,12 +24,9 @@ class FileFolder extends FileTimestamped {
 		return res;
 	}
 
-	iterate(apply) {
-		const res = [];
-		for(const f of this.getList()) {
-			res.push(f.iterate(apply));
-		}
-		return res;
+	async iterate(apply) {
+		return Promise.all(this.getList().map(f => f.iterate(apply)))
+			.then(() => console.info(`folder done: ${this.getRelativePath()}`));
 	}
 }
 
