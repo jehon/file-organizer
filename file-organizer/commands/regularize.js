@@ -41,9 +41,9 @@ exports.handler = function (noptions) {
 		options.guessComment = true;
 	}
 
-	options.file.iterate(async function(f) {
+	Promise.all(options.file.map(f => f.iterate(async function(f) {
 		await f.check();
-	}).then(() => {
+	})).then(() => {
 		console.info('\n\nDone');
-	});
+	}));
 };
