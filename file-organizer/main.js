@@ -22,10 +22,11 @@ Object.assign(options, yargs
 			type: 'boolean',
 			default: true
 		},
-		'file': {
-			type: 'string',
-			default: '.',
-			coerce: val => FileFactory(val)
+		'files': {
+			alias: [ 'f' ],
+			type: 'array',
+			default: [ '.' ],
+			coerce: (val) => val.map(f => FileFactory(f))
 		}
 	})
 	.commandDir('commands')

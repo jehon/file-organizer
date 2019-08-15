@@ -17,7 +17,7 @@ exports.handler = function (options) {
 		'|', 'pict.e.comment'.padEnd(padComment),
 	);
 	console.info('-'.repeat(125));
-	options.file.iterate(function(f) {
+	Promise.all(options.files.map(f => f.iterate(function(f) {
 		console.info(f.getFilename().padEnd(padFilename),
 			'|', f.getInfo('file.extension').padEnd(padExtension),
 			'|', f.getInfo('timestamp.comment').padEnd(padComment),
@@ -25,7 +25,7 @@ exports.handler = function (options) {
 			'|', f.getInfo('picture.exiv.timestamp').padEnd(padTimestamp),
 			'|', f.getInfo('picture.exiv.comment').padEnd(padComment),
 		);
-	}).then(() => {
+	}))).then(() => {
 		console.info('\n\nDone');
 	});
 };

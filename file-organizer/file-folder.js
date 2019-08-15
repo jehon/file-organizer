@@ -26,7 +26,7 @@ class FileFolder extends FileTimestamped {
 
 	async iterate(apply) {
 		return Promise.all(this.getList().map(f => f.iterate(apply)))
-			.then(() => console.info(`folder done: ${this.getRelativePath()}`));
+			.then(() => console.info(`\n** folder done: ${this.getRelativePath()}`));
 	}
 }
 
