@@ -81,9 +81,10 @@ function translateRotation(rotation) {
 }
 
 module.exports = class FilePicture extends FileTimestamped {
-	constructor(filePath) {
-		super(filePath);
+	async loadData() {
+		await super.loadData();
 
+		// This take time during construction
 		this.exivReload();
 
 		this.setCalculatedTS(this.exiv_timestamp);
@@ -92,6 +93,7 @@ module.exports = class FilePicture extends FileTimestamped {
 				.replace(/( |-|[0-9]{2,10})+$/, '')
 			;
 		}
+		return this;
 	}
 
 	exivReload(){

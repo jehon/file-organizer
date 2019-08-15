@@ -11,7 +11,7 @@ exports.tempPath = (...args) => rootPath('test', 'tmp', ...args);
 const FileFactory = require('../../file-organizer/file-factory.js');
 
 // FileGeneric: copy to
-exports.createFileGeneric = function(subPath, { folder, newName, factory } = {
+exports.createFileGeneric = async function(subPath, { folder, newName, factory } = {
 	folder: exports.tempPath(),
 	newName: subPath,
 	factory: FileFactory
@@ -20,7 +20,7 @@ exports.createFileGeneric = function(subPath, { folder, newName, factory } = {
 		exports.dataPath(subPath),
 		folder + path.sep + newName
 	);
-	return factory(path.join(folder, newName));
+	return await factory(path.join(folder, newName)).loadData();
 };
 
 // Clean up the temp folder !

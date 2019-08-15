@@ -80,11 +80,11 @@ describe('file-timestamped-test', () => {
 			});
 
 			it('should take the new comment from file', async () => {
-				const new1 = createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
+				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
 				new1.exivWriteComment('');
 
 				// new2 is a virtual alias of new1 with fields initialized
-				const new2 = FileFactory(new1.getRelativePath());
+				const new2 = await FileFactory(new1.getRelativePath()).loadData();
 				expect(new2.getInfo('picture.exiv.comment')).toBe('');
 				expect(new2.getInfo('timestamp.comment')).toBe('exivok01');
 
@@ -97,12 +97,12 @@ describe('file-timestamped-test', () => {
 			});
 
 			it('should take the new comment from the folder', async () => {
-				const new1 = createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
+				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
 				new1.exivWriteComment('');
 				await new1.changeFilename('1998-12-31 12-10-11');
 
 				// new2 is a virtual alias of new1 with fields initialized
-				const new2 = FileFactory(new1.getRelativePath());
+				const new2 = await FileFactory(new1.getRelativePath()).loadData();
 				expect(new2.getInfo('picture.exiv.comment')).toBe('');
 				expect(new2.getInfo('timestamp.comment')).toBe('');
 				new2._parent = new FileFolder('1998 parent comment');
@@ -116,11 +116,11 @@ describe('file-timestamped-test', () => {
 			});
 
 			it('should keep original comment', async () => {
-				const new1 = createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
+				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
 				new1.exivWriteComment('x test');
 
 				// new2 is a virtual alias of new1 with fields initialized
-				const new2 = FileFactory(new1.getRelativePath());
+				const new2 = await FileFactory(new1.getRelativePath()).loadData();
 				expect(new2.exiv_comment).toBe('x test');
 				expect(new2.getInfo('picture.exiv.comment')).toBe('x test');
 
@@ -135,12 +135,12 @@ describe('file-timestamped-test', () => {
 		});
 
 		it('should detect duplicate files', async() => {
-			const new1 = createFileGeneric('rotated-bottom-left.jpg');
+			const new1 = await createFileGeneric('rotated-bottom-left.jpg');
 			new1.calculatedTS.year = 2018;
 			new1.calculatedTS.comment = 'duplicate test';
 			await new1.check();
 
-			const new2 = createFileGeneric('rotated-bottom-left.jpg');
+			const new2 = await createFileGeneric('rotated-bottom-left.jpg');
 			new2.calculatedTS = new1.calculatedTS;
 			await new2.check();
 			expect(new2.errors).toContain('TS_DUP_FILES');

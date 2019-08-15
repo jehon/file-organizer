@@ -9,7 +9,8 @@ exports.builder = {
 	}
 };
 
-exports.handler = function (options) {
+exports.handler = async function (options) {
+	await options.file.loadData();
 	let i = options.file.getInfo(options.key);
 	if (i) {
 		console.info(i);

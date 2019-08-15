@@ -58,7 +58,7 @@ describe('file-generic-test', () => {
 
 	describe('crud', () => {
 		it('should changeFilename', async () => {
-			const new1 = createFileGeneric('jh-patch-file-patch.txt');
+			const new1 = await createFileGeneric('jh-patch-file-patch.txt');
 
 			await new1.changeFilename('file-generic-test-1');
 			expect(new1.getFilename()).toBe('file-generic-test-1');
@@ -69,7 +69,7 @@ describe('file-generic-test', () => {
 		});
 
 		it('should remove the file', async function() {
-			const new1 = createFileGeneric('jh-patch-file-patch.txt');
+			const new1 = await createFileGeneric('jh-patch-file-patch.txt');
 
 			let filename = new1.getRelativePath();
 
@@ -92,7 +92,7 @@ describe('file-generic-test', () => {
 		});
 
 		it('should normalize extensions when necessary', async() => {
-			const new1 = createFileGeneric('rotated-bottom-left.jpg');
+			const new1 = await createFileGeneric('rotated-bottom-left.jpg');
 			await new1.rename('test.jpeg');
 			new1.exiv_timestamp = tsFromString('2018-01-02');
 			new1.exiv_comment = 'comment';

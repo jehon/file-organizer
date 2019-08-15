@@ -29,6 +29,10 @@ class FileGeneric {
 		this.errors = [];
 	}
 
+	async loadData() {
+		return this;
+	}
+
 	isType() {
 		return 'generic';
 	}
@@ -127,7 +131,7 @@ class FileGeneric {
 	async iterate(apply) {
 		messages.fileStart(this);
 
-		return messages.concurrencyLimit(() => Promise.resolve()
+		return messages.concurrencyLimit(() => this.loadData()
 			.then(() => apply(this))
 			.then((res) => { messages.fileEnd(this); return res; })
 		);
