@@ -29,6 +29,10 @@ class FileGeneric {
 		this.errors = [];
 	}
 
+	isType() {
+		return 'generic';
+	}
+
 	addInfo(key, val) {
 		if (!val) {
 			return;

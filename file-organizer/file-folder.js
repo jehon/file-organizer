@@ -6,6 +6,10 @@ const FileTimestamped = require('./file-timestamped.js');
 const FileHidden = require('./file-hidden.js');
 
 class FileFolder extends FileTimestamped {
+	isType() {
+		return 'folder';
+	}
+
 	getList() {
 		const FileFactory = require('./file-factory.js');
 
