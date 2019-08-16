@@ -6,6 +6,7 @@ addons:
   apt:
     packages:
     - exiv2
+    - exiftran
 
 #script:
 #  - npm run test
