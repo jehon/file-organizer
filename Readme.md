@@ -1,4 +1,5 @@
 # Inspiration ?
+[![Build Status](https://travis-ci.com/jehon/file-organizer.svg?branch=master)](https://travis-ci.com/jehon/file-organizer)
 
 This is a private project, but you are really free to:
 - use it at your convenance
