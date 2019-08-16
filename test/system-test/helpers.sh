@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
 
-. jh-lib.sh
+SELF="$( realpath "$(dirname "${BASH_SOURCE[0]}" )" )"
 
-SELF="$(realpath "$(dirname "${BASH_SOURCE[0]}" )" )"
+# shellcheck source=./jh-lib.sh
+. "$SELF/jh-lib.sh"
+
 ROOT="$(dirname "$( dirname "$SELF" )" )"
 TMP="$ROOT/tmp"
 ORIG_DATA="$ROOT/test/data/system_test/"
 
 EXEC="$ROOT/file-organizer/main.js"
-
-log_debug "ROOT:      $ROOT"
-log_debug "TEST_DATA: $TEST_DATA"
-log_debug "ORIG_DATA: $ORIG_DATA"
-log_debug "EXEC:      $EXEC"
 
 assert_true "Exec $EXEC is runnable" "$([[ -x "$EXEC" ]])"
 
