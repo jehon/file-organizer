@@ -4,26 +4,22 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "depcheck": "^0.8.3",
     "eslint": "6.1.0",
-    "istanbul": "0.4.5",
     "jasmine": "3.4.0",
-    "nyc": "14.1.1",
-    "opn-cli": "4.1.0"
+    "nyc": "14.1.1"
   },
   "scripts": {
     "clean": "rm -fr tmp target",
     "eslint": "eslint .",
-    "test": "npm run clean && npm run eslint && npm run test-unit && npm run test-system",
-    "view-cover": "opn target/unit-coverage/index.html",
+    "test": "npm run clean && npm run eslint && npm run test-unit && npm run test-system && npm run depcheck",
     "test-unit": "jasmine --config=test/unit/jasmine.json",
     "test-system": "jasmine --config=test/system/jasmine.json",
     "depcheck": "depcheck"
-    "test-system": "jasmine --config=test/system/jasmine.json"
   },
   "dependencies": {
     "ansi-escapes": "4.2.1",
     "chalk": "2.4.2",
-    "colors": "1.3.3",
     "fs-extra": "8.1.0",
     "p-limit": "2.2.0",
     "shell-exec": "1.0.2",
