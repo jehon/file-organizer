@@ -4,11 +4,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^5.1.0",
-    "istanbul": "^0.4.5",
-    "jasmine": "^3.2.0",
-    "nyc": "^13.3.0",
-    "opn-cli": "^4.0.0"
+    "eslint": "5.15.1",
+    "istanbul": "0.4.5",
+    "jasmine": "3.3.1",
+    "nyc": "13.3.0",
+    "opn-cli": "4.0.0"
   },
   "scripts": {
     "clean": "rm -fr tmp target",
@@ -20,13 +20,13 @@
     "test-system": "jasmine --config=test/system/jasmine.json"
   },
   "dependencies": {
-    "ansi-escapes": "^3.1.0",
-    "chalk": "^2.4.2",
-    "colors": "^1.3.2",
-    "fs-extra": "^7.0.1",
-    "p-limit": "^2.2.0",
-    "shell-exec": "^1.0.2",
-    "yargs": "^12.0.5"
+    "ansi-escapes": "3.2.0",
+    "chalk": "2.4.2",
+    "colors": "1.3.3",
+    "fs-extra": "7.0.1",
+    "p-limit": "2.2.0",
+    "shell-exec": "1.0.2",
+    "yargs": "12.0.5"
   },
   "nyc": {
     "reporter": [
