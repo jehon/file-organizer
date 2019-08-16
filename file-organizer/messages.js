@@ -42,7 +42,7 @@ function dumpStats() {
 		// Write infos on one line, erase it after
 		process.stdout.write(
 			(concurrencyLimit.pendingCount > 0 ? concurrencyLimit.pendingCount + ': ' : '')
-			+ `Current files: ${stats.filesCount}`
+			+ `Total files: ${stats.filesCount}`
 			+ ` - fixes: ${stats.fixesCount}`
 			+ ` - skipped: ${stats.skippedCount}`
 			+ ` - errors: ${stats.errorsCount}`
@@ -55,15 +55,15 @@ module.exports.fileStart = function(file) {
 	messagesPerFiles[file.getRelativePath()] = '';
 	stats.filesCount++;
 	dumpStats();
-}
+};
 
 module.exports.fileEnd = function(file) {
 	const k = file.getRelativePath();
 	if (messagesPerFiles[k]) {
 		cleanLine();
 
-		header = (file.getFilename() + file.getExtension()) + ' /' + chalk.gray(file.parent.getRelativePath()) + '/';
-	
+		const header = (file.getFilename() + file.getExtension()) + ' /' + chalk.gray(file.parent.getRelativePath()) + '/';
+
 		process.stdout.write(header + messagesPerFiles[k] + '\n\n');
 	}
 	delete messagesPerFiles[k];

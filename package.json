@@ -12,7 +12,8 @@
   },
   "scripts": {
     "clean": "rm -fr tmp target",
-    "test": "npm run clean && npm run test-unit && npm run test-system",
+    "eslint": "eslint .",
+    "test": "npm run clean && npm run eslint && npm run test-unit && npm run test-system",
     "view-cover": "opn target/unit-coverage/index.html",
     "test-unit": "jasmine --config=test/unit/jasmine.json",
     "test-unit-cover": "nyc jasmine --config=test/unit/jasmine.json",
