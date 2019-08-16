@@ -16,8 +16,8 @@
     "test": "npm run clean && npm run eslint && npm run test-unit && npm run test-system",
     "view-cover": "opn target/unit-coverage/index.html",
     "test-unit": "jasmine --config=test/unit/jasmine.json",
-    "test-unit-cover": "nyc jasmine --config=test/unit/jasmine.json",
-    "test-system-old": "./test/system-test/all.sh",
+    "test-system": "jasmine --config=test/system/jasmine.json",
+    "depcheck": "depcheck"
     "test-system": "jasmine --config=test/system/jasmine.json"
   },
   "dependencies": {
