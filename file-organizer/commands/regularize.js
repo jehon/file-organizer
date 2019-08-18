@@ -1,7 +1,8 @@
 
+const messages = require('../messages.js');
 const options = require('../options.js');
 
-exports.command = [ '$0 [file]', 'regularize [file]' ];
+exports.command = [ '$0 [file]', 'regularize' ];
 
 exports.describe = 'Regularize the files';
 
@@ -41,7 +42,11 @@ exports.handler = function (noptions) {
 		options.guessComment = true;
 	}
 
-	Promise.all(options.files.map(f => f.iterate(f => f.check())))
+	Promise.all(options.files.map(f =>
+		f.iterate(
+			f => messages.concurrencyLimit(() => f.loadData())
+				.then(f => f.check())
+		)))
 		.then(() => {
 			console.info('\n\nDone');
 		});

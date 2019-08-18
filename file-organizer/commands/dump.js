@@ -1,5 +1,7 @@
 
-exports.command = 'dump [file]';
+const messages = require('../messages.js');
+
+exports.command = 'dump [files]';
 
 exports.describe = 'Get some info about the files';
 
@@ -17,15 +19,21 @@ exports.handler = function (options) {
 		'|', 'pict.e.comment'.padEnd(padComment),
 	);
 	console.info('-'.repeat(125));
-	Promise.all(options.files.map(f => f.iterate(function(f) {
-		console.info(f.getFilename().padEnd(padFilename),
-			'|', f.getInfo('file.extension').padEnd(padExtension),
-			'|', f.getInfo('timestamp.comment').padEnd(padComment),
-			'|', f.getInfo('timestamp.original'),
-			'|', f.getInfo('picture.exiv.timestamp').padEnd(padTimestamp),
-			'|', f.getInfo('picture.exiv.comment').padEnd(padComment),
-		);
-	}))).then(() => {
-		console.info('\n\nDone');
-	});
+
+	return Promise.all(options.files.map(f =>
+		f.iterate(
+			f => messages.concurrencyLimit(() => f.loadData())
+				.then(f =>
+					console.info(f.getFilename().padEnd(padFilename),
+						'|', f.getInfo('file.extension').padEnd(padExtension),
+						'|', f.getInfo('timestamp.comment').padEnd(padComment),
+						'|', f.getInfo('timestamp.original'),
+						'|', f.getInfo('picture.exiv.timestamp').padEnd(padTimestamp),
+						'|', f.getInfo('picture.exiv.comment').padEnd(padComment),
+					)
+				)
+		)))
+		.then(() => {
+			console.info('\n\nDone');
+		});
 };

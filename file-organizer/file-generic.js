@@ -129,12 +129,10 @@ class FileGeneric {
 	}
 
 	async iterate(apply) {
-		messages.fileStart(this);
-
-		return messages.concurrencyLimit(() => this.loadData()
+		return Promise.resolve(this)
+			.then(() => messages.fileStart(this))
 			.then(() => apply(this))
-			.then((res) => { messages.fileEnd(this); return res; })
-		);
+			.then((res) => { messages.fileEnd(this); return res; });
 	}
 
 	async check() {
