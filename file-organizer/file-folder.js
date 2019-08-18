@@ -2,6 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const messages = require('./messages.js');
+
 const FileTimestamped = require('./file-timestamped.js');
 const FileHidden = require('./file-hidden.js');
 
@@ -25,8 +27,13 @@ class FileFolder extends FileTimestamped {
 	}
 
 	async iterate(apply) {
-		return Promise.all(this.getList().map(f => f.iterate(apply)))
-			.then(() => console.info(`\n** folder done: ${this.getRelativePath()}`));
+		return Promise.resolve(this)
+			.then(() => messages.fileStart(this))
+			.then(() =>
+				Promise.all(this.getList().map(f => f.iterate(apply)))
+					.then(() => console.info(`\n** folder done: ${this.getRelativePath()}`))
+			)
+			.then((res) => { messages.fileEnd(this); return res; });
 	}
 }
 
