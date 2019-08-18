@@ -243,9 +243,9 @@ describe('timestamp', function() {
 	});
 
 	describe('parsing legacy format', function() {
-		it('should parse legacy1* formats', function() {
+		it('should parse version1* formats', function() {
 			expect(tsFromString('2010-12-30 09-09-51 Vie de famille - DSC_0155')).toEqual(jasmine.objectContaining(d({
-				type: 'legacy1',
+				type: 'version1',
 				year: 2010,
 				month: 12,
 				day: 30,
@@ -258,13 +258,13 @@ describe('timestamp', function() {
 
 			// Tags
 			expect(tsFromString('2018-01-15 bonjour - ABCDE123')).toEqual(jasmine.objectContaining({
-				type: 'legacy1',
+				type: 'version1',
 				comment: 'bonjour',
 				original: 'ABCDE123'
 			}));
 
 			expect(tsFromString('2018-01-15 bonjour - DSC_0101')).toEqual(jasmine.objectContaining({
-				type: 'legacy1',
+				type: 'version1',
 				comment: 'bonjour',
 				original: 'DSC_0101'
 			}));
@@ -275,14 +275,14 @@ describe('timestamp', function() {
 			}));
 
 			expect(tsFromString('2012-11-04 12-13-27 VID_20121104_121327')).toEqual(jasmine.objectContaining({
-				type: 'legacy0',
+				type: 'version0',
 				year: 2012,
 				comment: '',
 				original: 'VID_20121104_121327'
 			}));
 
 			expect(tsFromString('2012-05-26 11-37-24 vie de famille - VID_20120526_113724')).toEqual(jasmine.objectContaining({
-				type: 'legacy1',
+				type: 'version1',
 				year: 2012,
 				comment: 'vie de famille',
 				original: 'VID_20120526_113724'

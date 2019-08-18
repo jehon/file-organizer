@@ -30,7 +30,6 @@ class FileTimestamped extends FileGeneric {
 		this.addInfo('timestamp.filename', this.filenameTS.TS());
 		this.addInfo('timestamp.comment',  this.filenameTS.comment);
 		this.addInfo('timestamp.original', this.filenameTS.original);
-		this.addInfo('timestamp.type',     this.filenameTS.type);
 	}
 
 	getTSFromFileModificationDate() {
