@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -fr tmp target",
     "eslint": "eslint .",
-    "test": "npm run clean && npm run eslint && npm run test-unit && npm run test-system && npm run depcheck",
+    "test": "npm run clean && npm run test-unit && npm run test-system && npm run eslint && npm run depcheck",
     "test-unit": "jasmine --config=test/unit/jasmine.json",
     "test-system": "jasmine --config=test/system/jasmine.json",
     "depcheck": "depcheck"
