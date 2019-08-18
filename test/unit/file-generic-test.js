@@ -102,14 +102,4 @@ describe('file-generic-test', () => {
 			new1.remove();
 		});
 	});
-
-	// it('should iterate', (done) => {
-	// 	let ff = new FileGeneric(path.join(dataPath(), 'test.txt'));
-
-	// 	ff.iterate(f => f.getFilename()).then((res) => {
-	// 		expect(res.length).toBe(1);
-	// 		expect(res[0]).toBe('test');
-	// 		done();
-	// 	});
-	// });
 });
