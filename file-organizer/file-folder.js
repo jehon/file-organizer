@@ -17,6 +17,9 @@ class FileFolder extends FileTimestamped {
 
 		const res = [];
 		for(const l of fs.readdirSync(this.getRelativePath())) {
+			if (l == '.' || l == '..') {
+				continue;
+			}
 			const f = FileFactory(path.join(this.getRelativePath(), l));
 			if (f instanceof FileHidden) {
 				continue;

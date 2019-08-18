@@ -18,6 +18,7 @@ function FileFactory(filepath) {
 
 	switch (filename) {
 	case '@eaDir':
+	case '#recycle':
 		return new FileHidden(filepath);
 	case 'Thumbs.db':
 	case '.picasa.ini':
