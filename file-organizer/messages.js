@@ -43,10 +43,10 @@ function dumpStats() {
 		process.stdout.write(
 			(concurrencyLimit.pendingCount > 0 ? concurrencyLimit.pendingCount + ': ' : '')
 			+ `Total files: ${stats.filesCount}`
-			+ ` - fixes: ${stats.fixesCount}`
-			+ ` - skipped: ${stats.skippedCount}`
-			+ ` - errors: ${stats.errorsCount}`
-			+ ` - impossible: ${stats.impossibleCount}`
+			+ (stats.fixesCount      > 0 ? ` - fixes: ${stats.fixesCount}` : '')
+			+ (stats.skippedCount    > 0 ?` - skipped: ${stats.skippedCount}` : '')
+			+ (stats.errorsCount     > 0 ?` - errors: ${stats.errorsCount}` : '')
+			+ (stats.impossibleCount > 0 ? ` - impossible: ${stats.impossibleCount}` : '')
 		);
 	}
 }
