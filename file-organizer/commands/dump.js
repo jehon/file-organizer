@@ -20,8 +20,8 @@ exports.handler = function (options) {
 	);
 	console.info('-'.repeat(125));
 
-	return Promise.all(options.files.map(f =>
-		f.iterate(
+	return Promise.all(options.files.map(f0 =>
+		f0.iterate(
 			f => messages.concurrencyLimit(() => f.loadData())
 				.then(f =>
 					console.info(f.getFilename().padEnd(padFilename),

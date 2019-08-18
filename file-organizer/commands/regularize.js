@@ -42,8 +42,8 @@ exports.handler = function (noptions) {
 		options.guessComment = true;
 	}
 
-	Promise.all(options.files.map(f =>
-		f.iterate(
+	return Promise.all(options.files.map(f0 =>
+		f0.iterate(
 			f => messages.concurrencyLimit(() => f.loadData())
 				.then(f => f.check())
 		)))
