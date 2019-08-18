@@ -24,9 +24,8 @@ const yearUnammed = /[0-9][0-9][0-9][0-9]/;
 // The matchers:
 //
 
-const version0 = new RegExp(`^${ts.source} (?<original>[A-Z0-9_]*)$`); // Legacy
-//const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( - (?<original>[A-Z0-9_]*))$`); // Legacy
-const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( (- )?(?<original>[A-Z0-9_]{6,}))$`); // Legacy
+const legacy0 = new RegExp(`^${ts.source} (?<original>[A-Z0-9_]*)$`); // Legacy
+const legacy1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( (- )?(?<original>[A-Z0-9_]{6,}))$`); // Legacy
 
 const final = new RegExp(`^${ts.source}( (?<comment>(?!.* - )[^[]+))?( \\[(?<original>.+)\\])?$`);
 const final2 = new RegExp(`^${ts.source} (?<comment>.*) \\[(?<original>.+)\\]$`);
@@ -42,8 +41,8 @@ const minimal = new RegExp(`^(?!${ts.source})(?<original>(?<comment>(?!.* - )(?!
 const invalid = /^(?<comment>(?<original>.*$))/; // Fallback
 
 const matchers = {
-	version0, // Legacy
-	version1, // Legacy
+	legacy0,
+	legacy1,
 	final,
 	final2,
 	android,
