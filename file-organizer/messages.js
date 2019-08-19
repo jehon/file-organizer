@@ -1,5 +1,6 @@
 
 const ansiEscapes = require('ansi-escapes');
+require('colors');
 const chalk = require('chalk');
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
 
@@ -41,12 +42,15 @@ function dumpStats() {
 
 		// Write infos on one line, erase it after
 		process.stdout.write(
-			(concurrencyLimit.pendingCount > 0 ? concurrencyLimit.pendingCount + ': ' : '')
-			+ `Total files: ${stats.filesCount}`
-			+ ` - fixes: ${stats.fixesCount}`
-			+ ` - skipped: ${stats.skippedCount}`
-			+ ` - errors: ${stats.errorsCount}`
-			+ ` - impossible: ${stats.impossibleCount}`
+			('* '
+				// + (concurrencyLimit.pendingCount > 0 ? concurrencyLimit.pendingCount + ': ' : '')
+				+ `Total files: ${stats.filesCount}`
+				+ ((Object.keys(messagesPerFiles).length > 0) ? ` - pending: ${Object.keys(messagesPerFiles).length}` : '')
+				+ (stats.fixesCount                      > 0 ? ` - fixes: ${stats.fixesCount}` : '')
+				+ (stats.skippedCount                    > 0 ?` - skipped: ${stats.skippedCount}` : '')
+				+ (stats.errorsCount                     > 0 ?` - errors: ${stats.errorsCount}` : '')
+				+ (stats.impossibleCount                 > 0 ?` - impossible: ${stats.impossibleCount}` : '')
+			).white.bgCyan
 		);
 	}
 }
