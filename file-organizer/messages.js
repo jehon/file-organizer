@@ -35,6 +35,7 @@ function cleanLine() {
 	}
 
 }
+module.exports.cleanLine = cleanLine;
 
 function dumpStats() {
 	if (options.interactive) {
