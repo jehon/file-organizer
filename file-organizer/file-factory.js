@@ -20,7 +20,8 @@ function FileFactory(filepath, parent = false) {
 	switch (filename) {
 	case '#recycle':
 	case '@eaDir':
-		return new FileHidden(filepath);
+		f = new FileHidden(filepath);
+		break;
 	case 'Thumbs.db':
 	case '.picasa.ini':
 		f = new FileDelete(filepath);
