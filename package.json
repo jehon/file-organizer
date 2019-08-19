@@ -9,7 +9,7 @@
     "jasmine": "3.4.0"
   },
   "scripts": {
-    "clean": "rm -fr tmp target",
+    "clean": "rm -fr tmp",
     "eslint": "eslint .",
     "test": "npm run clean && npm run test-unit && npm run test-system && npm run eslint && npm run depcheck",
     "test-unit": "jasmine --config=test/unit/jasmine.json",
@@ -30,6 +30,6 @@
       "text-summary"
     ],
     "temp-dir": "./tmp/coverage",
-    "report-dir": "./target/unit-coverage"
+    "report-dir": "./tmp/unit-coverage"
   }
 }

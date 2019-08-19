@@ -7,7 +7,7 @@ const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))),
 
 // Test
 function dataPath(...args) { return rootPath('test', 'data', 'system_test', ...args); }
-function tempPath(...args) { return rootPath('test', 'tmp', ...args); }
+function tempPath(...args) { return rootPath('tmp', ...args); }
 exports.dataPath = dataPath;
 exports.tempPath = tempPath;
 
