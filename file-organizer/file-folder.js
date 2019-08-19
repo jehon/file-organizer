@@ -31,7 +31,7 @@ class FileFolder extends FileTimestamped {
 			.then(() => messages.fileStart(this))
 			.then(() =>
 				Promise.all(this.getList().map(f => f.iterate(apply)))
-					.then(() => console.info(`\n** folder done: ${this.getRelativePath()}`))
+				// .then(() => console.info(`\n** folder done: ${this.getRelativePath()}`))
 			)
 			.then((res) => { messages.fileEnd(this); return res; });
 	}
