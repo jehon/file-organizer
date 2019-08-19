@@ -1,5 +1,6 @@
 
 const ansiEscapes = require('ansi-escapes');
+require('colors');
 const chalk = require('chalk');
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
 
@@ -25,6 +26,7 @@ const stats = {
 module.exports.stats = stats;
 
 const messagesPerFiles = {};
+const folders = [];
 
 function cleanLine() {
 	if (options.interactive) {
@@ -34,6 +36,7 @@ function cleanLine() {
 	}
 
 }
+module.exports.cleanLine = cleanLine;
 
 function dumpStats() {
 	if (options.interactive) {
@@ -41,12 +44,16 @@ function dumpStats() {
 
 		// Write infos on one line, erase it after
 		process.stdout.write(
-			(concurrencyLimit.pendingCount > 0 ? concurrencyLimit.pendingCount + ': ' : '')
-			+ `Total files: ${stats.filesCount}`
-			+ (stats.fixesCount      > 0 ? ` - fixes: ${stats.fixesCount}` : '')
-			+ (stats.skippedCount    > 0 ?` - skipped: ${stats.skippedCount}` : '')
-			+ (stats.errorsCount     > 0 ?` - errors: ${stats.errorsCount}` : '')
-			+ (stats.impossibleCount > 0 ? ` - impossible: ${stats.impossibleCount}` : '')
+			(('* '
+				// + (concurrencyLimit.pendingCount > 0 ? concurrencyLimit.pendingCount + ': ' : '')
+				+ `Total files: ${stats.filesCount}`
+				+ ((Object.keys(messagesPerFiles).length > 0) ? ` - pending: ${Object.keys(messagesPerFiles).length}` : '')
+				+ (stats.fixesCount                      > 0 ? ` - fixes: ${stats.fixesCount}` : '')
+				+ (stats.skippedCount                    > 0 ?` - skipped: ${stats.skippedCount}` : '')
+				+ (stats.errorsCount                     > 0 ?` - errors: ${stats.errorsCount}` : '')
+				+ (stats.impossibleCount                 > 0 ?` - impossible: ${stats.impossibleCount}` : '')
+			)
+			+ folders.join(',')).substr(0, process.stdout.columns - 1).white.bgCyan
 		);
 	}
 }
@@ -54,6 +61,10 @@ function dumpStats() {
 module.exports.fileStart = function(file) {
 	messagesPerFiles[file.getRelativePath()] = '';
 	stats.filesCount++;
+	const FileFoder = require('./file-folder.js');
+	if (file instanceof FileFoder) {
+		folders.push(file.getRelativePath());
+	}
 	dumpStats();
 };
 
@@ -67,6 +78,10 @@ module.exports.fileEnd = function(file) {
 		process.stdout.write(header + messagesPerFiles[k] + '\n\n');
 	}
 	delete messagesPerFiles[k];
+	const i = folders.indexOf(file.getRelativePath());
+	if (i >= 0) {
+		folders.splice(i, 1);
+	}
 	dumpStats();
 };
 

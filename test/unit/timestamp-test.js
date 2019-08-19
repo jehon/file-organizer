@@ -90,6 +90,13 @@ describe('timestamp', function() {
 				year: 2018,
 				comment: 'test',
 			})));
+
+			// expect(tsFromString('2015-12-11 02-03-55 Bangaldesh - A la mer')).toEqual(jasmine.objectContaining(d({
+			// 	type: 'final',
+			// 	year: 2018,
+			// 	original: '',
+			// 	comment: 'Bangaldesh - A la mer'
+			// })));
 		});
 
 		it('should parse "android" elements', function() {

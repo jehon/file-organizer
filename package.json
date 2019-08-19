@@ -3,26 +3,27 @@
   "version": "1.0.0",
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "ansi-escapes": "4.2.1",
+    "chalk": "2.4.2",
+    "colors": "^1.3.3",
+    "fs-extra": "8.1.0",
+    "p-limit": "2.2.1",
+    "shell-exec": "1.0.2",
+    "yargs": "13.3.0"
+  },
   "devDependencies": {
     "depcheck": "0.8.3",
-    "eslint": "6.1.0",
+    "eslint": "6.2.0",
     "jasmine": "3.4.0"
   },
   "scripts": {
-    "clean": "rm -fr tmp target",
+    "clean": "rm -fr tmp",
     "eslint": "eslint .",
     "test": "npm run clean && npm run test-unit && npm run test-system && npm run eslint && npm run depcheck",
     "test-unit": "jasmine --config=test/unit/jasmine.json",
     "test-system": "jasmine --config=test/system/jasmine.json",
     "depcheck": "depcheck"
-  },
-  "dependencies": {
-    "ansi-escapes": "4.2.1",
-    "chalk": "2.4.2",
-    "fs-extra": "8.1.0",
-    "p-limit": "2.2.0",
-    "shell-exec": "1.0.2",
-    "yargs": "13.3.0"
   },
   "nyc": {
     "reporter": [
@@ -30,6 +31,6 @@
       "text-summary"
     ],
     "temp-dir": "./tmp/coverage",
-    "report-dir": "./target/unit-coverage"
+    "report-dir": "./tmp/unit-coverage"
   }
 }

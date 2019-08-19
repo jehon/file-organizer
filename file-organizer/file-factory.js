@@ -10,42 +10,53 @@ const FileHidden  = require('./file-hidden.js');
 const FileMovie   = require('./file-movie.js');
 const FilePicture = require('./file-picture.js');
 
-function FileFactory(filepath) {
+function FileFactory(filepath, parent = false) {
 	let filename = path.parse(filepath).base;
 
 	// Get the "file" relative or parent relative:
-	const f = new FileGeneric(filepath);
+	let f = new FileGeneric(filepath);
 
+	// By filename:
 	switch (filename) {
-	case '@eaDir':
 	case '#recycle':
+	case '@eaDir':
 		return new FileHidden(filepath);
 	case 'Thumbs.db':
 	case '.picasa.ini':
-		return new FileDelete(filepath);
-	}
-
-	try {
-		// Is it real? Let's go further
-		if (fs.statSync(f.getRelativePath()).isDirectory()) {
-			return new FileFolder(filepath);
+		f = new FileDelete(filepath);
+		break;
+	default:
+		try {
+			// Is it real? Let's go further
+			if (fs.statSync(f.getRelativePath()).isDirectory()) {
+				f = new FileFolder(filepath);
+				break;
+			}
+		} catch {
+			// ok
 		}
-	} catch(e) {
-		// ok
+
+		// By extension
+		switch (f.getExtension().toLowerCase()) {
+		case '.jpg':
+		case '.jpeg':
+			f = new FilePicture(filepath);
+			break;
+		case '.mov':
+		case '.mpeg':
+		case '.mpg':
+		case '.mp4':
+		case '.m4v':
+		case '.mkv':
+		case '.avi':
+			f = new FileMovie(filepath);
+			break;
+		}
 	}
 
-	switch (f.getExtension().toLowerCase()) {
-	case '.jpg':
-	case '.jpeg':
-		return new FilePicture(filepath);
-	case '.mov':
-	case '.mpeg':
-	case '.mpg':
-	case '.mp4':
-	case '.m4v':
-	case '.mkv':
-	case '.avi':
-		return new FileMovie(filepath);
+
+	if (parent) {
+		f._parent = parent;
 	}
 
 	// Fallback: generic file
