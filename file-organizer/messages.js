@@ -53,6 +53,7 @@ function dumpStats() {
 				+ (stats.errorsCount                     > 0 ?` - errors: ${stats.errorsCount}` : '')
 				+ (stats.impossibleCount                 > 0 ?` - impossible: ${stats.impossibleCount}` : '')
 			)
+			+ ' '
 			+ folders.join(',')).substr(0, process.stdout.columns - 1).white.bgCyan
 		);
 	}
