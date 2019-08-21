@@ -68,7 +68,7 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		let res = true;
-		if (this.calculatedTS.comment != '' && this.calculatedTS.comment == this.calculatedTS.original) {
+		if (this.calculatedTS.comment && this.calculatedTS.comment == this.calculatedTS.original) {
 			this.calculatedTS.original = '';
 			messages.fileInfo(this, 'TS_DUP_COMMENT', 'remove duplicate comment/original',
 				'remove original filename'
