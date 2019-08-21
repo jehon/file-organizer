@@ -24,12 +24,15 @@ const yearUnammed = /[0-9][0-9][0-9][0-9]/;
 // The matchers:
 //
 
-const version0 = new RegExp(`^${ts.source} (?<original>[A-Z0-9_]*)$`); // Legacy
-//const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( - (?<original>[A-Z0-9_]*))$`); // Legacy
-const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( (- )?(?<original>[A-Z0-9_]{6,}))$`); // Legacy
+const tsOnly = /^${ts.source}$/;
 
-const final = new RegExp(`^${ts.source}( (?<comment>(?!.* - )[^[]+))?( \\[(?<original>.+)\\])?$`);
-const final2 = new RegExp(`^${ts.source} (?<comment>.*) \\[(?<original>.+)\\]$`);
+// const version0 = new RegExp(`^${ts.source} (?<original>[A-Z0-9_]*)$`); // Legacy
+// const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( - (?<original>[A-Z0-9_]*))$`); // Legacy
+// const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( (- )?(?<original>[A-Z0-9_]{6,}))$`); // Legacy
+
+const final = new RegExp(`^${ts.source}( (?<comment>[^[]*))?( \\[(?<original>.+)\\])?$`);
+
+// console.log(final.source);
 
 const android = /^(?<original>(VID|IMG)_(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))$/;
 
@@ -42,10 +45,11 @@ const minimal = new RegExp(`^(?!${ts.source})(?<original>(?<comment>(?!.* - )(?!
 const invalid = /^(?<comment>(?<original>.*$))/; // Fallback
 
 const matchers = {
-	version0, // Legacy
-	version1, // Legacy
+	// version0, // Legacy
+	// version1, // Legacy
+	// final,
+	tsOnly,
 	final,
-	final2,
 	android,
 	screen,
 	yearRange,

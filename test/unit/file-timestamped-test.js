@@ -31,7 +31,7 @@ describe('file-timestamped-test', () => {
 
 	describe('check', () => {
 		it('should parse original file', async () => {
-			const new1 = new FileTimestamped('2015-05-26 11-37-24 vie de famille - VID_20120526_113724');
+			const new1 = new FileTimestamped('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
 			expect(new1.filenameTS.year).toBe(2012);
 			expect(new1.filenameTS.comment).toBe('vie de famille');
 		});

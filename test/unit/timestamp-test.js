@@ -250,51 +250,51 @@ describe('timestamp', function() {
 	});
 
 	describe('parsing legacy format', function() {
-		it('should parse version1* formats', function() {
-			expect(tsFromString('2010-12-30 09-09-51 Vie de famille - DSC_0155')).toEqual(jasmine.objectContaining(d({
-				type: 'version1',
-				year: 2010,
-				month: 12,
-				day: 30,
-				hour: 9,
-				minute: 9,
-				second: 51,
-				comment: 'Vie de famille',
-				original: 'DSC_0155',
-			})));
+		// it('should parse version1* formats', function() {
+		// 	expect(tsFromString('2010-12-30 09-09-51 Vie de famille - DSC_0155')).toEqual(jasmine.objectContaining(d({
+		// 		type: 'version1',
+		// 		year: 2010,
+		// 		month: 12,
+		// 		day: 30,
+		// 		hour: 9,
+		// 		minute: 9,
+		// 		second: 51,
+		// 		comment: 'Vie de famille',
+		// 		original: 'DSC_0155',
+		// 	})));
 
-			// Tags
-			expect(tsFromString('2018-01-15 bonjour - ABCDE123')).toEqual(jasmine.objectContaining({
-				type: 'version1',
-				comment: 'bonjour',
-				original: 'ABCDE123'
-			}));
+		// 	// Tags
+		// 	expect(tsFromString('2018-01-15 bonjour - ABCDE123')).toEqual(jasmine.objectContaining({
+		// 		type: 'version1',
+		// 		comment: 'bonjour',
+		// 		original: 'ABCDE123'
+		// 	}));
 
-			expect(tsFromString('2018-01-15 bonjour - DSC_0101')).toEqual(jasmine.objectContaining({
-				type: 'version1',
-				comment: 'bonjour',
-				original: 'DSC_0101'
-			}));
+		// 	expect(tsFromString('2018-01-15 bonjour - DSC_0101')).toEqual(jasmine.objectContaining({
+		// 		type: 'version1',
+		// 		comment: 'bonjour',
+		// 		original: 'DSC_0101'
+		// 	}));
 
-			expect(tsFromString('2012-08-07 10-03-05 Muguette Donnay - Plaine de jeux des chansons - IMG_6893')).toEqual(jasmine.objectContaining({
-				comment: 'Muguette Donnay - Plaine de jeux des chansons',
-				original: 'IMG_6893'
-			}));
+		// 	expect(tsFromString('2012-08-07 10-03-05 Muguette Donnay - Plaine de jeux des chansons - IMG_6893')).toEqual(jasmine.objectContaining({
+		// 		comment: 'Muguette Donnay - Plaine de jeux des chansons',
+		// 		original: 'IMG_6893'
+		// 	}));
 
-			expect(tsFromString('2012-11-04 12-13-27 VID_20121104_121327')).toEqual(jasmine.objectContaining({
-				type: 'version0',
-				year: 2012,
-				comment: '',
-				original: 'VID_20121104_121327'
-			}));
+		// 	expect(tsFromString('2012-11-04 12-13-27 VID_20121104_121327')).toEqual(jasmine.objectContaining({
+		// 		type: 'version0',
+		// 		year: 2012,
+		// 		comment: '',
+		// 		original: 'VID_20121104_121327'
+		// 	}));
 
-			expect(tsFromString('2012-05-26 11-37-24 vie de famille - VID_20120526_113724')).toEqual(jasmine.objectContaining({
-				type: 'version1',
-				year: 2012,
-				comment: 'vie de famille',
-				original: 'VID_20120526_113724'
-			}));
-		});
+		// 	expect(tsFromString('2012-05-26 11-37-24 vie de famille - VID_20120526_113724')).toEqual(jasmine.objectContaining({
+		// 		type: 'version1',
+		// 		year: 2012,
+		// 		comment: 'vie de famille',
+		// 		original: 'VID_20120526_113724'
+		// 	}));
+		// });
 	});
 
 	describe('functionnalities', function() {
