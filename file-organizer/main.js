@@ -25,7 +25,7 @@ Object.assign(options, yargs
 		'files': {
 			alias: [ 'f' ],
 			type: 'array',
-			default: [ '.' ],
+			default: [ ],
 			coerce: (val) => val.map(f => FileFactory(f))
 		}
 	})

@@ -1,8 +1,9 @@
 
 const messages = require('../messages.js');
 const { cleanLine } = require('../messages.js');
+const FileFolder = require('../file-folder.js');
 
-exports.command = 'dump [files]';
+exports.command = 'dump [files..]';
 
 exports.describe = 'Get some info about the files';
 
@@ -12,6 +13,10 @@ const padTimestamp = 22;
 const padComment   = 20;
 
 exports.handler = function (options) {
+	if (options.files.length == 0) {
+		options.files = [ new FileFolder('.') ];
+	}
+
 	console.info('filename'.padEnd(padFilename),
 		'|', 'fext'.padEnd(padExtension),
 		'|', 'ts.comment'.padEnd(padComment),

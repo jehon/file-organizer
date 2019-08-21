@@ -1,8 +1,9 @@
 
 const messages = require('../messages.js');
 const options = require('../options.js');
+const FileFolder = require('../file-folder.js');
 
-exports.command = [ '$0 [file]', 'regularize' ];
+exports.command = [ '$0 [files..]', 'regularize [files..]' ];
 
 exports.describe = 'Regularize the files';
 
@@ -37,6 +38,9 @@ exports.builder = {
 
 exports.handler = function (noptions) {
 	Object.assign(options, noptions);
+	if (options.files.length == 0) {
+		options.files = [ new FileFolder('.') ];
+	}
 
 	if (options.fixComment) {
 		options.guessComment = true;
