@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "depcheck": "0.8.3",
-    "eslint": "6.2.2",
+    "eslint": "6.3.0",
     "jasmine": "3.4.0"
   },
   "scripts": {
