@@ -6,6 +6,19 @@ const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const BusinessError = require('./business-error.js');
 
+const technicalTags = new Map();
+technicalTags.set('UserComment',      'Exif.Photo.UserComment');
+technicalTags.set('DateTimeOriginal', 'Exif.Photo.DateTimeOriginal');
+technicalTags.set('Orientation',      'Exif.Image.Orientation');
+
+function getByValue(map, searchValue) {
+	for (let [key, value] of map.entries()) {
+		if (value === searchValue)
+			return key;
+	}
+	return searchValue;
+}
+
 function runExiv(...params) {
 	//
 	// Error here ? check exiv is installed :-)
@@ -28,19 +41,20 @@ function runExiv(...params) {
 	return '';
 }
 
-function exivWrite(file, tag, value){
-	return runExiv('modify',`-M set ${tag} ${value}`, file.getRelativePath());
+function exivWrite(file, tag, value) {
+	return runExiv('modify',`-M set ${technicalTags.get(tag)} ${value}`, file.getRelativePath());
 }
 
 function exivReadAll(file) {
 	const data = runExiv('-g', 'Exif.*', file.getRelativePath());
 	const result = {
-		'Exif.Photo.UserComment': '',
-		'Exif.Photo.DateTimeOriginal': '',
-		'Exif.Image.Orientation': ''
+		'UserComment': '',
+		'DateTimeOriginal': '',
+		'Orientation': ''
 	};
 	data.split('\n').forEach(line => {
-		const k = line.split(' ')[0].trim();
+		const kraw = line.split(' ')[0].trim();
+		const k = getByValue(technicalTags, kraw);
 		let v = line.substr(60).replace(/\0/g, '').trim();
 		if (v == '(Binary value suppressed)') {
 			v = '';
@@ -98,10 +112,10 @@ module.exports = class FileExiv extends FileTimestamped {
 	exivReload(){
 		const exivData = exivReadAll(this);
 
-		this.exiv_timestamp_raw    = exivData['Exif.Photo.DateTimeOriginal'];
-		this.exiv_timestamp        = tsFromString(exivData['Exif.Photo.DateTimeOriginal'].split(':').join('-'));
-		this.exiv_comment          = exivData['Exif.Photo.UserComment'];
-		this.exiv_orientation      = translateRotation(exivData['Exif.Image.Orientation']);
+		this.exiv_timestamp_raw    = exivData['DateTimeOriginal'];
+		this.exiv_timestamp        = tsFromString(exivData['DateTimeOriginal'].split(':').join('-'));
+		this.exiv_comment          = exivData['UserComment'];
+		this.exiv_orientation      = translateRotation(exivData['Orientation']);
 
 		this.addInfo('exiv.timestamp_raw', this.exiv_timestamp_raw);
 		this.addInfo('exiv.timestamp',     this.exiv_timestamp.TS());
@@ -116,13 +130,13 @@ module.exports = class FileExiv extends FileTimestamped {
 			messages.fileInfo(this, 'EXIV_UPGRADE_TIMESTAMP', 'Update timestamp to ' + ts);
 		}
 
-		exivWrite(this, 'Exif.Photo.DateTimeOriginal', ts.split('-').join(':'));
+		exivWrite(this, 'DateTimeOriginal', ts.split('-').join(':'));
 		this.exiv_timestamp = tsFromString(ts);
 		this.setCalculatedTS(tsFromString(ts));
 	}
 
 	exivWriteComment(msg) {
-		exivWrite(this, 'Exif.Photo.UserComment', msg);
+		exivWrite(this, 'UserComment', msg);
 		this.exiv_comment = msg;
 		this.calculatedTS.comment = msg;
 	}
