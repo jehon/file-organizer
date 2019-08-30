@@ -7,7 +7,7 @@ exports.describe = 'Get some info about the file';
 
 exports.builder = {
 	key: {
-		default: 'picture.exiv.comment'
+		default: 'exiv.comment'
 	},
 	file: {
 		coerce: val => FileFactory(val)

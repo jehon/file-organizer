@@ -110,12 +110,12 @@ exports.assert = {
 
 
 	fileHasExivTimestamp: async function (ctx, f, data) {
-		const res = await getFileExivField(ctx, 'picture.exiv.timestamp', f);
+		const res = await getFileExivField(ctx, 'exiv.timestamp', f);
 		expect(res).toEqual(data);
 	},
 
 	fileHasExivcomment: async function (ctx, f, data) {
-		const res = await getFileExivField(ctx, 'picture.exiv.comment', f);
+		const res = await getFileExivField(ctx, 'exiv.comment', f);
 		expect(res).toEqual(data);
 	}
 };

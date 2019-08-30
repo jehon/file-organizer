@@ -30,8 +30,8 @@ exports.handler = function (options) {
 						'|', f.getInfo('file.extension').padEnd(padExtension),
 						'|', f.getInfo('timestamp.comment').padEnd(padComment),
 						'|', f.getInfo('timestamp.original'),
-						'|', f.getInfo('picture.exiv.timestamp').padEnd(padTimestamp),
-						'|', f.getInfo('picture.exiv.comment').padEnd(padComment),
+						'|', f.getInfo('exiv.timestamp').padEnd(padTimestamp),
+						'|', f.getInfo('exiv.comment').padEnd(padComment),
 					);
 				})
 		)))
