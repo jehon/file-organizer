@@ -7,7 +7,7 @@ addons:
     packages:
     - exiv2
     - exiftran
-    - libimage-exiftool-pelr
+    - libimage-exiftool-perl
     - coreutils
 
 #script:
