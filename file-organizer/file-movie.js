@@ -1,6 +1,6 @@
 
-const FileTimestamped = require('./file-timestamped.js');
+const FileExiv = require('./file-exiv.js');
 
-module.exports = class FileMovie extends FileTimestamped {
+module.exports = class FileMovie extends FileExiv {
 	// TODO: hook data functions
 };
