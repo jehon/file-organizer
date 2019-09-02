@@ -85,14 +85,14 @@ class FileGeneric {
 	 * Without extension
 	 */
 	getFilename() {
-		return path.parse(this.getRelativePath()).name;
+		return FileGeneric.getFilename(this.getRelativePath());
 	}
 
 	/**
 	 * Format: .blabla
 	 */
 	getExtension() {
-		return path.parse(this.getRelativePath()).ext;
+		return FileGeneric.getExtension(this.getRelativePath());
 	}
 
 	// async getIndexedFilenameFor(newFilenameWithoutIndex) {
@@ -160,5 +160,17 @@ class FileGeneric {
 		return res;
 	}
 }
+
+FileGeneric.getFullFilename = function(relativePath) {
+	return path.parse(relativePath).base;
+};
+
+FileGeneric.getFilename = function(relativePath) {
+	return path.parse(relativePath).name;
+};
+
+FileGeneric.getExtension = function(relativePath) {
+	return path.parse(relativePath).ext;
+};
 
 module.exports = FileGeneric;
