@@ -1,6 +1,5 @@
 
 const fs = require('fs');
-const path = require('path');
 
 const FileGeneric = require('./file-generic.js');
 const FileFolder  = require('./file-folder.js');
@@ -11,13 +10,15 @@ const FileMovie   = require('./file-movie.js');
 const FilePicture = require('./file-picture.js');
 
 function FileFactory(filepath, parent = false) {
-	let filename = path.parse(filepath).base;
+	// Target
+	let f = null;
 
-	// Get the "file" relative or parent relative:
-	let f = new FileGeneric(filepath);
+	// File infos
+	const fname = FileGeneric.getFullFilename(filepath);
+	const fext = FileGeneric.getExtension(filepath).toLowerCase();
 
 	// By filename:
-	switch (filename) {
+	switch (fname) {
 	case '#recycle':
 	case '@eaDir':
 		f = new FileHidden(filepath);
@@ -29,7 +30,7 @@ function FileFactory(filepath, parent = false) {
 	default:
 		try {
 			// Is it real? Let's go further
-			if (fs.statSync(f.getRelativePath()).isDirectory()) {
+			if (fs.statSync(filepath).isDirectory()) {
 				f = new FileFolder(filepath);
 				break;
 			}
@@ -38,23 +39,31 @@ function FileFactory(filepath, parent = false) {
 		}
 
 		// By extension
-		switch (f.getExtension().toLowerCase()) {
+		switch (fext) {
+		case '.txt':
+			// TODO: is this ok?
+			f = new FileGeneric(filepath);
+			break;
 		case '.jpg':
 		case '.jpeg':
 			f = new FilePicture(filepath);
 			break;
 		case '.mov':
-		case '.mpeg':
 		case '.mpg':
-		case '.mp4':
-		case '.m4v':
-		case '.mkv':
 		case '.avi':
+		case '.mp4':
+			// case '.mpeg':
+			// case '.m4v':
+			// case '.mkv':
 			f = new FileMovie(filepath);
 			break;
+		default:
+			f = new FileGeneric(filepath);
+			console.error('Unknown file type: ', fext, ' in ', filepath);
+			break;
+
 		}
 	}
-
 
 	if (parent) {
 		f._parent = parent;
