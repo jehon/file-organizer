@@ -6,24 +6,32 @@ const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const BusinessError = require('./business-error.js');
 
-const technicalTags = new Map();
-technicalTags.set('UserComment',      'Exif.Photo.UserComment');
-technicalTags.set('DateTimeOriginal', 'Exif.Photo.DateTimeOriginal');
-technicalTags.set('Orientation',      'Exif.Image.Orientation');
 
-function getByValue(map, searchValue) {
-	for (let [key, value] of map.entries()) {
-		if (value === searchValue)
-			return key;
-	}
-	return searchValue;
+var commandExistsSync = require('command-exists').sync;
+// returns true/false; doesn't throw
+if (!commandExistsSync('exiftool')) {
+	console.error('Command exiftool not found in path');
+	process.exit(0);
 }
+
+// const technicalTags = new Map();
+// technicalTags.set('UserComment',      'Exif.Photo.UserComment');
+// technicalTags.set('DateTimeOriginal', 'Exif.Photo.DateTimeOriginal');
+// technicalTags.set('Orientation',      'Exif.Image.Orientation');
+
+// function getByValue(map, searchValue) {
+// 	for (let [key, value] of map.entries()) {
+// 		if (value === searchValue)
+// 			return key;
+// 	}
+// 	return searchValue;
+// }
 
 function runExiv(...params) {
 	//
 	// Error here ? check exiv is installed :-)
 	//
-	let processResult = spawnSync('exiv2', params);
+	let processResult = spawnSync('exiftool', [ '-j', ...params]);
 	switch(processResult.status) {
 	case 0:   // ok, continue
 		break;
@@ -42,37 +50,32 @@ function runExiv(...params) {
 }
 
 function exivWrite(file, tag, value) {
-	return runExiv('modify',`-M set ${technicalTags.get(tag)} ${value}`, file.getRelativePath());
+	return runExiv(
+		'-overwrite_original',
+		`-${tag}=${value}`, file.getRelativePath()
+	);
 }
 
 function exivReadAll(file) {
-	const data = runExiv('-g', 'Exif.*', file.getRelativePath());
-	const result = {
+	const defaultResult = {
 		'UserComment': '',
 		'DateTimeOriginal': '',
 		'Orientation': ''
 	};
-	data.split('\n').forEach(line => {
-		const kraw = line.split(' ')[0].trim();
-		const k = getByValue(technicalTags, kraw);
-		let v = line.substr(60).replace(/\0/g, '').trim();
-		if (v == '(Binary value suppressed)') {
-			v = '';
-		}
-		if (v) {
-			result[k] = v;
-		}
-	});
-	return result;
+	const result = runExiv(file.getRelativePath());
+	let resultObj = JSON.parse(result)[0];
+	return Object.assign({}, defaultResult, resultObj);
 }
 
 function translateRotation(rotation) {
 	switch(rotation) {
 	// What is the top-left corner?
+	case 'Rotate 270 CW':
 	case 'left, bottom':
 		// https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_8.jpg
 		return 270;
 
+	case 'Rotate 90 CW':
 	case 'right, top':
 		// https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_6.jpg
 		return 90;
@@ -81,6 +84,7 @@ function translateRotation(rotation) {
 		// https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_3.jpg
 		return 180;
 
+	case 'Horizontal (normal)':
 	case 'top, left':
 	case '':
 	case '(0)':
