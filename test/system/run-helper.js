@@ -60,7 +60,7 @@ async function itRun(ctx, args, fn) {
 		result.assertConsistency = async function(dir = '') {
 			let oList = await fs.readdir(dataPath(dir));
 			let tList = await fs.readdir(ctx.tempPath(dir));
-			expect(tList.length).toBe(oList.length);
+			expect(tList.length).toBe(oList.length, `(in folder ${dir} [${ctx.tempPath(dir)}])`);
 
 			for(const di of oList) {
 				if (fs.lstatSync(dataPath(dir, di)).isDirectory()) {
