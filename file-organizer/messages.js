@@ -106,23 +106,25 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 	} else {
 		try {
 			res = await action();
+
+			if (res === undefined) {
+				res = true;
+			}
+			if (res) {
+				msg = IconSuccess;
+				stats.fixesCount++;
+			} else {
+				msg = IconFailure;
+				stats.errorsCount++;
+			}
 		} catch (e) {
 			if (e instanceof BusinessError) {
-				console.error('Error: ', e.getMessage ? e.getMessage() : '');
+				console.error('Business error: ', e.getMessage ? e.getMessage() : '');
+				stats.impossibleCount++;
 			} else {
 				console.error('Error: ', e);
 				stats.errorsCount++;
 			}
-		}
-		if (res === undefined) {
-			res = true;
-		}
-		if (res) {
-			msg = IconSuccess;
-			stats.fixesCount++;
-		} else {
-			msg = IconFailure;
-			stats.errorsCount++;
 		}
 	}
 
