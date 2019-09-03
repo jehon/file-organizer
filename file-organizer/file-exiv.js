@@ -88,6 +88,7 @@ function translateRotation(rotation) {
 		return 180;
 
 	case 'Horizontal (normal)':
+	case 'Unknown (0)':
 	case 'top, left':
 	case '':
 	case '(0)':
