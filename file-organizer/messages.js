@@ -151,7 +151,7 @@ module.exports.fileMsg = function (file, code, description, newInfo = null, acti
 
 	file.errors.push(code);
 
-	if (!( k in messagesPerFiles)) {
+	if (!(k in messagesPerFiles)) {
 		module.exports.fileStart(file);
 	}
 
