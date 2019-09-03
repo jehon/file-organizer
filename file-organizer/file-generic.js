@@ -34,7 +34,7 @@ class FileGeneric {
 		return this;
 	}
 
-	isType() {
+	getType() {
 		return 'generic';
 	}
 

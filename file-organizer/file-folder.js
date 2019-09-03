@@ -8,7 +8,7 @@ const FileTimestamped = require('./file-timestamped.js');
 const FileHidden = require('./file-hidden.js');
 
 class FileFolder extends FileTimestamped {
-	isType() {
+	getType() {
 		return 'folder';
 	}
 
