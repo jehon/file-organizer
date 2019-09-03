@@ -77,9 +77,11 @@ module.exports.fileEnd = function(file) {
 	if (messagesPerFiles[k]) {
 		cleanLine();
 
-		const header = (file.getFilename() + file.getExtension()) + ' /' + chalk.gray(file.parent.getRelativePath()) + '/';
+		const header = (file.getFilename() + file.getExtension()) + ' in ' + chalk.gray(file.parent.getRelativePath());
 
-		process.stdout.write(header + messagesPerFiles[k] + '\n\n');
+		process.stdout.write(header
+			+ '\n  ' + file._originalFilePath
+			+ messagesPerFiles[k] + '\n\n');
 	}
 	delete messagesPerFiles[k];
 	const i = folders.indexOf(file.getRelativePath());
@@ -150,6 +152,9 @@ module.exports.fileMsg = function (file, code, description, newInfo = null, acti
 	const k = file.getRelativePath();
 
 	file.errors.push(code);
+	if (!messagesPerFiles[k]) {
+		messagesPerFiles[k] = '';
+	}
 
 	if (!(k in messagesPerFiles)) {
 		module.exports.fileStart(file);
