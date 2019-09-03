@@ -117,8 +117,7 @@ class FileTimestamped extends FileGeneric {
 			if (this.parent.calculatedTS.year > 0) {
 				if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
 					res = res && messages.fileImpossible(this, 'TS_PARENT_INCOHERENT',
-						'calculated timestamp incoherent to parent folder',
-						`${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()}`
+						`calculated timestamp incoherent to parent folder (${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()})`
 					);
 				}
 			}
