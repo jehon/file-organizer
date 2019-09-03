@@ -88,7 +88,7 @@ exports.assert = {
 		const fpath = ctx.tempPath(f);
 
 		let promise = fs.pathExists(fpath)
-			.then((res) => expect(res).toBeTruthy(`File ${f} must NOT exists but does`));
+			.then((res) => expect(res).toBeTruthy(`File ${f} must exists but does not`));
 
 		const obj = {
 			withTS: (data) => { promise = promise
