@@ -1,5 +1,6 @@
 
 const options = require('../options.js');
+const messages = require('../messages.js');
 
 exports.command = 'legacy';
 
@@ -12,15 +13,20 @@ exports.builder = {
 	}
 };
 
+// TODO: treat unknown file type ???
+
 exports.handler = function (noptions) {
-	Object.assign(options, noptions);
+	Object.assign(options, noptions, {
+		guessComment: true
+	});
 
 	return Promise.all(options.files.map(f0 =>
 		f0.iterate(f => {
-			const tsType = f.getInfo('timestamp.type');
-			if (tsType == 'version0') {
-				console.info(f.getRelativePath(), ' -> ', f.getCanonicalFilename(), options.fix ? ' V ' : ' ? ');
+			if (f.getType() == 'movie') {
+				return messages.concurrencyLimit(() => f.loadData())
+					.then(f => f.check());
 			}
+			return Promise.resolve(true);
 		})))
 		.then(() => {
 			console.info('\n\nDone');
