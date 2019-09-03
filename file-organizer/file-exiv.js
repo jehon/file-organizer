@@ -62,8 +62,11 @@ function exivReadAll(file) {
 		'DateTimeOriginal': '',
 		'Orientation': ''
 	};
-	const result = runExiv(file.getRelativePath());
+	const result = runExiv(file.getRelativePath(), '-api', 'QuickTimeUTC');
 	let resultObj = JSON.parse(result)[0];
+	if (!resultObj.DateTimeOriginal && resultObj.CreateDate) {
+		resultObj.DateTimeOriginal = resultObj.CreateDate;
+	}
 	return Object.assign({}, defaultResult, resultObj);
 }
 
