@@ -1,8 +1,34 @@
 
 const { regexps, tsFromDate, tsFromString, defaultValues } = require('../../file-organizer/timestamp.js');
+var { diff } = require('just-diff');
 
-function d(data) {
-	return Object.assign({}, defaultValues, data);
+function compareWith(originalString, compareTo, strict = true) {
+	const parsed = tsFromString(originalString);
+	const target = strict ? Object.assign({}, defaultValues, compareTo) : compareTo;
+
+	let dd = '';
+	for(let d of diff(compareTo, parsed)) {
+		let op = '';
+		switch(d.op) {
+		case 'add':
+			op = '+';
+			break;
+		case 'replace':
+			op = '~';
+			break;
+		case 'remove':
+			op = '-';
+			break;
+		default:
+			console.error('invalid diff operation: ', d);
+		}
+		op += d.path + '[' + d.value + ']';
+		dd += op + ' ^ ';
+	}
+
+	return expect(parsed)
+		.withContext(`Not correctly mapped: ${originalString}: ${dd}`)
+		.toEqual(jasmine.objectContaining(target));
 }
 
 describe('timestamp', function() {
@@ -13,19 +39,19 @@ describe('timestamp', function() {
 		//
 		//
 		it('should parse "final" elements', function() {
-			expect(tsFromString('2018')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018', {
 				type: 'final',
 				year: 2018
-			})));
+			});
 
-			expect(tsFromString('2018-09-08')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018-09-08', {
 				type: 'final',
 				year: 2018,
 				month: 9,
 				day: 8,
-			})));
+			});
 
-			expect(tsFromString('2018-09-08 13-14-15')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018-09-08 13-14-15', {
 				type: 'final',
 				year: 2018,
 				month: 9,
@@ -33,9 +59,9 @@ describe('timestamp', function() {
 				hour: 13,
 				minute: 14,
 				second: 15
-			})));
+			});
 
-			expect(tsFromString('2018-09-08 13-14-15 test')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018-09-08 13-14-15 test', {
 				type: 'final',
 				year: 2018,
 				month: 9,
@@ -44,9 +70,9 @@ describe('timestamp', function() {
 				minute: 14,
 				second: 15,
 				comment: 'test'
-			})));
+			});
 
-			expect(tsFromString('2018-09-08 13-14-15 [file]')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018-09-08 13-14-15 [file]', {
 				type: 'final',
 				year: 2018,
 				month: 9,
@@ -55,9 +81,9 @@ describe('timestamp', function() {
 				minute: 14,
 				second: 15,
 				original: 'file'
-			})));
+			});
 
-			expect(tsFromString('2018-09-08 13-14-15 test [file]')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018-09-08 13-14-15 test [file]', {
 				type: 'final',
 				year: 2018,
 				month: 9,
@@ -67,40 +93,65 @@ describe('timestamp', function() {
 				second: 15,
 				comment: 'test',
 				original: 'file'
-			})));
+			});
 
-			expect(tsFromString('2018-09-08 test [file]')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018-09-08 test [file]', {
 				type: 'final',
 				year: 2018,
 				month: 9,
 				day: 8,
 				comment: 'test',
 				original: 'file'
-			})));
+			});
 
-			expect(tsFromString('2018 test [file]')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018 test [file]', {
 				type: 'final',
 				year: 2018,
 				comment: 'test',
 				original: 'file'
-			})));
+			});
 
-			expect(tsFromString('2018 test')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018 test', {
 				type: 'final',
 				year: 2018,
 				comment: 'test',
-			})));
+			});
 
-			// expect(tsFromString('2015-12-11 02-03-55 Bangaldesh - A la mer')).toEqual(jasmine.objectContaining(d({
-			// 	type: 'final',
-			// 	year: 2018,
-			// 	original: '',
-			// 	comment: 'Bangaldesh - A la mer'
-			// })));
+			compareWith('2015-12-11 02-03-55 Bangaldesh - A la mer', {
+				type: 'final',
+				year: 2015,
+				month: 12,
+				day: 11,
+				hour: 2,
+				minute: 3,
+				second: 55,
+				comment: 'Bangaldesh - A la mer'
+			});
+
+			compareWith('2019-03-24 12-14-46', {
+				type: 'final',
+				year: 2019,
+				month: 3,
+				day: 24,
+				hour: 12,
+				minute: 14,
+				second: 46
+			});
+
+			compareWith('2019-03-24 12-14-46+01:00', {
+				type: 'final',
+				year: 2019,
+				month: 3,
+				day: 24,
+				hour: 12,
+				minute: 14,
+				second: 46,
+				timezone: '+01:00'
+			});
 		});
 
 		it('should parse "android" elements', function() {
-			expect(tsFromString('VID_20180102_030405')).toEqual(jasmine.objectContaining(d({
+			compareWith('VID_20180102_030405', {
 				type: 'android',
 				year: 2018,
 				month: 1,
@@ -110,9 +161,9 @@ describe('timestamp', function() {
 				second: 5,
 
 				original: 'VID_20180102_030405'
-			})));
+			});
 
-			expect(tsFromString('IMG_20180102_030405')).toEqual(jasmine.objectContaining(d({
+			compareWith('IMG_20180102_030405', {
 				type: 'android',
 				year: 2018,
 				month: 1,
@@ -122,7 +173,7 @@ describe('timestamp', function() {
 				second: 5,
 
 				original: 'IMG_20180102_030405'
-			})));
+			});
 
 			// other legacy tests
 			expect(tsFromString('VID_20181124_183350').TS()).toBe('2018-11-24 18-33-50');
@@ -133,7 +184,7 @@ describe('timestamp', function() {
 		});
 
 		it('should parse "screen" elements', function() {
-			expect(tsFromString('20150306_153340')).toEqual(jasmine.objectContaining(d({
+			compareWith('20150306_153340', {
 				type: 'screen',
 				year: 2015,
 				month: 3,
@@ -145,9 +196,9 @@ describe('timestamp', function() {
 				original: '20150306_153340',
 
 				comment: '',
-			})));
+			});
 
-			expect(tsFromString('20150306_153340 Cable internet dans la rue')).toEqual(jasmine.objectContaining(d({
+			compareWith('20150306_153340 Cable internet dans la rue', {
 				type: 'screen',
 				year: 2015,
 				month: 3,
@@ -159,56 +210,56 @@ describe('timestamp', function() {
 				original: '20150306_153340',
 
 				comment: 'Cable internet dans la rue',
-			})));
+			});
 		});
 
 		it('should parse "yearRange" elements', function() {
-			expect(tsFromString('2015-2016')).toEqual(jasmine.objectContaining(d({
+			compareWith('2015-2016', {
 				type: 'yearRange',
 				yearMin: 2015,
 				yearMax: 2016,
 				year: 0,
 
 				comment: '',
-			})));
+			});
 
-			expect(tsFromString('2015-2016 with comment')).toEqual(jasmine.objectContaining(d({
+			compareWith('2015-2016 with comment', {
 				type: 'yearRange',
 				yearMin: 2015,
 				yearMax: 2016,
 				year: 0,
 
 				comment: 'with comment',
-			})));
+			});
 		});
 
 		it('should parse minimal format', function() {
-			expect(tsFromString('canon')).toEqual(jasmine.objectContaining({
+			compareWith('canon', {
 				type: 'minimal',
 				comment: 'canon'
-			}));
+			}, false);
 
-			expect(tsFromString('canon brol')).toEqual(jasmine.objectContaining({
+			compareWith('canon brol', {
 				type: 'minimal',
 				comment: 'canon brol'
-			}));
+			}, false);
 
 		});
 
 		it('should detect invalid formats', function() {
-			expect(tsFromString('2018-01-02-03')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018-01-02-03', {
 				type: 'invalid',
 				comment: '2018-01-02-03',
 				original: '2018-01-02-03'
-			})));
+			});
 
-			expect(tsFromString('brol - machin')).toEqual(jasmine.objectContaining({
+			compareWith('brol - machin', {
 				type: 'invalid'
-			}));
+			}, false);
 
-			expect(tsFromString('brol 2018-01-02 machin')).toEqual(jasmine.objectContaining({
+			compareWith('brol 2018-01-02 machin', {
 				type: 'invalid'
-			}));
+			}, false);
 		});
 
 		it('should parse legacy tests', function() {
@@ -216,28 +267,28 @@ describe('timestamp', function() {
 			// LEGACY tests
 			//
 
-			expect(tsFromString('2018 bonjour 2019')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018 bonjour 2019', {
 				type: 'final',
 				year: 2018,
 				comment: 'bonjour 2019',
-			})));
+			});
 
-			expect(tsFromString('2018-01 bonjour 2019')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018-01 bonjour 2019', {
 				type: 'final',
 				year: 2018,
 				month: 1,
 				comment: 'bonjour 2019',
-			})));
+			});
 
-			expect(tsFromString('2018-01-15 bonjour 2019')).toEqual(jasmine.objectContaining(d({
+			compareWith('2018-01-15 bonjour 2019', {
 				type: 'final',
 				year: 2018,
 				month: 1,
 				day: 15,
 				comment: 'bonjour 2019',
-			})));
+			});
 
-			expect(tsFromString('1999-09-09 12-00-01')).toEqual(jasmine.objectContaining(d({
+			compareWith('1999-09-09 12-00-01', {
 				type: 'final',
 				year: 1999,
 				month: 9,
@@ -245,13 +296,13 @@ describe('timestamp', function() {
 				hour: 12,
 				minute: 0,
 				second: 1,
-			})));
+			});
 		});
 	});
 
 	describe('parsing legacy format', function() {
 		// it('should parse version1* formats', function() {
-		// 	expect(tsFromString('2010-12-30 09-09-51 Vie de famille - DSC_0155')).toEqual(jasmine.objectContaining(d({
+		// 	compareWith('2010-12-30 09-09-51 Vie de famille - DSC_0155', {
 		// 		type: 'version1',
 		// 		year: 2010,
 		// 		month: 12,
@@ -261,39 +312,39 @@ describe('timestamp', function() {
 		// 		second: 51,
 		// 		comment: 'Vie de famille',
 		// 		original: 'DSC_0155',
-		// 	})));
+		// 	});
 
 		// 	// Tags
-		// 	expect(tsFromString('2018-01-15 bonjour - ABCDE123')).toEqual(jasmine.objectContaining({
+		// 	compareWith('2018-01-15 bonjour - ABCDE123', {
 		// 		type: 'version1',
 		// 		comment: 'bonjour',
 		// 		original: 'ABCDE123'
-		// 	}));
+		// 	}, false);
 
-		// 	expect(tsFromString('2018-01-15 bonjour - DSC_0101')).toEqual(jasmine.objectContaining({
+		// 	compareWith('2018-01-15 bonjour - DSC_0101', {
 		// 		type: 'version1',
 		// 		comment: 'bonjour',
 		// 		original: 'DSC_0101'
-		// 	}));
+		// 	}, false);
 
-		// 	expect(tsFromString('2012-08-07 10-03-05 Muguette Donnay - Plaine de jeux des chansons - IMG_6893')).toEqual(jasmine.objectContaining({
+		// 	compareWith('2012-08-07 10-03-05 Muguette Donnay - Plaine de jeux des chansons - IMG_6893', {
 		// 		comment: 'Muguette Donnay - Plaine de jeux des chansons',
 		// 		original: 'IMG_6893'
-		// 	}));
+		// 	}, false);
 
-		// 	expect(tsFromString('2012-11-04 12-13-27 VID_20121104_121327')).toEqual(jasmine.objectContaining({
+		// 	compareWith('2012-11-04 12-13-27 VID_20121104_121327', {
 		// 		type: 'version0',
 		// 		year: 2012,
 		// 		comment: '',
 		// 		original: 'VID_20121104_121327'
-		// 	}));
+		// 	}, false);
 
-		// 	expect(tsFromString('2012-05-26 11-37-24 vie de famille - VID_20120526_113724')).toEqual(jasmine.objectContaining({
+		// 	compareWith('2012-05-26 11-37-24 vie de famille - VID_20120526_113724', {
 		// 		type: 'version1',
 		// 		year: 2012,
 		// 		comment: 'vie de famille',
 		// 		original: 'VID_20120526_113724'
-		// 	}));
+		// 	}, false);
 		// });
 	});
 
