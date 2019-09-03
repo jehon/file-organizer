@@ -60,11 +60,14 @@ function dumpStats() {
 }
 
 module.exports.fileStart = function(file) {
-	messagesPerFiles[file.getRelativePath()] = '';
-	stats.filesCount++;
-	const FileFoder = require('./file-folder.js');
-	if (file instanceof FileFoder) {
-		folders.push(file.getRelativePath());
+	const k = file.getRelativePath();
+	if (!(k in messagesPerFiles)) {
+		messagesPerFiles[k] = '';
+		stats.filesCount++;
+		const FileFoder = require('./file-folder.js');
+		if (file instanceof FileFoder) {
+			folders.push(file.getRelativePath());
+		}
 	}
 	dumpStats();
 };
@@ -148,14 +151,14 @@ module.exports.fileMsg = function (file, code, description, newInfo = null, acti
 
 	file.errors.push(code);
 
+	if (!( k in messagesPerFiles)) {
+		module.exports.fileStart(file);
+	}
+
 	messagesPerFiles[k] += '\n  ';
 	messagesPerFiles[k] += action;
-
-	messagesPerFiles[k] += ' ';
-	messagesPerFiles[k] += chalk.yellow.bold((description).padEnd(30, ' '));
-
-	messagesPerFiles[k] += ' ';
-	messagesPerFiles[k] += (newInfo != null ? chalk.blue('' + newInfo) : '');
+	messagesPerFiles[k] += (description ? ' ' + chalk.yellow.bold((description).padEnd(30, ' ')) : '');
+	messagesPerFiles[k] += (newInfo     ? ' ' + chalk.blue('' + newInfo) : '');
 
 	dumpStats();
 };
