@@ -148,6 +148,17 @@ describe('timestamp', function() {
 				second: 46,
 				timezone: '+01:00'
 			});
+
+			compareWith('2019:03:24 12:14:46+01:00', {
+				type: 'final',
+				year: 2019,
+				month: 3,
+				day: 24,
+				hour: 12,
+				minute: 14,
+				second: 46,
+				timezone: '+01:00'
+			});
 		});
 
 		it('should parse "android" elements', function() {

@@ -110,6 +110,7 @@ module.exports = class FileExiv extends FileTimestamped {
 				.replace(/( |-|[0-9]{2,10})+$/, '')
 			;
 		}
+
 		return this;
 	}
 
@@ -117,7 +118,7 @@ module.exports = class FileExiv extends FileTimestamped {
 		const exivData = exivReadAll(this);
 
 		this.exiv_timestamp_raw    = exivData['DateTimeOriginal'];
-		this.exiv_timestamp        = tsFromString(exivData['DateTimeOriginal'].split(':').join('-'));
+		this.exiv_timestamp        = tsFromString(exivData['DateTimeOriginal']);
 		this.exiv_comment          = exivData['UserComment'];
 		this.exiv_orientation      = translateRotation(exivData['Orientation']);
 

@@ -16,7 +16,7 @@ function removeNames(r) {
 }
 
 // TODO (one shot?) later: remove "h" / "m" possibilities ?
-const ts = /(?<year>[0-9][0-9][0-9][0-9])(-(?<month>[0-1][0-9])(-(?<day>[0-3][0-9]))?)?( (?<hour>[0-2][0-9])(h|-)(?<minute>[0-5][0-9])(m|-)((?<second>[0-5][0-9])(?<timezone>[+-]\d\d:\d\d)?))?/;
+const ts = /(?<year>[0-9][0-9][0-9][0-9])([-:](?<month>[0-1][0-9])([-:](?<day>[0-3][0-9]))?)?( (?<hour>[0-2][0-9])[:-](?<minute>[0-5][0-9])([:-](?<second>[0-5][0-9])(?<timezone>[+-]\d\d:\d\d)?))?/;
 
 const yearUnammed = /[0-9][0-9][0-9][0-9]/;
 
