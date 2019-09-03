@@ -85,8 +85,10 @@ async function getFileExivField(ctx, field, f) {
 
 exports.assert = {
 	fileExists: function (ctx, f) {
-		let promise = fs.pathExists(path.join(ctx.tempPath(), f))
-			.then((res) => expect(res).toBeTruthy());
+		const fpath = ctx.tempPath(f);
+
+		let promise = fs.pathExists(fpath)
+			.then((res) => expect(res).toBeTruthy(`File ${f} must NOT exists but does`));
 
 		const obj = {
 			withTS: (data) => { promise = promise
@@ -105,17 +107,17 @@ exports.assert = {
 
 	fileDoesNotExists: async function (ctx, f) {
 		const exists = await fs.pathExists(path.join(ctx.tempPath(), f));
-		expect(exists).toBeFalsy();
+		expect(exists).toBeFalsy(`File ${f} must NOT exists but does`);
 	},
 
 
 	fileHasExivTimestamp: async function (ctx, f, data) {
 		const res = await getFileExivField(ctx, 'exiv.timestamp', f);
-		expect(res).toEqual(data);
+		expect(res).toEqual(data, `File ${f} must have exiv timestamp ${data} but have ${res}`);
 	},
 
 	fileHasExivcomment: async function (ctx, f, data) {
 		const res = await getFileExivField(ctx, 'exiv.comment', f);
-		expect(res).toEqual(data);
+		expect(res).toEqual(data, `File ${f} must have exiv comment ${data} but have ${res}`);
 	}
 };
