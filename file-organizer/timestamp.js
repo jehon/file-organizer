@@ -232,7 +232,7 @@ exports.regexps = {
 
 exports.tzFromGPS = function(GPS) {
 	const p = function(str) {
-		const parser = /(?<v1>\d+) deg (?<v2>\d+)' (?<v3>\d+)\.(?<v4>\d+)" (?<orien>(N|S|E|O))/;
+		const parser = /(?<v1>\d+) deg (?<v2>\d+)\' (?<v3>\d+)\.(?<v4>\d+)" (?<orien>(N|S|E|O))/;
 		const c = str.match(parser);
 		const val = (parseInt(c.groups.v1)
 			+ (parseInt(c.groups.v2) / 60)
