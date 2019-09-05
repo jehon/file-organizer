@@ -1,4 +1,8 @@
 
+const tzlookup = require('tz-lookup');
+const moment = require('moment');
+require('moment-timezone');
+
 function parseInfo(obj, k, def) {
 	if (k in obj && obj[k]) {
 		const val = +obj[k];
@@ -224,4 +228,32 @@ exports.tsFromDate = function(date) {
 exports.Timestamp = Timestamp;
 exports.regexps = {
 	android
+};
+
+exports.tzFromGPS = function(GPS) {
+	const p = function(str) {
+		const parser = /(?<v1>\d+) deg (?<v2>\d+)' (?<v3>\d+)\.(?<v4>\d+)" (?<orien>(N|S|E|O))/;
+		const c = str.match(parser);
+		const val = (parseInt(c.groups.v1)
+			+ (parseInt(c.groups.v2) / 60)
+			+ ((parseInt(c.groups.v3) + parseInt(c.groups.v4) /100) / 3600)
+		) * (c.groups.orien == 'N' || c.groups.orien == 'E' ? 1 : -1);
+		return val;
+	};
+
+	const coord = GPS.split(',');
+
+	const lat = p(coord[0]);
+	const long = p(coord[1]);
+
+	return tzlookup(lat, long);
+};
+
+exports.tsFromDateAndTimezone = function(date, tz) {
+	// https://stackoverflow.com/a/43527200/1954789
+
+	// console.log('Summer');
+	const now = moment(date + 'Z');
+	now.tz(tz);
+	return exports.tsFromString(now.format('YYYY-MM-DD HH:mm:ss'));
 };

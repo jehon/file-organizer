@@ -1,5 +1,5 @@
 
-const { regexps, tsFromDate, tsFromString, defaultValues } = require('../../file-organizer/timestamp.js');
+const { regexps, tsFromDate, tsFromString, defaultValues, tzFromGPS, tsFromDateAndTimezone } = require('../../file-organizer/timestamp.js');
 var { diff } = require('just-diff');
 
 function compareWith(originalString, compareTo, strict = true) {
@@ -31,7 +31,7 @@ function compareWith(originalString, compareTo, strict = true) {
 		.toEqual(jasmine.objectContaining(target));
 }
 
-describe('timestamp', function() {
+describe('timestamp-test', function() {
 	describe('parsing', function() {
 		//
 		//
@@ -448,4 +448,14 @@ describe('timestamp', function() {
 			expect(tsFromString('2001-01-03 test').matchLithe(bt)).toBeFalsy();
 		});
 	});
+
+	it('tzFromGPS', () => {
+		expect(tzFromGPS('50 deg 35\' 30.84" N, 5 deg 33\' 25.92" E')).toBe('Europe/Brussels');
+	});
+
+	it('tsFromDateAndTimezone', () => {
+		expect(tsFromDateAndTimezone('2019-02-02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-02-02 16-16-17', 'Winter time');
+		expect(tsFromDateAndTimezone('2019-07-02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-07-02 17-16-17', 'summer time');
+	});
 });
+

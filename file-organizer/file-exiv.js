@@ -69,11 +69,8 @@ function exivReadAll(file) {
 		'DateTimeOriginal': '',
 		'Orientation': ''
 	};
-	const result = runExiv(file.getRelativePath(), '-api', 'QuickTimeUTC');
+	const result = runExiv(file.getRelativePath());
 	let resultObj = JSON.parse(result)[0];
-	if (!resultObj.DateTimeOriginal && resultObj.CreateDate) {
-		resultObj.DateTimeOriginal = resultObj.CreateDate;
-	}
 	return Object.assign({}, defaultResult, resultObj);
 }
 
@@ -125,8 +122,12 @@ module.exports = class FileExiv extends FileTimestamped {
 		return this;
 	}
 
+	exivReadAll() {
+		return exivReadAll(this);
+	}
+
 	exivReload(){
-		const exivData = exivReadAll(this);
+		const exivData = this.exivReadAll();
 
 		this.exiv_timestamp_raw    = exivData['DateTimeOriginal'];
 		this.exiv_timestamp        = tsFromString(exivData['DateTimeOriginal']);

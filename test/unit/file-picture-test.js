@@ -17,7 +17,6 @@ describe('file-picture-test', () => {
 
 		// Adroid files
 		expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exiv_timestamp.TS()).toBe('2019-09-03 12-47-21');
-		// TODO: expect((await getPict('2019-09-03 12-48/20190903_124726.mp4')).exiv_timestamp.TS()).toBe('2019-09-03 12-47-26');
 
 		expect((await getPict('no_exiv.jpg')).exiv_timestamp.TS()).toBe('');
 	});
@@ -39,7 +38,6 @@ describe('file-picture-test', () => {
 
 		// Android files
 		expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exiv_comment).toBe('');
-		// TODO: expect((await getPict('2019-09-03 12-48/20190903_124726.mp4')).exiv_comment).toBe('2019-09-03 12-47-26');
 
 		expect((await getPict('no_exiv.jpg')).exiv_comment).toBe('');
 	});
