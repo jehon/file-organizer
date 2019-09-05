@@ -35,9 +35,8 @@ describe('file-factory-test', () => {
 	});
 
 	it('should give the correct type for movies', () => {
-		expect(FileFactory('test.mpg')).toEqual(jasmine.any(FileMovie));
-		expect(FileFactory('test.MPG')).toEqual(jasmine.any(FileMovie));
-		expect(FileFactory('test.AVI')).toEqual(jasmine.any(FileMovie));
+		expect(FileFactory('test.m4v')).toEqual(jasmine.any(FileMovie));
+		expect(FileFactory('test.MOV')).toEqual(jasmine.any(FileMovie));
 		expect(FileFactory('test.mov')).toEqual(jasmine.any(FileMovie));
 	});
 });

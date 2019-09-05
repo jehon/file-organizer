@@ -42,6 +42,14 @@ async function runMain(ctx, ...args) {
 		expect(this.stderr).toBe('');
 	};
 
+	result.dump = function() {
+		process.stdout.write('******' + args.join(' ') + '\n');
+		process.stdout.write(result.stdout + '\n');
+		process.stdout.write('------' + '\n');
+		process.stdout.write(result.stderr + '\n');
+		process.stdout.write('******' + '\n');
+	};
+
 	return result;
 }
 

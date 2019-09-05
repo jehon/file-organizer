@@ -35,13 +35,20 @@ function runExiv(...params) {
 	switch(processResult.status) {
 	case 0:   // ok, continue
 		break;
-	case 1:   // The file contains data of an unknown image type
+	// case 1:   // The file contains data of an unknown image type
 	case 253: // No exif data found in file
 		return '';
 	case 255: // File does not exists
 		return '';
 	default:
-		throw new BusinessError('\n\nrunExiv process: ' + processResult.status + ' with [ ' + params.join(' , ') + ' ] => ' + processResult.stderr.toString());
+		console.error(`
+*********
+*** runExiv process: ${processResult.status}
+*** exiftool '${params.join(' , ')}'
+*** ${processResult.stderr.toString()}
+*********
+`);
+		throw new BusinessError('runExiv failed');
 	}
 	if (processResult.stdout != null) {
 		return processResult.stdout.toString();
@@ -88,6 +95,7 @@ function translateRotation(rotation) {
 		return 180;
 
 	case 'Horizontal (normal)':
+	case 'Unknown (0)':
 	case 'top, left':
 	case '':
 	case '(0)':

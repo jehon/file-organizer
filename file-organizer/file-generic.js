@@ -17,6 +17,7 @@ class FileGeneric {
 		this._relativePath = filePath;
 		this._parent = null;
 		this._infos = {};
+		this._originalFilePath = filePath;
 
 		this.addInfo('file.name',          this.getFilename());
 		this.addInfo('file.extension',     this.getExtension());
@@ -33,7 +34,7 @@ class FileGeneric {
 		return this;
 	}
 
-	isType() {
+	getType() {
 		return 'generic';
 	}
 

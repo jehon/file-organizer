@@ -49,11 +49,11 @@ function FileFactory(filepath, parent = false) {
 			f = new FilePicture(filepath);
 			break;
 		case '.mov':
-		case '.mpg':
-		case '.avi':
 		case '.mp4':
+		case '.m4v':
+			// case '.mpg':
+			// case '.avi':
 			// case '.mpeg':
-			// case '.m4v':
 			// case '.mkv':
 			f = new FileMovie(filepath);
 			break;
