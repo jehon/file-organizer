@@ -1,17 +1,17 @@
 
 const options = require('../../file-organizer/options.js');
 const { dataPath, createFileGeneric } = require('./helpers.js');
-const FileMovie = require('../../file-organizer/file-movie.js');
+const FileMovieUTC = require('../../file-organizer/file-movie-utc.js');
 
 // const { tsFromString } = require('../../file-organizer/timestamp.js');
 
 async function getMov(dPath) {
-	return new FileMovie(dataPath(dPath)).loadData();
+	return new FileMovieUTC(dataPath(dPath)).loadData();
 }
 
 const AndroidMP4 = '2019-09-03 12-48/20190903_124726.mp4';
 
-describe('file-movie-test', () => {
+describe('file-movie-utc-test', () => {
 	it('should get exiv from files', async () => {
 		// Adroid files
 		expect((await getMov(AndroidMP4)).exiv_timestamp.TS()).toBe('2019-09-03 12-47-31');

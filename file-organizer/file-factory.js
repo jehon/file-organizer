@@ -4,10 +4,11 @@ const fs = require('fs');
 const FileGeneric = require('./file-generic.js');
 const FileFolder  = require('./file-folder.js');
 
-const FileDelete  = require('./file-delete.js');
-const FileHidden  = require('./file-hidden.js');
-const FileMovie   = require('./file-movie.js');
-const FilePicture = require('./file-picture.js');
+const FileDelete   = require('./file-delete.js');
+const FileHidden   = require('./file-hidden.js');
+const FileMovie    = require('./file-movie.js');
+const FileMovieUTC = require('./file-movie-utc.js');
+const FilePicture  = require('./file-picture.js');
 
 function FileFactory(filepath, parent = false) {
 	// Target
@@ -49,13 +50,15 @@ function FileFactory(filepath, parent = false) {
 			f = new FilePicture(filepath);
 			break;
 		case '.mov':
-		case '.mp4':
 		case '.m4v':
 			// case '.mpg':
 			// case '.avi':
 			// case '.mpeg':
 			// case '.mkv':
 			f = new FileMovie(filepath);
+			break;
+		case '.mp4':
+			f = new FileMovieUTC(filepath);
 			break;
 		default:
 			f = new FileGeneric(filepath);
