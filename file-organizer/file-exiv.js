@@ -5,7 +5,7 @@ const messages = require('./messages.js');
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const BusinessError = require('./business-error.js');
-
+const options = require('./options.js');
 
 var commandExistsSync = require('command-exists').sync;
 // returns true/false; doesn't throw
@@ -13,19 +13,6 @@ if (!commandExistsSync('exiftool')) {
 	console.error('Command exiftool not found in path');
 	process.exit(0);
 }
-
-// const technicalTags = new Map();
-// technicalTags.set('UserComment',      'Exif.Photo.UserComment');
-// technicalTags.set('DateTimeOriginal', 'Exif.Photo.DateTimeOriginal');
-// technicalTags.set('Orientation',      'Exif.Image.Orientation');
-
-// function getByValue(map, searchValue) {
-// 	for (let [key, value] of map.entries()) {
-// 		if (value === searchValue)
-// 			return key;
-// 	}
-// 	return searchValue;
-// }
 
 function runExiv(...params) {
 	//
@@ -119,6 +106,10 @@ module.exports = class FileExiv extends FileTimestamped {
 			;
 		}
 
+		if (options.setTimestampFromFile) {
+			this.calculatedTS = this.filenameTS.clone();
+		}
+
 		return this;
 	}
 
@@ -160,7 +151,7 @@ module.exports = class FileExiv extends FileTimestamped {
 
 	async check() {
 		let res = true;
-		if (!this.exiv_timestamp.TS()) {
+		if (!this.exiv_timestamp.TS() && !options.setTimestampFromFile) {
 			res = res && messages.fileImpossible(this, 'EXIV_NO_DATE', 'Exiv: no date found');
 		}
 
