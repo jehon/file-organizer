@@ -6,32 +6,50 @@ exports.command = 'dump [files..]';
 
 exports.describe = 'Get some info about the files';
 
-const padFilename  = 55;
+const padFilename  = 50;
 const padExtension = 5;
 const padTimestamp = 22;
-const padComment   = 20;
+const padComment   = 55;
+
+function l(str, ll) {
+	if (str.length > ll) {
+		str = str.substring(0, ll - 1) + '';
+	}
+	return str.padEnd(ll);
+}
 
 exports.handler = function (options) {
-	console.info('filename'.padEnd(padFilename),
-		'|', 'fext'.padEnd(padExtension),
-		'|', 'ts.comment'.padEnd(padComment),
-		'|', 'ts.original',
-		'|', 'pict.e.timestamp'.padEnd(padTimestamp),
-		'|', 'pict.e.comment'.padEnd(padComment),
+	console.info(l('filename', padFilename)
+		+ '|'
+		+ l('ext', padExtension)
+		+ '|'
+		+ l('timestamp', padTimestamp)
+		+ '|'
+		+ l('comment', padComment),
 	);
-	console.info('-'.repeat(125));
+	console.info('-'.repeat(padFilename + padExtension + padTimestamp + padComment + 4));
 
 	return Promise.all(options.files.map(f0 =>
 		f0.iterate(
 			f => messages.concurrencyLimit(() => f.loadData())
 				.then(f => {
 					cleanLine();
-					console.info(f.getFilename().padEnd(padFilename),
-						'|', f.getInfo('file.extension').padEnd(padExtension),
-						'|', f.getInfo('timestamp.comment').padEnd(padComment),
-						'|', f.getInfo('timestamp.original'),
-						'|', f.getInfo('exiv.timestamp').padEnd(padTimestamp),
-						'|', f.getInfo('exiv.comment').padEnd(padComment),
+					console.info(
+						l(f.getFilename(), padFilename)
+						+ '|'
+						+ l(f.getInfo('file.extension'), padExtension)
+						+ '|'
+						+ l((
+							f.getInfo('exiv.timestamp')
+								? '*: ' + f.getInfo('exiv.timestamp')
+								: 'F: ' + f.getInfo('timestamp.original')
+						), padTimestamp)
+						+ '|'
+						+ l((
+							f.getInfo('exiv.comment')
+								? '*: ' + f.getInfo('exiv.comment')
+								: 'F: ' + f.getInfo('timestamp.comment')
+						), padComment)
 					);
 				})
 		)))
