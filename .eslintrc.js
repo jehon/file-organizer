@@ -1,3 +1,7 @@
+
+const branchName = require('current-git-branch')();
+const ew = (branchName == 'master' ? "error" : "warn");
+
 module.exports = {
     "env": {
         "node": true,
@@ -26,11 +30,11 @@ module.exports = {
             "always"
 		],
 		"no-unused-vars": [
-			"error",
+			ew,
 			{ "argsIgnorePattern": "^_" }
 		],
 		"no-console": [
-			"error", 
+			ew,
 			{ "allow": [ "info", "warn", "error" ] }
 		],
 		"no-trailing-spaces": [
