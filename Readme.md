@@ -19,3 +19,7 @@ I run the script, and it does:
 - use the folder name as a comment and store it in the picture
 - rename the pictures as yyyy-mm-dd dd-hh-ss comment [original file name].extension
 
+
+
+
+exiftool -v -DateTimeOriginal="2000:01:01 0" DSC_2506.MOV
