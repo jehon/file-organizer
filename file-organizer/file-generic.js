@@ -30,10 +30,6 @@ class FileGeneric {
 		this.errors = [];
 	}
 
-	async loadData() {
-		return this;
-	}
-
 	getType() {
 		return 'generic';
 	}
@@ -103,6 +99,10 @@ class FileGeneric {
 	// 		this.getFilename(),
 	// 		this.getExtension());
 	// }
+
+	async loadData() {
+		return this;
+	}
 
 	async changeFilename(newFilename) {
 		return await this.rename(newFilename + this.getExtension());
