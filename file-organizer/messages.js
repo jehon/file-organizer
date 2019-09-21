@@ -13,6 +13,12 @@ const IconFailure = chalk.red.bold('✘');
 const IconSkipped = chalk.magenta('⚐');
 const IconImpossible = chalk.red('⚑');
 
+module.exports.IconSuccess    = IconSuccess;
+module.exports.IconFailure    = IconFailure;
+module.exports.IconSkipped    = IconSkipped;
+module.exports.IconImpossible = IconImpossible;
+
+
 const concurrencyLimit = pLimit(10);
 module.exports.concurrencyLimit = concurrencyLimit;
 
