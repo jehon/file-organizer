@@ -1,5 +1,4 @@
 
-const messages = require('../messages.js');
 const options = require('../options.js');
 
 exports.command = [ '$0 [files..]', 'regularize [files..]' ];
@@ -44,7 +43,7 @@ exports.handler = function (noptions) {
 
 	return Promise.all(options.files.map(f0 =>
 		f0.iterate(
-			f => messages.concurrencyLimit(() => f.loadData())
+			f => f.loadData()
 				.then(f => f.check())
 		)))
 		.then(() => {

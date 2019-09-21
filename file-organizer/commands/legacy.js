@@ -1,6 +1,5 @@
 
 const options = require('../options.js');
-const messages = require('../messages.js');
 
 exports.command = 'legacy';
 
@@ -23,7 +22,7 @@ exports.handler = function (noptions) {
 	return Promise.all(options.files.map(f0 =>
 		f0.iterate(f => {
 			if (f.getType() == 'movie') {
-				return messages.concurrencyLimit(() => f.loadData())
+				return f.loadData()
 					.then(f => f.check());
 			}
 			return Promise.resolve(true);

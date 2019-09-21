@@ -31,11 +31,12 @@ exports.handler = function (options) {
 
 	return Promise.all(options.files.map(f0 =>
 		f0.iterate(
-			f => messages.concurrencyLimit(() => f.loadData())
+			f => f.loadData()
 				.then(f => {
 					cleanLine();
 					console.info(
-						l(f.getFilename(), padFilename)
+						messages.IconSkipped
+						+ l(f.getFilename(), padFilename)
 						+ '|'
 						+ l(f.getInfo('file.extension'), padExtension)
 						+ '|'

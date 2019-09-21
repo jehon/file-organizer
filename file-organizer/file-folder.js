@@ -33,7 +33,13 @@ class FileFolder extends FileTimestamped {
 		return Promise.resolve(this)
 			.then(() => messages.fileStart(this))
 			.then(() =>
-				Promise.all(this.getList().map(f => f.iterate(apply)))
+				Promise.all(this.getList().map(f => {
+					if (f instanceof FileFolder) {
+						return f.iterate(apply);
+					} else {
+						return messages.concurrencyLimit(() => f.iterate(apply));
+					}
+				}))
 			)
 			.then((res) => { messages.fileEnd(this); return res; });
 	}
