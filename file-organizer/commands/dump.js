@@ -24,8 +24,11 @@ exports.handler = function (noptions) {
 		dryRun: true
 	});
 	options.dryRun = true;
+	options.withFileSummary = false;
+	options.withStats = false;
 
-	console.info(l('filename', padFilename)
+	console.info('  '
+		+ l('filename', padFilename)
 		+ '|'
 		+ l('ext', padExtension)
 		+ '|'
@@ -38,10 +41,10 @@ exports.handler = function (noptions) {
 	return Promise.all(options.files.map(f0 =>
 		f0.iterate(
 			f => f.loadData()
+				.then(f => { f.check(); return f; })
 				.then(f => {
 					cleanLine();
-					console.info(
-						messages.IconSkipped
+					let msg = ''
 						+ l(f.getFilename(), padFilename)
 						+ '|'
 						+ l(f.getInfo('file.extension'), padExtension)
@@ -56,8 +59,14 @@ exports.handler = function (noptions) {
 							f.getInfo('exiv.comment')
 								? '*: ' + f.getInfo('exiv.comment')
 								: 'F: ' + f.getInfo('timestamp.comment')
-						), padComment)
-					);
+						), padComment);
+
+					if (f.stats.skipped > 0) {
+						console.warn(messages.IconSkipped + ' '  + msg.yellow);
+					} else {
+						console.info(messages.IconSuccess + ' ' + msg);
+					}
+
 				})
 		)))
 		.then(() => {
