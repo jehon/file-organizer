@@ -1,7 +1,9 @@
 
 const defaultOptions = {
 	interactive: true,
-	dryRun: false
+	dryRun: false,
+	withFileSummary: true,
+	withStats: true
 };
 
 const options = {};

@@ -45,7 +45,7 @@ function cleanLine() {
 module.exports.cleanLine = cleanLine;
 
 function dumpStats() {
-	if (options.interactive) {
+	if (options.interactive && options.withStats) {
 		cleanLine();
 
 		// Write infos on one line, erase it after
@@ -80,14 +80,16 @@ module.exports.fileStart = function(file) {
 
 module.exports.fileEnd = function(file) {
 	const k = file.getRelativePath();
-	if (messagesPerFiles[k]) {
-		cleanLine();
+	if (options.withFileSummary) {
+		if (messagesPerFiles[k]) {
+			cleanLine();
 
-		const header = (file.getFilename() + file.getExtension()) + ' in ' + chalk.gray(file.parent.getRelativePath());
+			const header = (file.getFilename() + file.getExtension()) + ' in ' + chalk.gray(file.parent.getRelativePath());
 
-		process.stdout.write(header
+			process.stdout.write(header
 			+ '\n  ' + file._originalFilePath
 			+ messagesPerFiles[k] + '\n\n');
+		}
 	}
 	delete messagesPerFiles[k];
 	const i = folders.indexOf(file.getRelativePath());
