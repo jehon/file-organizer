@@ -62,7 +62,7 @@ exports.handler = function (noptions) {
 						), padComment);
 
 					if (f.stats.skipped > 0) {
-						console.warn(messages.IconSkipped + ' '  + msg.yellow);
+						console.info(messages.IconSkipped + ' '  + msg.yellow);
 					} else {
 						console.info(messages.IconSuccess + ' ' + msg);
 					}
