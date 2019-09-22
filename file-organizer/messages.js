@@ -183,25 +183,3 @@ module.exports.fileMsg = function (file, code, description, newInfo = null, acti
 
 	dumpStats();
 };
-
-module.exports.oneLine = async function (file, cb) {
-	let icon = IconImpossible;
-	try {
-		const result = await cb(file);
-		switch(result) {
-		case undefined:
-		case true:
-			icon = IconSuccess;
-			break;
-		case false:
-			icon = IconFailure;
-			break;
-		case null:
-			icon = IconSkipped;
-			break;
-		}
-		console.info(`${icon} ${file.getRelativePath()}`);
-	} catch(e) {
-		console.info(`${IconFailure} ${file.getRelativePath()}: ${chalk.red(e.getMessage())}`);
-	}
-};
