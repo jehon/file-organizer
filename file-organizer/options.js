@@ -1,7 +1,8 @@
 
-
-const defaultOptions = {};
-defaultOptions.interactive = false;
+const defaultOptions = {
+	interactive: true,
+	dryRun: false
+};
 
 const options = {};
 

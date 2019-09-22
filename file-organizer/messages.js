@@ -108,6 +108,7 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 	let msg = IconSkipped;
 
 	if (options.dryRun) {
+		file.stats.skipped++;
 		options.skippedCount++;
 	} else {
 		try {
@@ -118,17 +119,21 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 			}
 			if (res) {
 				msg = IconSuccess;
+				file.stats.fixed++;
 				stats.fixesCount++;
 			} else {
 				msg = IconFailure;
+				file.stats.errors++;
 				stats.errorsCount++;
 			}
 		} catch (e) {
 			if (e instanceof BusinessError) {
 				console.error('Business error: ', e.getMessage ? e.getMessage() : '');
+				file.stats.impossible++;
 				stats.impossibleCount++;
 			} else {
 				console.error('Error: ', e);
+				file.stats.errors++;
 				stats.errorsCount++;
 			}
 		}
@@ -139,6 +144,7 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 };
 
 module.exports.fileImpossible = function(file, code, description) {
+	file.stats.impossible++;
 	stats.impossibleCount++;
 	module.exports.fileMsg(file, code, description, null, IconImpossible);
 	return false;

@@ -11,7 +11,6 @@ Object.assign(options, yargs
 		'dryRun': {
 			alias: [ 'dry-run', 'n'],
 			type: 'boolean',
-			default: false,
 			coerce: (val) => {
 				if (val) {
 					console.info('Using dry run mode');
@@ -21,7 +20,6 @@ Object.assign(options, yargs
 		},
 		'interactive': {
 			type: 'boolean',
-			default: true
 		},
 		'files': {
 			alias: [ 'f' ],

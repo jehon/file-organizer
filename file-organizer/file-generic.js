@@ -27,6 +27,13 @@ class FileGeneric {
 			this.addInfo('file.parent.name',   this.parent.getFilename());
 		}
 
+		this.stats = {
+			fixed: 0,
+			skipped: 0,
+			impossible: 0,
+			errors: 0
+		};
+
 		this.errors = [];
 	}
 

@@ -1,4 +1,5 @@
 
+const options = require('../options.js');
 const messages = require('../messages.js');
 const { cleanLine } = require('../messages.js');
 
@@ -18,7 +19,12 @@ function l(str, ll) {
 	return str.padEnd(ll);
 }
 
-exports.handler = function (options) {
+exports.handler = function (noptions) {
+	Object.assign(options, noptions, {
+		dryRun: true
+	});
+	options.dryRun = true;
+
 	console.info(l('filename', padFilename)
 		+ '|'
 		+ l('ext', padExtension)
