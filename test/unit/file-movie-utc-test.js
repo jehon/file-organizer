@@ -2,8 +2,6 @@
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FileMovieUTC = require('../../file-organizer/file-movie-utc.js');
 
-// const { tsFromString } = require('../../file-organizer/timestamp.js');
-
 async function getMov(dPath) {
 	return new FileMovieUTC(dataPath(dPath)).loadData();
 }

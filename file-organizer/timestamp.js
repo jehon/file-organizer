@@ -34,6 +34,8 @@ const tsOnly = /^${ts.source}$/;
 // const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( - (?<original>[A-Z0-9_]*))$`); // Legacy
 // const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( (- )?(?<original>[A-Z0-9_]{6,}))$`); // Legacy
 
+const raw8_3 = new RegExp('^(?<original>[A-Z0-9_]{8})$');
+
 const final = new RegExp(`^${ts.source}( (?<comment>[^[]*))?( \\[(?<original>.+)\\])?$`);
 
 // console.log(final.source);
@@ -52,6 +54,7 @@ const matchers = {
 	// version0, // Legacy
 	// version1, // Legacy
 	// final,
+	raw8_3,
 	tsOnly,
 	final,
 	android,

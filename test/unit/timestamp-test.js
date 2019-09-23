@@ -138,6 +138,33 @@ describe('timestamp-test', function() {
 				second: 46
 			});
 
+			// Legacy
+			compareWith('2018 bonjour 2019', {
+				type: 'final',
+				year: 2018,
+				comment: 'bonjour 2019',
+			});
+
+			// Legacy
+			compareWith('2018-01 bonjour 2019', {
+				type: 'final',
+				year: 2018,
+				month: 1,
+				comment: 'bonjour 2019',
+			});
+
+			// Legacy
+			compareWith('2018-01-15 bonjour 2019', {
+				type: 'final',
+				year: 2018,
+				month: 1,
+				day: 15,
+				comment: 'bonjour 2019',
+			});
+		});
+
+		it('should parse timestamps elements', function() {
+			// With timezone
 			compareWith('2019-03-24 12-14-46+01:00', {
 				type: 'final',
 				year: 2019,
@@ -149,6 +176,7 @@ describe('timestamp-test', function() {
 				timezone: '+01:00'
 			});
 
+			// With timezone
 			compareWith('2019:03:24 12:14:46+01:00', {
 				type: 'final',
 				year: 2019,
@@ -158,6 +186,13 @@ describe('timestamp-test', function() {
 				minute: 14,
 				second: 46,
 				timezone: '+01:00'
+			});
+		});
+
+		it('should parse canon pictures and movies', function() {
+			compareWith('DSC_1234', {
+				type: 'raw8_3',
+				original: 'DSC_1234'
 			});
 		});
 
@@ -185,10 +220,6 @@ describe('timestamp-test', function() {
 
 				original: 'IMG_20180102_030405'
 			});
-
-			// other legacy tests
-			expect(tsFromString('VID_20181124_183350').TS()).toBe('2018-11-24 18-33-50');
-			expect(tsFromString('IMG_20181124_183350').TS()).toBe('2018-11-24 18-33-50');
 
 			expect(regexps.android.test('IMG_20180304_050607')).toBeTruthy();
 			expect(regexps.android.test('VID_20121215_111704')).toBeTruthy();
@@ -271,43 +302,6 @@ describe('timestamp-test', function() {
 			compareWith('brol 2018-01-02 machin', {
 				type: 'invalid'
 			}, false);
-		});
-
-		it('should parse legacy tests', function() {
-			//
-			// LEGACY tests
-			//
-
-			compareWith('2018 bonjour 2019', {
-				type: 'final',
-				year: 2018,
-				comment: 'bonjour 2019',
-			});
-
-			compareWith('2018-01 bonjour 2019', {
-				type: 'final',
-				year: 2018,
-				month: 1,
-				comment: 'bonjour 2019',
-			});
-
-			compareWith('2018-01-15 bonjour 2019', {
-				type: 'final',
-				year: 2018,
-				month: 1,
-				day: 15,
-				comment: 'bonjour 2019',
-			});
-
-			compareWith('1999-09-09 12-00-01', {
-				type: 'final',
-				year: 1999,
-				month: 9,
-				day: 9,
-				hour: 12,
-				minute: 0,
-				second: 1,
-			});
 		});
 	});
 
