@@ -7,7 +7,6 @@ const { tsFromString } = require('./timestamp.js');
 const BusinessError = require('./business-error.js');
 const options = require('./options.js');
 
-const debug = require('debug')('exiv');
 const debugExiv = require('debug')('exivtool');
 const debugExivOutput = debugExiv.extend('output');
 

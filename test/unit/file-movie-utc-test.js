@@ -1,5 +1,4 @@
 
-const options = require('../../file-organizer/options.js');
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FileMovieUTC = require('../../file-organizer/file-movie-utc.js');
 
@@ -33,33 +32,5 @@ describe('file-movie-utc-test', () => {
 		expect(new2.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
 
 		new1.remove();
-	});
-
-	describe('check', () => {
-		xit('should be problems when no exiv is present', async() => {
-			const new1 = await getMov('no_exiv.jpg');
-			await new1.check();
-			expect(new1.errors).toContain('EXIV_NO_DATE');
-		});
-
-		xit('should set comment if necessary', async() => {
-			options.guessComment = true;
-
-			// const new1 = await createFileGeneric('no_exiv.jpg');
-			// expect(new1.exiv_comment).toBe('');
-			// expect(new1.exiv_timestamp.TS()).toBe('');
-
-			// new1.exiv_timestamp = tsFromString('2018-01-02');
-
-			// new1.calculatedTS.year = 2018;
-			// new1.calculatedTS.comment = 'override comment';
-
-			// await new1.check();
-			// expect(new1.errors).toContain('EXIV_WRITE_COMMENT');
-			// expect(new1.exiv_comment).toBe('override comment');
-			// new1.remove();
-
-			options.resetToDefault();
-		});
 	});
 });

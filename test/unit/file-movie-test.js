@@ -1,10 +1,7 @@
 
-const options = require('../../file-organizer/options.js');
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FileMovie = require('../../file-organizer/file-movie.js');
 const FileFactory = require('../../file-organizer/file-factory.js');
-
-const { tsFromString } = require('../../file-organizer/timestamp.js');
 
 async function getMov(dPath) {
 	return new FileMovie(dataPath(dPath)).loadData();
