@@ -9,7 +9,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 
 		await result.assertConsistency();
 		async function t(f)  {
-			return assert.fileExists(ctx, f);
+			return assert.untouched(ctx, f);
 		}
 
 		await t('basic/DSC_2506.MOV');
