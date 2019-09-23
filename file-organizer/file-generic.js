@@ -12,6 +12,9 @@ const messages = require('./messages.js');
 const FileUtils = require('./file-utils.js');
 const BusinessError = require('./business-error.js');
 
+const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
+const renameOneByOneLimiter = pLimit(1);
+
 class FileGeneric {
 	constructor(filePath) {
 		this._relativePath = filePath;
@@ -99,14 +102,6 @@ class FileGeneric {
 		return FileGeneric.getExtension(this.getRelativePath());
 	}
 
-	// async getIndexedFilenameFor(newFilenameWithoutIndex) {
-	// 	return await FileUtils.findIndexedFilename(
-	// 		this.parent.getRelativePath(),
-	// 		newFilenameWithoutIndex,
-	// 		this.getFilename(),
-	// 		this.getExtension());
-	// }
-
 	async loadData() {
 		return this;
 	}
@@ -115,21 +110,46 @@ class FileGeneric {
 		return await this.rename(newFilename + this.getExtension());
 	}
 
+	// TODO
+	async getIndexedFilenameFor(newFilenameWithoutIndex) {
+		const dir = this.parent.getRelativePath();
+		const existingFilename = this.getFilename();
+		const extension =  this.getExtension();
+
+		const proposition = (i) => (newFilenameWithoutIndex + (i == 0 ? '' : '~' + i));
+
+		let i = 0;
+		while ((await FileUtils.fileExists(path.join(dir, proposition(i) + extension)))
+				&& (existingFilename != proposition(i))) {
+			i++;
+		}
+
+		return proposition(i);
+	}
+
+	// TODO: //ise it
 	async rename(newFilenameWithExtension) {
 		const newPath = path.join(this.parent.getRelativePath(), newFilenameWithExtension);
 		if (this.getRelativePath() == newPath) {
 			return true;
 		}
-		try {
-			await FileUtils.fileRename(
-				this.getRelativePath(),
-				newPath
-			);
-			this._relativePath = newPath;
-			return true;
-		} catch(e) {
-			throw new BusinessError('Error while renaming file: ', this.getRelativePath(), e);
-		}
+
+		// Only one at at time...
+		return await renameOneByOneLimiter(async () => {
+			if (await FileUtils.fileExists(newPath)) {
+				throw new BusinessError('A file with the same name already exists');
+			}
+			try {
+				await FileUtils.fileRename(
+					this.getRelativePath(),
+					newPath
+				);
+				this._relativePath = newPath;
+				return true;
+			} catch(e) {
+				throw new BusinessError('Error while renaming file: ', this.getRelativePath(), e);
+			}
+		});
 	}
 
 	async remove() {
