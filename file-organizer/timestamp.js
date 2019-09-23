@@ -251,6 +251,8 @@ exports.tzFromGPS = function(GPS) {
 
 exports.tsFromDateAndTimezone = function(date, tz) {
 	// https://stackoverflow.com/a/43527200/1954789
+
+	// console.log('Summer');
 	const now = moment(date + 'Z');
 	now.tz(tz);
 	return exports.tsFromString(now.format('YYYY-MM-DD HH:mm:ss'));

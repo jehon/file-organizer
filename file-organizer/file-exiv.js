@@ -7,18 +7,25 @@ const { tsFromString } = require('./timestamp.js');
 const BusinessError = require('./business-error.js');
 const options = require('./options.js');
 
+const debug = require('debug')('exiv');
+const debugExiv = require('debug')('exivtool');
+const debugExivOutput = debugExiv.extend('output');
+
 var commandExistsSync = require('command-exists').sync;
 // returns true/false; doesn't throw
 if (!commandExistsSync('exiftool')) {
 	console.error('Command exiftool not found in path');
-	process.exit(0);
+	process.exit(1);
 }
 
 function runExiv(...params) {
 	//
 	// Error here ? check exiv is installed :-)
 	//
-	let processResult = spawnSync('exiftool', [ '-j', ...params]);
+	debugExiv('runExiv command:', 'exiftool', ...params);
+	let processResult = spawnSync('exiftool', [ ...params]);
+	debugExiv('runExiv result:', processResult.status);
+	debugExivOutput('runExiv output:', processResult.stdout.toString(), processResult.stderr.toString());
 	switch(processResult.status) {
 	case 0:   // ok, continue
 		break;
@@ -44,6 +51,7 @@ function runExiv(...params) {
 }
 
 function exivWrite(file, tag, value) {
+	debugExiv('exivWrite:', file.getRelativePath(), tag, value);
 	return runExiv(
 		'-overwrite_original',
 		`-${tag}=${value}`, file.getRelativePath()
@@ -51,13 +59,15 @@ function exivWrite(file, tag, value) {
 }
 
 function exivReadAll(file) {
+	debugExiv('exivRead:', file.getRelativePath());
 	const defaultResult = {
 		'UserComment': '',
 		'DateTimeOriginal': '',
 		'Orientation': ''
 	};
-	const result = runExiv(file.getRelativePath());
+	const result = runExiv('-j', file.getRelativePath());
 	let resultObj = JSON.parse(result)[0];
+	debugExiv('exivRead got:', file.getRelativePath(), resultObj['DateTimeOriginal']);
 	return Object.assign({}, defaultResult, resultObj);
 }
 
