@@ -1,5 +1,4 @@
 
-const path = require('path');
 const util = require('util');
 var spawnSync = require('child_process').spawnSync;
 
@@ -31,25 +30,6 @@ async function fileRename(filePathOriginal, filePathDest) {
 	}
 }
 
-/**
- *
- * @param {string} dir (without filename)
- * @param {string} filename (without extension)
- * @param {string} existingFilename (without extension)
- * @param {string} extension (.blabla)
- */
-async function findIndexedFilename(dir, filename, existingFilename, extension) {
-	const proposition = (i) => (filename + (i == 0 ? '' : '~' + i));
-
-	let i = 0;
-	while ((await fileExists(path.join(dir, proposition(i) + extension)))
-			&& (existingFilename != proposition(i))) {
-		i++;
-	}
-
-	return proposition(i);
-}
-
 function fileExec(file, params = [], options = {}) {
 	// try {
 	const res = spawnSync(file, params, Object.assign({
@@ -70,7 +50,6 @@ function fileExec(file, params = [], options = {}) {
 module.exports = {
 	fileExists,
 	fileDelete,
-	findIndexedFilename,
 	fileRename,
 	fileExec
 };
