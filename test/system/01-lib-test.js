@@ -13,6 +13,10 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 
 		await result.assertConsistency();
 
+		await assert.untouched(ctx, 'basic/IMG_20190324_121437.jpg');
+
+		// Legacy
+
 		await assert.fileExists(ctx, 'other test/1.jpeg')
 			.withTS('2018-01-02 03-04-05')
 			.withComment('my comment')
