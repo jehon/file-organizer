@@ -4,19 +4,24 @@ const path = require('path');
 const { describeAndSetup, itRun, assert } = require('./run-helper.js');
 
 describeAndSetup(path.basename(__filename), (ctx) => {
-	itRun(ctx, [ 'regularize', '--set-comment', 'test' ], async (result) => {
-		result.dump();
-
+	const c = 'test comment';
+	itRun(ctx, [ 'regularize', '--set-comment', c ], async (result) => {
 		result.assertSuccess();
 
 		await result.assertConsistency();
 
-		await assert.fileExists(ctx,  '2019 test/2019-03-24 12-14-38 test [IMG_20190324_121437].jpg')
-			.withComment('test')
-			.done();
+		function t(fold, fnew)  {
+			if (!fnew) {
+				fnew = fold;
+			}
+			return assert.fileExists(ctx, fnew).from(fold).withTS().withComment(c).done();
+		}
 
-		await assert.fileExists(ctx,  '2019 test/2019-03-24 12-14-46 test [VID_20190324_121446].mp4')
-			.done();
+		await t('basic/DSC_2506.MOV',            `basic/2019-09-19 07-48-25 ${c} [DSC_2506].mov`);
+		await t('basic/IMG_20190324_121437.jpg', `basic/2019-03-24 12-14-38 ${c} [IMG_20190324_121437].jpg`);
+		await t('basic/VID_20190324_121446.mp4', `basic/2019-03-24 12-14-46 ${c} [VID_20190324_121446].mp4`);
+		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg',
+			`basic/2018-01-02 03-04-05 ${c} [my original name].jpg`);
 
 	});
 });
