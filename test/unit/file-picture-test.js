@@ -73,7 +73,7 @@ describe('file-picture-test', () => {
 		it('should be problems when no exiv is present', async() => {
 			const new1 = await getPict('no_exiv.jpg');
 			await new1.check();
-			expect(new1.errors).toContain('EXIV_NO_DATE');
+			expect(new1.errors).toContain('TS_NO_TIMESTAMP');
 		});
 
 		it('should rotate pictures when necessary', async() => {
@@ -89,8 +89,6 @@ describe('file-picture-test', () => {
 		});
 
 		it('should set comment if necessary', async() => {
-			options.guessComment = true;
-
 			const new1 = await createFileGeneric('no_exiv.jpg');
 			expect(new1.exiv_comment).toBe('');
 			expect(new1.exiv_timestamp.TS()).toBe('');

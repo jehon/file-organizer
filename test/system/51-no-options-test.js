@@ -1,28 +1,26 @@
 
 const path = require('path');
-const fs = require('fs-extra');
 
 const { describeAndSetup, itRun, assert } = require('./run-helper.js');
 
 describeAndSetup(path.basename(__filename), (ctx) => {
-	beforeEach(() => {
-		fs.moveSync(ctx.tempPath('basic/2018-01-02 03-04-05 my comment [my original name].jpg'),
-			ctx.tempPath('basic/2017-01-02 03-04-09 something else [my original name].jpg'));
-	});
 	itRun(ctx, [ 'regularize' ], async (result) => {
 		result.assertSuccess();
 		await result.assertConsistency();
 
-		async function t(f)  {
-			return assert.untouched(ctx, f);
+		function t(fold, fnew)  {
+			if (!fnew) {
+				fnew = fold;
+			}
+			return assert.fileExists(ctx, fnew).from(fold).untouched();
 		}
 
-		await t('basic/DSC_2506.MOV');               // Faulty: no comment
-		await t('basic/IMG_20190324_121437.jpg');    // Faulty: no comment
-		await t('basic/VID_20190324_121446.mp4');    // Faulty: no comment
-		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg'); // Modified in beforeEach, resetted by the run
+		await t('basic/DSC_2506.MOV',            'basic/2019-09-19 07-48-25 basic [DSC_2506].mov');
+		await t('basic/IMG_20190324_121437.jpg', 'basic/2019-03-24 12-14-38 basic [IMG_20190324_121437].jpg');
+		await t('basic/VID_20190324_121446.mp4', 'basic/2019-03-24 12-14-46 basic [VID_20190324_121446].mp4');
+		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg');
 
-		await t('2019 test/1.jpeg');                 // Faulty: no comment
-		await t('2019 test/DSC_2506.MOV');           // Faulty: no comment
+		await t('2019 test/1.jpeg');              // Faulty: No timestamp
+		await t('2019 test/DSC_2506.MOV',        '2019 test/2019-09-19 07-48-25 test [DSC_2506].mov');
 	});
 });

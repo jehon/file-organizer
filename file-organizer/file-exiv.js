@@ -115,7 +115,7 @@ module.exports = class FileExiv extends FileTimestamped {
 			;
 		}
 
-		if (options.setTimestampFromFile) {
+		if (options.forceTimestampFromFilename) {
 			this.calculatedTS = this.filenameTS.clone();
 		}
 
@@ -160,14 +160,6 @@ module.exports = class FileExiv extends FileTimestamped {
 
 	async check() {
 		let res = true;
-		if (!this.exiv_timestamp.TS() && !options.setTimestampFromFile) {
-			res = res && messages.fileImpossible(this, 'EXIV_NO_DATE', 'Exiv: no date found');
-		}
-
-		if (!res) {
-			return res;
-		}
-
 		if (!await super.check()) {
 			return false;
 		}

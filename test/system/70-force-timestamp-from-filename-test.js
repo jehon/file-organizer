@@ -10,7 +10,8 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 			ctx.tempPath('basic/2017-01-02 03-04-09 my comment [my original name].jpg'));
 	});
 
-	itRun(ctx, [ 'regularize', '--set-timestamp', '--fcff' ], async (result) => {
+	itRun(ctx, [ 'regularize', '--force-timestamp-from-filename' ], async (result) => {
+		result.dump();
 		result.assertSuccess();
 
 		await result.assertConsistency();
@@ -23,15 +24,18 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 				.done();
 		}
 
-		await assert.untouched(ctx, 'basic/DSC_2506.MOV'); // Faulty: no comment
+		await assert.untouched(ctx, 'basic/DSC_2506.MOV'); // Faulty: no timestamp in exiv or filename
 		await t('basic/IMG_20190324_121437.jpg', 'basic/2019-03-24 12-14-37 basic [IMG_20190324_121437].jpg', '2019-03-24 12-14-37');
 		await t('basic/VID_20190324_121446.mp4', 'basic/2019-03-24 12-14-46 basic [VID_20190324_121446].mp4', '2019-03-24 12-14-46');
-		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg',
-			'basic/2017-01-02 03-04-09 basic [my original name].jpg', '2017-01-02 03-04-09');
+		await assert.fileExists(ctx, 'basic/2017-01-02 03-04-09 my comment [my original name].jpg')
+			.from('basic/2018-01-02 03-04-05 my comment [my original name].jpg')
+			.withTS('2017-01-02 03-04-09')
+			.withComment('my comment')
+			.done();
 
 
-		await assert.untouched(ctx, '2019 test/1.jpeg'); // Faulty: no timestamp
-		await assert.untouched(ctx, '2019 test/DSC_2506.MOV'); // Faulty: no comment
+		await assert.untouched(ctx, '2019 test/1.jpeg'); // Faulty: no timestamp in exiv or filename
+		await assert.untouched(ctx, '2019 test/DSC_2506.MOV'); // Faulty: no comment in exiv or filename
 
 	});
 });

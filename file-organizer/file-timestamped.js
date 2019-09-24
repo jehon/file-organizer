@@ -36,6 +36,12 @@ class FileTimestamped extends FileGeneric {
 		return tsFromDate(fs.statSync(this.getRelativePath()).birthtime);
 	}
 
+	setCalculatedComment(newC) {
+		this.calculatedTS.comment = newC;
+		return true;
+	}
+
+
 	setCalculatedTS(newTS) {
 		if (typeof newTS == 'string') {
 			newTS = tsFromString(newTS);
@@ -69,57 +75,45 @@ class FileTimestamped extends FileGeneric {
 
 		let res = true;
 		if (this.calculatedTS.comment && this.calculatedTS.comment == this.calculatedTS.original) {
-			this.calculatedTS.original = '';
-			messages.fileInfo(this, 'TS_DUP_COMMENT', 'remove duplicate comment/original',
-				'remove original filename'
+			messages.fileCommit(this, 'TS_DUP_COMMENT', 'remove duplicate comment/original',
+				'remove original filename',
+				() => { this.calculatedTS.original = ''; }
 			);
 		}
 
 		{
-			let c = this.calculatedTS.comment;
 			if (options.setComment) {
-				c = options.setComment;
-			} else if (options.fixCommentFromFolder) {
-				c = this.parent.filenameTS.comment;
-			} else {
-				if ((!this.calculatedTS.comment && options.guessComment) || options.fixComment) {
-					c = this.filenameTS.comment;
-					if (!c) {
-						c = this.parent.calculatedTS.comment;
-					}
-				}
+				messages.fileInfo(this, 'TS_COMMENT_OPTION_FILENAME', 'force the comment as requested on command line',
+					options.setComment
+				);
+				this.setCalculatedComment(options.setComment);
 			}
-			if (!c) {
-				return messages.fileImpossible(this, 'TS_COMMENT_UPDATE_FAILED', 'Updating comment is empty', c);
+			if (options.forceCommentFromFolder) {
+				messages.fileInfo(this, 'TS_COMMENT_OPTION_FOLDER', 'force the comment from the parent folder',
+					this.parent.filenameTS.comment
+				);
+				this.setCalculatedComment(this.parent.filenameTS.comment);
 			}
-			if (this.calculatedTS.comment != c) {
-				messages.fileInfo(this, 'TS_UPDATE_COMMENT', 'Updating comment', c);
-				this.calculatedTS.comment = c;
+
+			if (!this.calculatedTS.comment && this.filenameTS.comment) {
+				messages.fileInfo(this, 'TS_COMMENT_FILENAME', 'set the comment from the filename',
+					this.filenameTS.comment
+				);
+				this.setCalculatedComment(this.filenameTS.comment);
+			}
+			if (!this.calculatedTS.comment && this.parent.filenameTS.comment) {
+				messages.fileInfo(this, 'TS_COMMENT_FOLDER', 'set the comment from the parent folder',
+					this.filenameTS.comment
+				);
+				this.setCalculatedComment(this.parent.filenameTS.comment);
 			}
 		}
 
 		{
-			let ts = this.calculatedTS;
-			if (options.setTimestampFromFile) {
-				ts = this.filenameTS;
-			}
-			if (!ts.year) {
-				return messages.fileImpossible(this, 'TS_TIMESTAMP_UPDATE_FAILED', 'Updating timestamp is empty', ts.TS());
-			}
-			if (this.calculatedTS.TS() != ts.TS()) {
-				messages.fileInfo(this, 'TS_UPDATE_TIMESTAMP', 'Updating timestamp', ts.TS());
-				this.setCalculatedTS(ts);
-			}
-		}
-
-		if (this.calculatedTS.year > 0) {
-			// Check filename according to parent folder TS
-			if (this.parent.calculatedTS.year > 0) {
-				if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
-					res = res && messages.fileImpossible(this, 'TS_PARENT_INCOHERENT',
-						`calculated timestamp incoherent to parent folder (${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()})`
-					);
-				}
+			if (options.forceTimestampFromFilename) {
+				messages.fileInfo(this, 'TS_TIMESTAMP_FORCE', 'Updating timestamp',
+					this.filenameTS.TS());
+				this.setCalculatedTS(this.filenameTS);
 			}
 		}
 
@@ -129,6 +123,15 @@ class FileTimestamped extends FileGeneric {
 
 		if (this.calculatedTS.TS() == '') {
 			res = res && messages.fileImpossible(this, 'TS_NO_TIMESTAMP', 'No timestamp found');
+		} else {
+			// Check filename according to parent folder TS
+			if (this.parent.calculatedTS.year > 0) {
+				if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
+					res = res && messages.fileImpossible(this, 'TS_PARENT_INCOHERENT',
+						`calculated timestamp incoherent to parent folder (${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()})`
+					);
+				}
+			}
 		}
 
 		if (!res) {

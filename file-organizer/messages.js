@@ -11,12 +11,10 @@ const BusinessError = require('./business-error.js');
 const IconSuccess = chalk.green('✓');
 const IconFailure = chalk.red.bold('✘');
 const IconSkipped = chalk.magenta('⚐');
-const IconImpossible = chalk.red('⚑');
 
 module.exports.IconSuccess    = IconSuccess;
 module.exports.IconFailure    = IconFailure;
 module.exports.IconSkipped    = IconSkipped;
-module.exports.IconImpossible = IconImpossible;
 
 
 const concurrencyLimit = pLimit(10);
@@ -27,7 +25,6 @@ const stats = {
 	fixesCount: 0,
 	errorsCount: 0,
 	skippedCount: 0,
-	impossibleCount: 0
 };
 module.exports.stats = stats;
 
@@ -57,7 +54,6 @@ function dumpStats() {
 				+ (stats.fixesCount                      > 0 ? ` - fixes: ${stats.fixesCount}` : '')
 				+ (stats.skippedCount                    > 0 ?` - skipped: ${stats.skippedCount}` : '')
 				+ (stats.errorsCount                     > 0 ?` - errors: ${stats.errorsCount}` : '')
-				+ (stats.impossibleCount                 > 0 ?` - impossible: ${stats.impossibleCount}` : '')
 			)
 			+ ' '
 			+ folders.join(',')).substr(0, process.stdout.columns - 1).white.bgCyan
@@ -131,13 +127,11 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 		} catch (e) {
 			if (e instanceof BusinessError) {
 				console.error('Business error: ', e.getMessage ? e.getMessage() : '');
-				file.stats.impossible++;
-				stats.impossibleCount++;
 			} else {
 				console.error('Error: ', e);
-				file.stats.errors++;
-				stats.errorsCount++;
 			}
+			file.stats.errors++;
+			stats.errorsCount++;
 		}
 	}
 
@@ -146,9 +140,9 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 };
 
 module.exports.fileImpossible = function(file, code, description) {
-	file.stats.impossible++;
-	stats.impossibleCount++;
-	module.exports.fileMsg(file, code, description, null, IconImpossible);
+	file.stats.errors++;
+	stats.errorsCount++;
+	module.exports.fileMsg(file, code, description, null, IconFailure);
 	return false;
 };
 
@@ -160,7 +154,7 @@ module.exports.fileImpossible = function(file, code, description) {
  * @param newInfo(null/string): the new information (display only)
  *
  * @param action(null/true/function):
- *    null: action impossible
+ *    null: action errors (impossible)
  *    true: info message of success
  *    fn: fix function
  */

@@ -4,12 +4,9 @@ const messages = require('./messages.js');
 
 module.exports = class FileDelete extends FileGeneric {
 	async check() {
-		{
-			await messages.fileCommit(this, 'DEL_DEL', 'delete unused',
-				'-',
-				() => this.remove()
-			);
-		}
-		return true;
+		return await messages.fileCommit(this, 'DEL_DEL', 'delete unused',
+			'-',
+			() => this.remove()
+		);
 	}
 };

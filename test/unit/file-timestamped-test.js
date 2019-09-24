@@ -1,6 +1,4 @@
 
-const options = require('../../file-organizer/options.js');
-
 const { tempPath, createFileGeneric } = require('./helpers.js');
 const FileFactory = require('../../file-organizer/file-factory.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
@@ -71,14 +69,6 @@ describe('file-timestamped-test', () => {
 		});
 
 		describe('should guess comment', () => {
-			beforeEach(() => {
-				options.guessComment = true;
-			});
-
-			afterEach(() => {
-				options.resetToDefault();
-			});
-
 			it('should take the new comment from file', async () => {
 				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
 				new1.exivWriteComment('');

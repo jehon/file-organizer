@@ -33,7 +33,6 @@ class FileGeneric {
 		this.stats = {
 			fixed: 0,
 			skipped: 0,
-			impossible: 0,
 			errors: 0
 		};
 

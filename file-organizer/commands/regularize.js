@@ -11,24 +11,13 @@ exports.builder = {
 		type: 'string',
 		default: ''
 	},
-	'guessComment': {
-		alias: [ 'guess-comment', 'gc' ],
+	'forceCommentFromFolder': {
+		alias: [ 'force-comment-from-folder', 'fcff' ],
 		type: 'boolean',
 		default: false
 	},
-	'fixComment': {
-		alias: [ 'fix-comment', 'fc' ],
-		type: 'boolean',
-		default: false
-	},
-	'fixCommentFromFolder': {
-		alias: [ 'fix-comment-from-folder', 'fcff' ],
-		type: 'boolean',
-		default: false
-	},
-
-	'setTimestampFromFile': {
-		alias: [ 'set-timestamp', 'sts' ],
+	'forceTimestampFromFilename': {
+		alias: [ 'force-timestamp-from-filename', 'sts' ],
 		type: 'boolean',
 		default: false
 	}
@@ -36,10 +25,6 @@ exports.builder = {
 
 exports.handler = function (noptions) {
 	Object.assign(options, noptions);
-
-	if (options.fixComment) {
-		options.guessComment = true;
-	}
 
 	return Promise.all(options.files.map(f0 =>
 		f0.iterate(

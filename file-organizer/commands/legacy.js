@@ -5,18 +5,10 @@ exports.command = 'legacy';
 
 exports.describe = 'Get some info about the files';
 
-exports.builder = {
-	'fix': {
-		alias: [ 'f' ],
-		type: 'boolean'
-	}
-};
-
 // TODO: treat unknown file type ???
 
 exports.handler = function (noptions) {
 	Object.assign(options, noptions, {
-		guessComment: true
 	});
 
 	return Promise.all(options.files.map(f0 =>
