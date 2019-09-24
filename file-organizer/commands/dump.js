@@ -10,11 +10,19 @@ exports.describe = 'Get some info about the files';
 const padFilename  = 50;
 const padExtension = 5;
 const padTimestamp = 22;
-const padComment   = 55;
+const padComment   = 50;
+const padFolder    = 20;
 
 function l(str, ll) {
 	if (str.length > ll) {
-		str = str.substring(0, ll - 1) + '';
+		str = str.substr(0, ll - 1) + '…';
+	}
+	return str.padEnd(ll);
+}
+
+function r(str, ll) {
+	if (str.length > ll) {
+		str = '…' + str.substr(-ll + 1) + '';
 	}
 	return str.padEnd(ll);
 }
@@ -34,9 +42,11 @@ exports.handler = function (noptions) {
 		+ '|'
 		+ l('timestamp', padTimestamp)
 		+ '|'
-		+ l('comment', padComment),
+		+ l('comment', padComment)
+		+ '|'
+		+ l('folder', padFolder)
 	);
-	console.info('-'.repeat(padFilename + padExtension + padTimestamp + padComment + 4));
+	console.info('-'.repeat(padFilename + padExtension + padTimestamp + padComment + padFolder + 5));
 
 	return Promise.all(options.files.map(f0 =>
 		f0.iterate(
@@ -59,7 +69,10 @@ exports.handler = function (noptions) {
 							f.getInfo('exiv.comment')
 								? '*: ' + f.getInfo('exiv.comment')
 								: 'F: ' + f.getInfo('timestamp.comment')
-						), padComment);
+						), padComment)
+						+ '|'
+						+ r(f.parent.getRelativePath(), padFolder)
+						;
 
 					if (f.stats.skipped > 0) {
 						console.info(messages.IconSkipped + ' '  + msg.yellow);
