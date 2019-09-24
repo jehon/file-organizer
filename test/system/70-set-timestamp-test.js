@@ -23,14 +23,15 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 				.done();
 		}
 
-		await assert.untouched(ctx, 'basic/DSC_2506.MOV');
+		await assert.untouched(ctx, 'basic/DSC_2506.MOV'); // Faulty: no comment
 		await t('basic/IMG_20190324_121437.jpg', 'basic/2019-03-24 12-14-37 basic [IMG_20190324_121437].jpg', '2019-03-24 12-14-37');
 		await t('basic/VID_20190324_121446.mp4', 'basic/2019-03-24 12-14-46 basic [VID_20190324_121446].mp4', '2019-03-24 12-14-46');
 		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg',
 			'basic/2017-01-02 03-04-09 basic [my original name].jpg', '2017-01-02 03-04-09');
 
-		// No timestamp
-		await assert.untouched(ctx, '2019 test/1.jpeg');
+
+		await assert.untouched(ctx, '2019 test/1.jpeg'); // Faulty: no timestamp
+		await assert.untouched(ctx, '2019 test/DSC_2506.MOV'); // Faulty: no comment
 
 	});
 });

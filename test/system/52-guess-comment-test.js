@@ -20,7 +20,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 		await t('basic/VID_20190324_121446.mp4', 'basic/2019-03-24 12-14-46 basic [VID_20190324_121446].mp4');
 		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg');
 
-		// No timestamp
-		await t('2019 test/1.jpeg');
+		await t('2019 test/1.jpeg');              // Faulty: No timestamp
+		await t('2019 test/DSC_2506.MOV',        '2019 test/2019-09-19 07-48-25 test [DSC_2506].mov');
 	});
 });
