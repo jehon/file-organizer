@@ -17,7 +17,6 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 	});
 
 	itRun(ctx, [ 'regularize', '--force-timestamp-from-filename' ], async (result) => {
-		result.dump();
 		result.assertSuccess();
 
 		await result.assertConsistency();
