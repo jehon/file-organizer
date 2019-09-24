@@ -20,13 +20,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 		await t('basic/VID_20190324_121446.mp4', 'basic/2019-03-24 12-14-46 basic [VID_20190324_121446].mp4');
 		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg');
 
-		// Legacy
-
-		await assert.fileExists(ctx, '2019 test/2019-03-24 12-14-38 test [IMG_20190324_121437].jpg')
-			.done();
-		await assert.fileExists(ctx, 'other test/2018-01-02 03-04-05 my comment [1].jpg')
-			.done();
-		await assert.fileExists(ctx, 'other test/2018-01-02 03-04-05 my comment [my original name].jpg')
-			.done();
+		// No timestamp
+		await t('2019 test/1.jpg');
 	});
 });

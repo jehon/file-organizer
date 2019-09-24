@@ -23,5 +23,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 		await t('basic/VID_20190324_121446.mp4');
 		// Modified in beforeEach, resetted by the run
 		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg');
+
+		await t('2019 test/1.jpg');
 	});
 });

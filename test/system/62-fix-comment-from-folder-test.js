@@ -24,10 +24,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg',
 			'basic/2018-01-02 03-04-05 basic [my original name].jpg');
 
-		// Legacy
-
-		await assert.fileExists(ctx,  '2019 test/2019-03-24 12-14-38 test [IMG_20190324_121437].jpg')
-			.withComment('test')
-			.done();
+		// No timestamp
+		await assert.untouched(ctx, '2019 test/1.jpg');
 	});
 });

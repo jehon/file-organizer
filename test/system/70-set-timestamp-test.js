@@ -29,5 +29,8 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg',
 			'basic/2017-01-02 03-04-09 basic [my original name].jpg', '2017-01-02 03-04-09');
 
+		// No timestamp
+		await assert.untouched(ctx, '2019 test/1.jpg');
+
 	});
 });
