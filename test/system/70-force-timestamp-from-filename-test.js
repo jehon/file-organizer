@@ -6,8 +6,14 @@ const { describeAndSetup, itRun, assert } = require('./run-helper.js');
 
 describeAndSetup(path.basename(__filename), (ctx) => {
 	beforeEach(() => {
+		fs.moveSync(ctx.tempPath('basic/DSC_2506.MOV'),
+			ctx.tempPath('basic/2017-01-02 01-02-03 [DSC_2506].mov'));
 		fs.moveSync(ctx.tempPath('basic/2018-01-02 03-04-05 my comment [my original name].jpg'),
 			ctx.tempPath('basic/2017-01-02 03-04-09 my comment [my original name].jpg'));
+		//TODO: mp4 set timestamp
+		// fs.moveSync(ctx.tempPath('basic/VID_20190324_121446.mp4'),
+		// 	ctx.tempPath('basic/VID_20170324_121446.mp4'));
+
 	});
 
 	itRun(ctx, [ 'regularize', '--force-timestamp-from-filename' ], async (result) => {
@@ -24,7 +30,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 				.done();
 		}
 
-		await assert.untouched(ctx, 'basic/DSC_2506.MOV'); // Faulty: no timestamp in exiv or filename
+		await t('basic/DSC_2506.MOV', 'basic/2017-01-02 01-02-03 basic [DSC_2506].mov', '2017-01-02 01-02-03');
 		await t('basic/IMG_20190324_121437.jpg', 'basic/2019-03-24 12-14-37 basic [IMG_20190324_121437].jpg', '2019-03-24 12-14-37');
 		await t('basic/VID_20190324_121446.mp4', 'basic/2019-03-24 12-14-46 basic [VID_20190324_121446].mp4', '2019-03-24 12-14-46');
 		await assert.fileExists(ctx, 'basic/2017-01-02 03-04-09 my comment [my original name].jpg')

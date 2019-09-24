@@ -7,7 +7,7 @@ exports.describe = 'Regularize the files';
 
 exports.builder = {
 	'setComment': {
-		alias: [ 'set-comment', 'sc' ],
+		alias: [ 'set-comment', 'c' ],
 		type: 'string',
 		default: ''
 	},
@@ -17,7 +17,7 @@ exports.builder = {
 		default: false
 	},
 	'forceTimestampFromFilename': {
-		alias: [ 'force-timestamp-from-filename', 'sts' ],
+		alias: [ 'force-timestamp-from-filename', 'ftsfn' ],
 		type: 'boolean',
 		default: false
 	}
