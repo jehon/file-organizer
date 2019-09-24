@@ -24,6 +24,6 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 		// Modified in beforeEach, resetted by the run
 		await t('basic/2018-01-02 03-04-05 my comment [my original name].jpg');
 
-		await t('2019 test/1.jpg');
+		await t('2019 test/1.jpeg');
 	});
 });

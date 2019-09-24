@@ -17,14 +17,14 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 
 		// Legacy
 
-		await assert.fileExists(ctx, 'other test/1.jpeg')
-			.withTS('2018-01-02 03-04-05')
-			.withComment('my comment')
-			.done();
-
-		await assert.fileExists(ctx, 'other test/2.jpeg')
+		await assert.fileExists(ctx, '2019 test/1.jpeg')
 			.withTS('')
 			.withComment('')
+			.done();
+
+		await assert.fileExists(ctx, '2019 test/1.jpeg')
+			.withTS()
+			.withComment()
 			.done();
 	});
 });
