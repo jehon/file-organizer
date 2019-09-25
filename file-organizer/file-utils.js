@@ -22,6 +22,9 @@ async function fileRename(filePathOriginal, filePathDest) {
 			await fileRename(filePathOriginal, filePathOriginal + '.case');
 			await fileRename(filePathOriginal + '.case', filePathDest);
 		} else {
+			if (await fileExists(filePathDest)) {
+				throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal})`);
+			}
 			spawnSync('mv', [ filePathOriginal, filePathDest ]).stdout.toString();
 		}
 		return true;

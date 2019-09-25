@@ -1,7 +1,6 @@
 
 const FileMovie = require('./file-movie.js');
 const { tzFromGPS, tsFromDateAndTimezone } = require('./timestamp.js');
-const BusinessException = require('./business-error.js');
 
 module.exports = class FileMovieUCT extends FileMovie {
 	getType() {
@@ -26,6 +25,6 @@ module.exports = class FileMovieUCT extends FileMovie {
 	}
 
 	exivWriteTimestamp(_ts) {
-		throw new BusinessException('Movie write timestamp not implemented');
+		throw new Error('Movie write timestamp not implemented');
 	}
 };

@@ -4,7 +4,6 @@ var spawnSync = require('child_process').spawnSync;
 const messages = require('./messages.js');
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
-const BusinessError = require('./business-error.js');
 const options = require('./options.js');
 
 const debugExiv = require('debug')('exivtool');
@@ -41,7 +40,7 @@ function runExiv(...params) {
 *** ${processResult.stderr.toString()}
 *********
 `);
-		throw new BusinessError('runExiv failed');
+		throw new Error('runExiv failed');
 	}
 	if (processResult.stdout != null) {
 		return processResult.stdout.toString();
@@ -96,7 +95,7 @@ function translateRotation(rotation) {
 		return 0;
 
 	default:
-		throw new BusinessError(`exivReadRotation: could not understand value: ${rotation}`);
+		throw new Error(`exivReadRotation: could not understand value: ${rotation}`);
 	}
 
 }

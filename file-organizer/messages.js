@@ -5,7 +5,6 @@ const chalk = require('chalk');
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
 
 const options = require('./options.js');
-const BusinessError = require('./business-error.js');
 // const { ellipseLeft } = require('./string-utils.js');
 
 const IconSuccess = chalk.green('✓');
@@ -125,11 +124,10 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 				stats.errorsCount++;
 			}
 		} catch (e) {
-			if (e instanceof BusinessError) {
-				console.error('Business error: ', e.getMessage ? e.getMessage() : '');
-			} else {
-				console.error('Error: ', e);
-			}
+			cleanLine();
+			console.error('!! ');
+			console.error('!! Error: ', e.getMessage ? e.getMessage() : '', e);
+			console.error('!! ');
 			file.stats.errors++;
 			stats.errorsCount++;
 		}

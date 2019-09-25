@@ -10,7 +10,6 @@ const process = require('process');
 
 const messages = require('./messages.js');
 const FileUtils = require('./file-utils.js');
-const BusinessError = require('./business-error.js');
 
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
 const renameOneByOneLimiter = pLimit(1);
@@ -135,19 +134,12 @@ class FileGeneric {
 
 		// Only one at at time...
 		return await renameOneByOneLimiter(async () => {
-			if (await FileUtils.fileExists(newPath)) {
-				throw new BusinessError('A file with the same name already exists');
-			}
-			try {
-				await FileUtils.fileRename(
-					this.getRelativePath(),
-					newPath
-				);
-				this._relativePath = newPath;
-				return true;
-			} catch(e) {
-				throw new BusinessError('Error while renaming file: ', this.getRelativePath(), e);
-			}
+			await FileUtils.fileRename(
+				this.getRelativePath(),
+				newPath
+			);
+			this._relativePath = newPath;
+			return true;
 		});
 	}
 
