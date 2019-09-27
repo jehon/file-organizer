@@ -71,9 +71,10 @@ class FileTimestamped extends FileGeneric {
 	// TODO (indexed): remember names to // rename
 	async getIndexedFilename() {
 		const o = this.calculatedTS.original;
-		// if (/^\d+$/.match(o)) {
-		// 	this.calculatedTS.original = '';
-		// }
+		if (/^\d+$/.test(o)) {
+			// Remove previous index (numerical)
+			this.calculatedTS.original = '';
+		}
 		if (this.getCanonicalFilename() == this.getFilename()) {
 			return this.getFilename();
 		}
