@@ -6,7 +6,7 @@ const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))),
 
 // Test
 exports.dataPath = (...args) => rootPath('test', 'data', ...args);
-exports.tempPath = (...args) => rootPath('test', 'tmp', ...args);
+exports.tempPath = (...args) => rootPath('tmp', 'unit', ...args);
 
 const FileFactory = require('../../file-organizer/file-factory.js');
 
