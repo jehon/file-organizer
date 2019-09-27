@@ -62,24 +62,32 @@ class FileTimestamped extends FileGeneric {
 		if (this.calculatedTS.comment > '') {
 			proposedFilename += ' ' + this.calculatedTS.comment;
 		}
-		if (this.calculatedTS.original > '') {
+		if (this.calculatedTS.original + '' > '') {
 			proposedFilename +=  ' [' + this.calculatedTS.original + ']';
 		}
 		return proposedFilename.trim();
 	}
 
 	async getIndexedFilename() {
+		const o = this.calculatedTS.original;
+		// if (/^\d+$/.match(o)) {
+		// 	this.calculatedTS.original = '';
+		// }
+		if (this.getCanonicalFilename() == this.getFilename()) {
+			return this.getFilename();
+		}
 
+		const p = (proposedFilename) => path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension());
+		if (! await fileExists(p(this.getCanonicalFilename()))) {
+			return this.getCanonicalFilename();
+		}
+
+		this.calculatedTS.original = 1;
+		while(this.calculatedTS.original != o && await fileExists(p(this.getCanonicalFilename()))) {
+			this.calculatedTS.original++;
+		}
 
 		return this.getCanonicalFilename();
-
-		// let i = 0;
-		// while ((await FileUtils.fileExists(proposition(i)))
-		// 		&& (relativePath != proposition(i))) {
-		// 	i++;
-		// }
-
-		// return proposition(i);
 	}
 
 	async check() {

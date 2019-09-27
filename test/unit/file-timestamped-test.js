@@ -4,6 +4,7 @@ const FileFactory = require('../../file-organizer/file-factory.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
 const FileFolder = require('../../file-organizer/file-folder.js');
 const { tsFromString } = require('../../file-organizer/timestamp.js');
+const { fileDelete } = require('../../file-organizer/file-utils.js');
 
 describe('file-timestamped-test', () => {
 	it('should get the timestamp', function() {
@@ -27,44 +28,18 @@ describe('file-timestamped-test', () => {
 		expect((new FileTimestamped('2020-01-19 01-24-02 petitAppPhoto')).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
 	});
 
-	// TODO
-	xit('should find an indexed filename', async function() {
+	it('should find an indexed filename', async function() {
 		const n1 = await createFileGeneric('canon.jpg');
 		await n1.check();
 		expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
+		const n2 = new FileTimestamped(n1.getRelativePath());
+
 		await n1.changeFilename('2018-02-04 13-17-50 canon [test]');
 
-		const n2 = new FileTimestamped(n1.getRelativePath());
 		n2.calculatedTS.original = 'test';
-		// expect(await n2.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon [1]');
+		expect(await n2.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon [1]');
 
-		// expect(await n2.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon [1]');
-
-		// const n2 = new FileTimestamped('2018-02-04 13-17-50 canon');
-		// expect(await n2.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon [1]');
-
-		// const new1 = createFileGeneric('jh-patch-file-patch.txt');
-
-		// 	// new2 does not really exists
-		// 	const new2 = new FileGeneric(path.join(new1.parent.getRelativePath(), 'jh-patch-file-patch~1.txt'));
-		// 	expect(await new2.getIndexedFilenameFor('jh-patch-file-patch')).toBe('jh-patch-file-patch~1');
-
-		// 	await fileDelete(new1.getRelativePath());
-
-
-		// 	expect(await fileExists(__filename)).toBeTruthy();
-		// 	expect(await fileExists(__filename + '.brol')).toBeFalsy();
-
-		// 	expect(await findIndexedFilename('/', 'anything', 'allthing', '.ext')).toBe('anything');
-		// 	expect(await findIndexedFilename('/', 'anything', 'anything~1', '.ext')).toBe('anything');
-
-		// 	// Ask to move to new file, but without telling him it is itself -> should be incremented
-		// 	const new1 = await createFileGeneric('jh-patch-file-patch.txt');
-		// 	expect(await fileExists(new1.getRelativePath())).toBeTruthy();
-		// 	expect(await findIndexedFilename(new1.parent.getRelativePath(), new1.getFilename(), 'anything', new1.getExtension())).toBe('jh-patch-file-patch~1');
-
-		// 	await fileDelete(new1.getRelativePath());
-		// 	expect(await fileExists(new1.getRelativePath())).toBeFalsy();
+		await fileDelete(n1.getRelativePath());
 	});
 
 	describe('check', () => {
