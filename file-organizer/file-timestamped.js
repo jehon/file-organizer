@@ -68,6 +68,20 @@ class FileTimestamped extends FileGeneric {
 		return proposedFilename.trim();
 	}
 
+	async getIndexedFilename() {
+
+
+		return this.getCanonicalFilename();
+
+		// let i = 0;
+		// while ((await FileUtils.fileExists(proposition(i)))
+		// 		&& (relativePath != proposition(i))) {
+		// 	i++;
+		// }
+
+		// return proposition(i);
+	}
+
 	async check() {
 		if (this.calculatedTS.type == 'invalid') {
 			return messages.fileImpossible(this, 'TS_FILENAME_INVALID', 'filename is not parsable');
@@ -144,7 +158,7 @@ class FileTimestamped extends FileGeneric {
 
 		{
 			// Rename to the canonical filename
-			const proposedFilename = this.getCanonicalFilename();
+			const proposedFilename = await this.getIndexedFilename();
 			if (proposedFilename != this.getFilename()) {
 				if (await fileExists(path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension()))) {
 					res = res && messages.fileImpossible(this, 'TS_DUP_FILES', 'file already exists',

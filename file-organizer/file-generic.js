@@ -175,22 +175,5 @@ FileGeneric.getExtension = function(relativePath) {
 	return path.parse(relativePath).ext;
 };
 
-FileGeneric.getIndexedFilenameFor = async function(newFilenameWithoutIndex) {
-	const dir = this.parent.getRelativePath();
-	const existingFilename = this.getFilename();
-	const extension =  this.getExtension();
-
-	const proposition = (i) => (newFilenameWithoutIndex + (i == 0 ? '' : '~' + i));
-
-	let i = 0;
-	while ((await FileUtils.fileExists(path.join(dir, proposition(i) + extension)))
-			&& (existingFilename != proposition(i))) {
-		i++;
-	}
-
-	return proposition(i);
-};
-
-
 module.exports = FileGeneric;
 

@@ -44,18 +44,6 @@ describe('file-generic-test', () => {
 		});
 	});
 
-	// it('should give an indexedFilename', async () => {
-	// 	const new1 = createFileGeneric('jh-patch-file-patch.txt');
-
-	// 	expect(await new1.getIndexedFilenameFor('jh-patch-file-patch')).toBe('jh-patch-file-patch');
-
-	// 	// new2 does not really exists
-	// 	const new2 = new FileGeneric(path.join(new1.parent.getRelativePath(), 'jh-patch-file-patch~1.txt'));
-	// 	expect(await new2.getIndexedFilenameFor('jh-patch-file-patch')).toBe('jh-patch-file-patch~1');
-
-	// 	await fileDelete(new1.getRelativePath());
-	// });
-
 	describe('crud', () => {
 		it('should changeFilename', async () => {
 			const new1 = await createFileGeneric('jh-patch-file-patch.txt');
@@ -77,24 +65,6 @@ describe('file-generic-test', () => {
 			await new1.remove();
 			expect(await fileExists(filename)).toBeFalsy();
 		});
-
-		// TODO
-		xit('should find an indexed filename', async function() {
-			// 	expect(await fileExists(__filename)).toBeTruthy();
-			// 	expect(await fileExists(__filename + '.brol')).toBeFalsy();
-
-			// 	expect(await findIndexedFilename('/', 'anything', 'allthing', '.ext')).toBe('anything');
-			// 	expect(await findIndexedFilename('/', 'anything', 'anything~1', '.ext')).toBe('anything');
-
-			// 	// Ask to move to new file, but without telling him it is itself -> should be incremented
-			// 	const new1 = await createFileGeneric('jh-patch-file-patch.txt');
-			// 	expect(await fileExists(new1.getRelativePath())).toBeTruthy();
-			// 	expect(await findIndexedFilename(new1.parent.getRelativePath(), new1.getFilename(), 'anything', new1.getExtension())).toBe('jh-patch-file-patch~1');
-
-			// 	await fileDelete(new1.getRelativePath());
-			// 	expect(await fileExists(new1.getRelativePath())).toBeFalsy();
-		});
-
 	});
 
 	describe('check', () => {
