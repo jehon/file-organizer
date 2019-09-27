@@ -68,6 +68,7 @@ class FileTimestamped extends FileGeneric {
 		return proposedFilename.trim();
 	}
 
+	// TODO (indexed): remember names to // rename
 	async getIndexedFilename() {
 		const o = this.calculatedTS.original;
 		// if (/^\d+$/.match(o)) {

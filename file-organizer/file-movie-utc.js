@@ -6,7 +6,7 @@ module.exports = class FileMovieUCT extends FileMovie {
 	getType() {
 		return 'movieUTC';
 	}
-	// TODO: hook data functions
+	// TODO (mp4-ts): hook data functions
 
 	exivReadAll(file) {
 		const resultObj = super.exivReadAll(file);

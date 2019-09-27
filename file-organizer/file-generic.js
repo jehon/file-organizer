@@ -108,7 +108,7 @@ class FileGeneric {
 		return await this.rename(newFilename + this.getExtension());
 	}
 
-	// TODO: //ise it
+	// TODO (indexed): //ise it
 	async rename(newFilenameWithExtension) {
 		const newPath = path.join(this.parent.getRelativePath(), newFilenameWithExtension);
 		if (this.getRelativePath() == newPath) {
