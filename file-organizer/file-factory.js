@@ -42,7 +42,6 @@ function FileFactory(filepath, parent = false) {
 		// By extension
 		switch (fext) {
 		case '.txt':
-			// TODO: is this ok?
 			f = new FileGeneric(filepath);
 			break;
 		case '.jpg':

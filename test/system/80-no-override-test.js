@@ -27,7 +27,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 			'basic/2018-01-02 03-04-05 basic [IMG_20190324_121437].jpg');
 
 		// Blocked file
-		await t('basic/IMG_20190324_121437.jpg');
+		await t('basic/IMG_20190324_121437.jpg', 'basic/2019-03-24 12-14-38 basic [1].jpg');
 
 	});
 });

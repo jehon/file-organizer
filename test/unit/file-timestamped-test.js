@@ -138,21 +138,5 @@ describe('file-timestamped-test', () => {
 			});
 
 		});
-
-		it('should detect duplicate files', async() => {
-			const new1 = await createFileGeneric('rotated-bottom-left.jpg');
-			new1.calculatedTS.year = 2018;
-			new1.calculatedTS.comment = 'duplicate test';
-			await new1.check();
-
-			const new2 = await createFileGeneric('rotated-bottom-left.jpg');
-			new2.calculatedTS = new1.calculatedTS;
-			await new2.check();
-			expect(new2.errors).toContain('TS_DUP_FILES');
-
-			new1.remove();
-			new2.remove();
-		});
-
 	});
 });

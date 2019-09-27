@@ -168,17 +168,10 @@ class FileTimestamped extends FileGeneric {
 			// Rename to the canonical filename
 			const proposedFilename = await this.getIndexedFilename();
 			if (proposedFilename != this.getFilename()) {
-				if (await fileExists(path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension()))) {
-					res = res && messages.fileImpossible(this, 'TS_DUP_FILES', 'file already exists',
-						proposedFilename
-					);
-
-				} else {
-					res = res && await messages.fileCommit(this, 'TS_CANONIZE', 'canonize filename',
-						proposedFilename,
-						() => this.changeFilename(proposedFilename)
-					);
-				}
+				res = res && await messages.fileCommit(this, 'TS_CANONIZE', 'canonize filename',
+					proposedFilename,
+					() => this.changeFilename(proposedFilename)
+				);
 			}
 		}
 
