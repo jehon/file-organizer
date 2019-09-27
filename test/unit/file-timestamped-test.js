@@ -29,7 +29,7 @@ describe('file-timestamped-test', () => {
 	});
 
 	it('should find an indexed filename', async function() {
-		const n1 = await createFileGeneric('canon.jpg');
+		const n1 = await createFileGeneric('canon.JPG');
 		await n1.check();
 		expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
 		const n2 = new FileTimestamped(n1.getRelativePath());
