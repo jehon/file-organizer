@@ -1,13 +1,12 @@
 
 
-const fs = require('fs');
 const path = require('path');
 
 const { fileExists } = require('./file-utils');
 
 const messages = require('./messages.js');
 const FileGeneric = require('./file-generic.js');
-const { tsFromString, tsFromDate } = require('./timestamp.js');
+const { tsFromString } = require('./timestamp.js');
 const options = require('./options.js');
 
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
