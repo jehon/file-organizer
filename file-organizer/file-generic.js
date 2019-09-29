@@ -12,7 +12,7 @@ const messages = require('./messages.js');
 const FileUtils = require('./file-utils.js');
 
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
-const renameOneByOneLimiter = pLimit(1);
+const oneByOneLimiter = pLimit(1);
 
 class FileGeneric {
 	constructor(filePath) {
@@ -116,7 +116,7 @@ class FileGeneric {
 		}
 
 		// Only one at at time...
-		return await renameOneByOneLimiter(async () => {
+		return await oneByOneLimiter(async () => {
 			await FileUtils.fileRename(
 				this.getRelativePath(),
 				newPath

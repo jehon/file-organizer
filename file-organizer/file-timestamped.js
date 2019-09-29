@@ -10,6 +10,9 @@ const FileGeneric = require('./file-generic.js');
 const { tsFromString, tsFromDate } = require('./timestamp.js');
 const options = require('./options.js');
 
+const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
+const oneByOneLimiter = pLimit(1);
+
 class FileTimestamped extends FileGeneric {
 	constructor(filePath) {
 		super(filePath);
@@ -40,7 +43,6 @@ class FileTimestamped extends FileGeneric {
 		this.calculatedTS.comment = newC;
 		return true;
 	}
-
 
 	setCalculatedTS(newTS) {
 		if (typeof newTS == 'string') {
@@ -75,21 +77,23 @@ class FileTimestamped extends FileGeneric {
 			// Remove previous index (numerical)
 			this.calculatedTS.original = '';
 		}
-		if (this.getCanonicalFilename() == this.getFilename()) {
-			return this.getFilename();
-		}
+		return await oneByOneLimiter(async () => {
+			if (this.getCanonicalFilename() == this.getFilename()) {
+				return this.getFilename();
+			}
 
-		const p = (proposedFilename) => path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension());
-		if (! await fileExists(p(this.getCanonicalFilename()))) {
+			const p = (proposedFilename) => path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension());
+			if (! await fileExists(p(this.getCanonicalFilename()))) {
+				return this.getCanonicalFilename();
+			}
+
+			this.calculatedTS.original = 1;
+			while(this.calculatedTS.original != o && await fileExists(p(this.getCanonicalFilename()))) {
+				this.calculatedTS.original++;
+			}
+
 			return this.getCanonicalFilename();
-		}
-
-		this.calculatedTS.original = 1;
-		while(this.calculatedTS.original != o && await fileExists(p(this.getCanonicalFilename()))) {
-			this.calculatedTS.original++;
-		}
-
-		return this.getCanonicalFilename();
+		});
 	}
 
 	async check() {
@@ -106,26 +110,32 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		{
-			if (options.setComment) {
-				messages.fileInfo(this, 'TS_COMMENT_OPTION_FILENAME', 'force the comment as requested on command line',
+			if (options.setComment  && this.calculatedTS.comment != options.setComment) {
+				messages.fileInfo(this, 'TS_COMMENT_OPTION_SET', 'force the comment as requested on command line',
 					options.setComment
 				);
 				this.setCalculatedComment(options.setComment);
 			}
-			if (options.forceCommentFromFolder) {
+			if (options.forceCommentFromFilename && this.calculatedTS.comment != this.filenameTS.comment) {
+				messages.fileInfo(this, 'TS_COMMENT_OPTION_FILENAME', 'force the comment from the filename',
+					this.filenameTS.comment
+				);
+				this.setCalculatedComment(this.filenameTS.comment);
+			}
+			if (options.forceCommentFromFolder && this.calculatedTS.comment != this.parent.filenameTS.comment) {
 				messages.fileInfo(this, 'TS_COMMENT_OPTION_FOLDER', 'force the comment from the parent folder',
 					this.parent.filenameTS.comment
 				);
 				this.setCalculatedComment(this.parent.filenameTS.comment);
 			}
 
-			if (!this.calculatedTS.comment && this.filenameTS.comment) {
+			if (!this.calculatedTS.comment && this.filenameTS.comment && this.calculatedTS.comment != this.filenameTS.comment) {
 				messages.fileInfo(this, 'TS_COMMENT_FILENAME', 'set the comment from the filename',
 					this.filenameTS.comment
 				);
 				this.setCalculatedComment(this.filenameTS.comment);
 			}
-			if (!this.calculatedTS.comment && this.parent.filenameTS.comment) {
+			if (!this.calculatedTS.comment && this.parent.filenameTS.comment && this.calculatedTS.comment != this.parent.filenameTS.comment) {
 				messages.fileInfo(this, 'TS_COMMENT_FOLDER', 'set the comment from the parent folder',
 					this.filenameTS.comment
 				);
@@ -134,7 +144,7 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		{
-			if (options.forceTimestampFromFilename) {
+			if (options.forceTimestampFromFilename && this.calculatedTS.TS() != this.filenameTS.TS()) {
 				messages.fileInfo(this, 'TS_TIMESTAMP_FORCE', 'Updating timestamp',
 					this.filenameTS.TS());
 				this.setCalculatedTS(this.filenameTS);
@@ -168,7 +178,10 @@ class FileTimestamped extends FileGeneric {
 
 		{
 			// Rename to the canonical filename
-			const proposedFilename = await this.getIndexedFilename();
+			// console.log('+');
+			// const proposedFilename = await this.getIndexedFilename();
+			// console.log('-');
+			const proposedFilename = this.getCanonicalFilename();
 			if (proposedFilename != this.getFilename()) {
 				res = res && await messages.fileCommit(this, 'TS_CANONIZE', 'canonize filename',
 					proposedFilename,

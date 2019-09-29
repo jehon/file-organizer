@@ -11,6 +11,11 @@ exports.builder = {
 		type: 'string',
 		default: ''
 	},
+	'forceCommentFromFilename': {
+		alias: [ 'force-comment-from-filename', 'fcfn' ],
+		type: 'boolean',
+		default: false
+	},
 	'forceCommentFromFolder': {
 		alias: [ 'force-comment-from-folder', 'fcff' ],
 		type: 'boolean',
