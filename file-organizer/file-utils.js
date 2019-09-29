@@ -1,5 +1,4 @@
 
-const util = require('util');
 var spawnSync = require('child_process').spawnSync;
 
 const fs = require('fs-extra');
@@ -9,7 +8,7 @@ async function fileExists(filePath) {
 }
 
 async function fileDelete(filePath) {
-	return await util.promisify(fs.unlink)(filePath);
+	return await fs.promises.unlink(filePath);
 }
 
 async function fileRename(filePathOriginal, filePathDest) {

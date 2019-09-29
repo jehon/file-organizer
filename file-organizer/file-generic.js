@@ -116,7 +116,7 @@ class FileGeneric {
 		}
 
 		// Only one at at time...
-		return await oneByOneLimiter(async () => {
+		return oneByOneLimiter(async () => {
 			await FileUtils.fileRename(
 				this.getRelativePath(),
 				newPath
@@ -127,7 +127,7 @@ class FileGeneric {
 	}
 
 	async remove() {
-		return await FileUtils.fileDelete(this.getRelativePath());
+		return FileUtils.fileDelete(this.getRelativePath());
 	}
 
 	async iterate(apply) {

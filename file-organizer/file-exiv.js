@@ -165,11 +165,17 @@ module.exports = class FileExiv extends FileTimestamped {
 
 		if (this.exiv_comment != this.calculatedTS.comment && this.calculatedTS.comment) {
 			const c = this.calculatedTS.comment;
-			res = res && await messages.fileCommit(this, 'EXIV_WRITE_COMMENT', 'Write comment', c, () => this.exivWriteComment(c));
+			res = res && await messages.fileCommit(this, 'EXIV_WRITE_COMMENT', 'Write comment',
+				c,
+				() => this.exivWriteComment(c)
+			);
 		}
 
 		if (this.exiv_timestamp.TS() != this.calculatedTS.TS() && this.calculatedTS.TS()) {
-			res = res && await messages.fileCommit(this, 'EXIV_WRITE_TIMESTAMP', 'Write timestamp', this.calculatedTS.TS(), () => this.exivWriteTimestamp(this.calculatedTS.TS()));
+			res = res && await messages.fileCommit(this, 'EXIV_WRITE_TIMESTAMP', 'Write timestamp',
+				this.calculatedTS.TS(),
+				() => this.exivWriteTimestamp(this.calculatedTS.TS())
+			);
 		}
 		return res;
 	}

@@ -118,7 +118,11 @@ describe('file-timestamped-test', () => {
 				new2._parent = new FileFolder('1998 parent comment');
 				expect(new2.parent.getInfo('timestamp.comment')).toBe('parent comment');
 
-				await new2.check();
+				try {
+					await new2.check();
+				} catch (_e) {
+					// expected
+				}
 				// !! new2 is in a non-existant folder
 				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 parent comment');
 

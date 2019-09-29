@@ -35,10 +35,6 @@ class FileTimestamped extends FileGeneric {
 		this.addInfo('timestamp.original', this.filenameTS.original);
 	}
 
-	getTSFromFileModificationDate() {
-		return tsFromDate(fs.statSync(this.getRelativePath()).birthtime);
-	}
-
 	setCalculatedComment(newC) {
 		this.calculatedTS.comment = newC;
 		return true;
@@ -77,12 +73,14 @@ class FileTimestamped extends FileGeneric {
 			// Remove previous index (numerical)
 			this.calculatedTS.original = '';
 		}
-		return await oneByOneLimiter(async () => {
-			if (this.getCanonicalFilename() == this.getFilename()) {
-				return this.getFilename();
-			}
 
-			const p = (proposedFilename) => path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension());
+		if (this.getCanonicalFilename() == this.getFilename()) {
+			return this.getCanonicalFilename();
+		}
+
+		const p = (proposedFilename) => path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension());
+
+		return oneByOneLimiter(async () => {
 			if (! await fileExists(p(this.getCanonicalFilename()))) {
 				return this.getCanonicalFilename();
 			}
@@ -103,10 +101,10 @@ class FileTimestamped extends FileGeneric {
 
 		let res = true;
 		if (this.calculatedTS.comment && this.calculatedTS.comment == this.calculatedTS.original) {
-			messages.fileCommit(this, 'TS_DUP_COMMENT', 'remove duplicate comment/original',
-				'remove original filename',
-				() => { this.calculatedTS.original = ''; }
+			messages.fileInfo(this, 'TS_DUP_COMMENT', 'remove duplicate comment/original',
+				'remove original filename'
 			);
+			this.calculatedTS.original = '';
 		}
 
 		{
@@ -137,7 +135,7 @@ class FileTimestamped extends FileGeneric {
 			}
 			if (!this.calculatedTS.comment && this.parent.filenameTS.comment && this.calculatedTS.comment != this.parent.filenameTS.comment) {
 				messages.fileInfo(this, 'TS_COMMENT_FOLDER', 'set the comment from the parent folder',
-					this.filenameTS.comment
+					this.parent.filenameTS.comment
 				);
 				this.setCalculatedComment(this.parent.filenameTS.comment);
 			}
@@ -146,7 +144,8 @@ class FileTimestamped extends FileGeneric {
 		{
 			if (options.forceTimestampFromFilename && this.calculatedTS.TS() != this.filenameTS.TS()) {
 				messages.fileInfo(this, 'TS_TIMESTAMP_FORCE', 'Updating timestamp',
-					this.filenameTS.TS());
+					this.filenameTS.TS()
+				);
 				this.setCalculatedTS(this.filenameTS);
 			}
 		}
@@ -177,10 +176,9 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		{
+
 			// Rename to the canonical filename
-			// console.log('+');
 			// const proposedFilename = await this.getIndexedFilename();
-			// console.log('-');
 			const proposedFilename = this.getCanonicalFilename();
 			if (proposedFilename != this.getFilename()) {
 				res = res && await messages.fileCommit(this, 'TS_CANONIZE', 'canonize filename',

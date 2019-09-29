@@ -15,7 +15,6 @@ module.exports.IconSuccess    = IconSuccess;
 module.exports.IconFailure    = IconFailure;
 module.exports.IconSkipped    = IconSkipped;
 
-
 const concurrencyLimit = pLimit(10);
 module.exports.concurrencyLimit = concurrencyLimit;
 
@@ -130,6 +129,7 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 			console.error('!! ');
 			file.stats.errors++;
 			stats.errorsCount++;
+			throw e;
 		}
 	}
 
