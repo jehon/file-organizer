@@ -48,7 +48,7 @@ exports.handler = function (noptions) {
 	return Promise.all(options.files.map(f0 =>
 		f0.iterate(
 			f => f.loadData()
-				.then(f => { f.check(); return f; })
+				.then(async f => { await f.check(); return f; })
 				.then(f => {
 					const sep = (f.stats.skipped > 0) ? '|' : '|';
 					cleanLine();
