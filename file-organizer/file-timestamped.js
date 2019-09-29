@@ -178,8 +178,8 @@ class FileTimestamped extends FileGeneric {
 		{
 
 			// Rename to the canonical filename
-			// const proposedFilename = await this.getIndexedFilename();
-			const proposedFilename = this.getCanonicalFilename();
+			const proposedFilename = await this.getIndexedFilename();
+			// const proposedFilename = this.getCanonicalFilename();
 			if (proposedFilename != this.getFilename()) {
 				res = res && await messages.fileCommit(this, 'TS_CANONIZE', 'canonize filename',
 					proposedFilename,
