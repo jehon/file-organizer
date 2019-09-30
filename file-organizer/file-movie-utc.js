@@ -8,21 +8,22 @@ module.exports = class FileMovieUCT extends FileMovie {
 	}
 	// TODO (mp4-ts): hook data functions
 
-	// TODO(async): rewrite
 	async exivReadAll(file) {
-		const resultObj = await super.exivReadAll(file);
-		// console.log(resultObj);
-		if (!resultObj.DateTimeOriginal && resultObj.CreateDate) {
-			// CreateDate
-			// GPSPosition
-			if (resultObj.GPSPosition) {
-				const tz = tzFromGPS(resultObj.GPSPosition);
-				resultObj.DateTimeOriginal = tsFromDateAndTimezone(resultObj.CreateDate.replace(':', '-').replace(':', '-'), tz).TS();
-			} else {
-				resultObj.DateTimeOriginal = resultObj.CreateDate;
-			}
-		}
-		return resultObj;
+		return super.exivReadAll(file)
+			.then(resultObj => {
+				// console.log(resultObj);
+				if (!resultObj.DateTimeOriginal && resultObj.CreateDate) {
+					// CreateDate
+					// GPSPosition
+					if (resultObj.GPSPosition) {
+						const tz = tzFromGPS(resultObj.GPSPosition);
+						resultObj.DateTimeOriginal = tsFromDateAndTimezone(resultObj.CreateDate.replace(':', '-').replace(':', '-'), tz).TS();
+					} else {
+						resultObj.DateTimeOriginal = resultObj.CreateDate;
+					}
+				}
+				return resultObj;
+			});
 	}
 
 	async exivWriteTimestamp(_ts) {

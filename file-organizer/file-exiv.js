@@ -1,6 +1,4 @@
 
-// TODO(async): check for async
-
 var spawnSync = require('child_process').spawnSync;
 
 const messages = require('./messages.js');
