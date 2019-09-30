@@ -100,7 +100,7 @@ describe('file-timestamped-test', () => {
 				expect(new2.getInfo('timestamp.comment')).toBe('exivok01');
 
 				await new2.check();
-				new2.exivReload();
+				await new2.exivReload();
 				expect(new2.exiv_comment).toBe('exivok01');
 				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 exivok01');
 
@@ -142,7 +142,7 @@ describe('file-timestamped-test', () => {
 				expect(new2.getInfo('exiv.comment')).toBe('x test');
 
 				await new2.check();
-				new2.exivReload();
+				await new2.exivReload();
 				expect(new2.exiv_comment).toBe('x test');
 				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 x test');
 

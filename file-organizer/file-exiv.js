@@ -58,7 +58,7 @@ function exivWrite(file, tag, value) {
 	);
 }
 
-function exivReadAll(file) {
+async function exivReadAll(file) {
 	debugExiv('exivRead:', file.getRelativePath());
 	const defaultResult = {
 		'UserComment': '',
@@ -107,13 +107,18 @@ module.exports = class FileExiv extends FileTimestamped {
 		await super.loadData();
 
 		// This take time during construction
-		this.exivReload();
+		await this.exivReload();
 
 		this.setCalculatedTS(this.exiv_timestamp);
 		if (this.exiv_comment) {
 			this.calculatedTS.comment = this.exiv_comment
 				.replace(/( |-|[0-9]{2,10})+$/, '')
 			;
+			if (this.calculatedTS.comment) {
+				if (/\d\d\.\d\d /.test(this.calculatedTS.comment)) {
+					this.calculatedTS.comment = this.calculatedTS.comment.slice(6);
+				}
+			}
 		}
 
 		if (options.forceTimestampFromFilename) {
@@ -123,22 +128,25 @@ module.exports = class FileExiv extends FileTimestamped {
 		return this;
 	}
 
-	exivReadAll() {
+	async exivReadAll() {
 		return exivReadAll(this);
 	}
 
-	exivReload(){
-		const exivData = this.exivReadAll();
+	async exivReload(){
+		return this.exivReadAll().then(exivData => {
 
-		this.exiv_timestamp_raw    = exivData['DateTimeOriginal'];
-		this.exiv_timestamp        = tsFromString(exivData['DateTimeOriginal']);
-		this.exiv_comment          = exivData['UserComment'];
-		this.exiv_orientation      = translateRotation(exivData['Orientation']);
+			this.exiv_timestamp_raw    = exivData['DateTimeOriginal'];
+			this.exiv_timestamp        = tsFromString(exivData['DateTimeOriginal']);
+			this.exiv_comment          = exivData['UserComment'];
+			this.exiv_orientation      = translateRotation(exivData['Orientation']);
 
-		this.addInfo('exiv.timestamp_raw', this.exiv_timestamp_raw);
-		this.addInfo('exiv.timestamp',     this.exiv_timestamp.TS());
-		this.addInfo('exiv.comment',       this.exiv_comment);
-		this.addInfo('exiv.orientation',   this.exiv_orientation);
+			this.addInfo('exiv.timestamp_raw', this.exiv_timestamp_raw);
+			this.addInfo('exiv.timestamp',     this.exiv_timestamp.TS());
+			this.addInfo('exiv.comment',       this.exiv_comment);
+			this.addInfo('exiv.orientation',   this.exiv_orientation);
+
+			return this;
+		});
 	}
 
 	exivWriteTimestamp(ts) {

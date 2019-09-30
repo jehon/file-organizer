@@ -8,8 +8,9 @@ module.exports = class FileMovieUCT extends FileMovie {
 	}
 	// TODO (mp4-ts): hook data functions
 
-	exivReadAll(file) {
-		const resultObj = super.exivReadAll(file);
+	// TODO(async): rewrite
+	async exivReadAll(file) {
+		const resultObj = await super.exivReadAll(file);
 		// console.log(resultObj);
 		if (!resultObj.DateTimeOriginal && resultObj.CreateDate) {
 			// CreateDate
