@@ -9,6 +9,7 @@ addons:
     - libimage-exiftool-perl
     - coreutils
 
-#script:
-#  - npm run test
+script:
+  - npm run test
+  - npm run style
   

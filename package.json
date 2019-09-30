@@ -27,7 +27,8 @@
   "scripts": {
     "clean": "rm -fr tmp",
     "eslint": "eslint .",
-    "test": "npm run --silent clean && npm run --silent test-unit && npm run --silent test-system && npm run --silent eslint && npm run --silent depcheck",
+    "test": "npm run --silent clean && npm run --silent test-unit && npm run --silent test-system",
+    "style": "npm run --silent eslint && npm run --silent depcheck",
     "test-unit": "jasmine --config=test/unit/jasmine.json",
     "test-system": "jasmine --config=test/system/jasmine.json",
     "depcheck": "depcheck"
