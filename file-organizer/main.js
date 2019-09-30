@@ -36,7 +36,7 @@ Object.assign(options, yargs
 			argv.files.push('.');
 		}
 		return Promise.all(argv.files.map(
-			f => fileFactory(f)))
+			f => fileFactory('' + f)))
 			.then(nlist => argv.files = nlist)
 			.then(() => argv);
 	})
