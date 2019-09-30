@@ -1,10 +1,9 @@
 
-var spawnSync = require('child_process').spawnSync;
-
 const messages = require('./messages.js');
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const options = require('./options.js');
+const { fileExec } = require('./file-utils.js');
 
 const debugExiv = require('debug')('exivtool');
 const debugExivOutput = debugExiv.extend('output');
@@ -18,35 +17,38 @@ if (!commandExistsSync('exiftool')) {
 
 // TODO(async): real async
 async function runExiv(...params) {
-	//
-	// Error here ? check exiv is installed :-)
-	//
 	debugExiv('runExiv command:', 'exiftool', ...params);
-	let processResult = spawnSync('exiftool', [ ...params]);
-	debugExiv('runExiv result:', processResult.status);
-	debugExivOutput('runExiv output:', processResult.stdout.toString(), processResult.stderr.toString());
-	switch(processResult.status) {
-	case 0:   // ok, continue
-		break;
-	// case 1:   // The file contains data of an unknown image type
-	case 253: // No exif data found in file
-		return '';
-	case 255: // File does not exists
-		return '';
-	default:
-		console.error(`
-*********
-*** runExiv process: ${processResult.status}
-*** exiftool '${params.join(' , ')}'
-*** ${processResult.stderr.toString()}
-*********
-`);
-		throw new Error('runExiv failed');
-	}
-	if (processResult.stdout != null) {
-		return processResult.stdout.toString();
-	}
-	return '';
+	return fileExec('exiftool', [ ...params])
+		.then(log => { debugExiv('runExiv result: ', log); return log; })
+		.catch(processResult => {
+			console.error(processResult);
+			debugExiv('runExiv result:', processResult.status);
+			debugExivOutput('runExiv output:', processResult.stdout.toString(), processResult.stderr.toString());
+			switch(processResult.status) {
+			case 0:   // ok, continue
+				break;
+				// case 1:   // The file contains data of an unknown image type
+			case 253: // No exif data found in file
+				return '';
+			case 255: // File does not exists
+				return '';
+			default:
+				console.error(`
+			*********
+			*** runExiv process: ${processResult.status}
+			*** exiftool '${params.join(' , ')}'
+			*** ${processResult.stderr.toString()}
+			*********
+			`);
+				throw new Error('runExiv failed');
+			}
+
+			throw processResult;
+		})
+		.then(log => log ? log :'');
+	// let processResult = spawnSync('exiftool', [ ...params]);
+	// debugExiv('runExiv result:', processResult.status);
+	// debugExivOutput('runExiv output:', processResult.stdout.toString(), processResult.stderr.toString());
 }
 
 async function exivWrite(file, tag, value) {
