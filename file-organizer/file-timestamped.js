@@ -1,6 +1,4 @@
 
-// TODO(async): 1 ! check for async
-
 const path = require('path');
 
 const { fileExists } = require('./file-utils');
