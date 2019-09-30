@@ -15,11 +15,11 @@ describe('file-utils-test', function() {
 		expect(await fileExists(new1.getRelativePath())).toBeFalsy();
 	});
 
-	it('should launch subprocesses', function() {
-		expect(fileExec('ls', [ '/' ])).toContain('dev');
-		expect(() => fileExec('anything')).toThrow();
+	it('should launch subprocesses', async function() {
+		expect(await fileExec('ls', [ '/' ])).toContain('dev');
+		await expectAsync(fileExec('anything')).toBeRejected();
+		await expectAsync(fileExec('ls', [ '/anything' ])).toBeRejectedWithError();
 
-		expect(() => fileExec('ls', [ '/anything' ])).toThrowError();
 		// Erase just written error message
 		process.stdout.write('\u001B[1A\r\u001B[K');
 	});

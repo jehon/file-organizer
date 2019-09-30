@@ -45,37 +45,38 @@ exports.handler = function (noptions) {
 	);
 	console.info('-'.repeat(padFilename + padExtension + padTimestamp + padComment + 4));
 
-	return Promise.all(options.files.map(f0 =>
-		f0.iterate(
-			f => f.loadData()
-				.then(async f => { await f.check(); return f; })
-				.then(f => {
-					const sep = (f.stats.skipped > 0) ? '|' : '|';
+	return Promise.all(options.files.map(
+		f0 => f0.iterate(
+			fi => fi.loadData()
+				.then(async fi => { await fi.check(); return fi; })
+				.then(fi => {
+					const sep = (fi.stats.skipped > 0) ? '|' : '|';
 					cleanLine();
 					let msg = ''
-						+ r(f.parent.getRelativePath() + '/' + f.getFilename(), padFilename)
+						+ r(fi.parent.getRelativePath() + '/' + fi.getFilename(), padFilename)
 						+ sep
-						+ l(f.getInfo('file.extension'), padExtension)
+						+ l(fi.getInfo('file.extension'), padExtension)
 						+ sep
-						+ (f.getInfo('exiv.timestamp')
-							? l(f.getInfo('exiv.timestamp'), padTimestamp)
-							: messages.IconFailure + ' ' + l(f.getInfo('timestamp.original'), padTimestamp - 2).red
+						+ (fi.getInfo('exiv.timestamp')
+							? l(fi.getInfo('exiv.timestamp'), padTimestamp)
+							: messages.IconFailure + ' ' + l(fi.getInfo('timestamp.original'), padTimestamp - 2).red
 						)
 						+ sep
-						+ (f.getInfo('exiv.comment')
-							? l(f.getInfo('exiv.comment'), padComment)
-							: messages.IconFailure + ' ' + l(f.getInfo('timestamp.comment'), padComment - 2).red
+						+ (fi.getInfo('exiv.comment')
+							? l(fi.getInfo('exiv.comment'), padComment)
+							: messages.IconFailure + ' ' + l(fi.getInfo('timestamp.comment'), padComment - 2).red
 						)
 						;
 
-					if (f.stats.skipped > 0) {
+					if (fi.stats.skipped > 0) {
 						console.info(messages.IconFailure + ' '  + msg.red);
 					} else {
 						console.info(messages.IconSuccess + ' ' + msg);
 					}
 
 				})
-		)))
+		))
+	)
 		.then(() => {
 			console.info('\n\nDone');
 		});

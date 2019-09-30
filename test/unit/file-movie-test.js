@@ -1,7 +1,7 @@
 
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FileMovie = require('../../file-organizer/file-movie.js');
-const FileFactory = require('../../file-organizer/file-factory.js');
+const fileFactory = require('../../file-organizer/file-factory.js');
 
 async function getMov(dPath) {
 	return new FileMovie(dataPath(dPath)).loadData();
@@ -28,7 +28,8 @@ describe('file-movie-test', () => {
 		await new1.exivWriteTimestamp('2016-02-04 01-02-03');
 		expect(new1.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
 
-		const new2 = await FileFactory(new1.getRelativePath()).loadData();
+		const new2 = await fileFactory(new1.getRelativePath());
+		await new2.loadData();
 		expect(new2.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
 
 		new1.remove();
@@ -42,7 +43,8 @@ describe('file-movie-test', () => {
 		await new1.exivWriteComment(newComment);
 		expect(new1.exiv_comment).toBe(newComment);
 
-		const new2 = await FileFactory(new1.getRelativePath()).loadData();
+		const new2 = await fileFactory(new1.getRelativePath());
+		await new2.loadData();
 		expect(new2.exiv_comment).toBe(newComment);
 
 		new1.remove();

@@ -1,6 +1,6 @@
 
 const { tempPath, createFileGeneric } = require('./helpers.js');
-const FileFactory = require('../../file-organizer/file-factory.js');
+const fileFactory = require('../../file-organizer/file-factory.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
 const FileFolder = require('../../file-organizer/file-folder.js');
 const { tsFromString } = require('../../file-organizer/timestamp.js');
@@ -94,7 +94,8 @@ describe('file-timestamped-test', () => {
 				new1.exivWriteComment('');
 
 				// new2 is a virtual alias of new1 with fields initialized
-				const new2 = await FileFactory(new1.getRelativePath()).loadData();
+				const new2 = await fileFactory(new1.getRelativePath());
+				await new2.loadData();
 				expect(new2.getInfo('exiv.comment')).toBe('');
 				expect(new2.getInfo('timestamp.comment')).toBe('exivok01');
 
@@ -112,7 +113,8 @@ describe('file-timestamped-test', () => {
 				await new1.changeFilename('1998-12-31 12-10-11');
 
 				// new2 is a virtual alias of new1 with fields initialized
-				const new2 = await FileFactory(new1.getRelativePath()).loadData();
+				const new2 = await fileFactory(new1.getRelativePath());
+				await new2.loadData();
 				expect(new2.getInfo('exiv.comment')).toBe('');
 				expect(new2.getInfo('timestamp.comment')).toBe('');
 				new2._parent = new FileFolder('1998 parent comment');
@@ -134,7 +136,8 @@ describe('file-timestamped-test', () => {
 				new1.exivWriteComment('x test');
 
 				// new2 is a virtual alias of new1 with fields initialized
-				const new2 = await FileFactory(new1.getRelativePath()).loadData();
+				const new2 = await fileFactory(new1.getRelativePath());
+				await new2.loadData();
 				expect(new2.exiv_comment).toBe('x test');
 				expect(new2.getInfo('exiv.comment')).toBe('x test');
 

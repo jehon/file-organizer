@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 
 const messages = require('./messages.js');
-
 const FileTimestamped = require('./file-timestamped.js');
 const FileHidden = require('./file-hidden.js');
 
@@ -12,35 +11,32 @@ class FileFolder extends FileTimestamped {
 		return 'folder';
 	}
 
-	getList() {
-		const FileFactory = require('./file-factory.js');
+	async getList() {
+		const fileFactory = require('./file-factory.js');
 
-		const res = [];
-		for(const l of fs.readdirSync(this.getRelativePath())) {
-			if (l == '.' || l == '..') {
-				continue;
-			}
-			const f = FileFactory(path.join(this.getRelativePath(), l));
-			if (f instanceof FileHidden) {
-				continue;
-			}
-			res.push(f);
-		}
-		return res;
+		return fs.promises.readdir(this.getRelativePath())
+			// Remove hidden files
+			.then(list => list.filter(f => f[0] != '.'))
+			.then(list => Promise.all(
+				list.map(async f => await fileFactory(path.join(this.getRelativePath(), f)))
+			))
+			// Remove "FileHidden" files
+			.then(list => list.filter(f => ! (f instanceof FileHidden)));
 	}
 
 	async iterate(apply) {
 		return Promise.resolve(this)
 			.then(() => messages.fileStart(this))
-			.then(() =>
-				Promise.all(this.getList().map(f => {
+			.then(() => this.getList())
+			.then(list => Promise.all(list.map(
+				f => {
 					if (f instanceof FileFolder) {
 						return f.iterate(apply);
 					} else {
 						return messages.concurrencyLimit(() => f.iterate(apply));
 					}
-				}))
-			)
+				})
+			))
 			.then((res) => { messages.fileEnd(this); return res; });
 	}
 }

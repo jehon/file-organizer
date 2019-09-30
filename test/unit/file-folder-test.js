@@ -4,10 +4,10 @@ const FileFolder = require('../../file-organizer/file-folder.js');
 const FileGeneric = require('../../file-organizer/file-generic.js');
 
 describe('file-folder-test', () => {
-	it('should pass on all files', () => {
+	it('should pass on all files', async () => {
 		const folder = new FileFolder(dataPath());
 		let res = 0;
-		for(const f of folder.getList()) {
+		for(const f of await folder.getList()) {
 			expect(f).toEqual(jasmine.any(FileGeneric));
 			expect(f.parent.getRelativePath()).toBe(dataPath());
 			expect(f.getFilename()).not.toBe('.');

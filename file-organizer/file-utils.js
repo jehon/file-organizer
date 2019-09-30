@@ -4,11 +4,11 @@ var spawnSync = require('child_process').spawnSync;
 const fs = require('fs-extra');
 
 async function fileExists(filePath) {
-	return await fs.pathExists(filePath); // fs-extra dependency
+	return fs.pathExists(filePath); // fs-extra dependency
 }
 
 async function fileDelete(filePath) {
-	return await fs.promises.unlink(filePath);
+	return fs.promises.unlink(filePath);
 }
 
 async function fileRename(filePathOriginal, filePathDest) {
@@ -32,7 +32,7 @@ async function fileRename(filePathOriginal, filePathDest) {
 	}
 }
 
-function fileExec(file, params = [], options = {}) {
+async function fileExec(file, params = [], options = {}) {
 	// try {
 	const res = spawnSync(file, params, Object.assign({
 		stdio: [ 'ignore', 'pipe', 'inherit' ]

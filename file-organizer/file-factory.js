@@ -10,7 +10,10 @@ const FileMovie    = require('./file-movie.js');
 const FileMovieUTC = require('./file-movie-utc.js');
 const FilePicture  = require('./file-picture.js');
 
-function FileFactory(filepath, parent = false) {
+async function fileFactory(filepath, parent = false) {
+	if (filepath instanceof FileGeneric) {
+		return filepath;
+	}
 	// Target
 	let f = null;
 
@@ -75,4 +78,4 @@ function FileFactory(filepath, parent = false) {
 	return f;
 }
 
-module.exports = FileFactory;
+module.exports = fileFactory;

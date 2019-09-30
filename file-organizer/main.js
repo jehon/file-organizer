@@ -2,9 +2,8 @@
 
 const yargs = require('yargs');
 
+const fileFactory = require('./file-factory.js');
 const options = require('./options.js');
-const FileFactory = require('./file-factory.js');
-const FileFolder = require('./file-folder.js');
 
 Object.assign(options, yargs
 	.options({
@@ -25,18 +24,20 @@ Object.assign(options, yargs
 			alias: [ 'f' ],
 			type: 'array',
 			default: [ ],
-			coerce: (val) => val.map(f => FileFactory(f))
 		}
 	})
 	.commandDir('commands')
 	.recommendCommands()
 	.strict()
 	.help()
-	.middleware((argv) => {
+	.middleware(async (argv) => {
 		// Put a default value in files if the list is empty
 		if (argv.files.length == 0) {
-			argv.files.push(new FileFolder('.'));
+			argv.files.push('.');
 		}
-		return argv;
+		return Promise.all(argv.files.map(
+			f => fileFactory(f)))
+			.then(nlist => argv.files = nlist)
+			.then(() => argv);
 	})
 	.argv);

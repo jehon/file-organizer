@@ -31,11 +31,12 @@ exports.builder = {
 exports.handler = function (noptions) {
 	Object.assign(options, noptions);
 
-	return Promise.all(options.files.map(f0 =>
-		f0.iterate(
+	return Promise.all(options.files.map(
+		fi => fi.iterate(
 			f => f.loadData()
 				.then(f => f.check())
-		)))
+		))
+	)
 		.then(() => {
 			console.info('\n\nDone');
 		});

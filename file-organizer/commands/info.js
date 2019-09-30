@@ -1,5 +1,5 @@
 
-const FileFactory = require('../file-factory.js');
+const fileFactory = require('../file-factory.js');
 
 exports.command = 'info <key> <file>';
 
@@ -10,11 +10,12 @@ exports.builder = {
 		default: 'exiv.comment'
 	},
 	file: {
-		coerce: val => FileFactory(val)
+		type: 'string'
 	}
 };
 
 exports.handler = async function (options) {
-	await options.file.loadData();
-	console.info(options.file.getInfo(options.key));
+	fileFactory(options.file)
+		.then(f => f.loadData())
+		.then(f => console.info(f.getInfo(options.key)));
 };
