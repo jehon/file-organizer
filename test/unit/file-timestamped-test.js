@@ -91,7 +91,7 @@ describe('file-timestamped-test', () => {
 		describe('should guess comment', () => {
 			it('should take the new comment from file', async () => {
 				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
-				new1.exivWriteComment('');
+				await new1.exivWriteComment('');
 
 				// new2 is a virtual alias of new1 with fields initialized
 				const new2 = await fileFactory(new1.getRelativePath());
@@ -109,7 +109,7 @@ describe('file-timestamped-test', () => {
 
 			it('should take the new comment from the folder', async () => {
 				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
-				new1.exivWriteComment('');
+				await new1.exivWriteComment('');
 				await new1.changeFilename('1998-12-31 12-10-11');
 
 				// new2 is a virtual alias of new1 with fields initialized
@@ -133,7 +133,7 @@ describe('file-timestamped-test', () => {
 
 			it('should keep original comment', async () => {
 				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
-				new1.exivWriteComment('x test');
+				await new1.exivWriteComment('x test');
 
 				// new2 is a virtual alias of new1 with fields initialized
 				const new2 = await fileFactory(new1.getRelativePath());

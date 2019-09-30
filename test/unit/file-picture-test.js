@@ -46,10 +46,10 @@ describe('file-picture-test', () => {
 		const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
 		expect(new1.exiv_timestamp.TS()).toBe('2015-03-06 15-33-40');
 
-		new1.exivWriteTimestamp('2016-02-04 01-02-03');
+		await new1.exivWriteTimestamp('2016-02-04 01-02-03');
 		expect(new1.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
 
-		new1.exivWriteTimestamp('2014-05-06');
+		await new1.exivWriteTimestamp('2014-05-06');
 		expect(new1.exiv_timestamp.TS()).toBe('2014-05-06');
 
 		new1.remove();
@@ -58,13 +58,13 @@ describe('file-picture-test', () => {
 	it('should write comments correctly', async() =>  {
 		const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
 		expect(new1.exiv_comment).toBe('User comments');
-		new1.exivWriteComment('My new comment with àn accent');
+		await new1.exivWriteComment('My new comment with àn accent');
 		expect(new1.exiv_comment).toBe('My new comment with àn accent');
 		new1.remove();
 
 		const new2 = await createFileGeneric('canon.JPG');
 		expect(new2.exiv_comment).toBe('');
-		new2.exivWriteComment('My other comment with àn accent');
+		await new2.exivWriteComment('My other comment with àn accent');
 		expect(new2.exiv_comment).toBe('My other comment with àn accent');
 		new2.remove();
 	});

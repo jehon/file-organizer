@@ -25,7 +25,7 @@ module.exports = class FileMovieUCT extends FileMovie {
 		return resultObj;
 	}
 
-	exivWriteTimestamp(_ts) {
+	async exivWriteTimestamp(_ts) {
 		throw new Error('Movie write timestamp not implemented');
 	}
 };

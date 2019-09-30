@@ -23,7 +23,7 @@ describe('file-movie-utc-test', () => {
 		const new1 = await createFileGeneric(AndroidMP4);
 		expect(new1.exiv_timestamp.TS()).toBe('2019-09-03 12-47-31');
 
-		new1.exivWriteTimestamp('2016-02-04 01-02-03');
+		await ew1.exivWriteTimestamp('2016-02-04 01-02-03');
 		expect(new1.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
 
 		const new2 = await createFileGeneric(AndroidMP4);

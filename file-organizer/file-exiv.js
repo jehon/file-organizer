@@ -18,7 +18,8 @@ if (!commandExistsSync('exiftool')) {
 	process.exit(1);
 }
 
-function runExiv(...params) {
+// TODO(async): real async
+async function runExiv(...params) {
 	//
 	// Error here ? check exiv is installed :-)
 	//
@@ -50,7 +51,7 @@ function runExiv(...params) {
 	return '';
 }
 
-function exivWrite(file, tag, value) {
+async function exivWrite(file, tag, value) {
 	debugExiv('exivWrite:', file.getRelativePath(), tag, value);
 	return runExiv(
 		'-overwrite_original',
@@ -59,16 +60,18 @@ function exivWrite(file, tag, value) {
 }
 
 async function exivReadAll(file) {
-	debugExiv('exivRead:', file.getRelativePath());
+	debugExiv('exivReadAll:', file.getRelativePath());
 	const defaultResult = {
 		'UserComment': '',
 		'DateTimeOriginal': '',
 		'Orientation': ''
 	};
-	const result = runExiv('-j', file.getRelativePath());
-	let resultObj = JSON.parse(result)[0];
-	debugExiv('exivRead got:', file.getRelativePath(), resultObj['DateTimeOriginal']);
-	return Object.assign({}, defaultResult, resultObj);
+	return runExiv('-j', file.getRelativePath())
+		.then(result => {
+			let resultObj = JSON.parse(result)[0];
+			debugExiv('exivReadAll got:', file.getRelativePath(), resultObj['DateTimeOriginal']);
+			return Object.assign({}, defaultResult, resultObj);
+		});
 }
 
 function translateRotation(rotation) {
@@ -134,7 +137,6 @@ module.exports = class FileExiv extends FileTimestamped {
 
 	async exivReload(){
 		return this.exivReadAll().then(exivData => {
-
 			this.exiv_timestamp_raw    = exivData['DateTimeOriginal'];
 			this.exiv_timestamp        = tsFromString(exivData['DateTimeOriginal']);
 			this.exiv_comment          = exivData['UserComment'];
@@ -149,22 +151,28 @@ module.exports = class FileExiv extends FileTimestamped {
 		});
 	}
 
-	exivWriteTimestamp(ts) {
+	async exivWriteTimestamp(ts) {
 		const empty = '0000-00-01 00-00-00';
 		if (ts.length < empty.length) {
 			ts = ts + empty.substr(ts.length);
 			messages.fileInfo(this, 'EXIV_UPGRADE_TIMESTAMP', 'Update timestamp to ' + ts);
 		}
 
-		exivWrite(this, 'DateTimeOriginal', ts.split('-').join(':'));
-		this.exiv_timestamp = tsFromString(ts);
-		this.setCalculatedTS(tsFromString(ts));
+		return exivWrite(this, 'DateTimeOriginal', ts.split('-').join(':'))
+			.then(() => {
+				this.exiv_timestamp = tsFromString(ts);
+				this.setCalculatedTS(tsFromString(ts));
+				return this;
+			});
 	}
 
-	exivWriteComment(msg) {
-		exivWrite(this, 'UserComment', msg);
-		this.exiv_comment = msg;
-		this.calculatedTS.comment = msg;
+	async exivWriteComment(msg) {
+		return exivWrite(this, 'UserComment', msg)
+			.then(() => {
+				this.exiv_comment = msg;
+				this.calculatedTS.comment = msg;
+				return this;
+			});
 	}
 
 	async check() {
