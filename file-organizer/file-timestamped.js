@@ -1,4 +1,5 @@
 
+// TODO(async): 1 ! check for async
 
 const path = require('path');
 
@@ -175,6 +176,7 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		{
+			// TODO(indexed): did not work???
 
 			// Rename to the canonical filename
 			const proposedFilename = await this.getIndexedFilename();

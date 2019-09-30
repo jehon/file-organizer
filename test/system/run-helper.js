@@ -31,6 +31,7 @@ async function describeAndSetup(testName, fn) {
 }
 exports.describeAndSetup = describeAndSetup;
 
+// TODO(cleanup): use async-promise (see file-utils) to be uniform all around
 async function runMain(ctx, ...args) {
 	// console.log('+', ...args);
 	const cmdLine = rootPath('/file-organizer/main.js') + ' "' + args.join('" "') + '"';

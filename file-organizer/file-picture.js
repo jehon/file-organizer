@@ -16,13 +16,12 @@ module.exports = class FilePicture extends FileExiv {
 		const orig = this.getRelativePath();
 		const temp = this.getRelativePath() + '.rotated';
 
-		await fileExec('exiftran', [ '-a', '-p', '-g', orig, '-o', temp ]);
-		await fileExec('touch', [ '-r', orig, temp]);
-		await fileDelete(orig);
-		await fileRename(temp, orig);
-
-		this.exiv_orientation = 0;
-		return true;
+		return fileExec('exiftran', [ '-a', '-p', '-g', orig, '-o', temp ])
+			.then(() => fileExec('touch', [ '-r', orig, temp]))
+			.then(() => fileDelete(orig))
+			.then(() => fileRename(temp, orig))
+			.then(() => this.exiv_orientation = 0)
+			.then(() => true);
 	}
 
 	async check() {
