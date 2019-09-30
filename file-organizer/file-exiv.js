@@ -15,7 +15,6 @@ if (!commandExistsSync('exiftool')) {
 	process.exit(1);
 }
 
-// TODO(async): real async
 async function runExiv(...params) {
 	debugExiv('runExiv command:', 'exiftool', ...params);
 	return fileExec('exiftool', [ ...params])
@@ -46,9 +45,6 @@ async function runExiv(...params) {
 			throw processResult;
 		})
 		.then(log => log ? log :'');
-	// let processResult = spawnSync('exiftool', [ ...params]);
-	// debugExiv('runExiv result:', processResult.status);
-	// debugExivOutput('runExiv output:', processResult.stdout.toString(), processResult.stderr.toString());
 }
 
 async function exivWrite(file, tag, value) {
