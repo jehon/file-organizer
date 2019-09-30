@@ -19,7 +19,6 @@ function removeNames(r) {
 	return str.replace(/\?<[^>]+>/g, '');
 }
 
-// TODO (cleanup) later: remove "h" / "m" possibilities ?
 const ts = /(?<year>[0-9][0-9][0-9][0-9])([-:](?<month>[0-1][0-9])([-:](?<day>[0-3][0-9]))?)?( (?<hour>[0-2][0-9])[:-](?<minute>[0-5][0-9])([:-](?<second>[0-5][0-9])(?<timezone>[+-]\d\d:\d\d)?))?/;
 
 const yearUnammed = /[0-9][0-9][0-9][0-9]/;
@@ -30,15 +29,10 @@ const yearUnammed = /[0-9][0-9][0-9][0-9]/;
 
 const tsOnly = /^${ts.source}$/;
 
-// const version0 = new RegExp(`^${ts.source} (?<original>[A-Z0-9_]*)$`); // Legacy
-// const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( - (?<original>[A-Z0-9_]*))$`); // Legacy
-// const version1 = new RegExp(`^${ts.source}( (?<comment>.*?))?( (- )?(?<original>[A-Z0-9_]{6,}))$`); // Legacy
 
 const raw8_3 = new RegExp('^(?<original>[A-Z0-9_]{8})$');
 
 const final = new RegExp(`^${ts.source}( (?<comment>[^[]*))?( \\[(?<original>.+)\\])?$`);
-
-// console.log(final.source);
 
 const android = /^(?<original>(VID|IMG)_(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))$/;
 
@@ -51,9 +45,6 @@ const minimal = new RegExp(`^(?!${ts.source})(?<original>(?<comment>(?!.* - )(?!
 const invalid = /^(?<comment>(?<original>.*$))/; // Fallback
 
 const matchers = {
-	// version0, // Legacy
-	// version1, // Legacy
-	// final,
 	raw8_3,
 	tsOnly,
 	final,
@@ -254,8 +245,6 @@ exports.tzFromGPS = function(GPS) {
 
 exports.tsFromDateAndTimezone = function(date, tz) {
 	// https://stackoverflow.com/a/43527200/1954789
-
-	// console.log('Summer');
 	const now = moment(date + 'Z');
 	now.tz(tz);
 	return exports.tsFromString(now.format('YYYY-MM-DD HH:mm:ss'));
