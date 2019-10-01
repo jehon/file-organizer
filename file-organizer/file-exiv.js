@@ -9,7 +9,7 @@ const debugExiv = require('debug')('exivtool');
 const debugExivOutput = debugExiv.extend('output');
 
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
-const oneByOneLimiter = pLimit(1);
+const exivExecLimiter = pLimit(5);
 
 var commandExistsSync = require('command-exists').sync;
 // returns true/false; doesn't throw
@@ -18,47 +18,49 @@ if (!commandExistsSync('exiftool')) {
 	process.exit(1);
 }
 
+// @Limited(x)
 async function runExiv(...params) {
-	debugExiv('runExiv command:', 'exiftool', ...params);
-	return fileExec('exiftool', [ ...params])
-		.then(log => { debugExiv('runExiv result: ', log); return log; })
-		.catch(processResult => {
-			console.error(processResult);
-			debugExiv('runExiv result:', processResult.status);
-			debugExivOutput('runExiv output:', processResult.stdout.toString(), processResult.stderr.toString());
-			switch(processResult.status) {
-			case 0:   // ok, continue
-				break;
+	return exivExecLimiter(() =>
+		fileExec('exiftool', [ ...params])
+			.then(log => { debugExiv('runExiv result: ', log); return log; })
+			.catch(processResult => {
+				console.error(processResult);
+				debugExiv('runExiv result:', processResult.status);
+				debugExivOutput('runExiv output:', processResult.stdout.toString(), processResult.stderr.toString());
+				switch(processResult.status) {
+				case 0:   // ok, continue
+					break;
 				// case 1:   // The file contains data of an unknown image type
-			case 253: // No exif data found in file
-				return '';
-			case 255: // File does not exists
-				return '';
-			default:
-				console.error(`
-			*********
-			*** runExiv process: ${processResult.status}
-			*** exiftool '${params.join(' , ')}'
-			*** ${processResult.stderr.toString()}
-			*********
-			`);
-				throw new Error('runExiv failed');
-			}
+				case 253: // No exif data found in file
+					return '';
+				case 255: // File does not exists
+					return '';
+				default:
+					console.error(`
+*********
+*** runExiv process: ${processResult.status}
+*** exiftool '${params.join(' , ')}'
+*** ${processResult.stderr.toString()}
+*********
+`);
+					throw new Error('runExiv failed');
+				}
 
-			throw processResult;
-		})
-		.then(log => log ? log :'');
+				throw processResult;
+			})
+			.then(log => log ? log :'')
+	);
 }
 
 async function exivWrite(file, tag, value) {
 	debugExiv('exivWrite:', file.getRelativePath(), tag, value);
 	return runExiv(
 		'-overwrite_original',
+		// '-m', // Work with legacy files
 		`-${tag}=${value}`, file.getRelativePath()
 	);
 }
 
-// @OneByOne
 async function exivReadAll(file) {
 	debugExiv('exivReadAll:', file.getRelativePath());
 	const defaultResult = {
@@ -66,7 +68,7 @@ async function exivReadAll(file) {
 		'DateTimeOriginal': '',
 		'Orientation': ''
 	};
-	return oneByOneLimiter(() => runExiv('-j', file.getRelativePath()))
+	return runExiv('-j', file.getRelativePath())
 		.then(result => {
 			let resultObj = JSON.parse(result)[0];
 			debugExiv('exivReadAll got:', file.getRelativePath(), resultObj['DateTimeOriginal']);
