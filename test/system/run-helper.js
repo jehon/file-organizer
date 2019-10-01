@@ -25,7 +25,8 @@ async function describeAndSetup(testName, fn) {
 
 		return fn({
 			testName,
-			tempPath: tPath
+			tempPath: tPath,
+			listAll: async () => shellExec(`find ${tPath()} -type f`).then(res => console.info('Listing: \n', res.stdout))
 		});
 	});
 }
