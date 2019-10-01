@@ -33,7 +33,7 @@ class FileFolder extends FileTimestamped {
 					if (f instanceof FileFolder) {
 						return f.iterate(apply);
 					} else {
-						return messages.concurrencyLimit(() => f.iterate(apply));
+						return messages.concurrencyLimit(() => f.iterate(apply)).catch();
 					}
 				})
 			))
