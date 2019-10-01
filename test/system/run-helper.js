@@ -63,9 +63,9 @@ async function itRun(ctx, args, fn) {
 	it('should run with ' + args.join(' '), async () => {
 		const result = await runMain(ctx, ...args);
 
-		fs.writeFile(tempPath('output.cmd'), result.cmd);
-		fs.writeFile(tempPath('output.log'), result.stdout);
-		fs.writeFile(tempPath('output.err'), result.stderr);
+		fs.writeFile(tempPath(ctx.testName + '-output.cmd'), result.cmd);
+		fs.writeFile(tempPath(ctx.testName + '-output.log'), result.stdout);
+		fs.writeFile(tempPath(ctx.testName + '-output.err'), result.stderr);
 
 		result.assertContain = function(str)  {
 			expect(this.stdout).toContain(str);
