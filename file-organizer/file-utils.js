@@ -40,21 +40,21 @@ async function fileRename(filePathOriginal, filePathDest) {
 		return true;
 	}
 
-	try {
-		if (filePathOriginal.toUpperCase() == filePathDest.toUpperCase()) {
-			return fileRename(filePathOriginal, filePathOriginal + '.case')
-				.then(() => fileRename(filePathOriginal + '.case', filePathDest))
-				.then(() => true);
-		} else {
-			if (await fileExists(filePathDest)) {
-				throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal})`);
-			}
-			return fileExec('mv', [ filePathOriginal, filePathDest ])
-				// .then(buffer => console.log(buffer.toString()))
-				.then(() => true);
-		}
-	} catch (e) {
-		throw Error('Error in fileRename: ', e);
+	if (filePathOriginal.toUpperCase() == filePathDest.toUpperCase()) {
+		return fileRename(filePathOriginal, filePathOriginal + '.case')
+			.then(() => fileRename(filePathOriginal + '.case', filePathDest))
+			.then(() => true);
+	} else {
+		return fileExists(filePathDest)
+			.then(doExists => {
+				if (doExists) {
+					throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal})`);
+				}
+			})
+			.then(() => fileExec('mv', [ filePathOriginal, filePathDest ]))
+		// .then(buffer => console.log(buffer.toString()))
+			.then(() => true)
+		;
 	}
 }
 
