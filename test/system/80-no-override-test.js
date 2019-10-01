@@ -18,13 +18,6 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 
 		await result.assertConsistency();
 
-		function t(fold, fnew)  {
-			if (!fnew) {
-				fnew = fold;
-			}
-			return assert.fileExists(ctx, fnew).from(fold).untouched();
-		}
-
 		// Blocking file
 		await assert.fileExists(ctx, 'basic/2019-03-24 12-14-37 basic [IMG_20190324_121437].jpg');
 
