@@ -9,7 +9,7 @@ const { tsFromString } = require('./timestamp.js');
 const options = require('./options.js');
 
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
-const oneByOneLimiter = pLimit(1);
+const indexedFilenameLimiter = pLimit(1);
 
 class FileTimestamped extends FileGeneric {
 	constructor(filePath) {
@@ -65,7 +65,7 @@ class FileTimestamped extends FileGeneric {
 	}
 
 	// TODO (indexed): remember names to // rename
-	// @OneByOne
+	// @Limited(1)
 	async getIndexedFilename() {
 		const o = this.calculatedTS.original;
 		if (/^\d+$/.test(o)) {
@@ -79,7 +79,7 @@ class FileTimestamped extends FileGeneric {
 
 		const p = (proposedFilename) => path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension());
 
-		return oneByOneLimiter(async () => {
+		return indexedFilenameLimiter(async () => {
 			if (! await fileExists(p(this.getCanonicalFilename()))) {
 				return this.getCanonicalFilename();
 			}
