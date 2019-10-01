@@ -10,6 +10,8 @@ const FileMovie    = require('./file-movie.js');
 const FileMovieUTC = require('./file-movie-utc.js');
 const FilePicture  = require('./file-picture.js');
 
+const FileFuture   = require('./file-future.js');
+
 async function fileFactory(filepath, parent = false) {
 	if (filepath instanceof FileGeneric) {
 		return filepath;
@@ -44,6 +46,14 @@ async function fileFactory(filepath, parent = false) {
 
 		// By extension
 		switch (fext) {
+		case '.mpg':
+		case '.avi':
+		case '.mpeg':
+		case '.mkv':
+			// TODO (extensions): future files not already supported
+			f = new FileFuture(filepath);
+			break;
+
 		case '.txt':
 			f = new FileGeneric(filepath);
 			break;
@@ -53,10 +63,6 @@ async function fileFactory(filepath, parent = false) {
 			break;
 		case '.mov':
 		case '.m4v':
-			// case '.mpg':
-			// case '.avi':
-			// case '.mpeg':
-			// case '.mkv':
 			f = new FileMovie(filepath);
 			break;
 		case '.mp4':
