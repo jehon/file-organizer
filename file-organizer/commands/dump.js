@@ -7,6 +7,13 @@ exports.command = 'dump [files..]';
 
 exports.describe = 'Get some info about the files';
 
+exports.builder = {
+	all: {
+		type: 'boolean',
+		default: false
+	}
+};
+
 const padFilename  = 60;
 const padExtension = 5;
 const padTimestamp = 22;
@@ -50,7 +57,12 @@ exports.handler = function (noptions) {
 			fi => fi.loadData()
 				.then(async fi => { await fi.check(); return fi; })
 				.then(fi => {
-					const sep = (fi.stats.skipped > 0) ? '|' : '|';
+					const ok = fi.stats.skipped == 0;
+					if (!options.all && ok) {
+						// Display only problems
+						return;
+					}
+					const sep = (ok) ? '|' : '|';
 					cleanLine();
 					let msg = ''
 						+ r(fi.parent.getRelativePath() + '/' + fi.getFilename(), padFilename)
@@ -68,10 +80,10 @@ exports.handler = function (noptions) {
 						)
 						;
 
-					if (fi.stats.skipped > 0) {
-						console.info(messages.IconFailure + ' '  + msg.red);
-					} else {
+					if (ok) {
 						console.info(messages.IconSuccess + ' ' + msg);
+					} else {
+						console.info(messages.IconFailure + ' '  + msg.red);
 					}
 
 				})
