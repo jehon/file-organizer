@@ -14,7 +14,7 @@
     "moment-timezone": "0.5.26",
     "p-limit": "2.2.1",
     "shell-exec": "1.0.2",
-    "spawn-promise": "^0.1.8",
+    "spawn-promise": "0.1.8",
     "tz-lookup": "6.1.24",
     "yargs": "14.0.0"
   },
