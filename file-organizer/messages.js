@@ -48,10 +48,10 @@ function dumpStats() {
 			(('* '
 				// + (concurrencyLimit.pendingCount > 0 ? concurrencyLimit.pendingCount + ': ' : '')
 				+ `Total files: ${stats.filesCount}`
-				+ ((Object.keys(messagesPerFiles).length > 0) ? ` - pending: ${Object.keys(messagesPerFiles).length}` : '')
+				+ (Object.keys(messagesPerFiles).length  > 0 ? ` - pending: ${Object.keys(messagesPerFiles).length}` : '')
 				+ (stats.fixesCount                      > 0 ? ` - fixes: ${stats.fixesCount}` : '')
-				+ (stats.skippedCount                    > 0 ?` - skipped: ${stats.skippedCount}` : '')
-				+ (stats.errorsCount                     > 0 ?` - errors: ${stats.errorsCount}` : '')
+				+ (stats.skippedCount                    > 0 ? ` - skipped: ${stats.skippedCount}` : '')
+				+ (stats.errorsCount                     > 0 ? ` - errors: ${stats.errorsCount}` : '')
 			)
 			+ ' '
 			+ folders.join(',')).substr(0, process.stdout.columns - 1).white.bgCyan
@@ -78,10 +78,10 @@ module.exports.fileEnd = function(file) {
 		if (messagesPerFiles[k]) {
 			cleanLine();
 
-			const header = (file.getFilename() + file.getExtension()) + ' in ' + chalk.gray(file.parent.getRelativePath());
+			const header = '*** ' + file.parent.getRelativePath() + '/' + chalk.bold(file.getFilename()) + file.getExtension();
 
 			process.stdout.write(header
-			+ '\n  ' + file._originalFilePath
+			+ (file._originalFilePath != file.getRelativePath() ? '\n  < ' + file._originalFilePath : '')
 			+ messagesPerFiles[k] + '\n\n');
 		}
 	}
@@ -170,7 +170,7 @@ module.exports.fileMsg = function (file, code, description, newInfo = null, acti
 
 	messagesPerFiles[k] += '\n  ';
 	messagesPerFiles[k] += action;
-	messagesPerFiles[k] += (description ? ' ' + chalk.yellow.bold((description).padEnd(30, ' ')) : '');
+	messagesPerFiles[k] += (description ? ' ' + chalk.yellow((description).padEnd(40, ' ')) : '');
 	messagesPerFiles[k] += (newInfo     ? ' ' + chalk.blue('' + newInfo) : '');
 
 	dumpStats();
