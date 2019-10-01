@@ -11,6 +11,30 @@ async function fileDelete(filePath) {
 	return fs.promises.unlink(filePath);
 }
 
+const reservedNames = [];
+async function checkAndReserveName(filePath) {
+	if (reservedNames.includes(filePath)) {
+		throw false;
+	}
+	return fileExists(filePath)
+		.then(doExists => {
+			if (doExists) {
+				throw false;
+			}
+			reservedNames.push(filePath);
+			return true;
+		});
+}
+
+function freeReservedName(filePath) {
+	const i = reservedNames.indexOf(filePath);
+	if (i < 0) {
+		return;
+	}
+	reservedNames.splice(i, 1);
+}
+
+
 async function fileRename(filePathOriginal, filePathDest) {
 	if (filePathOriginal == filePathDest) {
 		return true;
@@ -48,5 +72,7 @@ module.exports = {
 	fileExists,
 	fileDelete,
 	fileRename,
-	fileExec
+	fileExec,
+	checkAndReserveName,
+	freeReservedName
 };
