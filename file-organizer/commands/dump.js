@@ -1,5 +1,6 @@
 
 const options = require('../options.js');
+const FileUnsupported = require('../file-unsupported.js');
 const messages = require('../messages.js');
 const { cleanLine } = require('../messages.js');
 
@@ -90,6 +91,7 @@ exports.handler = function (noptions) {
 		))
 	)
 		.then(() => {
-			console.info('\n\nDone');
+			console.info('\n\n');
+			FileUnsupported.dumpDiscoveredExtension();
 		});
 };
