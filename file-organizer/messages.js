@@ -2,7 +2,6 @@
 const ansiEscapes = require('ansi-escapes');
 require('colors');
 const chalk = require('chalk');
-const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
 
 const options = require('./options.js');
 // const { ellipseLeft } = require('./string-utils.js');
@@ -14,9 +13,6 @@ const IconSkipped = chalk.magenta('⚐');
 module.exports.IconSuccess    = IconSuccess;
 module.exports.IconFailure    = IconFailure;
 module.exports.IconSkipped    = IconSkipped;
-
-const concurrencyLimit = pLimit(10);
-module.exports.concurrencyLimit = concurrencyLimit;
 
 const stats = {
 	filesCount: 0,

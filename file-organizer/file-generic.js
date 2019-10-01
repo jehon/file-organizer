@@ -109,6 +109,7 @@ class FileGeneric {
 	}
 
 	// TODO (indexed): //ise it
+	// @OneByOne
 	async rename(newFilenameWithExtension) {
 		const newPath = path.join(this.parent.getRelativePath(), newFilenameWithExtension);
 		if (this.getRelativePath() == newPath) {

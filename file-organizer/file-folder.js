@@ -29,14 +29,8 @@ class FileFolder extends FileTimestamped {
 			.then(() => messages.fileStart(this))
 			.then(() => this.getList())
 			.then(list => Promise.all(list.map(
-				f => {
-					if (f instanceof FileFolder) {
-						return f.iterate(apply);
-					} else {
-						return messages.concurrencyLimit(() => f.iterate(apply)).catch();
-					}
-				})
-			))
+				f => f.iterate(apply).catch()
+			)))
 			.then((res) => { messages.fileEnd(this); return res; });
 	}
 }

@@ -8,6 +8,9 @@ const { fileExec } = require('./file-utils.js');
 const debugExiv = require('debug')('exivtool');
 const debugExivOutput = debugExiv.extend('output');
 
+const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
+const oneByOneLimiter = pLimit(1);
+
 var commandExistsSync = require('command-exists').sync;
 // returns true/false; doesn't throw
 if (!commandExistsSync('exiftool')) {
@@ -55,6 +58,7 @@ async function exivWrite(file, tag, value) {
 	);
 }
 
+// @OneByOne
 async function exivReadAll(file) {
 	debugExiv('exivReadAll:', file.getRelativePath());
 	const defaultResult = {
@@ -62,7 +66,7 @@ async function exivReadAll(file) {
 		'DateTimeOriginal': '',
 		'Orientation': ''
 	};
-	return runExiv('-j', file.getRelativePath())
+	return oneByOneLimiter(() => runExiv('-j', file.getRelativePath()))
 		.then(result => {
 			let resultObj = JSON.parse(result)[0];
 			debugExiv('exivReadAll got:', file.getRelativePath(), resultObj['DateTimeOriginal']);
