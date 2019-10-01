@@ -1,5 +1,7 @@
 
 const spawn = require('spawn-promise');
+const debug = require('debug')('file-utils');
+const debugExec = debug.extend('exec');
 
 const fs = require('fs-extra');
 
@@ -34,7 +36,6 @@ function freeReservedName(filePath) {
 	reservedNames.splice(i, 1);
 }
 
-
 async function fileRename(filePathOriginal, filePathDest) {
 	if (filePathOriginal == filePathDest) {
 		return true;
@@ -59,6 +60,7 @@ async function fileRename(filePathOriginal, filePathDest) {
 }
 
 async function fileExec(file, params = []) {
+	debugExec(file, ...params);
 	return spawn(file, params)
 		.catch(res => {
 			// console.error(res);
