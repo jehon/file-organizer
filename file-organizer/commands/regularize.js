@@ -1,4 +1,5 @@
 
+const FileUnsupported = require('../file-unsupported.js');
 const options = require('../options.js');
 
 exports.command = [ '$0 [files..]', 'regularize [files..]' ];
@@ -39,5 +40,6 @@ exports.handler = function (noptions) {
 	)
 		.then(() => {
 			console.info('\n\nDone');
+			FileUnsupported.dumpDiscoveredExtension();
 		});
 };

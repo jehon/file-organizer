@@ -1,16 +1,16 @@
 
 const fs = require('fs');
 
-const FileGeneric = require('./file-generic.js');
-const FileFolder  = require('./file-folder.js');
+const FileGeneric     = require('./file-generic.js');
+const FileFolder      = require('./file-folder.js');
 
-const FileDelete   = require('./file-delete.js');
-const FileHidden   = require('./file-hidden.js');
-const FileMovie    = require('./file-movie.js');
-const FileMovieUTC = require('./file-movie-utc.js');
-const FilePicture  = require('./file-picture.js');
+const FileDelete      = require('./file-delete.js');
+const FileHidden      = require('./file-hidden.js');
+const FileMovie       = require('./file-movie.js');
+const FileMovieUTC    = require('./file-movie-utc.js');
+const FilePicture     = require('./file-picture.js');
 
-const FileFuture   = require('./file-future.js');
+const FileUnsupported = require('./file-unsupported.js');
 
 async function fileFactory(filepath, parent = false) {
 	if (filepath instanceof FileGeneric) {
@@ -34,48 +34,55 @@ async function fileFactory(filepath, parent = false) {
 		f = new FileDelete(filepath);
 		break;
 	default:
-		try {
+		if (fname != '.' && (fname[0] == '.' || fext == '.')) {
+			// Skip '.xxx'
+			// Skip 'xxx' (no extension)
+			f = new FileHidden(filepath);
+		} else {
+			try {
 			// Is it real? Let's go further
-			if (fs.statSync(filepath).isDirectory()) {
-				f = new FileFolder(filepath);
-				break;
-			}
-		} catch {
+				if (fs.statSync(filepath).isDirectory()) {
+					f = new FileFolder(filepath);
+					break;
+				}
+			} catch {
 			// ok
-		}
+			}
 
-		// By extension
-		switch (fext) {
-		case '.mpg':
-		case '.avi':
-		case '.mpeg':
-		case '.mkv':
-			// TODO (extensions): future files not already supported
-			f = new FileFuture(filepath);
-			break;
+			// By extension
+			switch (fext) {
+			case '.txt':
+				f = new FileGeneric(filepath);
+				break;
+			case '.jpg':
+			case '.jpeg':
+				f = new FilePicture(filepath);
+				break;
+			case '.mov':
+			case '.m4v':
+				f = new FileMovie(filepath);
+				break;
+			case '.mp4':
+				f = new FileMovieUTC(filepath);
+				break;
 
-		case '.txt':
-			f = new FileGeneric(filepath);
-			break;
-		case '.jpg':
-		case '.jpeg':
-			f = new FilePicture(filepath);
-			break;
-		case '.mov':
-		case '.m4v':
-			f = new FileMovie(filepath);
-			break;
-		case '.mp4':
-			f = new FileMovieUTC(filepath);
-			break;
-		default:
-			f = new FileGeneric(filepath);
-			console.error('Unknown file type: ', fext, ' in ', filepath);
-			break;
+			// case '.mpg':
+			// case '.avi':
+			// case '.mpeg':
+			// case '.mkv':
+			// case '.mts':
+			// case '.mod':
+			// case '.png':
+			// case '.wmv':
+			// case '.dng':
+				// TODO (extensions): unsupported
+			default:
+				f = new FileUnsupported(filepath);
+				break;
 
+			}
 		}
 	}
-
 	if (parent) {
 		f._parent = parent;
 	}

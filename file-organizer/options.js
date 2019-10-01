@@ -3,7 +3,8 @@ const defaultOptions = {
 	interactive: true,
 	dryRun: false,
 	withFileSummary: true,
-	withStats: true
+	withStats: true,
+	showHidden: false
 };
 
 const options = {};

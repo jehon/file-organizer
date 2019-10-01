@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const options = require('./options.js');
 const messages = require('./messages.js');
 const FileTimestamped = require('./file-timestamped.js');
 const FileHidden = require('./file-hidden.js');
@@ -15,13 +16,12 @@ class FileFolder extends FileTimestamped {
 		const fileFactory = require('./file-factory.js');
 
 		return fs.promises.readdir(this.getRelativePath())
-			// Remove hidden files
-			.then(list => list.filter(f => f[0] != '.'))
+			.then(list => list.filter(f => f != '.' && f != '..'))
 			.then(list => Promise.all(
 				list.map(async f => await fileFactory(path.join(this.getRelativePath(), f)))
 			))
-			// Remove "FileHidden" files
-			.then(list => list.filter(f => ! (f instanceof FileHidden)));
+			// Remove "FileHidden" files if required
+			.then(list => list.filter(f => options.showHidden || (! (f instanceof FileHidden))));
 	}
 
 	async iterate(apply) {
