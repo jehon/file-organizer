@@ -13,27 +13,28 @@ async function fileDelete(filePath) {
 	return fs.promises.unlink(filePath);
 }
 
-const reservedNames = [];
+const reservedNames = new Set();
+const releasedNames = new Set();
+
 async function checkAndReserveName(filePath) {
-	if (reservedNames.includes(filePath)) {
+	if (reservedNames.has(filePath.toUpperCase())) {
 		throw false;
+	}
+	if (releasedNames.has(filePath.toUpperCase())) {
+		return true;
 	}
 	return fileExists(filePath)
 		.then(doExists => {
 			if (doExists) {
 				throw false;
 			}
-			reservedNames.push(filePath);
+			reservedNames.add(filePath.toUpperCase());
 			return true;
 		});
 }
 
 function freeReservedName(filePath) {
-	const i = reservedNames.indexOf(filePath);
-	if (i < 0) {
-		return;
-	}
-	reservedNames.splice(i, 1);
+	reservedNames.delete(filePath.toUpperCase());
 }
 
 async function fileRename(filePathOriginal, filePathDest) {
@@ -45,18 +46,20 @@ async function fileRename(filePathOriginal, filePathDest) {
 		return fileRename(filePathOriginal, filePathOriginal + '.case')
 			.then(() => fileRename(filePathOriginal + '.case', filePathDest))
 			.then(() => true);
-	} else {
-		return fileExists(filePathDest)
-			.then(doExists => {
-				if (doExists) {
-					throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal})`);
-				}
-			})
-			.then(() => fileExec('mv', [ filePathOriginal, filePathDest ]))
-		// .then(buffer => console.log(buffer.toString()))
-			.then(() => true)
-		;
 	}
+
+	releasedNames.add(filePathOriginal.toUpperCase());
+
+	return checkAndReserveName(filePathDest)
+		.catch((e) => {
+			console.error(e);
+			throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal})`);
+		})
+		.then(() => {
+			return fileExec('mv', [ filePathOriginal, filePathDest ]);
+		})
+		.then(() => freeReservedName(filePathDest))
+		.then(() => true);
 }
 
 async function fileExec(file, params = []) {
@@ -76,5 +79,6 @@ module.exports = {
 	fileRename,
 	fileExec,
 	checkAndReserveName,
+	// TODO(cleanup): Should not be exposed
 	freeReservedName
 };
