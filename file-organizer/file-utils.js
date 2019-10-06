@@ -5,6 +5,8 @@ const debugExec = debug.extend('exec');
 
 const fs = require('fs');
 
+// TODO(indexed): privatise this function ?
+// (used in file-generic-test.js and file-timestamp-test.js -> helper / in file-timestamp.js -> reservation instead)
 async function fileExists(filePath) {
 	return fs.promises.stat(filePath)
 		.then(() => true)
