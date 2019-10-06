@@ -9,7 +9,6 @@ async function fileExists(filePath) {
 	return fs.promises.stat(filePath)
 		.then(() => true)
 		.catch(() => false);
-	// return fs.pathExists(filePath); // fs-extra dependency
 }
 
 async function fileDelete(filePath) {

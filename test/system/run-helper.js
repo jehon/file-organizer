@@ -1,6 +1,7 @@
 
 const path = require('path');
-const fs = require('fs-extra');
+const fs = require('fs');
+const fse = require('fs-extra');
 const shellExec = require('shell-exec');
 
 const datas = require('./data.js');
@@ -21,8 +22,8 @@ async function describeAndSetup(testName, fn) {
 			jasmine.DEFAULT_TIMEOUT_INTERVAL = 20 * 1000;
 			await fs.promises.rmdir(tPath(), { recursive: true });
 			await fs.promises.mkdir(tPath(), { recursive: true });
-			// TODO: fs-extra dependency: copy recursively
-			await fs.copy(dataPath(), tPath());
+			// TODO(fs-extra) dependency: copy recursively
+			await fse.copy(dataPath(), tPath());
 		});
 
 		return fn({
@@ -66,22 +67,25 @@ async function itRun(ctx, args, fn) {
 	it('should run with ' + args.join(' '), async () => {
 		const result = await runMain(ctx, ...args);
 
-		fs.writeFile(tempPath(ctx.testName + '-output.cmd'), result.cmd);
-		fs.writeFile(tempPath(ctx.testName + '-output.log'), result.stdout);
-		fs.writeFile(tempPath(ctx.testName + '-output.err'), result.stderr);
+		// TODO(fs-extra) dependency
+		fse.writeFile(tempPath(ctx.testName + '-output.cmd'), result.cmd);
+		fse.writeFile(tempPath(ctx.testName + '-output.log'), result.stdout);
+		fse.writeFile(tempPath(ctx.testName + '-output.err'), result.stderr);
 
 		result.assertContain = function(str)  {
 			expect(this.stdout).toContain(str);
 		};
 
 		result.assertConsistency = async function(dir = '') {
-			let oList = await fs.readdir(dataPath(dir));
-			let tList = await fs.readdir(ctx.tempPath(dir));
+			let oList = await fs.promises.readdir(dataPath(dir));
+			let tList = await fs.promises.readdir(ctx.tempPath(dir));
 			expect(tList.length).toBe(oList.length, `(in folder ${dir} [${ctx.tempPath(dir)}])`);
 
 			for(const di of oList) {
-				if (fs.lstatSync(dataPath(dir, di)).isDirectory()) {
-					let tmpExists = await fs.pathExists(ctx.tempPath(di));
+				// TODO(fs-extra) dependency: copy recursively
+				if (fse.lstatSync(dataPath(dir, di)).isDirectory()) {
+					// TODO(fs-extra) dependency: copy recursively
+					let tmpExists = await fse.pathExists(ctx.tempPath(di));
 					expect(tmpExists).toBeTruthy();
 					await result.assertConsistency(path.join(dir, di));
 				}
@@ -111,7 +115,8 @@ exports.assert = {
 	fileExists: function (ctx, f) {
 		const fpath = ctx.tempPath(f);
 
-		let promise = fs.pathExists(fpath)
+		// TODO(fs-extra) dependency
+		let promise = fse.pathExists(fpath)
 			.then((res) => expect(res).withContext(`File '${f}' must exists but does not`).toBeTruthy());
 
 		let foriginal = f;
@@ -145,7 +150,8 @@ exports.assert = {
 	},
 
 	fileDoesNotExists: async function (ctx, f) {
-		const exists = await fs.pathExists(path.join(ctx.tempPath(), f));
+		// TODO(fs-extra) dependency
+		const exists = await fse.pathExists(path.join(ctx.tempPath(), f));
 		expect(exists).toBeFalsy(`File ${f} must NOT exists but does`);
 	},
 
