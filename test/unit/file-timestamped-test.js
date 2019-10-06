@@ -121,6 +121,10 @@ describe('file-timestamped-test', () => {
 				expect(new2.parent.getInfo('timestamp.comment')).toBe('parent comment');
 
 				try {
+					// TODO(cleanup): this check lead to a lot of error
+					// const fs = require('fs');
+					// spyOn(fs.promises, 'rename').and.returnValue(Promise.resolve(true));
+					// spyOn(spawn-promise, '?').and.returnValue(Promise.resolve(true));
 					await new2.check();
 				} catch (_e) {
 					// expected

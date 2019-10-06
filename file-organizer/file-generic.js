@@ -105,7 +105,7 @@ class FileGeneric {
 	}
 
 	async changeFilename(newFilename) {
-		return await this.rename(newFilename + this.getExtension());
+		return this.rename(newFilename + this.getExtension());
 	}
 
 	// TODO (indexed): //ise it

@@ -41,7 +41,10 @@ async function fileFactory(filepath, parent = false) {
 		} else {
 			try {
 				// Is it real? Let's go further
-				if (fs.statSync(filepath).isDirectory()) {
+
+				// TODO (async): render this async !
+				const stat = await fs.promises.stat(filepath);
+				if (stat.isDirectory()) {
 					f = new FileFolder(filepath);
 					break;
 				}
