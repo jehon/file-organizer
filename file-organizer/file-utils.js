@@ -55,10 +55,9 @@ async function fileRename(filePathOriginal, filePathDest) {
 			console.error(e);
 			throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal})`);
 		})
-		.then(() => {
-			return fileExec('mv', [ filePathOriginal, filePathDest ]);
-		})
-		.then(() => freeReservedName(filePathDest))
+		.then(() => fs.promises.rename(filePathOriginal, filePathDest ))
+		.then(() => reservedNames.delete(filePathDest.toUpperCase()))
+		.then(() => releasedNames.delete(filePathOriginal.toUpperCase()))
 		.then(() => true);
 }
 
