@@ -1,12 +1,12 @@
 
 const path = require('path');
-const fs = require('fs-extra');
+const fs = require('fs');
 
 const { describeAndSetup, itRun, assert } = require('./run-helper.js');
 
 describeAndSetup(path.basename(__filename), (ctx) => {
 	beforeEach(async () => {
-		fs.moveSync(ctx.tempPath('basic/2018-01-02 03-04-05 my comment [my original name].jpg'),
+		fs.renameSync(ctx.tempPath('basic/2018-01-02 03-04-05 my comment [my original name].jpg'),
 			ctx.tempPath('basic/2019-03-24 12-14-38 basic [IMG_20190324_121437].jpg'));
 		// await ctx.listAll();
 	});

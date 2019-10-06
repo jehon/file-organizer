@@ -19,7 +19,9 @@ async function describeAndSetup(testName, fn) {
 	describe(testName, () => {
 		beforeEach(async () => {
 			jasmine.DEFAULT_TIMEOUT_INTERVAL = 20 * 1000;
-			await fs.emptyDir(tPath());
+			await fs.promises.rmdir(tPath(), { recursive: true });
+			await fs.promises.mkdir(tPath(), { recursive: true });
+			// TODO: fs-extra dependency: copy recursively
 			await fs.copy(dataPath(), tPath());
 		});
 

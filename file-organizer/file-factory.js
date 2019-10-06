@@ -40,7 +40,7 @@ async function fileFactory(filepath, parent = false) {
 			f = new FileHidden(filepath);
 		} else {
 			try {
-			// Is it real? Let's go further
+				// Is it real? Let's go further
 				if (fs.statSync(filepath).isDirectory()) {
 					f = new FileFolder(filepath);
 					break;

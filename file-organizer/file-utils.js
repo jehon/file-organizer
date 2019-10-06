@@ -3,10 +3,13 @@ const spawn = require('spawn-promise');
 const debug = require('debug')('file-utils');
 const debugExec = debug.extend('exec');
 
-const fs = require('fs-extra');
+const fs = require('fs');
 
 async function fileExists(filePath) {
-	return fs.pathExists(filePath); // fs-extra dependency
+	return fs.promises.stat(filePath)
+		.then(() => true)
+		.catch(() => false);
+	// return fs.pathExists(filePath); // fs-extra dependency
 }
 
 async function fileDelete(filePath) {

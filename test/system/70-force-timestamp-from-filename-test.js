@@ -1,17 +1,17 @@
 
 const path = require('path');
-const fs = require('fs-extra');
+const fs = require('fs');
 
 const { describeAndSetup, itRun, assert } = require('./run-helper.js');
 
 describeAndSetup(path.basename(__filename), (ctx) => {
 	beforeEach(() => {
-		fs.moveSync(ctx.tempPath('basic/DSC_2506.MOV'),
+		fs.renameSync(ctx.tempPath('basic/DSC_2506.MOV'),
 			ctx.tempPath('basic/2017-01-02 01-02-03 [DSC_2506].mov'));
-		fs.moveSync(ctx.tempPath('basic/2018-01-02 03-04-05 my comment [my original name].jpg'),
+		fs.renameSync(ctx.tempPath('basic/2018-01-02 03-04-05 my comment [my original name].jpg'),
 			ctx.tempPath('basic/2017-01-02 03-04-09 my comment [my original name].jpg'));
 		//TODO (mp4-ts): mp4 set timestamp
-		// fs.moveSync(ctx.tempPath('basic/VID_20190324_121446.mp4'),
+		// fs.renameSync(ctx.tempPath('basic/VID_20190324_121446.mp4'),
 		// 	ctx.tempPath('basic/VID_20170324_121446.mp4'));
 
 	});

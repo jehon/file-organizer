@@ -9,7 +9,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 		result.assertSuccess();
 
 		// This would test concistency: :-)
-		// require('fs-extra').removeSync(ctx.tempPath('2019 test/1.jpg'));
+		// require('fs').unlinkSync(ctx.tempPath('2019 test/1.jpg'));
 
 		await result.assertConsistency();
 

@@ -1,6 +1,6 @@
 
 const path = require('path');
-const fs = require('fs-extra');
+const fs = require('fs');
 
 const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))), ...args);
 
@@ -15,7 +15,7 @@ exports.createFileGeneric = async function(subPath, { folder, newName } = {
 	folder: exports.tempPath(),
 	newName: subPath,
 }) {
-	fs.copySync(
+	fs.copyFileSync(
 		exports.dataPath(subPath),
 		folder + path.sep + newName
 	);
@@ -24,7 +24,7 @@ exports.createFileGeneric = async function(subPath, { folder, newName } = {
 };
 
 // Clean up the temp folder !
-beforeAll(function(done) {
-	fs.emptyDir(exports.tempPath()) // fs-extra dependency
-		.then(done);
+beforeAll(async () => {
+	return fs.promises.rmdir(exports.tempPath(), { recursive: true })
+		.then(() => fs.promises.mkdir(exports.tempPath(), { recursive: true }));
 });
