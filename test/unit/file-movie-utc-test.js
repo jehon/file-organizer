@@ -19,7 +19,9 @@ describe('file-movie-utc-test', () => {
 		expect((await getMov(AndroidMP4)).exiv_comment).toBe('');
 	});
 
-	xit('should write timestamps correctly', async() =>  {
+	it('should write timestamps correctly', async() =>  {
+		pending('MP4 write exiv is not developped');
+
 		const new1 = await createFileGeneric(AndroidMP4);
 		expect(new1.exiv_timestamp.TS()).toBe('2019-09-03 12-47-31');
 
