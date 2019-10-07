@@ -5,6 +5,26 @@ const debugExec = debug.extend('exec');
 
 const fs = require('fs');
 
+const reservedNames = new Map();
+const releasedNames = new Set();
+
+function reserveName(filePath, data = null) {
+	reservedNames.set(filePath.toUpperCase(), data);
+	releasedNames.delete(filePath.toUpperCase());
+}
+function isReservedName(filePath) {
+	return reservedNames.has(filePath.toUpperCase());
+}
+
+function releaseName(filePath) {
+	reservedNames.delete(filePath.toUpperCase());
+	releasedNames.add(filePath.toUpperCase());
+}
+function isReleasedName(filePath) {
+	return reservedNames.has(filePath.toUpperCase());
+}
+
+
 // TODO(indexed): privatise this function ?
 // (used in file-generic-test.js and file-timestamp-test.js -> helper / in file-timestamp.js -> reservation instead)
 async function fileExists(filePath) {
@@ -17,14 +37,11 @@ async function fileDelete(filePath) {
 	return fs.promises.unlink(filePath);
 }
 
-const reservedNames = new Set();
-const releasedNames = new Set();
-
 async function checkAndReserveName(filePath) {
-	if (reservedNames.has(filePath.toUpperCase())) {
+	if (isReservedName(filePath)) {
 		throw false;
 	}
-	if (releasedNames.has(filePath.toUpperCase())) {
+	if (isReleasedName(filePath)) {
 		return true;
 	}
 	return fileExists(filePath)
@@ -32,13 +49,9 @@ async function checkAndReserveName(filePath) {
 			if (doExists) {
 				throw false;
 			}
-			reservedNames.add(filePath.toUpperCase());
+			reserveName(filePath);
 			return true;
 		});
-}
-
-function freeReservedName(filePath) {
-	reservedNames.delete(filePath.toUpperCase());
 }
 
 async function fileRename(filePathOriginal, filePathDest) {
@@ -52,7 +65,7 @@ async function fileRename(filePathOriginal, filePathDest) {
 			.then(() => true);
 	}
 
-	releasedNames.add(filePathOriginal.toUpperCase());
+	releaseName(filePathOriginal.toUpperCase());
 
 	return checkAndReserveName(filePathDest)
 		.catch((e) => {
@@ -60,8 +73,7 @@ async function fileRename(filePathOriginal, filePathDest) {
 			throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal})`);
 		})
 		.then(() => fs.promises.rename(filePathOriginal, filePathDest ))
-		.then(() => reservedNames.delete(filePathDest.toUpperCase()))
-		.then(() => releasedNames.delete(filePathOriginal.toUpperCase()))
+		.then(() => releaseName(filePathDest))
 		.then(() => true);
 }
 
@@ -82,6 +94,4 @@ module.exports = {
 	fileRename,
 	fileExec,
 	checkAndReserveName,
-	// TODO(cleanup): Should not be exposed
-	freeReservedName
 };

@@ -37,11 +37,6 @@ describe('file-utils-test', function() {
 		// Now it is reserved
 		await expectAsync(fileUtils.checkAndReserveName(new2Name)).toBeRejected();
 
-		fileUtils.freeReservedName(new2Name);
-
-		// It is again available
-		await expectAsync(fileUtils.checkAndReserveName(new2Name)).toBeResolvedTo(true);
-
 		await fileUtils.fileDelete(new1.getRelativePath());
 	});
 });
