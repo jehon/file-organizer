@@ -2,13 +2,10 @@
 const path = require('path');
 
 const { tempPath, createFileGeneric, dataPath } = require('./helpers.js');
-const { fileDelete, fileExists } = require('../../file-organizer/file-utils.js');
+const fileUtils = require('../../file-organizer/file-utils.js');
 const FileGeneric = require('../../file-organizer/file-generic.js');
 
 const { tsFromString } = require('../../file-organizer/timestamp.js');
-
-// For mock
-const fileUtils = require('../../file-organizer/file-utils.js');
 
 describe('file-generic-test', () => {
 	describe('attributes', () => {
@@ -53,7 +50,7 @@ describe('file-generic-test', () => {
 			expect(new1.getExtension()).toBe('.txt');
 			expect(new1.parent.getRelativePath()).toBe(tempPath());
 
-			await fileDelete(new1.getRelativePath());
+			await fileUtils.fileDelete(new1.getRelativePath());
 		});
 
 		it('should remove the file', async function() {
@@ -61,9 +58,9 @@ describe('file-generic-test', () => {
 
 			let filename = new1.getRelativePath();
 
-			expect(await fileExists(filename)).toBeTruthy();
+			expect(await fileUtils.fileExists(filename)).toBeTruthy();
 			await new1.remove();
-			expect(await fileExists(filename)).toBeFalsy();
+			expect(await fileUtils.fileExists(filename)).toBeFalsy();
 		});
 	});
 
