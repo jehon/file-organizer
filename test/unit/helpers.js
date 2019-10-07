@@ -22,9 +22,3 @@ exports.createFileGeneric = async function(subPath, { folder, newName } = {
 	return fileFactory(path.join(folder, newName))
 		.then(f => f.loadData());
 };
-
-// Clean up the temp folder !
-beforeAll(async () => {
-	return fs.promises.rmdir(exports.tempPath(), { recursive: true })
-		.then(() => fs.promises.mkdir(exports.tempPath(), { recursive: true }));
-});
