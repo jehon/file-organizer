@@ -3,7 +3,7 @@ const messages = require('./messages.js');
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const options = require('./options.js');
-const { fileExec } = require('./file-utils.js');
+const fileUtils = require('./file-utils.js');
 
 const debugExiv = require('debug')('exivtool');
 const debugExivOutput = debugExiv.extend('output');
@@ -21,7 +21,7 @@ if (!commandExistsSync('exiftool')) {
 // @Limited(x)
 async function runExiv(...params) {
 	return exivExecLimiter(() =>
-		fileExec('exiftool', [ ...params])
+		fileUtils.fileExec('exiftool', [ ...params])
 			.then(log => { debugExiv('runExiv result: ', log); return log; })
 			.catch(processResult => {
 				console.error(processResult);

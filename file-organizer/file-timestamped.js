@@ -1,7 +1,7 @@
 
 const path = require('path');
 
-const { fileExists } = require('./file-utils');
+const fileUtils = require('./file-utils');
 
 const messages = require('./messages.js');
 const FileGeneric = require('./file-generic.js');
@@ -80,12 +80,12 @@ class FileTimestamped extends FileGeneric {
 		const p = (proposedFilename) => path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension());
 
 		return indexedFilenameLimiter(async () => {
-			if (! await fileExists(p(this.getCanonicalFilename()))) {
+			if (! await fileUtils.fileExists(p(this.getCanonicalFilename()))) {
 				return this.getCanonicalFilename();
 			}
 
 			this.calculatedTS.original = 1;
-			while(this.calculatedTS.original != o && await fileExists(p(this.getCanonicalFilename()))) {
+			while(this.calculatedTS.original != o && await fileUtils.fileExists(p(this.getCanonicalFilename()))) {
 				this.calculatedTS.original++;
 			}
 

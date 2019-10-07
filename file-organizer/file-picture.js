@@ -1,7 +1,7 @@
 
 const messages = require('./messages.js');
 const FileExiv = require('./file-exiv.js');
-const { fileExec, fileRename, fileDelete } = require('./file-utils.js');
+const fileUtils = require('./file-utils.js');
 
 module.exports = class FilePicture extends FileExiv {
 	async exivRotatePicture() {
@@ -16,10 +16,10 @@ module.exports = class FilePicture extends FileExiv {
 		const orig = this.getRelativePath();
 		const temp = this.getRelativePath() + '.rotated';
 
-		return fileExec('exiftran', [ '-a', '-p', '-g', orig, '-o', temp ])
-			.then(() => fileExec('touch', [ '-r', orig, temp]))
-			.then(() => fileDelete(orig))
-			.then(() => fileRename(temp, orig))
+		return fileUtils.fileExec('exiftran', [ '-a', '-p', '-g', orig, '-o', temp ])
+			.then(() => fileUtils.fileExec('touch', [ '-r', orig, temp ]))
+			.then(() => fileUtils.fileDelete(orig))
+			.then(() => fileUtils.fileRename(temp, orig))
 			.then(() => this.exiv_orientation = 0)
 			.then(() => true);
 	}
