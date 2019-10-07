@@ -16,7 +16,7 @@
     "shell-exec": "1.0.2",
     "spawn-promise": "0.1.8",
     "tz-lookup": "6.1.24",
-    "yargs": "14.0.0"
+    "yargs": "14.2.0"
   },
   "devDependencies": {
     "current-git-branch": "1.1.0",
