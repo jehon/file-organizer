@@ -21,6 +21,7 @@ class FileFolder extends FileTimestamped {
 				list.map(async f => await fileFactory(path.join(this.getRelativePath(), f)))
 			))
 			// Remove "FileHidden" files if required
+			.then(list => { list.sort(); return list; })
 			.then(list => list.filter(f => options.showHidden || (! (f instanceof FileHidden))));
 	}
 
