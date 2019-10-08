@@ -68,11 +68,14 @@ async function fileFactory(filepath, parent = false) {
 			case '.mp4':
 				f = new FileMovieUTC(filepath);
 				break;
+				// Thanks to https://stackoverflow.com/a/40077776/1954789
+				// does not work everytimes...
+				// case '.mkv': --> ffmpeg -i filename.mkv -vcodec copy -acodec copy 1.m4v
+				// case '.mkv': --> ffmpeg -i filename.mkv -c copy 1.m4v
 
 			// case '.mpg':
 			// case '.avi':
 			// case '.mpeg':
-			// case '.mkv':
 			// case '.mts':
 			// case '.mod':
 			// case '.png':
