@@ -1,13 +1,13 @@
 
 const fileFactory = require('../file-factory.js');
 
-exports.command = 'info <key> <file>';
+exports.command = 'info [key] <file>';
 
 exports.describe = 'Get some info about the file';
 
 exports.builder = {
 	key: {
-		default: 'exiv.comment'
+		default: ''
 	},
 	file: {
 		type: 'string'
@@ -17,5 +17,11 @@ exports.builder = {
 exports.handler = async function (options) {
 	fileFactory(options.file)
 		.then(f => f.loadData())
-		.then(f => console.info(f.getInfo(options.key)));
+		.then(f => {
+			if (options.key) {
+				console.info(f.getInfo(options.key));
+			} else {
+				console.info(f.getAllInfos());
+			}
+		});
 };

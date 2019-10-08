@@ -59,6 +59,10 @@ class FileGeneric {
 		return '';
 	}
 
+	getAllInfos() {
+		return Object.assign({}, this._infos);
+	}
+
 	get parent() {
 		if (this._parent == null) {
 			const FileFolder = require('./file-folder.js');
