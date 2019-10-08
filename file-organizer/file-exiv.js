@@ -56,7 +56,7 @@ async function exivWrite(file, tag, value) {
 	debugExiv('exivWrite:', file.getRelativePath(), tag, value);
 	return runExiv(
 		'-overwrite_original',
-		// '-m', // Work with legacy files
+		'-m', // Work with legacy files
 		`-${tag}=${value}`, file.getRelativePath()
 	);
 }
@@ -68,7 +68,9 @@ async function exivReadAll(file) {
 		'DateTimeOriginal': '',
 		'Orientation': ''
 	};
-	return runExiv('-j', file.getRelativePath())
+	return runExiv('-j',
+		'-m', // Work with legacy files
+		file.getRelativePath())
 		.then(result => {
 			let resultObj = JSON.parse(result)[0];
 			debugExiv('exivReadAll got:', file.getRelativePath(), resultObj['DateTimeOriginal']);
