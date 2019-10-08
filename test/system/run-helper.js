@@ -99,7 +99,7 @@ async function itRun(ctx, args, fn) {
 exports.itRun = itRun;
 
 async function getFileExivField(ctx, field, f) {
-	const res = await runMain(ctx, 'info', field, f);
+	const res = await runMain(ctx, 'info', '-k', field, f);
 	res.assertSuccess();
 	return res.stdout.trim();
 }

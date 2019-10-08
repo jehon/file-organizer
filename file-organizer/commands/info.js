@@ -1,12 +1,13 @@
 
 const fileFactory = require('../file-factory.js');
 
-exports.command = 'info [key] <file>';
+exports.command = 'info <file>';
 
 exports.describe = 'Get some info about the file';
 
 exports.builder = {
 	key: {
+		alias: [ 'k' ],
 		default: ''
 	},
 	file: {
