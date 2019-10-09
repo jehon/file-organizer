@@ -58,7 +58,7 @@ exports.handler = function (noptions) {
 			fi => fi.loadData()
 				.then(async fi => { await fi.check(); return fi; })
 				.then(fi => {
-					const ok = fi.stats.skipped == 0;
+					const ok = fi.stats.fixSkipped == 0;
 					if (!options.all && ok) {
 						// Display only problems
 						return;

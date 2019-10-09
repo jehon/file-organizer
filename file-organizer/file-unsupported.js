@@ -6,8 +6,8 @@ const map = new Map();
 class FileUnsupported extends FileHidden {
 	constructor(filePath) {
 		super(filePath);
-		const i = map.has(this.getExtension()) ? map.get(this.getExtension()) : 0;
-		map.set(this.getExtension(), i + 1);
+		const i = map.has(this.getExtension().toLowerCase()) ? map.get(this.getExtension().toLowerCase()) : 0;
+		map.set(this.getExtension().toLowerCase(), i + 1);
 	}
 
 	getType() {

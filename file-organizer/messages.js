@@ -15,12 +15,11 @@ module.exports.IconFailure    = IconFailure;
 module.exports.IconSkipped    = IconSkipped;
 
 const stats = {
-	filesCount: 0,
-	fixesCount: 0,
-	errorsCount: 0,
-	skippedCount: 0,
+	filesTotal: 0,
+	fixesTotal: 0,
+	errorsTotal: 0,
+	fixesSkipped: 0,
 };
-module.exports.stats = stats;
 
 const messagesPerFiles = {};
 const folders = [];
@@ -43,11 +42,11 @@ function dumpStats() {
 		process.stdout.write(
 			(('* '
 				// + (concurrencyLimit.pendingCount > 0 ? concurrencyLimit.pendingCount + ': ' : '')
-				+ `Total files: ${stats.filesCount}`
+				+ `Total files: ${stats.filesTotal}`
 				+ (Object.keys(messagesPerFiles).length  > 0 ? ` - pending: ${Object.keys(messagesPerFiles).length}` : '')
-				+ (stats.fixesCount                      > 0 ? ` - fixes: ${stats.fixesCount}` : '')
-				+ (stats.skippedCount                    > 0 ? ` - skipped: ${stats.skippedCount}` : '')
-				+ (stats.errorsCount                     > 0 ? ` - errors: ${stats.errorsCount}` : '')
+				+ (stats.fixesTotal                      > 0 ? ` - fixes: ${stats.fixesTotal}` : '')
+				+ (stats.fixesSkipped                    > 0 ? ` - skipped: ${stats.fixesSkipped}` : '')
+				+ (stats.errorsTotal                     > 0 ? ` - errors: ${stats.errorsTotal}` : '')
 			)
 			+ ' '
 			+ folders.join(',')).substr(0, process.stdout.columns - 1).white.bgCyan
@@ -70,18 +69,19 @@ module.exports.fileStart = function(file) {
 
 module.exports.fileEnd = function(file) {
 	const k = file.getRelativePath();
-	if (options.withFileSummary) {
-		if (messagesPerFiles[k]) {
+	if (k in messagesPerFiles) {
+		if (options.withFileSummary) {
 			cleanLine();
-
-			const header = '*** ' + file.parent.getRelativePath() + '/' + chalk.bold(file.getFilename()) + file.getExtension();
-
-			process.stdout.write(header
-			+ (file._originalFilePath != file.getRelativePath() ? '\n  < ' + file._originalFilePath : '')
-			+ messagesPerFiles[k] + '\n\n');
+			process.stdout.write(
+				'*** '
+				+ file.parent.getRelativePath() + '/' + chalk.bold(file.getFilename()) + file.getExtension()
+				+ (file._originalFilePath != file.getRelativePath() ? '\n  < ' + file._originalFilePath : '')
+				+ messagesPerFiles[k]
+				+ '\n\n'
+			);
 		}
+		delete messagesPerFiles[k];
 	}
-	delete messagesPerFiles[k];
 	const i = folders.indexOf(file.getRelativePath());
 	if (i >= 0) {
 		folders.splice(i, 1);
@@ -100,8 +100,8 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 	let msg = IconSkipped;
 
 	if (options.dryRun) {
-		file.stats.skipped++;
-		options.skippedCount++;
+		file.stats.fixSkipped++;
+		stats.fixesSkipped++;
 	} else {
 		try {
 			res = await action();
@@ -112,11 +112,11 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 			if (res) {
 				msg = IconSuccess;
 				file.stats.fixed++;
-				stats.fixesCount++;
+				stats.fixesTotal++;
 			} else {
 				msg = IconFailure;
 				file.stats.errors++;
-				stats.errorsCount++;
+				stats.errorsTotal++;
 			}
 		} catch (e) {
 			cleanLine();
@@ -124,8 +124,8 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 			console.error('!! Error: ', e.getMessage ? e.getMessage() : '', e);
 			console.error('!! ');
 			file.stats.errors++;
-			stats.errorsCount++;
-			throw e;
+			stats.errorsTotal++;
+			res = false;
 		}
 	}
 
@@ -135,7 +135,7 @@ module.exports.fileCommit = async function(file, code, description, newInfo = nu
 
 module.exports.fileImpossible = function(file, code, description) {
 	file.stats.errors++;
-	stats.errorsCount++;
+	stats.errorsTotal++;
 	module.exports.fileMsg(file, code, description, null, IconFailure);
 	return false;
 };

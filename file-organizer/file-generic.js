@@ -181,4 +181,3 @@ FileGeneric.getExtension = function(relativePath) {
 };
 
 module.exports = FileGeneric;
-
