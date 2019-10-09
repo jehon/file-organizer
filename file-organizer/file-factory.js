@@ -6,6 +6,7 @@ const FileFolder      = require('./file-folder.js');
 
 const FileDelete      = require('./file-delete.js');
 const FileHidden      = require('./file-hidden.js');
+const FileManual      = require('./file-manual.js');
 const FileMovie       = require('./file-movie.js');
 const FileMovieUTC    = require('./file-movie-utc.js');
 const FilePicture     = require('./file-picture.js');
@@ -56,6 +57,9 @@ async function fileFactory(filepath, parent = false) {
 			switch (fext) {
 			case '.txt':
 				f = new FileGeneric(filepath);
+				break;
+			case '.doc*':
+				f = new FileManual(filepath);
 				break;
 			case '.jpg':
 			case '.jpeg':
