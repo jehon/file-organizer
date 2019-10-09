@@ -55,6 +55,7 @@ async function fileFactory(filepath, parent = false) {
 
 			// By extension
 			switch (fext) {
+			case '.pdf':
 			case '.txt':
 				f = new FileGeneric(filepath);
 				break;
