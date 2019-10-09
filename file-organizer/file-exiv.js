@@ -119,13 +119,8 @@ module.exports = class FileExiv extends FileTimestamped {
 		this.setCalculatedTS(this.exiv_timestamp);
 		if (this.exiv_comment) {
 			this.calculatedTS.comment = this.exiv_comment
-				.replace(/( |-|[0-9]{2,10})+$/, '')
+			// 	.replace(/( |-|[0-9]{2,10})+$/, '')
 			;
-			if (this.calculatedTS.comment) {
-				if (/\d\d\.\d\d /.test(this.calculatedTS.comment)) {
-					this.calculatedTS.comment = this.calculatedTS.comment.slice(6);
-				}
-			}
 		}
 
 		if (options.forceTimestampFromFilename) {
