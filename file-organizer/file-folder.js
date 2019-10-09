@@ -32,7 +32,7 @@ class FileFolder extends FileTimestamped {
 			.then(list => Promise.all(list.map(
 				f => f.iterate(apply)
 			)))
-			.then((res) => { messages.fileEnd(this); return res; });
+			.finally(() => messages.fileEnd(this));
 	}
 }
 

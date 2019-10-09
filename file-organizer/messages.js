@@ -57,11 +57,12 @@ function dumpStats() {
 module.exports.fileStart = function(file) {
 	const k = file.getRelativePath();
 	if (!(k in messagesPerFiles)) {
-		messagesPerFiles[k] = '';
-		stats.filesCount++;
 		const FileFoder = require('./file-folder.js');
 		if (file instanceof FileFoder) {
 			folders.push(file.getRelativePath());
+		} else {
+			messagesPerFiles[k] = '';
+			stats.filesTotal++;
 		}
 	}
 	dumpStats();
@@ -69,7 +70,7 @@ module.exports.fileStart = function(file) {
 
 module.exports.fileEnd = function(file) {
 	const k = file.getRelativePath();
-	if (k in messagesPerFiles) {
+	if (k in messagesPerFiles && messagesPerFiles[k]) {
 		if (options.withFileSummary) {
 			cleanLine();
 			process.stdout.write(
@@ -80,8 +81,8 @@ module.exports.fileEnd = function(file) {
 				+ '\n\n'
 			);
 		}
-		delete messagesPerFiles[k];
 	}
+	delete messagesPerFiles[k];
 	const i = folders.indexOf(file.getRelativePath());
 	if (i >= 0) {
 		folders.splice(i, 1);

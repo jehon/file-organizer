@@ -139,7 +139,7 @@ class FileGeneric {
 		return Promise.resolve(this)
 			.then(() => messages.fileStart(this))
 			.then(() => apply(this))
-			.then((res) => { messages.fileEnd(this); return res; });
+			.finally(() => messages.fileEnd(this));
 	}
 
 	async check() {
