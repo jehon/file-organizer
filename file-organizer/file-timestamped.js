@@ -80,16 +80,23 @@ class FileTimestamped extends FileGeneric {
 		const p = (proposedFilename) => path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension());
 
 		return indexedFilenameLimiter(async () => {
-			if (! await fileUtils.fileExists(p(this.getCanonicalFilename()))) {
+			try {
+				await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getRelativePath());
 				return this.getCanonicalFilename();
+			} catch (_e) {
+				// expected
 			}
 
 			this.calculatedTS.original = 1;
-			while(this.calculatedTS.original != o && await fileUtils.fileExists(p(this.getCanonicalFilename()))) {
+			while(this.calculatedTS.original != o) {
+				try {
+					await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getRelativePath())
+					return this.getCanonicalFilename();
+				} catch(_e) {
+					//expected
+				}
 				this.calculatedTS.original++;
 			}
-
-			return this.getCanonicalFilename();
 		});
 	}
 

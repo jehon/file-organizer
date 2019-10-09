@@ -29,13 +29,16 @@ describe('file-utils-test', function() {
 		const new2Name = new1.getRelativePath() + '.ok';
 
 		// The file exists
-		await expectAsync(fileUtils.checkAndReserveName(new1.getRelativePath())).toBeRejected();
+		await expectAsync(fileUtils.checkAndReserveName(new1.getRelativePath(), 'someone-else')).toBeRejected();
 
 		// It is available
-		await expectAsync(fileUtils.checkAndReserveName(new2Name)).toBeResolvedTo(true);
+		await expectAsync(fileUtils.checkAndReserveName(new2Name, 'for-me')).toBeResolvedTo(true);
+
+		// It is for me
+		await expectAsync(fileUtils.checkAndReserveName(new2Name, 'for-me')).toBeResolvedTo(true);
 
 		// Now it is reserved
-		await expectAsync(fileUtils.checkAndReserveName(new2Name)).toBeRejected();
+		await expectAsync(fileUtils.checkAndReserveName(new2Name, 'someone-else')).toBeRejected();
 
 		await fileUtils.fileDelete(new1.getRelativePath());
 	});
