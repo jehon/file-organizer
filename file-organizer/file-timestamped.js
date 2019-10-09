@@ -90,7 +90,7 @@ class FileTimestamped extends FileGeneric {
 			this.calculatedTS.original = 1;
 			while(this.calculatedTS.original != o) {
 				try {
-					await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getRelativePath())
+					await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getRelativePath());
 					return this.getCanonicalFilename();
 				} catch(_e) {
 					//expected
