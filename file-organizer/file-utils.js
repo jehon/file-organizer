@@ -8,12 +8,17 @@ const fs = require('fs');
 const reservedNames = new Map();
 const releasedNames = new Set();
 
-function reserveName(filePath, data = null) {
-	reservedNames.set(filePath.toUpperCase(), data);
+function reserveNameForMe(filePath, forMe) {
+	reservedNames.set(filePath.toUpperCase(), forMe);
 	releasedNames.delete(filePath.toUpperCase());
 }
-function isReservedName(filePath) {
-	return reservedNames.has(filePath.toUpperCase());
+
+function isReservedNameForSomeoneElse(filePath, forMe) {
+	return reservedNames.has(filePath.toUpperCase()) && reservedNames.get(filePath.toUpperCase()) != forMe;
+}
+
+function isReservedNameForMe(filePath, forMe) {
+	return reservedNames.has(filePath.toUpperCase()) && reservedNames.get(filePath.toUpperCase()) == forMe;
 }
 
 function releaseName(filePath) {
@@ -37,19 +42,25 @@ async function fileDelete(filePath) {
 	return fs.promises.unlink(filePath);
 }
 
-async function checkAndReserveName(filePath) {
-	if (isReservedName(filePath)) {
+async function checkAndReserveName(filePath, forMe) {
+	if (isReservedNameForMe(filePath, forMe)) {
+		return true;
+	}
+
+	if (isReservedNameForSomeoneElse(filePath, forMe)) {
 		throw false;
 	}
+
 	if (isReleasedName(filePath)) {
 		return true;
 	}
+
 	return fileExists(filePath)
 		.then(doExists => {
 			if (doExists) {
 				throw false;
 			}
-			reserveName(filePath);
+			reserveNameForMe(filePath, forMe);
 			return true;
 		});
 }
@@ -65,9 +76,9 @@ async function fileRename(filePathOriginal, filePathDest) {
 			.then(() => true);
 	}
 
-	releaseName(filePathOriginal.toUpperCase());
+	releaseName(filePathOriginal);
 
-	return checkAndReserveName(filePathDest)
+	return checkAndReserveName(filePathDest, filePathOriginal)
 		.catch((e) => {
 			console.error(e);
 			throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal})`);
