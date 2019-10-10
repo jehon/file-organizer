@@ -9,7 +9,7 @@ const path = require('path');
 const process = require('process');
 
 const messages = require('./messages.js');
-const FileUtils = require('./file-utils.js');
+const fileUtils = require('./file-utils.js');
 
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
 const renameLimiter = pLimit(1);
@@ -94,14 +94,14 @@ class FileGeneric {
 	 * Without extension
 	 */
 	getFilename() {
-		return FileGeneric.getFilename(this.getRelativePath());
+		return fileUtils.getFilename(this.getRelativePath());
 	}
 
 	/**
 	 * Format: .blabla
 	 */
 	getExtension() {
-		return FileGeneric.getExtension(this.getRelativePath());
+		return fileUtils.getExtension(this.getRelativePath());
 	}
 
 	async loadData() {
@@ -122,7 +122,7 @@ class FileGeneric {
 
 		// Only one at at time...
 		return renameLimiter(async () => {
-			await FileUtils.fileRename(
+			await fileUtils.fileRename(
 				this.getRelativePath(),
 				newPath
 			);
@@ -132,7 +132,7 @@ class FileGeneric {
 	}
 
 	async remove() {
-		return FileUtils.fileDelete(this.getRelativePath());
+		return fileUtils.fileDelete(this.getRelativePath());
 	}
 
 	async iterate(apply) {

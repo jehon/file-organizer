@@ -1,6 +1,7 @@
 
 const fs = require('fs');
 
+const fileUtils       = require('./file-utils.js');
 const FileGeneric     = require('./file-generic.js');
 const FileFolder      = require('./file-folder.js');
 
@@ -21,8 +22,8 @@ async function fileFactory(filepath, parent = false) {
 	let f = null;
 
 	// File infos
-	const fname = FileGeneric.getFullFilename(filepath);
-	const fext = FileGeneric.getExtension(filepath).toLowerCase();
+	const fname = fileUtils.getFullFilename(filepath);
+	const fext = fileUtils.getExtension(filepath).toLowerCase();
 
 	// By filename:
 	switch (fname) {
