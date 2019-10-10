@@ -1,5 +1,5 @@
 
-const spawn = require('spawn-promise');
+const childProcess = require('child_process');
 const debug = require('debug')('file-utils');
 const debugExec = debug.extend('exec');
 
@@ -90,13 +90,24 @@ async function fileRename(filePathOriginal, filePathDest) {
 
 async function fileExec(file, params = []) {
 	debugExec(file, ...params);
-	return spawn(file, params)
-		.catch(res => {
-			// console.error(res);
-			throw Error(res);
-		})
-		.then(logBuffer => logBuffer ? logBuffer.toString() : '')
-	;
+	return new Promise((resolve, reject) => {
+		childProcess.execFile(file, params, (error, stdout, stderr) => {
+			debugExec(file, ...params, '->', stdout, stderr, error);
+			if (! stdout) {
+				stdout = '';
+			}
+			if (! stderr) {
+				stderr = '';
+			}
+			if (error) {
+				error.stdout = stdout;
+				error.stderr = stderr;
+				reject(error);
+			} else {
+				resolve(stdout);
+			}
+		});
+	});
 }
 
 module.exports = {

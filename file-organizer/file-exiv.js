@@ -25,9 +25,9 @@ async function runExiv(...params) {
 			.then(log => { debugExiv('runExiv result: ', log); return log; })
 			.catch(processResult => {
 				console.error(processResult);
-				debugExiv('runExiv result:', processResult.status);
-				debugExivOutput('runExiv output:', processResult.stdout.toString(), processResult.stderr.toString());
-				switch(processResult.status) {
+				debugExiv('runExiv result:', processResult.code);
+				debugExivOutput('runExiv output:', processResult.stdout, processResult.stderr);
+				switch(processResult.code) {
 				case 0:   // ok, continue
 					break;
 				// case 1:   // The file contains data of an unknown image type
@@ -38,7 +38,7 @@ async function runExiv(...params) {
 				default:
 					console.error(`
 *********
-*** runExiv process: ${processResult.status}
+*** runExiv process: ${processResult.code}
 *** exiftool '${params.join(' , ')}'
 *** ${processResult.stderr.toString()}
 *********
