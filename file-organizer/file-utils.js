@@ -1,9 +1,27 @@
 
 const childProcess = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
 const debug = require('debug')('file-utils');
 const debugExec = debug.extend('exec');
 
-const fs = require('fs');
+function getDirname(relativePath) {
+	return path.parse(relativePath).dir;
+}
+
+function getFullFilename(relativePath) {
+	return path.parse(relativePath).base;
+}
+
+function getFilename(relativePath) {
+	return path.parse(relativePath).name;
+}
+
+function getExtension(relativePath) {
+	return path.parse(relativePath).ext;
+}
+
 
 const reservedNames = new Map();
 const releasedNames = new Set();
@@ -111,6 +129,10 @@ async function fileExec(file, params = []) {
 }
 
 module.exports = {
+	getDirname,
+	getFullFilename,
+	getFilename,
+	getExtension,
 	fileExists,
 	fileDelete,
 	fileRename,

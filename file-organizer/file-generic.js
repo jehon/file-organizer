@@ -168,16 +168,4 @@ class FileGeneric {
 	}
 }
 
-FileGeneric.getFullFilename = function(relativePath) {
-	return path.parse(relativePath).base;
-};
-
-FileGeneric.getFilename = function(relativePath) {
-	return path.parse(relativePath).name;
-};
-
-FileGeneric.getExtension = function(relativePath) {
-	return path.parse(relativePath).ext;
-};
-
 module.exports = FileGeneric;
