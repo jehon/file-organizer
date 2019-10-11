@@ -35,6 +35,16 @@ async function convertToMov(filepath) {
 	);
 }
 
+const converterMixin = (target) => class extends target {
+	async loadData() {
+		return super.loadData();
+	}
+
+	async check() {
+		return super.check();
+	}
+};
+
 module.exports = {
 	convertToMov
 };
