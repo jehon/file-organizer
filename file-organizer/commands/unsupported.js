@@ -1,7 +1,7 @@
 
 const options = require('../options.js');
 const FileUnsupported = require('../file-unsupported.js');
-const { cleanLine } = require('../messages.js');
+const messages = require('../messages.js');
 
 exports.command = 'unsupported';
 
@@ -16,8 +16,7 @@ exports.handler = function (noptions) {
 		f0 => f0.iterate(
 			f => {
 				if (f instanceof FileUnsupported) {
-					cleanLine();
-					console.info('Unsupported: ', f.getRelativePath());
+					messages.writeLine('Unsupported: ', f.getRelativePath());
 				}
 			})
 	))

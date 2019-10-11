@@ -8,13 +8,19 @@
 const path = require('path');
 const process = require('process');
 
+const chalk = require('chalk');
+
 const messages = require('./messages.js');
 const fileUtils = require('./file-utils.js');
+const options = require('./options.js');
 
 const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
 const renameLimiter = pLimit(1);
 
+const activeFilesList = new Map();
+
 class FileGeneric {
+
 	constructor(filePath) {
 		this._relativePath = filePath;
 		this._parent = null;
@@ -35,7 +41,94 @@ class FileGeneric {
 			errors: 0
 		};
 
-		this.errors = [];
+		activeFilesList.set(this.getRelativePath().toUpperCase(), this);
+		messages.stats.filesTotal++;
+		messages.stats.pendindFiles = activeFilesList.size;
+		this.messages = new Map();
+	}
+
+	end() {
+		if (activeFilesList.has(this.getRelativePath().toUpperCase())) {
+			activeFilesList.delete(this.getRelativePath().toUpperCase());
+		}
+		if (options.withFileSummary) {
+			messages.writeLine(
+				'*** '
+				+ this.parent.getRelativePath() + '/' + chalk.bold(this.getFilename()) + this.getExtension()
+				+ (this._originalFilePath != this.getRelativePath() ? '\n  < ' + this._originalFilePath : '')
+				+ Array.from(this.messages.entries())
+					.map(v => v[1])
+					.map(v => '\n  ' + v)
+					.reduce((prev, cur) => prev += cur, '')
+				+ '\n'
+			);
+			this.messages = new Map();
+		}
+		messages.stats.pendindFiles = activeFilesList.size;
+	}
+
+	/**
+	 * @param description(string): free text
+	 *
+	 * @param newInfo(null/string): the new information (display only)
+	 *
+	 * @param icon(null/true/function):
+	 *    null: action errors (impossible)
+	 *    true: info message of success
+	 *    fn: fix function
+	 */
+	addMessage(code, description, newInfo = null, icon = null) {
+		this.messages.set(code, icon
+			+ (description ? ' ' + chalk.yellow((description).padEnd(40, ' ')) : '')
+			+ (newInfo     ? ' ' + chalk.blue('' + newInfo) : '')
+		);
+		messages.dumpStats();
+	}
+
+	addMessageImpossible(code, description) {
+		this.stats.errors++;
+		messages.stats.errorsTotal++;
+		this.addMessage(code, description, null, messages.IconFailure);
+		return false;
+	}
+
+	addMessageInfo(code, description, newInfo = null) {
+		this.addMessage(code, description, newInfo, messages.IconSuccess);
+		return true;
+	}
+
+	async addMessageCommit(code, description, newInfo = null, action = null) {
+		let res = false;
+		let msg = messages.IconSkipped;
+
+		if (options.dryRun) {
+			this.stats.fixSkipped++;
+			messages.stats.fixesSkipped++;
+		} else {
+			try {
+				res = await action();
+
+				if (res === undefined) {
+					res = true;
+				}
+				if (res) {
+					msg = messages.IconSuccess;
+					this.stats.fixed++;
+					messages.stats.fixesTotal++;
+				} else {
+					msg = messages.IconFailure;
+					this.stats.errors++;
+					messages.stats.errorsTotal++;
+				}
+			} catch (e) {
+				messages.notifyError(e);
+				this.stats.errors++;
+				messages.stats.errorsTotal++;
+				res = false;
+			}
+		}
+		this.addMessage(code, description, newInfo, msg);
+		return res;
 	}
 
 	getType() {
@@ -137,9 +230,8 @@ class FileGeneric {
 
 	async iterate(apply) {
 		return Promise.resolve(this)
-			.then(() => messages.fileStart(this))
 			.then(() => apply(this))
-			.finally(() => messages.fileEnd(this));
+			.finally(() => this.end());
 	}
 
 	async check() {
@@ -148,7 +240,7 @@ class FileGeneric {
 			// Lowercase extension
 			if (this.getExtension().toLowerCase() != this.getExtension()) {
 				let proposedFN = this.getFilename() + this.getExtension().toLowerCase();
-				res = res && await messages.fileCommit(this, 'FILE_EXT_UPPERCASE', 'uppercase extension',
+				res = res && await this.addMessageCommit('FILE_EXT_UPPERCASE', 'uppercase extension',
 					proposedFN,
 					() => this.rename(proposedFN)
 				);
@@ -157,7 +249,7 @@ class FileGeneric {
 
 		{
 			if (this.getExtension() == '.jpeg') {
-				res = res && await messages.fileCommit(this, 'FILE_EXT_NORMALIZE', 'align extension to 3 char',
+				res = res && await this.addMessageCommit('FILE_EXT_NORMALIZE', 'align extension to 3 char',
 					'jpg',
 					() => this.rename(this.getFilename() + '.jpg')
 				);

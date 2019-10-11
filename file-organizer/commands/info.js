@@ -1,4 +1,6 @@
 
+const messages = require('../messages.js');
+const options = require('../options.js');
 const fileFactory = require('../file-factory.js');
 
 exports.command = 'info <file>';
@@ -15,14 +17,19 @@ exports.builder = {
 	}
 };
 
-exports.handler = async function (options) {
+exports.handler = async function (noptions) {
+	Object.assign(options, noptions, {
+		withStats: false,
+		withFileSummary: false
+	});
+
 	fileFactory(options.file)
 		.then(f => f.loadData())
 		.then(f => {
 			if (options.key) {
-				console.info(f.getInfo(options.key));
+				messages.writeLine(f.getInfo(options.key));
 			} else {
-				console.info(f.getAllInfos());
+				messages.writeLine(f.getAllInfos());
 			}
 		});
 };

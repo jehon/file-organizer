@@ -17,9 +17,6 @@ Object.assign(options, yargs
 				return val;
 			}
 		},
-		'interactive': {
-			type: 'boolean',
-		},
 		'files': {
 			alias: [ 'f' ],
 			type: 'array',

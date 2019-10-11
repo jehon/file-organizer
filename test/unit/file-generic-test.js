@@ -70,7 +70,7 @@ describe('file-generic-test', () => {
 
 			const new1 = new FileGeneric('canon.JPG', tempPath());
 			await new1.check();
-			expect(new1.errors).toContain('FILE_EXT_UPPERCASE');
+			expect(Array.from(new1.messages.keys())).toContain('FILE_EXT_UPPERCASE');
 			expect(fileUtils.fileRename).toHaveBeenCalledTimes(1);
 			expect(new1.getFilename()).toBe('canon');
 			expect(new1.getExtension()).toBe('.jpg');
@@ -82,7 +82,7 @@ describe('file-generic-test', () => {
 			new1.exiv_timestamp = tsFromString('2018-01-02');
 			new1.exiv_comment = 'comment';
 			await FileGeneric.prototype.check.call(new1); // new1.check();
-			expect(new1.errors).toContain('FILE_EXT_NORMALIZE');
+			expect(Array.from(new1.messages.keys())).toContain('FILE_EXT_NORMALIZE');
 			expect(new1.getExtension()).toBe('.jpg');
 			new1.remove();
 		});

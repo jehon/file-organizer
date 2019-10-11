@@ -1,5 +1,4 @@
 
-const messages = require('./messages.js');
 const FileExiv = require('./file-exiv.js');
 const fileUtils = require('./file-utils.js');
 
@@ -32,7 +31,7 @@ module.exports = class FilePicture extends FileExiv {
 
 		// Rotate according to exiv tag
 		if (this.exiv_orientation != 0) {
-			await messages.fileCommit(this, 'PICT_ROTATE', 'rotate picture',
+			await this.addMessageCommit('PICT_ROTATE', 'rotate picture',
 				this.exiv_orientation,
 				() => this.exivRotatePicture()
 			);

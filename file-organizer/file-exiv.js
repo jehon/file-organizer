@@ -1,5 +1,4 @@
 
-const messages = require('./messages.js');
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const options = require('./options.js');
@@ -154,7 +153,7 @@ module.exports = class FileExiv extends FileTimestamped {
 		const empty = '0000-00-01 00-00-00';
 		if (ts.length < empty.length) {
 			ts = ts + empty.substr(ts.length);
-			messages.fileInfo(this, 'EXIV_UPGRADE_TIMESTAMP', 'Update timestamp to ' + ts);
+			this.addMessageInfo('EXIV_UPGRADE_TIMESTAMP', 'Update timestamp to ' + ts);
 		}
 
 		return exivWrite(this, 'DateTimeOriginal', ts.split('-').join(':'))
@@ -182,14 +181,14 @@ module.exports = class FileExiv extends FileTimestamped {
 
 		if (this.exiv_comment != this.calculatedTS.comment && this.calculatedTS.comment) {
 			const c = this.calculatedTS.comment;
-			res = res && await messages.fileCommit(this, 'EXIV_WRITE_COMMENT', 'Write comment',
+			res = res && await this.addMessageCommit('EXIV_WRITE_COMMENT', 'Write comment',
 				c,
 				() => this.exivWriteComment(c)
 			);
 		}
 
 		if (this.exiv_timestamp.TS() != this.calculatedTS.TS() && this.calculatedTS.TS()) {
-			res = res && await messages.fileCommit(this, 'EXIV_WRITE_TIMESTAMP', 'Write timestamp',
+			res = res && await this.addMessageCommit('EXIV_WRITE_TIMESTAMP', 'Write timestamp',
 				this.calculatedTS.TS(),
 				() => this.exivWriteTimestamp(this.calculatedTS.TS())
 			);

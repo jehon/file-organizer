@@ -3,7 +3,6 @@ const path = require('path');
 
 const fileUtils = require('./file-utils');
 
-const messages = require('./messages.js');
 const FileGeneric = require('./file-generic.js');
 const { tsFromString } = require('./timestamp.js');
 const options = require('./options.js');
@@ -102,12 +101,12 @@ class FileTimestamped extends FileGeneric {
 
 	async check() {
 		if (this.calculatedTS.type == 'invalid') {
-			return messages.fileImpossible(this, 'TS_FILENAME_INVALID', 'filename is not parsable');
+			return this.addMessageImpossible('TS_FILENAME_INVALID', 'filename is not parsable');
 		}
 
 		let res = true;
 		if (this.calculatedTS.comment && this.calculatedTS.comment == this.calculatedTS.original) {
-			messages.fileInfo(this, 'TS_DUP_COMMENT', 'remove duplicate comment/original',
+			this.addMessageInfo('TS_DUP_COMMENT', 'remove duplicate comment/original',
 				'remove original filename'
 			);
 			this.calculatedTS.original = '';
@@ -115,32 +114,32 @@ class FileTimestamped extends FileGeneric {
 
 		{
 			if (options.setComment  && this.calculatedTS.comment != options.setComment) {
-				messages.fileInfo(this, 'TS_COMMENT_OPTION_SET', 'force the comment as requested on command line',
+				this.addMessageInfo('TS_COMMENT_OPTION_SET', 'force the comment as requested on command line',
 					options.setComment
 				);
 				this.setCalculatedComment(options.setComment);
 			}
 			if (options.forceCommentFromFilename && this.calculatedTS.comment != this.filenameTS.comment) {
-				messages.fileInfo(this, 'TS_COMMENT_OPTION_FILENAME', 'force the comment from the filename',
+				this.addMessageInfo('TS_COMMENT_OPTION_FILENAME', 'force the comment from the filename',
 					this.filenameTS.comment
 				);
 				this.setCalculatedComment(this.filenameTS.comment);
 			}
 			if (options.forceCommentFromFolder && this.calculatedTS.comment != this.parent.filenameTS.comment) {
-				messages.fileInfo(this, 'TS_COMMENT_OPTION_FOLDER', 'force the comment from the parent folder',
+				this.addMessageInfo('TS_COMMENT_OPTION_FOLDER', 'force the comment from the parent folder',
 					this.parent.filenameTS.comment
 				);
 				this.setCalculatedComment(this.parent.filenameTS.comment);
 			}
 
 			if (!this.calculatedTS.comment && this.filenameTS.comment && this.calculatedTS.comment != this.filenameTS.comment) {
-				messages.fileInfo(this, 'TS_COMMENT_FILENAME', 'set the comment from the filename',
+				this.addMessageInfo('TS_COMMENT_FILENAME', 'set the comment from the filename',
 					this.filenameTS.comment
 				);
 				this.setCalculatedComment(this.filenameTS.comment);
 			}
 			if (!this.calculatedTS.comment && this.parent.filenameTS.comment && this.calculatedTS.comment != this.parent.filenameTS.comment) {
-				messages.fileInfo(this, 'TS_COMMENT_FOLDER', 'set the comment from the parent folder',
+				this.addMessageInfo('TS_COMMENT_FOLDER', 'set the comment from the parent folder',
 					this.parent.filenameTS.comment
 				);
 				this.setCalculatedComment(this.parent.filenameTS.comment);
@@ -149,7 +148,7 @@ class FileTimestamped extends FileGeneric {
 
 		{
 			if (options.forceTimestampFromFilename && this.calculatedTS.TS() != this.filenameTS.TS()) {
-				messages.fileInfo(this, 'TS_TIMESTAMP_FORCE', 'Updating timestamp',
+				this.addMessageInfo('TS_TIMESTAMP_FORCE', 'Updating timestamp',
 					this.filenameTS.TS()
 				);
 				this.setCalculatedTS(this.filenameTS);
@@ -157,16 +156,16 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		if (!this.calculatedTS.comment) {
-			res = res && messages.fileImpossible(this, 'TS_NO_COMMENT', 'No comment found');
+			res = res && this.addMessageImpossible('TS_NO_COMMENT', 'No comment found');
 		}
 
 		if (this.calculatedTS.TS() == '') {
-			res = res && messages.fileImpossible(this, 'TS_NO_TIMESTAMP', 'No timestamp found');
+			res = res && this.addMessageImpossible('TS_NO_TIMESTAMP', 'No timestamp found');
 		} else {
 			// Check filename according to parent folder TS
 			if (this.parent.calculatedTS.year > 0) {
 				if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
-					res = res && messages.fileImpossible(this, 'TS_PARENT_INCOHERENT',
+					res = res && this.addMessageImpossible('TS_PARENT_INCOHERENT',
 						`calculated timestamp incoherent to parent folder (${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()})`
 					);
 				}
@@ -188,7 +187,7 @@ class FileTimestamped extends FileGeneric {
 			// const proposedFilename = await this.getIndexedFilename();
 			const proposedFilename = this.getCanonicalFilename();
 			if (proposedFilename != this.getFilename()) {
-				res = res && await messages.fileCommit(this, 'TS_CANONIZE', 'canonize filename',
+				res = res && await this.addMessageCommit('TS_CANONIZE', 'canonize filename',
 					proposedFilename,
 					() => this.changeFilename(proposedFilename)
 				);

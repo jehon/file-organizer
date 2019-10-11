@@ -2,7 +2,6 @@
 const options = require('../options.js');
 const FileUnsupported = require('../file-unsupported.js');
 const messages = require('../messages.js');
-const { cleanLine } = require('../messages.js');
 
 exports.command = 'dump [files..]';
 
@@ -64,7 +63,6 @@ exports.handler = function (noptions) {
 						return;
 					}
 					const sep = (ok) ? '|' : '|';
-					cleanLine();
 					let msg = ''
 						+ r(fi.parent.getRelativePath() + '/' + fi.getFilename(), padFilename)
 						+ sep
@@ -82,9 +80,9 @@ exports.handler = function (noptions) {
 						;
 
 					if (ok) {
-						console.info(messages.IconSuccess + ' ' + msg);
+						messages.writeLine(messages.IconSuccess + ' ' + msg);
 					} else {
-						console.info(messages.IconFailure + ' '  + msg.red);
+						messages.writeLine(messages.IconFailure + ' '  + msg.red);
 					}
 
 				})

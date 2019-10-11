@@ -73,7 +73,7 @@ describe('file-picture-test', () => {
 		it('should be problems when no exiv is present', async() => {
 			const new1 = await getPict('no_exiv.jpg');
 			await new1.check();
-			expect(new1.errors).toContain('TS_NO_TIMESTAMP');
+			expect(Array.from(new1.messages.keys())).toContain('TS_NO_TIMESTAMP');
 		});
 
 		it('should rotate pictures when necessary', async() => {
@@ -83,7 +83,7 @@ describe('file-picture-test', () => {
 			new1.calculatedTS.comment = 'should rotate pictures when necessary';
 			expect(new1.exiv_orientation).toBe(270);
 			await new1.check();
-			expect(new1.errors).toContain('PICT_ROTATE');
+			expect(Array.from(new1.messages.keys())).toContain('PICT_ROTATE');
 			expect(new1.exiv_orientation).toBe(0);
 			new1.remove();
 		});
@@ -99,7 +99,7 @@ describe('file-picture-test', () => {
 			new1.calculatedTS.comment = 'override comment';
 
 			await new1.check();
-			expect(new1.errors).toContain('EXIV_WRITE_COMMENT');
+			expect(Array.from(new1.messages.keys())).toContain('EXIV_WRITE_COMMENT');
 			expect(new1.exiv_comment).toBe('override comment');
 			new1.remove();
 
