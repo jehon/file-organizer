@@ -1,25 +1,24 @@
 
 const fs = require('fs');
 
-const fileUtils       = require('./file-utils.js');
-const FileGeneric     = require('./file-generic.js');
-const FileFolder      = require('./file-folder.js');
+const fileUtils         = require('./file-utils.js');
+const FileGeneric       = require('./file-generic.js');
+const FileFolder        = require('./file-folder.js');
 
-const FileDelete      = require('./file-delete.js');
-const FileHidden      = require('./file-hidden.js');
-const FileManual      = require('./file-manual.js');
-const FileMovie       = require('./file-movie.js');
-const FileMovieUTC    = require('./file-movie-utc.js');
-const FilePicture     = require('./file-picture.js');
+const FileDelete        = require('./file-delete.js');
+const FileHidden        = require('./file-hidden.js');
+const FileManual        = require('./file-manual.js');
+const FileMovie         = require('./file-movie.js');
+const FileMovieUTC      = require('./file-movie-utc.js');
+const FilePicture       = require('./file-picture.js');
+const FileConvertSource = require('./file-convert-source.js');
 
 const FileUnsupported = require('./file-unsupported.js');
 
-async function fileFactory(filepath, parent = false) {
+async function fileFactory(filepath, parent = null) {
 	if (filepath instanceof FileGeneric) {
 		return filepath;
 	}
-	// Target
-	let f = null;
 
 	// File infos
 	const fname = fileUtils.getFullFilename(filepath);
@@ -29,78 +28,64 @@ async function fileFactory(filepath, parent = false) {
 	switch (fname) {
 	case '#recycle':
 	case '@eaDir':
-		f = new FileHidden(filepath);
-		break;
+		return new FileHidden(filepath, parent);
 	case 'Thumbs.db':
 	case '.picasa.ini':
-		f = new FileDelete(filepath);
-		break;
-	default:
-		if (fname != '.' && (fname[0] == '.' || fext == '.')) {
-			// Skip '.xxx'
-			// Skip 'xxx' (no extension)
-			f = new FileHidden(filepath);
-		} else {
-			try {
-				// Is it real? Let's go further
+		return new FileDelete(filepath, parent);
+	}
 
-				// TODO (async): render this async !
-				const stat = await fs.promises.stat(filepath);
-				if (stat.isDirectory()) {
-					f = new FileFolder(filepath);
-					break;
-				}
-			} catch {
-			// ok
-			}
+	if (fname != '.' && (fname[0] == '.' || fext == '.')) {
+		// Skip '.xxx'
+		// Skip 'xxx' (no extension)
+		return new FileHidden(filepath, parent);
+	}
+	if (fname.endsWith('_converted')) {
+		return new FileConvertSource(filepath, parent);
+	}
 
-			// By extension
-			switch (fext) {
-			case '.pdf':
-			case '.txt':
-				f = new FileGeneric(filepath);
-				break;
-			case '.doc*':
-				f = new FileManual(filepath);
-				break;
-			case '.jpg':
-			case '.jpeg':
-				f = new FilePicture(filepath);
-				break;
-			case '.mov':
-			case '.m4v':
-				f = new FileMovie(filepath);
-				break;
-			case '.mp4':
-				f = new FileMovieUTC(filepath);
-				break;
-				// Thanks to https://stackoverflow.com/a/40077776/1954789
-				// does not work everytimes...
-				// case '.mkv': --> ffmpeg -i filename.mkv -vcodec copy -acodec copy 1.m4v
-				// case '.mkv': --> ffmpeg -i filename.mkv -c copy 1.m4v
+	try {
+		// Is it real? Let's go further
 
-			// case '.mpg':
-			// case '.avi':
-			// case '.mpeg':
-			// case '.mts':
-			// case '.mod':
-			// case '.png':
-			// case '.wmv':
-			// case '.dng':
-				// TODO (extensions): unsupported
-			default:
-				f = new FileUnsupported(filepath);
-				break;
-
-			}
+		// TODO (async): render this async !
+		const stat = await fs.promises.stat(filepath);
+		if (stat.isDirectory()) {
+			return new FileFolder(filepath, parent);
 		}
-	}
-	if (parent) {
-		f._parent = parent;
+	} catch {
+	// ok
 	}
 
-	// Fallback: generic file
-	return f;
+	// By extension
+	switch (fext) {
+	case '.pdf':
+	case '.txt':
+		return new FileGeneric(filepath, parent);
+	case '.doc*':
+		return new FileManual(filepath, parent);
+	case '.jpg':
+	case '.jpeg':
+		return new FilePicture(filepath, parent);
+	case '.mov':
+	case '.m4v':
+		return new FileMovie(filepath, parent);
+	case '.mp4':
+		return new FileMovieUTC(filepath, parent);
+		// Thanks to https://stackoverflow.com/a/40077776/1954789
+		// does not work everytimes...
+		// case '.mkv': --> ffmpeg -i filename.mkv -vcodec copy -acodec copy 1.m4v
+		// case '.mkv': --> ffmpeg -i filename.mkv -c copy 1.m4v
+
+	// case '.mpg':
+	// case '.avi':
+	// case '.mpeg':
+	// case '.mts':
+	// case '.mod':
+	// case '.png':
+	// case '.wmv':
+	// case '.dng':
+		// TODO (extensions): unsupported
+	}
+	return new FileUnsupported(filepath, parent);
 }
 
 module.exports = fileFactory;
