@@ -353,7 +353,7 @@ describe('timestamp-test', function() {
 		// });
 	});
 
-	describe('functionnalities', function() {
+	describe('functionalities', function() {
 		//
 		//
 		// Functionnal stuffs
