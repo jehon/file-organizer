@@ -71,6 +71,8 @@ exports.defaultValues = {
 	yearMax:  0
 };
 
+const MomentJSParseTS = 'YYYY-MM-DD HH-mm-SS';
+
 class Timestamp {
 	constructor(str = '') {
 		Object.assign(this, exports.defaultValues);
@@ -132,6 +134,14 @@ class Timestamp {
 		res += '-' + ('' + this.minute).padStart(2, '0');
 		res += '-' + ('' + this.second).padStart(2, '0');
 		return res;
+	}
+
+	TSinUTC(tz = 'Europe/Brussels') {
+		if (this.hour <= 0 && this.minute == 0 && this.second == 0) {
+			return this.TS();
+		}
+		const m = moment.tz(this.TS(), MomentJSParseTS, tz);
+		return m.utc().format(MomentJSParseTS);
 	}
 
 	// match test if the timestamp match against (larger) ts
@@ -209,11 +219,11 @@ exports.tsFromString = function(str) {
 };
 
 exports.tsFromDate = function(date) {
-	const ts = new Timestamp('');
-	ts.year = date.getUTCFullYear();
-	ts.month = date.getUTCMonth() + 1;
-	ts.day = date.getUTCDate();
-	ts.hour = date.getUTCHours();
+	const ts  = new Timestamp('');
+	ts.year   = date.getUTCFullYear();
+	ts.month  = date.getUTCMonth() + 1;
+	ts.day    = date.getUTCDate();
+	ts.hour   = date.getUTCHours();
 	ts.minute = date.getUTCMinutes();
 	ts.second = date.getUTCSeconds();
 	return ts;

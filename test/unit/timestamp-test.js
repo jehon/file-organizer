@@ -363,6 +363,13 @@ describe('timestamp-test', function() {
 			expect(tsFromDate(new Date('2019-01-02T03:04:05Z')).TS()).toBe('2019-01-02 03-04-05');
 		});
 
+		it('TSinUTC', () => {
+			expect(tsFromString('2019-01-02').TSinUTC()).toBe('2019-01-02');
+			expect(tsFromString('2019-01-02 03-04-05').TSinUTC()).toBe('2019-01-02 02-04-05');
+			expect(tsFromString('2019-07-02 03-04-05').TSinUTC()).toBe('2019-07-02 01-04-05');
+			expect(tsFromString('2019-07-02 03-04-05').TSinUTC('Asia/Taipei')).toBe('2019-07-01 19-04-05');
+		});
+
 		it('should be clonable', function() {
 			let ts0 = tsFromString('2018-01-02');
 			expect(ts0.year).toBe(2018);
