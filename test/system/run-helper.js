@@ -77,19 +77,16 @@ async function itRun(ctx, args, fn) {
 		};
 
 		result.assertConsistency = async function(dir = '') {
-			let oList = await fs.promises.readdir(dataPath(dir));
-			let tList = await fs.promises.readdir(ctx.tempPath(dir));
-			expect(tList.length).toBe(oList.length, `(in folder ${dir} [${ctx.tempPath(dir)}])`);
+			const l = async function(p, n) {
+				return fs.promises.readdir(ctx.tempPath(p))
+					.then(list => expect(list.length)
+						.withContext(`(in folder '${p}' [${ctx.tempPath(dir)}])`)
+						.toBe(n)
+					);
+			};
 
-			for(const di of oList) {
-				// TODO(fs-extra) dependency: copy recursively
-				if (fse.lstatSync(dataPath(dir, di)).isDirectory()) {
-					// TODO(fs-extra) dependency: copy recursively
-					let tmpExists = await fse.pathExists(ctx.tempPath(di));
-					expect(tmpExists).toBeTruthy();
-					await result.assertConsistency(path.join(dir, di));
-				}
-			}
+			l('basic', 4);
+			l('2019 test', 2);
 			return true;
 		};
 
