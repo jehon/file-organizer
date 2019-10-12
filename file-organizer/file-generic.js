@@ -19,9 +19,12 @@ const renameLimiter = pLimit(1);
 
 const activeFilesList = new Map();
 
+let id = 0;
+
 class FileGeneric {
 
 	constructor(filePath) {
+		this._id = id++;
 		this._relativePath = filePath;
 		this._parent = null;
 		this._infos = {};
@@ -41,15 +44,15 @@ class FileGeneric {
 			errors: 0
 		};
 
-		activeFilesList.set(this.getRelativePath().toUpperCase(), this);
+		activeFilesList.set(this.id, this);
 		messages.stats.filesTotal++;
 		messages.stats.pendindFiles = activeFilesList.size;
 		this.messages = new Map();
 	}
 
 	end() {
-		if (activeFilesList.has(this.getRelativePath().toUpperCase())) {
-			activeFilesList.delete(this.getRelativePath().toUpperCase());
+		if (activeFilesList.has(this.id)) {
+			activeFilesList.delete(this.id);
 		}
 		if (options.withFileSummary) {
 			messages.writeLine(
