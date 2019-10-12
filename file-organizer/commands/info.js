@@ -19,6 +19,7 @@ exports.builder = {
 
 exports.handler = async function (noptions) {
 	Object.assign(options, noptions, {
+		dryRun: true,
 		withStats: false,
 		withFileSummary: false
 	});
