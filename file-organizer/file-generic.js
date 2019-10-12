@@ -45,8 +45,8 @@ class FileGeneric {
 		};
 
 		activeFilesList.set(this.id, this);
-		messages.stats.filesTotal++;
-		messages.stats.pendindFiles = activeFilesList.size;
+		messages.statsAddFileToTotal();
+		messages.statsSetPendingFiles(activeFilesList.size);
 		this.messages = new Map();
 	}
 
@@ -67,7 +67,7 @@ class FileGeneric {
 			);
 			this.messages = new Map();
 		}
-		messages.stats.pendindFiles = activeFilesList.size;
+		messages.statsSetPendingFiles(activeFilesList.size);
 	}
 
 	/**
@@ -85,12 +85,11 @@ class FileGeneric {
 			+ (description ? ' ' + chalk.yellow((description).padEnd(40, ' ')) : '')
 			+ (newInfo     ? ' ' + chalk.blue('' + newInfo) : '')
 		);
-		messages.dumpStats();
 	}
 
 	addMessageImpossible(code, description) {
 		this.stats.errors++;
-		messages.stats.errorsTotal++;
+		messages.statsAddErrorToTotal();
 		this.addMessage(code, description, null, messages.IconFailure);
 		return false;
 	}
@@ -106,7 +105,7 @@ class FileGeneric {
 
 		if (options.dryRun) {
 			this.stats.fixSkipped++;
-			messages.stats.fixesSkipped++;
+			messages.statsAddSkippedFix();
 		} else {
 			try {
 				res = await action();
@@ -117,16 +116,16 @@ class FileGeneric {
 				if (res) {
 					msg = messages.IconSuccess;
 					this.stats.fixed++;
-					messages.stats.fixesTotal++;
+					messages.statsAddFixToTotal();
 				} else {
 					msg = messages.IconFailure;
 					this.stats.errors++;
-					messages.stats.errorsTotal++;
+					messages.statsAddErrorToTotal();
 				}
 			} catch (e) {
 				messages.notifyError(e);
 				this.stats.errors++;
-				messages.stats.errorsTotal++;
+				messages.statsAddErrorToTotal();
 				res = false;
 			}
 		}

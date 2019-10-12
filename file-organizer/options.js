@@ -1,8 +1,10 @@
 
+const isInteractive = require('is-interactive');
+
 const defaultOptions = {
 	dryRun: false,
-	withFileSummary: true,
-	withStats: true,
+	withFileSummary: isInteractive(),
+	withStats: isInteractive(),
 	showHidden: false
 };
 

@@ -30,7 +30,7 @@ exports.handler = async function (noptions) {
 			if (options.key) {
 				messages.writeLine(f.getInfo(options.key));
 			} else {
-				messages.writeLine(f.getAllInfos());
+				messages.writeLine(JSON.stringify(f.getAllInfos(), null, 2));
 			}
 		});
 };

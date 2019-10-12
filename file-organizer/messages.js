@@ -22,6 +22,31 @@ const stats = {
 };
 module.exports.stats = stats;
 
+module.exports.statsSetPendingFiles = function(i) {
+	stats.pendingFiles = i;
+	dumpStats();
+};
+
+module.exports.statsAddFileToTotal = function() {
+	stats.filesTotal++;
+	dumpStats();
+};
+
+module.exports.statsAddFixToTotal = function() {
+	stats.fixesTotal++;
+	dumpStats();
+};
+
+module.exports.statsAddErrorToTotal = function() {
+	stats.errorsTotal++;
+	dumpStats();
+};
+
+module.exports.statsAddSkippedFix = function() {
+	stats.fixesSkipped++;
+	dumpStats();
+};
+
 // const messagesPerFiles = {};
 
 function cleanLine() {
