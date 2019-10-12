@@ -55,8 +55,9 @@ class FileGeneric {
 			activeFilesList.delete(this.id);
 		}
 		if (options.withFileSummary) {
-			messages.writeLine(
-				'*** '
+			if (this.messages.size > 0) {
+				messages.writeLine(
+					'*** '
 				+ this.parent.getRelativePath() + '/' + chalk.bold(this.getFilename()) + this.getExtension()
 				+ (this._originalFilePath != this.getRelativePath() ? '\n  < ' + this._originalFilePath : '')
 				+ Array.from(this.messages.entries())
@@ -64,7 +65,8 @@ class FileGeneric {
 					.map(v => '\n  ' + v)
 					.reduce((prev, cur) => prev += cur, '')
 				+ '\n'
-			);
+				);
+			}
 			this.messages = new Map();
 		}
 		messages.statsSetPendingFiles(activeFilesList.size);
