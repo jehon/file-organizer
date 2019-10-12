@@ -65,7 +65,8 @@ async function exivReadAll(file) {
 	const defaultResult = {
 		'UserComment': '',
 		'DateTimeOriginal': '',
-		'Orientation': ''
+		'Orientation': '',
+		'calculatedTimezone': null
 	};
 	return runExiv('-j',
 		// '-m', // Work with legacy files
@@ -139,11 +140,13 @@ module.exports = class FileExiv extends FileTimestamped {
 			this.exiv_timestamp        = tsFromString(exivData['DateTimeOriginal']);
 			this.exiv_comment          = exivData['UserComment'];
 			this.exiv_orientation      = translateRotation(exivData['Orientation']);
+			this.exiv_calculated_tz    = exivData['calculatedTimezone'];
 
 			this.addInfo('exiv.timestamp_raw', this.exiv_timestamp_raw);
 			this.addInfo('exiv.timestamp',     this.exiv_timestamp.TS());
 			this.addInfo('exiv.comment',       this.exiv_comment);
 			this.addInfo('exiv.orientation',   this.exiv_orientation);
+			this.addInfo('exiv.calculated.tz', this.exiv_calculated_tz);
 
 			return this;
 		});

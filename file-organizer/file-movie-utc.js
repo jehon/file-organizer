@@ -11,13 +11,17 @@ module.exports = class FileMovieUCT extends FileMovie {
 	async exivReadAll(file) {
 		return super.exivReadAll(file)
 			.then(resultObj => {
+				if (resultObj.GPSPosition) {
+					const tz = tzFromGPS(resultObj.GPSPosition);
+					resultObj.calculatedTimezone = tz;
+				}
+
 				// console.log(resultObj);
 				if (!resultObj.DateTimeOriginal && resultObj.CreateDate) {
 					// CreateDate
 					// GPSPosition
-					if (resultObj.GPSPosition) {
-						const tz = tzFromGPS(resultObj.GPSPosition);
-						resultObj.DateTimeOriginal = tsFromDateAndTimezone(resultObj.CreateDate.replace(':', '-').replace(':', '-'), tz).TS();
+					if (resultObj.calculatedTimezone) {
+						resultObj.DateTimeOriginal = tsFromDateAndTimezone(resultObj.CreateDate.replace(':', '-').replace(':', '-'), resultObj.calculatedTimezone).TS();
 					} else {
 						resultObj.DateTimeOriginal = resultObj.CreateDate;
 					}
