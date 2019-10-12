@@ -11,14 +11,14 @@ exports.tempPath = (...args) => rootPath('tmp', 'unit', ...args);
 const fileFactory = require('../../file-organizer/file-factory.js');
 
 // FileGeneric: copy to
-exports.createFileGeneric = async function(subPath, { folder, newName } = {
-	folder: exports.tempPath(),
-	newName: subPath,
-}) {
+exports.createFileGeneric = async function(subPath) {
+	const fullSource = exports.dataPath(subPath);
+	const newName = path.parse(fullSource).base;
+
 	fs.copyFileSync(
-		exports.dataPath(subPath),
-		folder + path.sep + newName
+		fullSource,
+		path.join(exports.tempPath(), newName)
 	);
-	return fileFactory(path.join(folder, newName))
+	return fileFactory(path.join(exports.tempPath(), newName))
 		.then(f => f.loadData());
 };
