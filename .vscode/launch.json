@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "type": "node",
             "request": "launch",
@@ -17,6 +18,14 @@
             "name": "info",
             "program": "${workspaceFolder}/file-organizer/main.js",
             "args": [ "info", "test/data/canon.JPG" ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "run on 01-test-lib",
+            "program": "${workspaceFolder}/file-organizer/main.js",
+            "cwd": "${workspaceFolder}/tmp/01-test-lib.sh",
+            "args": [ "-n" ]
         }
     ]
 }

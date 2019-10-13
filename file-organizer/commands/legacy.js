@@ -12,7 +12,7 @@ exports.handler = function (noptions) {
 	});
 
 	return Promise.all(options.files.map(
-		f0 => f0.iterate(
+		fi => fi.iterate(
 			f => {
 				if (f.getType() == 'movie') {
 					return f.loadData()
