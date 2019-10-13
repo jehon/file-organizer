@@ -23,8 +23,9 @@
             "type": "node",
             "request": "launch",
             "name": "run on 01-test-lib",
+            "preLaunchTask": "jh reset 01-lib-test",
+            "cwd": "${workspaceFolder}/tmp/01-lib-test.js",
             "program": "${workspaceFolder}/file-organizer/main.js",
-            "cwd": "${workspaceFolder}/tmp/01-test-lib.sh",
             "args": [ "-n" ]
         }
     ]

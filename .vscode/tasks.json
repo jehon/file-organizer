@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        { 
+            "label": "jh reset 01-lib-test",
+            "type": "shell",
+            "command": "${workspaceFolder}/reset.sh",
+            "args": [ "tmp/01-lib-test.sh" ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+            },
+            "problemMatcher": []
+        }
+    ]
+}
