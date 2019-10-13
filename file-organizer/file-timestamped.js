@@ -26,10 +26,6 @@ class FileTimestamped extends FileGeneric {
 		}
 		this.filenameTS.comment = comment;
 		this.calculatedTS = this.filenameTS.clone();
-
-		this.addInfo('timestamp.filename', this.filenameTS.TS());
-		this.addInfo('timestamp.comment',  this.filenameTS.comment);
-		this.addInfo('timestamp.original', this.filenameTS.original);
 	}
 
 	setCalculatedComment(newC) {

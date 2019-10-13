@@ -30,17 +30,6 @@ describe('file-generic-test', () => {
 
 	});
 
-	describe('infos', () => {
-		it('should get infos', () => {
-			let new1 = new FileGeneric('test');
-			expect(new1.getInfo('file.name')).toBe('test');
-			expect(new1.getInfo('does.not.exists')).toBeFalsy();
-
-			new1.addInfo('does.not.exists', '1');
-			expect(new1.getInfo('does.not.exists')).toBe('1');
-		});
-	});
-
 	describe('crud', () => {
 		it('should changeFilename', async () => {
 			const new1 = await createFileGeneric('jh-patch-file-patch.txt');

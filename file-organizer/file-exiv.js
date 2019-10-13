@@ -142,12 +142,6 @@ module.exports = class FileExiv extends FileTimestamped {
 			this.exiv_orientation      = translateRotation(exivData['Orientation']);
 			this.exiv_calculated_tz    = exivData['calculatedTimezone'];
 
-			this.addInfo('exiv.timestamp_raw', this.exiv_timestamp_raw);
-			this.addInfo('exiv.timestamp',     this.exiv_timestamp.TS());
-			this.addInfo('exiv.comment',       this.exiv_comment);
-			this.addInfo('exiv.orientation',   this.exiv_orientation);
-			this.addInfo('exiv.calculated.tz', this.exiv_calculated_tz);
-
 			return this;
 		});
 	}

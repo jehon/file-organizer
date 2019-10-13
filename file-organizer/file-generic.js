@@ -30,13 +30,7 @@ class FileGeneric {
 		this._infos = {};
 		this._originalFilePath = filePath;
 
-		this.addInfo('file.name',          this.getFilename());
-		this.addInfo('file.extension',     this.getExtension());
-		this.addInfo('file.path.relative', this.getRelativePath());
-		this.addInfo('file.path.absolute', this._getAbsolutePath());
-		if (this.parent != null) {
-			this.addInfo('file.parent.name',   this.parent.getFilename());
-		}
+		this.generic_original_extension = this.getExtension();
 
 		this.stats = {
 			fixed: 0,
@@ -137,23 +131,6 @@ class FileGeneric {
 
 	getType() {
 		return 'generic';
-	}
-
-	addInfo(key, val) {
-		if (!val) {
-			return;
-		}
-		if (typeof(val) != 'string') {
-			val = '' + val;
-		}
-		this._infos[key] = val;
-	}
-
-	getInfo(key) {
-		if (key in this._infos) {
-			return this._infos[key];
-		}
-		return '';
 	}
 
 	getAllInfos() {

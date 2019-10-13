@@ -96,8 +96,8 @@ describe('file-timestamped-test', () => {
 				// new2 is a virtual alias of new1 with fields initialized
 				const new2 = await fileFactory(new1.getRelativePath());
 				await new2.loadData();
-				expect(new2.getInfo('exiv.comment')).toBe('');
-				expect(new2.getInfo('timestamp.comment')).toBe('exivok01');
+				expect(new2.exiv_comment).toBe('');
+				expect(new2.filenameTS.comment).toBe('exivok01');
 
 				await new2.check();
 				await new2.exivReload();
@@ -115,10 +115,10 @@ describe('file-timestamped-test', () => {
 				// new2 is a virtual alias of new1 with fields initialized
 				const new2 = await fileFactory(new1.getRelativePath());
 				await new2.loadData();
-				expect(new2.getInfo('exiv.comment')).toBe('');
-				expect(new2.getInfo('timestamp.comment')).toBe('');
+				expect(new2.exiv_comment).toBe('');
+				expect(new2.filenameTS.comment).toBe('');
 				new2._parent = new FileFolder('1998 parent comment');
-				expect(new2.parent.getInfo('timestamp.comment')).toBe('parent comment');
+				expect(new2.parent.filenameTS.comment).toBe('parent comment');
 
 				try {
 					// TODO(cleanup): this check lead to a lot of error
@@ -143,7 +143,6 @@ describe('file-timestamped-test', () => {
 				const new2 = await fileFactory(new1.getRelativePath());
 				await new2.loadData();
 				expect(new2.exiv_comment).toBe('x test');
-				expect(new2.getInfo('exiv.comment')).toBe('x test');
 
 				await new2.check();
 				await new2.exivReload();

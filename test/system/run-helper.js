@@ -157,7 +157,7 @@ exports.assert = {
 		if (data === false) {
 			data = datas[foriginal ? foriginal : f].ts;
 		}
-		const res = await getFileExivField(ctx, 'exiv.timestamp', f);
+		const res = await getFileExivField(ctx, 'exiv_timestamp', f);
 		expect(res).toEqual(data, `File ${f} must have exiv timestamp ${data} but have ${res}`);
 	},
 
@@ -165,7 +165,7 @@ exports.assert = {
 		if (data === false) {
 			data = datas[foriginal ? foriginal : f].comment;
 		}
-		const res = await getFileExivField(ctx, 'exiv.comment', f);
+		const res = await getFileExivField(ctx, 'exiv_comment', f);
 		expect(res).toEqual(data, `File ${f} must have exiv comment ${data} but have ${res}`);
 	}
 };

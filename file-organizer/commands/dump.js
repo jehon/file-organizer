@@ -20,6 +20,7 @@ const padTimestamp = 22;
 const padComment   = 50;
 
 function l(str, ll) {
+	str = '' + str;
 	if (str.length > ll) {
 		str = str.slice(0, ll - 1) + '…';
 	}
@@ -66,16 +67,16 @@ exports.handler = function (noptions) {
 					let msg = ''
 						+ r(fi.parent.getRelativePath() + '/' + fi.getFilename(), padFilename)
 						+ sep
-						+ l(fi.getInfo('file.extension'), padExtension)
+						+ l(fi.generic_original_extension, padExtension)
 						+ sep
-						+ (fi.getInfo('exiv.timestamp')
-							? l(fi.getInfo('exiv.timestamp'), padTimestamp)
-							: messages.IconFailure + ' ' + l(fi.getInfo('timestamp.original'), padTimestamp - 2).red
+						+ (fi.exiv_timestamp
+							? l(fi.exiv_timestamp.TS(), padTimestamp)
+							: messages.IconFailure + ' ' + l(fi.filenameTS.original, padTimestamp - 2).red
 						)
 						+ sep
-						+ (fi.getInfo('exiv.comment')
-							? l(fi.getInfo('exiv.comment'), padComment)
-							: messages.IconFailure + ' ' + l(fi.getInfo('timestamp.comment'), padComment - 2).red
+						+ (fi.exiv_comment
+							? l(fi.exiv_comment, padComment)
+							: messages.IconFailure + ' ' + l(fi.filenameTS.comment, padComment - 2).red
 						)
 						;
 
