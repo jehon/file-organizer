@@ -66,10 +66,11 @@ async function fileFactory(filepath, parent = null) {
 	case '.jpeg':
 		return new FilePicture(filepath, parent);
 	case '.mov':
-	case '.m4v':
+	// case '.m4v':
 		return new FileMovie(filepath, parent);
-	case '.mp4':
-		return new FileMovieUTC(filepath, parent);
+		// case '.mp4':
+		// return new FileMovieUTC(filepath, parent);
+
 		// Thanks to https://stackoverflow.com/a/40077776/1954789
 		// does not work everytimes...
 		// case '.mkv': --> ffmpeg -i filename.mkv -vcodec copy -acodec copy 1.m4v
