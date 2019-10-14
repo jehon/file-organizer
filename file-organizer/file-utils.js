@@ -1,3 +1,9 @@
+/**
+ * Conventions
+ *   - path include filename and extension
+ *   - filename = without extension
+ *   - extension = .blabla
+ */
 
 const childProcess = require('child_process');
 const fs = require('fs');
