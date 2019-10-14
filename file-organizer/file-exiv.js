@@ -55,7 +55,7 @@ async function exivWrite(file, tag, value) {
 	debugExiv('exivWrite:', file.getRelativePath(), tag, value);
 	return runExiv(
 		'-overwrite_original',
-		// '-m', // Work with legacy files
+		'-m', // Ignore minor errors and warnings
 		`-${tag}=${value}`, file.getRelativePath()
 	);
 }
@@ -69,7 +69,7 @@ async function exivReadAll(file) {
 		'calculatedTimezone': null
 	};
 	return runExiv('-j',
-		// '-m', // Work with legacy files
+		'-m', // Ignore minor errors and warnings
 		file.getRelativePath())
 		.then(result => {
 			let resultObj = JSON.parse(result)[0];
