@@ -58,7 +58,7 @@ describe('file-generic-test', () => {
 		it('should fix extensions', async () => {
 			spyOn(fileUtils, 'fileRename');
 
-			const new1 = new FileGeneric('canon.JPG', tempPath());
+			const new1 = new FileGeneric('canon.JPG');
 			await new1.check();
 			expect(Array.from(new1.messages.keys())).toContain('FILE_EXT_UPPERCASE');
 			expect(fileUtils.fileRename).toHaveBeenCalledTimes(1);
