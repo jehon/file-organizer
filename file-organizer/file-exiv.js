@@ -1,4 +1,11 @@
 
+/**
+ * Exif File
+ *
+ * See https://www.sno.phy.queensu.ca/~phil/exiftool/#supported
+ *
+ */
+
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromString } = require('./timestamp.js');
 const options = require('./options.js');
