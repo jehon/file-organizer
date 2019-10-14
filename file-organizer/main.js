@@ -21,6 +21,26 @@ Object.assign(options, yargs
 			alias: [ 'f' ],
 			type: 'array',
 			default: [ ],
+		},
+		'setComment': {
+			alias: [ 'set-comment', 'c' ],
+			type: 'string',
+			default: ''
+		},
+		'forceCommentFromFilename': {
+			alias: [ 'force-comment-from-filename', 'fcfn' ],
+			type: 'boolean',
+			default: false
+		},
+		'forceCommentFromFolder': {
+			alias: [ 'force-comment-from-folder', 'fcff' ],
+			type: 'boolean',
+			default: false
+		},
+		'forceTimestampFromFilename': {
+			alias: [ 'force-timestamp-from-filename', 'ftsfn' ],
+			type: 'boolean',
+			default: false
 		}
 	})
 	.commandDir('commands')

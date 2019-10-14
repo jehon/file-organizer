@@ -8,7 +8,6 @@ exports.describe = 'Get some info about the files';
 
 exports.handler = function (noptions) {
 	Object.assign(options, noptions, {
-		dryRun: true
 	});
 
 	return Promise.all(options.files.map(
