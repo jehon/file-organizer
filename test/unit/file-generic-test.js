@@ -4,6 +4,7 @@ const path = require('path');
 const { tempPath, createFileGeneric, dataPath } = require('./helpers.js');
 const fileUtils = require('../../file-organizer/file-utils.js');
 const FileGeneric = require('../../file-organizer/file-generic.js');
+const helpers = require('./helpers.js');
 
 const { tsFromString } = require('../../file-organizer/timestamp.js');
 
@@ -47,9 +48,9 @@ describe('file-generic-test', () => {
 
 			let filename = new1.getRelativePath();
 
-			expect(await fileUtils.fileExists(filename)).toBeTruthy();
+			expect(await helpers.fileExists(filename)).toBeTruthy();
 			await new1.remove();
-			expect(await fileUtils.fileExists(filename)).toBeFalsy();
+			expect(await helpers.fileExists(filename)).toBeFalsy();
 		});
 	});
 
