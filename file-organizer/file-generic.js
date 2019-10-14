@@ -17,10 +17,10 @@ let id = 0;
 
 class FileGeneric {
 
-	constructor(filePath) {
+	constructor(filePath, parent = null) {
 		this._id = id++;
 		this._relativePath = filePath;
-		this._parent = null;
+		this._parent = parent;
 		this._infos = {};
 		this._originalFilePath = filePath;
 

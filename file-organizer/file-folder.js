@@ -17,7 +17,7 @@ class FileFolder extends FileTimestamped {
 		return fs.promises.readdir(this.getRelativePath())
 			.then(list => list.filter(f => f != '.' && f != '..'))
 			.then(list => Promise.all(
-				list.map(async f => await fileFactory(path.join(this.getRelativePath(), f)))
+				list.map(async f => await fileFactory(path.join(this.getRelativePath(), f), this))
 			))
 			// Remove "FileHidden" files if required
 			.then(list => { list.sort(); return list; })

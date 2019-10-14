@@ -11,8 +11,8 @@ const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
 const indexedFilenameLimiter = pLimit(1);
 
 class FileTimestamped extends FileGeneric {
-	constructor(filePath) {
-		super(filePath);
+	constructor(filePath, parent = null) {
+		super(filePath, parent);
 
 		this.filenameTS = tsFromString(this.getFilename());
 		const comment = this.filenameTS.comment;
