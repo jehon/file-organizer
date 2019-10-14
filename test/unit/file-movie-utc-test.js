@@ -20,10 +20,10 @@ describe('file-movie-utc-test', () => {
 	});
 
 	it('should write timestamps correctly', async() =>  {
-		pending('MP4 write exiv is not developped');
-
 		const new1 = await createFileGeneric(AndroidMP4);
 		expect(new1.exiv_timestamp.TS()).toBe('2019-09-03 12-47-31');
+
+		pending('MP4 write exiv is not developped');
 
 		await new1.exivWriteTimestamp('2016-02-04 01-02-03');
 		expect(new1.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
