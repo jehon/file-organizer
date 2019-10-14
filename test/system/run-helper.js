@@ -1,7 +1,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const fse = require('fs-extra');
+const fsExtra = require('fs-extra');
 const shellExec = require('shell-exec');
 
 const datas = require('./data.js');
@@ -22,8 +22,7 @@ async function describeAndSetup(testName, fn) {
 			jasmine.DEFAULT_TIMEOUT_INTERVAL = 20 * 1000;
 			await fs.promises.rmdir(tPath(), { recursive: true });
 			await fs.promises.mkdir(tPath(), { recursive: true });
-			// TODO(fs-extra) dependency: copy recursively
-			await fse.copy(dataPath(), tPath());
+			await fsExtra.copy(dataPath(), tPath());
 		});
 
 		return fn({
@@ -67,10 +66,9 @@ async function itRun(ctx, args, fn) {
 	it('should run with ' + args.join(' '), async () => {
 		const result = await runMain(ctx, ...args);
 
-		// TODO(fs-extra) dependency
-		fse.writeFile(tempPath(ctx.testName + '-output.cmd'), result.cmd);
-		fse.writeFile(tempPath(ctx.testName + '-output.log'), result.stdout);
-		fse.writeFile(tempPath(ctx.testName + '-output.err'), result.stderr);
+		fsExtra.writeFile(tempPath(ctx.testName + '-output.cmd'), result.cmd);
+		fsExtra.writeFile(tempPath(ctx.testName + '-output.log'), result.stdout);
+		fsExtra.writeFile(tempPath(ctx.testName + '-output.err'), result.stderr);
 
 		result.assertContain = function(str)  {
 			expect(this.stdout).toContain(str);
@@ -112,8 +110,7 @@ exports.assert = {
 	fileExists: function (ctx, f) {
 		const fpath = ctx.tempPath(f);
 
-		// TODO(fs-extra) dependency
-		let promise = fse.pathExists(fpath)
+		let promise = fsExtra.pathExists(fpath)
 			.then((res) => expect(res).withContext(`File '${f}' must exists but does not`).toBeTruthy());
 
 		let foriginal = f;
@@ -147,8 +144,7 @@ exports.assert = {
 	},
 
 	fileDoesNotExists: async function (ctx, f) {
-		// TODO(fs-extra) dependency
-		const exists = await fse.pathExists(path.join(ctx.tempPath(), f));
+		const exists = await fsExtra.pathExists(path.join(ctx.tempPath(), f));
 		expect(exists).toBeFalsy(`File ${f} must NOT exists but does`);
 	},
 

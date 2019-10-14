@@ -1,3 +1,9 @@
+/**
+ * Conventions
+ *   - path include filename and extension
+ *   - filename = without extension
+ *   - extension = .blabla
+ */
 
 const childProcess = require('child_process');
 const fs = require('fs');
@@ -47,15 +53,6 @@ function isReleasedName(filePath) {
 	return reservedNames.has(filePath.toUpperCase());
 }
 
-
-// TODO(indexed): privatise this function ?
-// (used in file-generic-test.js and file-timestamp-test.js -> helper / in file-timestamp.js -> reservation instead)
-async function fileExists(filePath) {
-	return fs.promises.stat(filePath)
-		.then(() => true)
-		.catch(() => false);
-}
-
 async function fileDelete(filePath) {
 	return fs.promises.unlink(filePath);
 }
@@ -73,11 +70,12 @@ async function checkAndReserveName(filePath, forMe) {
 		return true;
 	}
 
-	return fileExists(filePath)
-		.then(doExists => {
-			if (doExists) {
-				throw false;
-			}
+	return fs.promises.stat(filePath)
+		.then(() => {
+			// If it exists, we can't reserve it...
+			throw false;
+		}, () => {
+			// If it does not, then let's reserve it...
 			reserveNameForMe(filePath, forMe);
 			return true;
 		});
@@ -133,7 +131,6 @@ module.exports = {
 	getFullFilename,
 	getFilename,
 	getExtension,
-	fileExists,
 	fileDelete,
 	fileRename,
 	fileExec,

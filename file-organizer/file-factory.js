@@ -39,14 +39,12 @@ async function fileFactory(filepath, parent = null) {
 		// Skip 'xxx' (no extension)
 		return new FileHidden(filepath, parent);
 	}
-	if (fname.endsWith('_converted')) {
+	if (fname.endsWith(FileGeneric.convertedSuffix)) {
 		return new FileConvertSource(filepath, parent);
 	}
 
 	try {
 		// Is it real? Let's go further
-
-		// TODO (async): render this async !
 		const stat = await fs.promises.stat(filepath);
 		if (stat.isDirectory()) {
 			return new FileFolder(filepath, parent);
@@ -66,10 +64,10 @@ async function fileFactory(filepath, parent = null) {
 	case '.jpeg':
 		return new FilePicture(filepath, parent);
 	case '.mov':
-	// case '.m4v':
+	case '.m4v': // --> convert to MP4 ? // https://www.winxdvd.com/resource/m4v-vs-mp4.htm ==> change extension
 		return new FileMovie(filepath, parent);
-		// case '.mp4':
-		// return new FileMovieUTC(filepath, parent);
+	case '.mp4': // --> but convert inside to H264 ?
+		return new FileMovieUTC(filepath, parent);
 
 		// Thanks to https://stackoverflow.com/a/40077776/1954789
 		// does not work everytimes...

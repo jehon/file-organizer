@@ -22,3 +22,9 @@ exports.createFileGeneric = async function(subPath) {
 	return fileFactory(path.join(exports.tempPath(), newName))
 		.then(f => f.loadData());
 };
+
+exports.fileExists = async function(filePath) {
+	return fs.promises.stat(filePath)
+		.then(() => true)
+		.catch(() => false);
+};

@@ -1,9 +1,3 @@
-/**
- * Conventions
- *   - path include filename and extension
- *   - filename = without extension
- *   - extension = .blabla
- */
 
 const path = require('path');
 const process = require('process');
@@ -129,12 +123,23 @@ class FileGeneric {
 		return res;
 	}
 
-	getType() {
-		return 'generic';
+	// TODO: to be tested
+	async addMessageConvert(code, targetExtension, action) {
+		const sourcePath    = this.getRelativePath();
+		const targetPath    = path.join(fileUtils.getDirname(this.getRelativePath()), this.getFilename() + targetExtension);
+		const convertedPath = path.join(fileUtils.getDirname(this.getRelativePath()), this.getFilename() + FileGeneric.convertedSuffix + this.getExtension());
+
+		let res = await messages.addMessageCommit(code + '_CONVERT', 'Convert file', targetExtension, async () => action(sourcePath, targetPath));
+		if (res) {
+			res = res && await messages.addMessageCommit(code + '_OBSOLETE', 'Move away original file', fileUtils.getFilename(convertedPath),
+				() => fileUtils.fileRename(this.getRelativePath(), convertedPath)
+			);
+		}
+		return res;
 	}
 
-	getAllInfos() {
-		return Object.assign({}, this._infos);
+	getType() {
+		return 'generic';
 	}
 
 	get parent() {
@@ -242,3 +247,4 @@ class FileGeneric {
 }
 
 module.exports = FileGeneric;
+FileGeneric.convertedSuffix = '_converted';

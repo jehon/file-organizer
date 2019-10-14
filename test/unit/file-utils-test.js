@@ -1,18 +1,19 @@
 
 const { createFileGeneric } = require('./helpers.js');
 const fileUtils = require('../../file-organizer/file-utils.js');
+const helpers = require('./helpers.js');
 
 describe('file-utils-test', function() {
 	it('should findIndexedFilename', async function() {
-		expect(await fileUtils.fileExists(__filename)).toBeTruthy();
-		expect(await fileUtils.fileExists(__filename + '.brol')).toBeFalsy();
+		expect(await helpers.fileExists(__filename)).toBeTruthy();
+		expect(await helpers.fileExists(__filename + '.brol')).toBeFalsy();
 
 		// Ask to move to new file, but without telling him it is itself -> should be incremented
 		const new1 = await createFileGeneric('jh-patch-file-patch.txt');
-		expect(await fileUtils.fileExists(new1.getRelativePath())).toBeTruthy();
+		expect(await helpers.fileExists(new1.getRelativePath())).toBeTruthy();
 
 		await fileUtils.fileDelete(new1.getRelativePath());
-		expect(await fileUtils.fileExists(new1.getRelativePath())).toBeFalsy();
+		expect(await helpers.fileExists(new1.getRelativePath())).toBeFalsy();
 	});
 
 	it('should launch subprocesses', async function() {
