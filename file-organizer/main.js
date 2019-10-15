@@ -4,6 +4,7 @@ const yargs = require('yargs');
 
 const fileFactory = require('./file-factory.js');
 const options = require('./options.js');
+const messages = require('./messages.js');
 
 Object.assign(options, yargs
 	.options({
@@ -52,6 +53,7 @@ Object.assign(options, yargs
 		if (argv.files.length == 0) {
 			argv.files.push('.');
 		}
+		messages.statsAddFileToTotal(argv.files.length);
 		return Promise.all(argv.files.map(
 			f => fileFactory('' + f)))
 			.then(nlist => argv.files = nlist)

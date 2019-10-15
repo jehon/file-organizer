@@ -33,9 +33,11 @@ class FileGeneric {
 			errors: 0
 		};
 
-		activeFilesList.set(this._id, this);
-		messages.statsAddFileToTotal();
-		messages.statsSetPendingFiles(activeFilesList.size);
+		if (parent) {
+			activeFilesList.set(this._id, this);
+			messages.statsAddFileToTotal();
+			messages.statsSetPendingFiles(activeFilesList.size);
+		}
 		this.messages = new Map();
 	}
 

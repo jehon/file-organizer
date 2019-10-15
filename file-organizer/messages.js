@@ -27,8 +27,8 @@ module.exports.statsSetPendingFiles = function(i) {
 	dumpStats();
 };
 
-module.exports.statsAddFileToTotal = function() {
-	stats.filesTotal++;
+module.exports.statsAddFileToTotal = function(i = 1) {
+	stats.filesTotal += i;
 	dumpStats();
 };
 
