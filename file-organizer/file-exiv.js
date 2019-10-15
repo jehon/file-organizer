@@ -71,17 +71,22 @@ async function exivReadAll(file) {
 	debugExiv('exivReadAll:', file.getRelativePath());
 	const defaultResult = {
 		'UserComment': '',
-		'DateTimeOriginal': '',
 		'Orientation': '',
-		'calculatedTimezone': null
+		'GPSPosition': '',
+		'calculatedTimezone': ''
 	};
+	defaultResult[this.constExivTS] = '';
+
 	return runExiv('-j',
 		'-m', // Ignore minor errors and warnings
 		file.getRelativePath())
 		.then(result => {
-			let resultObj = JSON.parse(result)[0];
-			debugExiv('exivReadAll got:', file.getRelativePath(), resultObj['DateTimeOriginal']);
-			return Object.assign({}, defaultResult, resultObj);
+			let exivData = JSON.parse(result)[0];
+			debugExiv('exivReadAll got:', file.getRelativePath(), exivData['DateTimeOriginal']);
+			if (exivData.GPSPosition) {
+				exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
+			}
+			return Object.assign({}, defaultResult, exivData);
 		});
 }
 
@@ -117,6 +122,8 @@ function translateRotation(rotation) {
 }
 
 module.exports = class FileExiv extends FileTimestamped {
+	get constExivTS() { return 'DateTimeOriginal'; }
+
 	async loadData() {
 		await super.loadData();
 
@@ -143,11 +150,10 @@ module.exports = class FileExiv extends FileTimestamped {
 
 	async exivReload(){
 		return this.exivReadAll().then(exivData => {
-			this.exiv_timestamp_raw    = exivData['DateTimeOriginal'];
-			this.exiv_timestamp        = tsFromString(exivData['DateTimeOriginal']);
-			this.exiv_comment          = exivData['UserComment'];
-			this.exiv_orientation      = translateRotation(exivData['Orientation']);
-			this.exiv_calculated_tz    = exivData['calculatedTimezone'];
+			this.exiv_timestamp           = tsFromString(exivData[this.constExivTS]);
+			this.exiv_comment             = exivData['UserComment'];
+			this.exiv_orientation         = translateRotation(exivData['Orientation']);
+			this.exiv_calculated_timezone = exivData.calculatedTimezone;
 
 			return this;
 		});
@@ -161,7 +167,7 @@ module.exports = class FileExiv extends FileTimestamped {
 			this.addMessageInfo('EXIV_UPGRADE_TIMESTAMP', 'Update timestamp to ' + ts);
 		}
 
-		return exivWrite(this, 'DateTimeOriginal', ts.split('-').join(':'))
+		return exivWrite(this, this.constExivTS, ts.split('-').join(':'))
 			.then(() => {
 				this.exiv_timestamp = tsFromString(ts);
 				this.setCalculatedTS(tsFromString(ts));

@@ -1,6 +1,6 @@
 
 const FileMovie = require('./file-movie.js');
-const { tzFromGPS, tsFromDateAndTimezone } = require('./timestamp.js');
+const { tsFromDateAndTimezone } = require('./timestamp.js');
 
 module.exports = class FileMovieUCT extends FileMovie {
 	get type() { return 'movieUTC';	}
@@ -9,23 +9,14 @@ module.exports = class FileMovieUCT extends FileMovie {
 
 	async exivReadAll(file) {
 		return super.exivReadAll(file)
-			.then(resultObj => {
-				if (resultObj.GPSPosition) {
-					const tz = tzFromGPS(resultObj.GPSPosition);
-					resultObj.calculatedTimezone = tz;
+			.then(exivData => {
+				if (!exivData[this.constExivTS] && exivData.DateTimeOriginal) {
+					exivData[this.constExivTS] = exivData.DateTimeOriginal;
 				}
-
-				// console.log(resultObj);
-				if (!resultObj.DateTimeOriginal && resultObj.CreateDate) {
-					// CreateDate
-					// GPSPosition
-					if (resultObj.calculatedTimezone) {
-						resultObj.DateTimeOriginal = tsFromDateAndTimezone(resultObj.CreateDate.replace(':', '-').replace(':', '-'), resultObj.calculatedTimezone).TS();
-					} else {
-						resultObj.DateTimeOriginal = resultObj.CreateDate;
-					}
+				if (exivData.calculatedTimezone) {
+					exivData[this.constExivTS] = tsFromDateAndTimezone(exivData[this.constExivTS].replace(':', '-').replace(':', '-'), exivData.calculatedTimezone).TS();
 				}
-				return resultObj;
+				return exivData;
 			});
 	}
 
