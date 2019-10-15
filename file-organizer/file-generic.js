@@ -16,6 +16,7 @@ const activeFilesList = new Map();
 let id = 0;
 
 class FileGeneric {
+	get type() { return 'generic'; }
 
 	constructor(filePath, parent = null) {
 		this._id = id++;
@@ -136,10 +137,6 @@ class FileGeneric {
 			);
 		}
 		return res;
-	}
-
-	getType() {
-		return 'generic';
 	}
 
 	get parent() {

@@ -3,9 +3,8 @@ const FileMovie = require('./file-movie.js');
 const { tzFromGPS, tsFromDateAndTimezone } = require('./timestamp.js');
 
 module.exports = class FileMovieUCT extends FileMovie {
-	getType() {
-		return 'movieUTC';
-	}
+	get type() { return 'movieUTC';	}
+	get constExivTS() { return 'CreateDate'; }
 	// TODO (mp4-ts): hook data functions
 
 	async exivReadAll(file) {

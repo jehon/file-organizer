@@ -13,7 +13,7 @@ exports.handler = function (noptions) {
 	return Promise.all(options.files.map(
 		fi => fi.iterate(
 			f => {
-				if (f.getType() == 'movie') {
+				if (f.type == 'movie') {
 					return f.loadData()
 						.then(f => f.check());
 				}

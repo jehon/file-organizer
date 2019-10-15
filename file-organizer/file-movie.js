@@ -3,9 +3,8 @@ const FileExiv = require('./file-exiv.js');
 // const fileUtils = require('./file-utils.js');
 
 module.exports = class FileMovie extends FileExiv {
-	getType() {
-		return 'movie';
-	}
+	get type() { return 'movie'; }
+	get constExivTS() { return 'CreateDate'; }
 
 	check() {
 	// 	this.addMessageConvert(

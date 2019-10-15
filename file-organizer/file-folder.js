@@ -7,9 +7,7 @@ const FileTimestamped = require('./file-timestamped.js');
 const FileHidden = require('./file-hidden.js');
 
 class FileFolder extends FileTimestamped {
-	getType() {
-		return 'folder';
-	}
+	get type() { return 'folder'; }
 
 	async getList() {
 		const fileFactory = require('./file-factory.js');
