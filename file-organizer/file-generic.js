@@ -21,7 +21,9 @@ class FileGeneric {
 	constructor(filePath, parent = null) {
 		this._id = id++;
 		this._relativePath = filePath;
-		this._parent = parent;
+		if (this._parent && this._parent.getRelativePath() != '.') {
+			this._parent = parent;
+		}
 		this._infos = {};
 		this._originalFilePath = filePath;
 
@@ -143,6 +145,7 @@ class FileGeneric {
 	}
 
 	get parent() {
+		// TODO(optimization): build a parent cache?
 		if (this._parent == null) {
 			const FileFolder = require('./file-folder.js');
 			let parentDir = path.dirname(this._relativePath);
