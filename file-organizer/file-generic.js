@@ -33,11 +33,12 @@ class FileGeneric {
 			errors: 0
 		};
 
-		if (parent) {
-			activeFilesList.set(this._id, this);
-			messages.statsAddFileToTotal();
-			messages.statsSetPendingFiles(activeFilesList.size);
-		}
+		// const FileFolder = require('./file-folder.js');
+		// if (!(this instanceof FileFolder)) {
+		activeFilesList.set(this._id, this);
+		messages.statsAddFileToTotal();
+		messages.statsSetPendingFiles(activeFilesList.size);
+		// }
 		this.messages = new Map();
 	}
 
