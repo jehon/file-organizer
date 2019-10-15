@@ -197,15 +197,15 @@ class FileGeneric {
 	// TODO (indexed): //ise it
 	// @Limited(1)
 	async rename(newFilenameWithExtension) {
-		const newPath = path.join(this.parent.getRelativePath(), newFilenameWithExtension);
-		if (this.getRelativePath() == newPath) {
+		const newPath = path.join(this.parent._getAbsolutePath(), newFilenameWithExtension);
+		if (this._getAbsolutePath() == newPath) {
 			return true;
 		}
 
 		// Only one at at time...
 		return renameLimiter(async () => {
 			await fileUtils.fileRename(
-				this.getRelativePath(),
+				this._getAbsolutePath(),
 				newPath
 			);
 			this._relativePath = newPath;

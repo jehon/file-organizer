@@ -63,7 +63,7 @@ async function checkAndReserveName(filePath, forMe) {
 	}
 
 	if (isReservedNameForSomeoneElse(filePath, forMe)) {
-		throw false;
+		throw 'already reserved';
 	}
 
 	if (isReleasedName(filePath)) {
@@ -73,7 +73,7 @@ async function checkAndReserveName(filePath, forMe) {
 	return fs.promises.stat(filePath)
 		.then(() => {
 			// If it exists, we can't reserve it...
-			throw false;
+			throw 'exists on disk';
 		}, () => {
 			// If it does not, then let's reserve it...
 			reserveNameForMe(filePath, forMe);
@@ -96,8 +96,7 @@ async function fileRename(filePathOriginal, filePathDest) {
 
 	return checkAndReserveName(filePathDest, filePathOriginal)
 		.catch((e) => {
-			console.error(e);
-			throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal})`);
+			throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal}) (${e})`);
 		})
 		.then(() => fs.promises.rename(filePathOriginal, filePathDest ))
 		.then(() => releaseName(filePathDest))
