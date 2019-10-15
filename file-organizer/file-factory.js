@@ -9,7 +9,6 @@ const FileDelete        = require('./file-delete.js');
 const FileHidden        = require('./file-hidden.js');
 const FileManual        = require('./file-manual.js');
 const FileMovie         = require('./file-movie.js');
-const FileMovieUTC      = require('./file-movie-utc.js');
 const FilePicture       = require('./file-picture.js');
 const FileConvertSource = require('./file-convert-source.js');
 
@@ -70,11 +69,10 @@ async function fileFactory(filepath, parent = null) {
 
 	case '.mov':
 	case '.m4v':  // 67 (#1 !) --> convert to MP4 ? // https://www.winxdvd.com/resource/m4v-vs-mp4.htm ==> change extension
+	case '.mp4':  // 11 --> but convert inside to H264 ?
 		return new FileMovie(filepath, parent);
 
 	// case '.avi':  // 17 (#2 !)
-	case '.mp4':  // 11 --> but convert inside to H264 ?
-		return new FileMovieUTC(filepath, parent);
 
 		// Thanks to https://stackoverflow.com/a/40077776/1954789
 		// does not work everytimes...
