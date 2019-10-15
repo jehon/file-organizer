@@ -7,7 +7,7 @@
  */
 
 const FileTimestamped = require('./file-timestamped.js');
-const { tsFromString } = require('./timestamp.js');
+const { tsFromString, tzFromGPS } = require('./timestamp.js');
 const options = require('./options.js');
 const fileUtils = require('./file-utils.js');
 
@@ -154,6 +154,7 @@ module.exports = class FileExiv extends FileTimestamped {
 	}
 
 	async exivWriteTimestamp(ts) {
+		ts = ts.TS();
 		const empty = '0000-00-01 00-00-00';
 		if (ts.length < empty.length) {
 			ts = ts + empty.substr(ts.length);
@@ -194,7 +195,7 @@ module.exports = class FileExiv extends FileTimestamped {
 		if (this.exiv_timestamp.TS() != this.calculatedTS.TS() && this.calculatedTS.TS()) {
 			res = res && await this.addMessageCommit('EXIV_WRITE_TIMESTAMP', 'Write timestamp',
 				this.calculatedTS.TS(),
-				() => this.exivWriteTimestamp(this.calculatedTS.TS())
+				() => this.exivWriteTimestamp(this.calculatedTS)
 			);
 		}
 		return res;

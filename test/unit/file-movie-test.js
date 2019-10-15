@@ -2,6 +2,7 @@
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FileMovie = require('../../file-organizer/file-movie.js');
 const fileFactory = require('../../file-organizer/file-factory.js');
+const { tsFromString } = require('../../file-organizer/timestamp.js');
 
 async function getMov(dPath) {
 	return new FileMovie(dataPath(dPath)).loadData();
@@ -25,7 +26,7 @@ describe('file-movie-test', () => {
 		const new1 = await createFileGeneric(canonMOV);
 		expect(new1.exiv_timestamp.TS()).toBe(canonMOVTS);
 
-		await new1.exivWriteTimestamp('2016-02-04 01-02-03');
+		await new1.exivWriteTimestamp(tsFromString('2016-02-04 01-02-03'));
 		expect(new1.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
 
 		const new2 = await fileFactory(new1.getRelativePath());

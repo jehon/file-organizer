@@ -1,6 +1,7 @@
 
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FileMovieUTC = require('../../file-organizer/file-movie-utc.js');
+const { tsFromString } = require('../../file-organizer/timestamp.js');
 
 async function getMov(dPath) {
 	return new FileMovieUTC(dataPath(dPath)).loadData();
@@ -25,7 +26,7 @@ describe('file-movie-utc-test', () => {
 
 		pending('MP4 write exiv is not developped');
 
-		await new1.exivWriteTimestamp('2016-02-04 01-02-03');
+		await new1.exivWriteTimestamp(tsFromString('2016-02-04 01-02-03'));
 		expect(new1.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
 
 		const new2 = await createFileGeneric(AndroidMP4);
