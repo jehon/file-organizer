@@ -251,3 +251,4 @@ class FileGeneric {
 
 module.exports = FileGeneric;
 FileGeneric.convertedSuffix = '_converted';
+FileGeneric.pendings = activeFilesList;
