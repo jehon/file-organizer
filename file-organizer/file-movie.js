@@ -24,6 +24,7 @@ module.exports = class FileMovie extends FileExiv {
 		return super.exivReadAll(file)
 			.then(exivData => {
 				if (!exivData[this.constExivTS] && exivData.DateTimeOriginal) {
+					// TODO: here, we should write it in "check"
 					exivData[this.constExivTS] = exivData.DateTimeOriginal;
 				}
 				if (exivData.calculatedTimezone) {
