@@ -33,15 +33,15 @@ class FileGeneric {
 			errors: 0
 		};
 
-		activeFilesList.set(this.id, this);
+		activeFilesList.set(this._id, this);
 		messages.statsAddFileToTotal();
 		messages.statsSetPendingFiles(activeFilesList.size);
 		this.messages = new Map();
 	}
 
 	end() {
-		if (activeFilesList.has(this.id)) {
-			activeFilesList.delete(this.id);
+		if (activeFilesList.has(this._id)) {
+			activeFilesList.delete(this._id);
 		}
 		if (options.withFileSummary) {
 			if (this.messages.size > 0) {
