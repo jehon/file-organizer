@@ -63,32 +63,24 @@ async function fileFactory(filepath, parent = null) {
 	case '.jpeg':
 		return new FilePicture(filepath, parent);
 
-
-		// .mp4: 67
-		// .m4v: 11
-
 	case '.mov':
-	case '.m4v':  // 67 (#1 !) --> convert to MP4 ? // https://www.winxdvd.com/resource/m4v-vs-mp4.htm ==> change extension
-	case '.mp4':  // 11 --> but convert inside to H264 ?
+	case '.mp4':  // 67  // TODO (extensions): unsupported
 		return new FileMovie(filepath, parent);
 
-	// case '.avi':  // 17 (#2 !)
+	// case '.avi':  // 17  // TODO (extensions): unsupported
+	// case '.mpg':  // 29  // TODO (extensions): unsupported
+	// case '.mpeg': // ?   // TODO (extensions): unsupported
+	// case '.wmv':  // ?   // TODO (extensions): unsupported
+	// case '.mod':  // ?   // TODO (extensions): unsupported
+		// return new FileMovieMov(filepath, parent);
 
-		// Thanks to https://stackoverflow.com/a/40077776/1954789
-		// does not work everytimes...
-		// case '.mkv': --> ffmpeg -i filename.mkv -vcodec copy -acodec copy 1.m4v
-		// case '.mkv': --> ffmpeg -i filename.mkv -c copy 1.m4v
+	// case '.m4v':  // 11  // TODO (extensions): unsupported
+	// case '.mkv':  // 1   // TODO (extensions): unsupported
+		// return new FileMovieMP4(filepath, parent);
 
-	// case '.mpg':  // 29
-	// case '.mkv':  // 1
-
-	// case '.mpeg': // ?
-	// case '.mts':  // ?
-	// case '.mod':  // ?
-	// case '.png':  // ?
-	// case '.wmv':  // ?
-	// case '.dng':  // ?
-		// TODO (extensions): unsupported
+	// case '.mts':  // ?   // TODO (extensions): unsupported
+	// case '.png':  // ?   // TODO (extensions): unsupported
+	// case '.dng':  // ?   // TODO (extensions): unsupported
 	}
 	return new FileUnsupported(filepath, parent);
 }
