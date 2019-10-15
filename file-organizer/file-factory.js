@@ -73,8 +73,8 @@ async function fileFactory(filepath, parent = null) {
 		return new FileMovie(filepath, parent);
 
 	// case '.avi':  // 17 (#2 !)
-	// case '.mp4':  // 11 --> but convert inside to H264 ?
-	// 	return new FileMovieUTC(filepath, parent);
+	case '.mp4':  // 11 --> but convert inside to H264 ?
+		return new FileMovieUTC(filepath, parent);
 
 		// Thanks to https://stackoverflow.com/a/40077776/1954789
 		// does not work everytimes...
