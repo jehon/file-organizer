@@ -214,6 +214,7 @@ class FileGeneric {
 	async iterate(apply) {
 		return Promise.resolve(this)
 			.then(() => apply(this))
+			.catch(e => this.addMessageImpossible('ERR', 'Error: ' + (e instanceof Error ? e.message : e)))
 			.finally(() => this.end());
 	}
 
