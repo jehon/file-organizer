@@ -154,6 +154,7 @@ class FileGeneric {
 			if (!parents.has(parentDir)) {
 				const FileFolder = require('./file-folder.js');
 				const p = new FileFolder(parentDir);
+				p.end();
 				parents.set(parentDir, p);
 			}
 			this._parent = parents.get(parentDir);
