@@ -15,6 +15,8 @@ const activeFilesList = new Map();
 
 let id = 0;
 
+const parents = new Map();
+
 class FileGeneric {
 	constructor(filePath, parent = null) {
 		this._id = id++;
@@ -145,12 +147,16 @@ class FileGeneric {
 	get parent() {
 		// TODO(optimization): build a parent cache?
 		if (this._parent == null) {
-			const FileFolder = require('./file-folder.js');
 			let parentDir = path.dirname(this.getPath());
 			if (parentDir == '/') {
 				return null;
 			}
-			this._parent = new FileFolder(parentDir);
+			if (!parents.has(parentDir)) {
+				const FileFolder = require('./file-folder.js');
+				const p = new FileFolder(parentDir);
+				parents.set(parentDir, p);
+			}
+			this._parent = parents.get(parentDir);
 		}
 		return this._parent;
 	}
