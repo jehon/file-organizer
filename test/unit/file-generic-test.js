@@ -16,15 +16,15 @@ describe('file-generic-test', () => {
 
 			expect(new1.getFilename()).toBe('test');
 			expect(new1.getExtension()).toBe('.txt');
-			expect(new1.getRelativePath()).toBe(fpath);
+			expect(new1.getPath()).toBe(fpath);
 		});
 
 		it('should get the parent', function() {
 			expect((new FileGeneric(path.join(dataPath(), 'test.txt')))
-				.parent.getRelativePath())
+				.parent.getPath())
 				.toBe(dataPath());
 			expect((new FileGeneric('.'))
-				.parent.getRelativePath())
+				.parent.getPath())
 				.toBe(path.dirname(process.cwd()));
 			expect((new FileGeneric('/')).parent).toBeNull();
 		});
@@ -38,15 +38,15 @@ describe('file-generic-test', () => {
 			await new1.changeFilename('file-generic-test-1');
 			expect(new1.getFilename()).toBe('file-generic-test-1');
 			expect(new1.getExtension()).toBe('.txt');
-			expect(new1.parent.getRelativePath()).toBe(tempPath());
+			expect(new1.parent.getPath()).toBe(tempPath());
 
-			await fileUtils.fileDelete(new1.getRelativePath());
+			await fileUtils.fileDelete(new1.getPath());
 		});
 
 		it('should remove the file', async function() {
 			const new1 = await createFileGeneric('jh-patch-file-patch.txt');
 
-			let filename = new1.getRelativePath();
+			let filename = new1.getPath();
 
 			expect(await helpers.fileExists(filename)).toBeTruthy();
 			await new1.remove();

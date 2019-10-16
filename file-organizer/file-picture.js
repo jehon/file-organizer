@@ -12,8 +12,8 @@ module.exports = class FilePicture extends FileExiv {
 		// '-a': auto rotate
 		// '-i': inplace
 
-		const orig = this.getRelativePath();
-		const temp = this.getRelativePath() + '.rotated';
+		const orig = this.getPath();
+		const temp = this.getPath() + '.rotated';
 
 		return fileUtils.fileExec('exiftran', [ '-a', '-p', '-g', orig, '-o', temp ])
 			.then(() => fileUtils.fileExec('touch', [ '-r', orig, temp ]))

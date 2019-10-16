@@ -1,5 +1,6 @@
 
 const options = require('../options.js');
+const fileUtils = require('../file-utils.js');
 const FileUnsupported = require('../file-unsupported.js');
 const messages = require('../messages.js');
 
@@ -16,7 +17,7 @@ exports.handler = function (noptions) {
 		f0 => f0.iterate(
 			f => {
 				if (f instanceof FileUnsupported) {
-					messages.writeLine('Unsupported: ', f.getRelativePath());
+					messages.writeLine('Unsupported: ', fileUtils.getPathRelativeTo(f.getPath()));
 				}
 			})
 	))

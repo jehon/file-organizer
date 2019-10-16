@@ -16,12 +16,10 @@ const activeFilesList = new Map();
 let id = 0;
 
 class FileGeneric {
-	get type() { return 'generic'; }
-
 	constructor(filePath, parent = null) {
 		this._id = id++;
-		this._relativePath = filePath;
-		if (this._parent && this._parent.getRelativePath() != '.') {
+		this._path = fileUtils.getAbsolutePath(filePath);
+		if (this._parent && this._parent.getPath() != '.') {
 			this._parent = parent;
 		}
 		this._infos = {};
@@ -52,8 +50,8 @@ class FileGeneric {
 			if (this.messages.size > 0) {
 				messages.writeLine(
 					'*** '
-				+ this.parent.getRelativePath() + '/' + chalk.bold(this.getFilename()) + this.getExtension()
-				+ (this._originalFilePath != this.getRelativePath() ? '\n  < ' + this._originalFilePath : '')
+				+ fileUtils.getPathRelativeTo(this.parent.getPath()) + '/' + chalk.bold(this.getFilename()) + this.getExtension()
+				+ (this._originalFilePath != this.getPath() ? '\n  < ' + fileUtils.getPathRelativeTo(this._originalFilePath) : '')
 				+ Array.from(this.messages.entries())
 					.map(v => v[1])
 					.map(v => '\n  ' + v)
@@ -131,14 +129,14 @@ class FileGeneric {
 
 	// TODO: to be tested
 	async addMessageConvert(code, targetExtension, action) {
-		const sourcePath    = this.getRelativePath();
-		const targetPath    = path.join(fileUtils.getDirname(this.getRelativePath()), this.getFilename() + targetExtension);
-		const convertedPath = path.join(fileUtils.getDirname(this.getRelativePath()), this.getFilename() + FileGeneric.convertedSuffix + this.getExtension());
+		const sourcePath    = this.getPath();
+		const targetPath    = path.join(fileUtils.getDirname(this.getPath()), this.getFilename() + targetExtension);
+		const convertedPath = path.join(fileUtils.getDirname(this.getPath()), this.getFilename() + FileGeneric.convertedSuffix + this.getExtension());
 
 		let res = await messages.addMessageCommit(code + '_CONVERT', 'Convert file', targetExtension, async () => action(sourcePath, targetPath));
 		if (res) {
 			res = res && await messages.addMessageCommit(code + '_OBSOLETE', 'Move away original file', fileUtils.getFilename(convertedPath),
-				() => fileUtils.fileRename(this.getRelativePath(), convertedPath)
+				() => fileUtils.fileRename(this.getPath(), convertedPath)
 			);
 		}
 		return res;
@@ -148,11 +146,7 @@ class FileGeneric {
 		// TODO(optimization): build a parent cache?
 		if (this._parent == null) {
 			const FileFolder = require('./file-folder.js');
-			let parentDir = path.dirname(this._relativePath);
-			if (parentDir == '.') {
-				// switch to absolute path
-				parentDir = path.dirname(this._getAbsolutePath());
-			}
+			let parentDir = path.dirname(this.getPath());
 			if (parentDir == '/') {
 				return null;
 			}
@@ -161,29 +155,22 @@ class FileGeneric {
 		return this._parent;
 	}
 
-	_getAbsolutePath() {
-		if (this._relativePath[0] == '/') {
-			return this._relativePath;
-		}
-		return path.join(process.cwd(), this._relativePath);
-	}
-
-	getRelativePath() {
-		return this._relativePath;
+	getPath() {
+		return this._path;
 	}
 
 	/**
 	 * Without extension
 	 */
 	getFilename() {
-		return fileUtils.getFilename(this.getRelativePath());
+		return fileUtils.getFilename(this.getPath());
 	}
 
 	/**
 	 * Format: .blabla
 	 */
 	getExtension() {
-		return fileUtils.getExtension(this.getRelativePath());
+		return fileUtils.getExtension(this.getPath());
 	}
 
 	async loadData() {
@@ -197,24 +184,24 @@ class FileGeneric {
 	// TODO (indexed): //ise it
 	// @Limited(1)
 	async rename(newFilenameWithExtension) {
-		const newPath = path.join(this.parent._getAbsolutePath(), newFilenameWithExtension);
-		if (this._getAbsolutePath() == newPath) {
+		const newPath = path.join(this.parent.getPath(), newFilenameWithExtension);
+		if (this.getPath() == newPath) {
 			return true;
 		}
 
 		// Only one at at time...
 		return renameLimiter(async () => {
 			await fileUtils.fileRename(
-				this._getAbsolutePath(),
+				this.getPath(),
 				newPath
 			);
-			this._relativePath = newPath;
+			this._path = newPath;
 			return true;
 		});
 	}
 
 	async remove() {
-		return fileUtils.fileDelete(this.getRelativePath());
+		return fileUtils.fileDelete(this.getPath());
 	}
 
 	async iterate(apply) {

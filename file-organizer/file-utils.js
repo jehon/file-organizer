@@ -12,6 +12,17 @@ const path = require('path');
 const debug = require('debug')('file-utils');
 const debugExec = debug.extend('exec');
 
+function getAbsolutePath(relativePath) {
+	if (relativePath[0] == '/') {
+		return relativePath;
+	}
+	return path.join(process.cwd(), relativePath);
+}
+
+function getPathRelativeTo(filepath, root = process.cwd()) {
+	return path.relative(root, filepath);
+}
+
 function getDirname(relativePath) {
 	return path.parse(relativePath).dir;
 }
@@ -126,6 +137,8 @@ async function fileExec(file, params = []) {
 }
 
 module.exports = {
+	getAbsolutePath,
+	getPathRelativeTo,
 	getDirname,
 	getFullFilename,
 	getFilename,

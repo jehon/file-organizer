@@ -66,16 +66,16 @@ async function runExiv(...params) {
 }
 
 async function exivWrite(file, tag, value) {
-	debugExiv('exivWrite:', file.getRelativePath(), tag, value);
+	debugExiv('exivWrite:', file.getPath(), tag, value);
 	return runExiv(
 		'-overwrite_original',
 		'-m', // Ignore minor errors and warnings
-		`-${tag}=${value}`, file.getRelativePath()
+		`-${tag}=${value}`, file.getPath()
 	);
 }
 
 async function exivReadAll(file) {
-	debugExiv('exivReadAll:', file.getRelativePath());
+	debugExiv('exivReadAll:', file.getPath());
 	const defaultResult = {
 		'UserComment': '',
 		'Orientation': '',
@@ -86,10 +86,10 @@ async function exivReadAll(file) {
 
 	return runExiv('-j',
 		'-m', // Ignore minor errors and warnings
-		file.getRelativePath())
+		file.getPath())
 		.then(result => {
 			let exivData = JSON.parse(result)[0];
-			debugExiv('exivReadAll got:', file.getRelativePath(), exivData['DateTimeOriginal']);
+			debugExiv('exivReadAll got:', file.getPath(), exivData['DateTimeOriginal']);
 			if (exivData.GPSPosition) {
 				exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
 			}

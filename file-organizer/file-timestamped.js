@@ -72,11 +72,11 @@ class FileTimestamped extends FileGeneric {
 			return this.getCanonicalFilename();
 		}
 
-		const p = (proposedFilename) => path.join(this.parent.getRelativePath(), proposedFilename + this.getExtension());
+		const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.getExtension());
 
 		return indexedFilenameLimiter(async () => {
 			try {
-				await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getRelativePath());
+				await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getPath());
 				return this.getCanonicalFilename();
 			} catch (_e) {
 				// expected
@@ -85,7 +85,7 @@ class FileTimestamped extends FileGeneric {
 			this.calculatedTS.original = 1;
 			while(this.calculatedTS.original != o) {
 				try {
-					await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getRelativePath());
+					await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getPath());
 					return this.getCanonicalFilename();
 				} catch(_e) {
 					//expected

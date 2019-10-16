@@ -3,7 +3,6 @@ const FileExiv = require('./file-exiv.js');
 const { tsFromDateAndTimezone } = require('./timestamp.js');
 
 module.exports = class FileMovie extends FileExiv {
-	get type() { return 'movie'; }
 	get constExivTS() { return 'CreateDate'; }
 
 	async exivReadAll(file) {

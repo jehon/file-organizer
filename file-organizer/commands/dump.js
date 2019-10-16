@@ -1,5 +1,6 @@
 
 const options = require('../options.js');
+const fileUtils = require('../file-utils.js');
 const FileUnsupported = require('../file-unsupported.js');
 const messages = require('../messages.js');
 
@@ -65,7 +66,7 @@ exports.handler = function (noptions) {
 					}
 					const sep = (ok) ? '|' : '|';
 					let msg = ''
-						+ r(fi.parent.getRelativePath() + '/' + fi.getFilename(), padFilename)
+						+ r(fileUtils.getPathRelativeTo(fi.parent.getPath()) + '/' + fi.getFilename(), padFilename)
 						+ sep
 						+ l(fi.generic_original_extension, padExtension)
 						+ sep

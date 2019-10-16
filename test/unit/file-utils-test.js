@@ -10,10 +10,10 @@ describe('file-utils-test', function() {
 
 		// Ask to move to new file, but without telling him it is itself -> should be incremented
 		const new1 = await createFileGeneric('jh-patch-file-patch.txt');
-		expect(await helpers.fileExists(new1.getRelativePath())).toBeTruthy();
+		expect(await helpers.fileExists(new1.getPath())).toBeTruthy();
 
-		await fileUtils.fileDelete(new1.getRelativePath());
-		expect(await helpers.fileExists(new1.getRelativePath())).toBeFalsy();
+		await fileUtils.fileDelete(new1.getPath());
+		expect(await helpers.fileExists(new1.getPath())).toBeFalsy();
 	});
 
 	it('should launch subprocesses', async function() {
@@ -27,10 +27,10 @@ describe('file-utils-test', function() {
 
 	it('should work with reservations', async function() {
 		const new1 = await createFileGeneric('jh-patch-file-patch.txt');
-		const new2Name = new1.getRelativePath() + '.ok';
+		const new2Name = new1.getPath() + '.ok';
 
 		// The file exists
-		await expectAsync(fileUtils.checkAndReserveName(new1.getRelativePath(), 'someone-else')).toBeRejected();
+		await expectAsync(fileUtils.checkAndReserveName(new1.getPath(), 'someone-else')).toBeRejected();
 
 		// It is available
 		await expectAsync(fileUtils.checkAndReserveName(new2Name, 'for-me')).toBeResolvedTo(true);
@@ -41,6 +41,6 @@ describe('file-utils-test', function() {
 		// Now it is reserved
 		await expectAsync(fileUtils.checkAndReserveName(new2Name, 'someone-else')).toBeRejected();
 
-		await fileUtils.fileDelete(new1.getRelativePath());
+		await fileUtils.fileDelete(new1.getPath());
 	});
 });

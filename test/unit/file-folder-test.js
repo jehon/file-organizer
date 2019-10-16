@@ -9,7 +9,7 @@ describe('file-folder-test', () => {
 		let res = 0;
 		for(const f of await folder.getList()) {
 			expect(f).toEqual(jasmine.any(FileGeneric));
-			expect(f.parent.getRelativePath()).toBe(dataPath());
+			expect(f.parent.getPath()).toBe(dataPath());
 			expect(f.getFilename()).not.toBe('.');
 			expect(f.getFilename()).not.toBe('..');
 

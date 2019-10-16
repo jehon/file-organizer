@@ -4,8 +4,6 @@ const FileHidden = require('./file-hidden.js');
 const map = new Map();
 
 class FileUnsupported extends FileHidden {
-	get type() { return 'unsupported'; }
-
 	constructor(filePath, parent = null) {
 		super(filePath, parent);
 		const i = map.has(this.getExtension().toLowerCase()) ? map.get(this.getExtension().toLowerCase()) : 0;

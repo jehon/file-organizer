@@ -33,7 +33,7 @@ describe('file-movie-test', () => {
 		await new1.exivWriteTimestamp(tsFromString('2016-02-04 01-02-03'));
 		expect(new1.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
 
-		const new2 = await fileFactory(new1.getRelativePath());
+		const new2 = await fileFactory(new1.getPath());
 		await new2.loadData();
 		expect(new2.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
 
@@ -64,7 +64,7 @@ describe('file-movie-test', () => {
 		await new1.exivWriteComment(newComment);
 		expect(new1.exiv_comment).toBe(newComment);
 
-		const new2 = await fileFactory(new1.getRelativePath());
+		const new2 = await fileFactory(new1.getPath());
 		await new2.loadData();
 		expect(new2.exiv_comment).toBe(newComment);
 

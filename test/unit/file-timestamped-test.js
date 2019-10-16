@@ -32,7 +32,7 @@ describe('file-timestamped-test', () => {
 		const n1 = await createFileGeneric('canon.JPG');
 		await n1.check();
 		expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
-		const n2 = new FileTimestamped(n1.getRelativePath());
+		const n2 = new FileTimestamped(n1.getPath());
 
 		await n1.changeFilename('2018-02-04 13-17-50 canon [test]');
 
@@ -44,7 +44,7 @@ describe('file-timestamped-test', () => {
 		n1.calculatedTS.original = '123';
 		expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
 
-		await fileDelete(n1.getRelativePath());
+		await fileDelete(n1.getPath());
 	});
 
 	describe('check', () => {
@@ -94,7 +94,7 @@ describe('file-timestamped-test', () => {
 				await new1.exivWriteComment('');
 
 				// new2 is a virtual alias of new1 with fields initialized
-				const new2 = await fileFactory(new1.getRelativePath());
+				const new2 = await fileFactory(new1.getPath());
 				await new2.loadData();
 				expect(new2.exiv_comment).toBe('');
 				expect(new2.filenameTS.comment).toBe('exivok01');
@@ -113,7 +113,7 @@ describe('file-timestamped-test', () => {
 				await new1.changeFilename('1998-12-31 12-10-11');
 
 				// new2 is a virtual alias of new1 with fields initialized
-				const new2 = await fileFactory(new1.getRelativePath());
+				const new2 = await fileFactory(new1.getPath());
 				await new2.loadData();
 				expect(new2.exiv_comment).toBe('');
 				expect(new2.filenameTS.comment).toBe('');
@@ -140,7 +140,7 @@ describe('file-timestamped-test', () => {
 				await new1.exivWriteComment('x test');
 
 				// new2 is a virtual alias of new1 with fields initialized
-				const new2 = await fileFactory(new1.getRelativePath());
+				const new2 = await fileFactory(new1.getPath());
 				await new2.loadData();
 				expect(new2.exiv_comment).toBe('x test');
 

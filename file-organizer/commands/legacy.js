@@ -1,6 +1,7 @@
 
 const options = require('../options.js');
 const FileUnsupported = require('../file-unsupported.js');
+const FileMovie = require('../file-movie.js');
 
 exports.command = 'legacy';
 
@@ -13,7 +14,7 @@ exports.handler = function (noptions) {
 	return Promise.all(options.files.map(
 		fi => fi.iterate(
 			f => {
-				if (f.type == 'movie') {
+				if (f instanceof FileMovie) {
 					return f.loadData()
 						.then(f => f.check());
 				}
