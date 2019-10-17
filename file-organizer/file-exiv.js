@@ -157,6 +157,7 @@ module.exports = class FileExiv extends FileTimestamped {
 
 	async exivReload(){
 		return this.exivReadAll().then(exivData => {
+			this.exiv_timestamp_raw       = exivData[this.constExivTS];
 			this.exiv_timestamp           = tsFromString(exivData[this.constExivTS]);
 			this.exiv_comment             = exivData['UserComment'];
 			this.exiv_orientation         = translateRotation(exivData['Orientation']);
@@ -166,18 +167,11 @@ module.exports = class FileExiv extends FileTimestamped {
 		});
 	}
 
-	async exivWriteTimestamp(ts) {
-		ts = ts.TS();
-		const empty = '0000-00-01 00-00-00';
-		if (ts.length < empty.length) {
-			ts = ts + empty.substr(ts.length);
-			this.addMessageInfo('EXIV_UPGRADE_TIMESTAMP', 'Update timestamp to ' + ts);
-		}
-
-		return exivWrite(this, this.constExivTS, ts.split('-').join(':'))
+	async exivWriteTimestamp(ts, tz = false) {
+		return exivWrite(this, this.constExivTS, ts.exiv(tz))
 			.then(() => {
-				this.exiv_timestamp = tsFromString(ts);
-				this.setCalculatedTS(tsFromString(ts));
+				this.exiv_timestamp = ts;
+				this.setCalculatedTS(ts);
 				return this;
 			});
 	}
@@ -205,7 +199,7 @@ module.exports = class FileExiv extends FileTimestamped {
 			);
 		}
 
-		if (this.exiv_timestamp.TS() != this.calculatedTS.TS() && this.calculatedTS.TS()) {
+		if (this.exiv_timestamp_raw != this.calculatedTS.exiv() && this.calculatedTS.TS()) {
 			res = res && await this.addMessageCommit('EXIV_WRITE_TIMESTAMP', 'Write timestamp',
 				this.calculatedTS.TS(),
 				() => this.exivWriteTimestamp(this.calculatedTS)

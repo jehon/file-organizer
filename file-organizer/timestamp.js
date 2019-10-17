@@ -36,7 +36,7 @@ const final = new RegExp(`^${ts.source}( (?<comment>[^[]*))?( \\[(?<original>.+)
 
 const android = /^(?<original>(VID|IMG)_(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))$/;
 
-const screen = /^(?<original>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))(?<_tag>(?<comment>.*))?$/;
+const screen = /^(?<original>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))(?<comment>.*)?$/;
 
 const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})( (?<comment>.*))?$`);
 
@@ -95,10 +95,7 @@ class Timestamp {
 				break;
 			}
 		}
-		if (this.comment2 > '') {
-			this.comment = this.comment2;
-		}
-
+		this._moment = moment([ this.year, this.month - 1, this.day, this.hour, this.minute, this.second ]);
 		return;
 	}
 
@@ -136,12 +133,20 @@ class Timestamp {
 		return res;
 	}
 
-	TSinUTC(tz = 'Europe/Brussels') {
-		if (this.hour <= 0 && this.minute == 0 && this.second == 0) {
-			return this.TS();
+	exiv(tz = false) {
+		if (tz && this.TS().length > 10) {
+			// We have a time
+			const exiv = this._moment.clone();
+			exiv.tz(tz, true); // true: force to keep the initial value
+			return exiv.utc().format('YYYY:MM:DD HH:mm:ss');
 		}
-		const m = moment.tz(this.TS(), MomentJSParseTS, tz);
-		return m.utc().format(MomentJSParseTS);
+
+		return ('' + Math.max(0, this.year)).padStart(2 , '0')
+			+ ':' + ('' + Math.max(0, this.month)).padStart(2, '0')
+			+ ':' + ('' + Math.max(0, this.day)).padStart(2, '0')
+			+ ' ' + ('' + Math.max(0, this.hour)).padStart(2, '0')
+			+ ':' + ('' + Math.max(0, this.minute)).padStart(2, '0')
+			+ ':' + ('' + Math.max(0, this.second)).padStart(2, '0');
 	}
 
 	// match test if the timestamp match against (larger) ts

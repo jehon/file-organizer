@@ -20,9 +20,6 @@ module.exports = class FileMovie extends FileExiv {
 	}
 
 	async exivWriteTimestamp(ts) {
-		if (this.calculatedTimezone) {
-			throw new Error('Movie write timestamp not implemented');
-		}
-		return super.exivWriteTimestamp(ts);
+		return super.exivWriteTimestamp(ts, this.calculatedTimezone);
 	}
 };
