@@ -359,15 +359,19 @@ describe('timestamp-test', function() {
 		// Functionnal stuffs
 		//
 		//
-		it('should read pure date', () => {
-			expect(tsFromDate(new Date('2019-01-02T03:04:05Z')).TS()).toBe('2019-01-02 03-04-05');
+
+		// TODO: WIP
+		it('should generate exiv tag', () => {
+			expect(tsFromString('2019-01-02 03-04-05').exiv())                 .toBe('2019:01:02 03:04:05');
+			expect(tsFromString('2019-01-02 03-04-05').exiv('Europe/Brussels')).toBe('2019:01:02 02:04:05');
+			expect(tsFromString('2019-01-02 03-04-05').exiv('Asia/Taipei'))    .toBe('2019:01:01 19:04:05');
+
+			// TODO: temp !
+			expect(tsFromString('2018').exiv()).toBe('2018:00:00 00:00:00');
 		});
 
-		it('TSinUTC', () => {
-			expect(tsFromString('2019-01-02').TSinUTC()).toBe('2019-01-02');
-			expect(tsFromString('2019-01-02 03-04-05').TSinUTC()).toBe('2019-01-02 02-04-05');
-			expect(tsFromString('2019-07-02 03-04-05').TSinUTC()).toBe('2019-07-02 01-04-05');
-			expect(tsFromString('2019-07-02 03-04-05').TSinUTC('Asia/Taipei')).toBe('2019-07-01 19-04-05');
+		it('should read pure date', () => {
+			expect(tsFromDate(new Date('2019-01-02T03:04:05Z')).TS()).toBe('2019-01-02 03-04-05');
 		});
 
 		it('should be clonable', function() {
