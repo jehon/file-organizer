@@ -20,6 +20,6 @@ module.exports = class FileMovie extends FileExiv {
 	}
 
 	async exivWriteTimestamp(ts) {
-		return super.exivWriteTimestamp(ts, this.calculatedTimezone);
+		return super.exivWriteTimestamp(ts, this.exiv_calculated_timezone);
 	}
 };
