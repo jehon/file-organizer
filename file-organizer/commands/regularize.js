@@ -1,4 +1,5 @@
 
+// const FileGeneric = require('../file-generic.js');
 const FileUnsupported = require('../file-unsupported.js');
 const options = require('../options.js');
 
@@ -18,5 +19,6 @@ exports.handler = function (noptions) {
 		.then(() => {
 			console.info('\n\nDone');
 			FileUnsupported.dumpDiscoveredExtension();
+			// console.info(FileGeneric.pendings);
 		});
 };
