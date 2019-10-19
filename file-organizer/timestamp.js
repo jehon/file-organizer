@@ -135,7 +135,7 @@ class Timestamp {
 
 	exiv(tz = false) {
 		if (tz && this.TS().length > 10) {
-			// We have a time
+			// We have a time and a timezone
 			const exiv = this._moment.clone();
 			exiv.tz(tz, true); // true: force to keep the initial value
 			return exiv.utc().format('YYYY:MM:DD HH:mm:ss');
@@ -223,15 +223,10 @@ exports.tsFromString = function(str) {
 	return new Timestamp(str);
 };
 
-exports.tsFromDate = function(date) {
-	const ts  = new Timestamp('');
-	ts.year   = date.getUTCFullYear();
-	ts.month  = date.getUTCMonth() + 1;
-	ts.day    = date.getUTCDate();
-	ts.hour   = date.getUTCHours();
-	ts.minute = date.getUTCMinutes();
-	ts.second = date.getUTCSeconds();
-	return ts;
+exports.tsFromExiv = function(str, tz = false) {
+	// TODO: simplify this parsing !
+	// TODO: take into account tz !
+	return new Timestamp(str, tz);
 };
 
 exports.Timestamp = Timestamp;
@@ -256,11 +251,4 @@ exports.tzFromGPS = function(GPS) {
 	const long = p(coord[1]);
 
 	return tzlookup(lat, long);
-};
-
-exports.tsFromDateAndTimezone = function(date, tz) {
-	// https://stackoverflow.com/a/43527200/1954789
-	const now = moment(date + 'Z');
-	now.tz(tz);
-	return exports.tsFromString(now.format('YYYY-MM-DD HH:mm:ss'));
 };

@@ -9,14 +9,18 @@ async function getMov(dPath) {
 }
 
 const canonMOV = 'DSC_2506.MOV';
-const canonMOV_TS = '2019-09-19 07-48-25';
+const canonMOV_TS = '2019:09:19 07:48:25';
+
 const AndroidMP4 = '2019-09-03 12-48/20190903_124726.mp4';
-const AndroidMP4_TS = '2019:09:03 12:47:31';
+const AndroidMP4_TS = '2019-09-03 12-47-31';
+const AndroidMP4_EXIV_TS = '2019:09:03 10:47:31';
 
 describe('file-movie-test', () => {
 	it('should get exiv from files', async () => {
 		// Adroid files
-		expect((await getMov(canonMOV)).exiv_timestamp.TS()).toBe(canonMOV_TS);
+		expect((await getMov(canonMOV)).exiv_timestamp_raw).toBe(canonMOV_TS);
+
+		expect((await getMov(AndroidMP4)).exiv_timestamp_raw).toBe(AndroidMP4_EXIV_TS);
 		expect((await getMov(AndroidMP4)).exiv_timestamp.TS()).toBe(AndroidMP4_TS);
 	});
 
@@ -40,9 +44,9 @@ describe('file-movie-test', () => {
 		new1.remove();
 	});
 
-	fit('should write timestamps correctly with MP4', async() =>  {
+	it('should write timestamps correctly with MP4', async() =>  {
 		const new1 = await createFileGeneric(AndroidMP4);
-		expect(new1.exiv_timestamp.exiv()).toBe(AndroidMP4_TS);
+		expect(new1.exiv_timestamp.exiv()).toBe(AndroidMP4_EXIV_TS);
 
 		await new1.exivWriteTimestamp(tsFromString('2016-02-04 01-02-03'));
 		expect(new1.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');

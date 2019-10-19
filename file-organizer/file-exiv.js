@@ -14,7 +14,7 @@
  */
 
 const FileTimestamped = require('./file-timestamped.js');
-const { tsFromString, tzFromGPS } = require('./timestamp.js');
+const { tsFromString, tsFromExiv, tzFromGPS } = require('./timestamp.js');
 const options = require('./options.js');
 const fileUtils = require('./file-utils.js');
 
@@ -74,29 +74,6 @@ async function exivWrite(file, tag, value) {
 	);
 }
 
-async function exivReadAll(file) {
-	debugExiv('exivReadAll:', file.getPath());
-	const defaultResult = {
-		'UserComment': '',
-		'Orientation': '',
-		'GPSPosition': '',
-		'calculatedTimezone': ''
-	};
-	defaultResult[this.constExivTS] = '';
-
-	return runExiv('-j',
-		'-m', // Ignore minor errors and warnings
-		file.getPath())
-		.then(result => {
-			let exivData = JSON.parse(result)[0];
-			debugExiv('exivReadAll got:', file.getPath(), exivData['DateTimeOriginal']);
-			if (exivData.GPSPosition) {
-				exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
-			}
-			return Object.assign({}, defaultResult, exivData);
-		});
-}
-
 function translateRotation(rotation) {
 	switch(rotation) {
 	// What is the top-left corner?
@@ -152,17 +129,35 @@ module.exports = class FileExiv extends FileTimestamped {
 	}
 
 	async exivReadAll() {
-		return exivReadAll(this);
+		debugExiv('exivReadAll:', this.getPath());
+		const defaultResult = {
+			'UserComment': '',
+			'Orientation': '',
+			'GPSPosition': '',
+			'calculatedTimezone': ''
+		};
+		defaultResult[this.constExivTS] = '';
+
+		return runExiv('-j',
+			'-m', // Ignore minor errors and warnings
+			this.getPath())
+			.then(result => {
+				let exivData = JSON.parse(result)[0];
+				debugExiv('exivReadAll got:', this.getPath(), exivData['DateTimeOriginal']);
+				if (exivData.GPSPosition) {
+					exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
+				}
+				return Object.assign({}, defaultResult, exivData);
+			});
 	}
 
 	async exivReload(){
 		return this.exivReadAll().then(exivData => {
+			this.exiv_calculated_timezone = exivData.calculatedTimezone;
 			this.exiv_timestamp_raw       = exivData[this.constExivTS];
-			this.exiv_timestamp           = tsFromString(exivData[this.constExivTS]);
+			this.exiv_timestamp           = tsFromExiv(exivData[this.constExivTS], this.exiv_calculated_timezone);
 			this.exiv_comment             = exivData['UserComment'];
 			this.exiv_orientation         = translateRotation(exivData['Orientation']);
-			this.exiv_calculated_timezone = exivData.calculatedTimezone;
-
 			return this;
 		});
 	}

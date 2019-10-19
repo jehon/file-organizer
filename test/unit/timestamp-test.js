@@ -1,5 +1,5 @@
 
-const { regexps, tsFromDate, tsFromString, defaultValues, tzFromGPS, tsFromDateAndTimezone } = require('../../file-organizer/timestamp.js');
+const { regexps, tsFromString, tsFromExiv, defaultValues, tzFromGPS } = require('../../file-organizer/timestamp.js');
 var { diff } = require('just-diff');
 
 function compareWith(originalString, compareTo, strict = true) {
@@ -362,16 +362,19 @@ describe('timestamp-test', function() {
 
 		// TODO: WIP
 		it('should generate exiv tag', () => {
-			expect(tsFromString('2019-01-02 03-04-05').exiv())                 .toBe('2019:01:02 03:04:05');
-			expect(tsFromString('2019-01-02 03-04-05').exiv('Europe/Brussels')).toBe('2019:01:02 02:04:05');
-			expect(tsFromString('2019-01-02 03-04-05').exiv('Asia/Taipei'))    .toBe('2019:01:01 19:04:05');
+			expect(tsFromString('2019-01-02 03-04-05')                   .exiv()).toBe('2019:01:02 03:04:05');
+			expect(tsFromString('2019-01-02 03-04-05', 'Europe/Brussels').exiv()).toBe('2019:01:02 03:04:05');
+			expect(tsFromString('2019-01-02 03-04-05', 'Asia/Taipei')    .exiv()).toBe('2019:01:02 03:04:05');
+
+			expect(tsFromExiv('2019-02-02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-02-02 16-16-17', 'Winter time');
+			expect(tsFromExiv('2019-07-02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-07-02 17-16-17', 'summer time');
+
+			expect(tsFromString('2019-01-02 03-04-05').exiv())            .toBe('2019-01-02 03-04-05');
+			expect(tsFromString('2019-01-02 03-04-05').exiv()).toBe('2019-01-02 03-04-05');
+			expect(tsFromString('2019-01-02 03-04-05').exiv()).toBe('2019-01-02 03-04-05');
 
 			// TODO: temp !
 			expect(tsFromString('2018').exiv()).toBe('2018:00:00 00:00:00');
-		});
-
-		it('should read pure date', () => {
-			expect(tsFromDate(new Date('2019-01-02T03:04:05Z')).TS()).toBe('2019-01-02 03-04-05');
 		});
 
 		it('should be clonable', function() {
@@ -456,11 +459,6 @@ describe('timestamp-test', function() {
 
 	it('tzFromGPS', () => {
 		expect(tzFromGPS('50 deg 35\' 30.84" N, 5 deg 33\' 25.92" E')).toBe('Europe/Brussels');
-	});
-
-	it('tsFromDateAndTimezone', () => {
-		expect(tsFromDateAndTimezone('2019-02-02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-02-02 16-16-17', 'Winter time');
-		expect(tsFromDateAndTimezone('2019-07-02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-07-02 17-16-17', 'summer time');
 	});
 });
 
