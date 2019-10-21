@@ -78,9 +78,13 @@ describe('file-picture-test', () => {
 
 		it('should rotate pictures when necessary', async() => {
 			const new1 = await createFileGeneric('rotated-bottom-left.jpg');
+
+			// Set data to go to the target test
 			new1.exiv_timestamp = tsFromString('2018-01-02');
-			new1.calculatedTS.moment.year(2018);
-			new1.calculatedTS.comment = 'should rotate pictures when necessary';
+			new1.exiv_timestamp_raw = new1.exiv_timestamp.exiv();
+			new1.calculatedTS = new1.exiv_timestamp;
+			new1.calculatedTS.comment = new1.exiv_comment;
+
 			expect(new1.exiv_orientation).toBe(270);
 			await new1.check();
 			expect(Array.from(new1.messages.keys())).toContain('PICT_ROTATE');
@@ -90,12 +94,13 @@ describe('file-picture-test', () => {
 
 		it('should set comment if necessary', async() => {
 			const new1 = await createFileGeneric('no_exiv.jpg');
-			expect(new1.exiv_comment).toBe('');
-			expect(new1.exiv_timestamp.humanReadable()).toBe('');
 
+			// Set data to go to the target test
 			new1.exiv_timestamp = tsFromString('2018-01-02');
+			new1.exiv_timestamp_raw = new1.exiv_timestamp.exiv();
+			new1.calculatedTS = new1.exiv_timestamp;
 
-			new1.calculatedTS.year = 2018;
+			expect(new1.exiv_comment).toBe('');
 			new1.calculatedTS.comment = 'override comment';
 
 			await new1.check();

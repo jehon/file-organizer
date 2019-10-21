@@ -14,7 +14,7 @@
  */
 
 const FileTimestamped = require('./file-timestamped.js');
-const { tsFromString, tsFromExiv, tzFromGPS } = require('./timestamp.js');
+const { tsFromExiv, tzFromGPS } = require('./timestamp.js');
 const options = require('./options.js');
 const fileUtils = require('./file-utils.js');
 
@@ -115,14 +115,14 @@ module.exports = class FileExiv extends FileTimestamped {
 		await this.exivReload();
 
 		this.setCalculatedTS(this.exiv_timestamp);
+		if (options.forceTimestampFromFilename) {
+			this.calculatedTS = this.filenameTS.clone();
+		}
+
 		if (this.exiv_comment) {
 			this.calculatedTS.comment = this.exiv_comment
 			// 	.replace(/( |-|[0-9]{2,10})+$/, '')
 			;
-		}
-
-		if (options.forceTimestampFromFilename) {
-			this.calculatedTS = this.filenameTS.clone();
 		}
 
 		return this;
@@ -143,7 +143,7 @@ module.exports = class FileExiv extends FileTimestamped {
 			this.getPath())
 			.then(result => {
 				let exivData = JSON.parse(result)[0];
-				debugExiv('exivReadAll got:', this.getPath(), exivData['DateTimeOriginal']);
+				debugExiv('exivReadAll got:', this.getPath(), exivData[this.constExivTS]);
 				if (exivData.GPSPosition) {
 					exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
 				}
