@@ -163,10 +163,14 @@ module.exports = class FileExiv extends FileTimestamped {
 	}
 
 	async exivWriteTimestamp(ts) {
-		return exivWrite(this, this.constExivTS, ts.exiv())
+		const t = ts.clone();
+		if (this.exiv_calculated_timezone) {
+			t.forceTimezone(this.exiv_calculated_timezone);
+		}
+		return exivWrite(this, this.constExivTS, t.exiv())
 			.then(() => {
-				this.exiv_timestamp = ts;
-				this.setCalculatedTS(ts);
+				this.exiv_timestamp = t;
+				this.setCalculatedTS(t);
 				return this;
 			});
 	}
