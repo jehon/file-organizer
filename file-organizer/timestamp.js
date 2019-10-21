@@ -29,7 +29,6 @@ const yearUnammed = /[0-9][0-9][0-9][0-9]/;
 
 const tsOnly = /^${ts.source}$/;
 
-
 const raw8_3 = new RegExp('^(?<original>[A-Z0-9_]{8})$');
 
 const final = new RegExp(`^${ts.source}( (?<comment>[^[]*))?( \\[(?<original>.+)\\])?$`);
@@ -185,12 +184,6 @@ class Timestamp {
 	}
 
 	exiv() {
-		// if (tz && this.TS().length > 10) {
-		// 	// We have a time and a timezone
-		// 	const exiv = this.moment.clone();
-		// 	exiv.tz(tz, true); // true: force to keep the initial value
-		// 	return exiv.utc().format('YYYY:MM:DD HH:mm:ss');
-		// }
 		if (this.isTextOnly() || this.isRange()) {
 			return EMPTY_EXIV;
 		}

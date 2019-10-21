@@ -203,20 +203,23 @@ describe('timestamp-test', function() {
 		//
 		//
 
-		xit('should generate exiv tag', () => {
+		it('should read exiv tag', () => {
 			expect(tsFromString('2019-01-02 03-04-05')                   .exiv()).toBe('2019:01:02 03:04:05');
 			expect(tsFromString('2019-01-02 03-04-05', 'Europe/Brussels').exiv()).toBe('2019:01:02 03:04:05');
 			expect(tsFromString('2019-01-02 03-04-05', 'Asia/Taipei')    .exiv()).toBe('2019:01:02 03:04:05');
 
+			expect(tsFromExiv('2019:07:02 15:16:17')                   .TS()).toBe('2019-07-02 15-16-17', 'summer time');
 			expect(tsFromExiv('2019:02:02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-02-02 15-16-17', 'Winter time');
+			expect(tsFromExiv('2019:02:02 15:16:17', 'Asia/Dhaka')     .TS()).toBe('2019-02-02 15-16-17', 'Dhaka');
+
 			expect(tsFromExiv('2019:07:02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-07-02 15-16-17', 'summer time');
 
-			expect(tsFromString('2019-01-02 03-04-05').exiv())            .toBe('2019-01-02 03-04-05');
-			expect(tsFromString('2019-01-02 03-04-05').exiv()).toBe('2019-01-02 03-04-05');
-			expect(tsFromString('2019-01-02 03-04-05').exiv()).toBe('2019-01-02 03-04-05');
+			expect(tsFromString('2019-01-02 03-04-05').exiv())               .toBe('2019:01:02 03:04:05');
 
-			// TODO: temp !
-			expect(tsFromString('2018').exiv()).toBe('2018:00:00 00:00:00');
+			// Special cases
+			expect(tsFromString('2018').exiv())   .toBe('2018:01:01 01:01:01');
+			expect(tsFromString('2018-01').exiv()).toBe('2018:01:02 02:02:02');
+			expect(tsFromString('2018-02').exiv()).toBe('2018:02:02 02:02:02');
 		});
 
 		it('should be clonable', function() {
