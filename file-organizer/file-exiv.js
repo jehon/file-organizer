@@ -151,7 +151,7 @@ module.exports = class FileExiv extends FileTimestamped {
 			});
 	}
 
-	async exivReload(){
+	async exivReload() {
 		return this.exivReadAll().then(exivData => {
 			this.exiv_calculated_timezone = exivData.calculatedTimezone;
 			this.exiv_timestamp_raw       = exivData[this.constExivTS];
