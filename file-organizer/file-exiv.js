@@ -194,9 +194,9 @@ module.exports = class FileExiv extends FileTimestamped {
 			);
 		}
 
-		if (this.exiv_timestamp_raw != this.calculatedTS.exiv() && this.calculatedTS.TS()) {
+		if (this.exiv_timestamp_raw != this.calculatedTS.exiv() && this.calculatedTS.humanReadable()) {
 			res = res && await this.addMessageCommit('EXIV_WRITE_TIMESTAMP', 'Write timestamp',
-				this.calculatedTS.TS(),
+				this.calculatedTS.humanReadable(),
 				() => this.exivWriteTimestamp(this.calculatedTS)
 			);
 		}

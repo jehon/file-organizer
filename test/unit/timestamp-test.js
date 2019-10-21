@@ -4,20 +4,20 @@ const { regexps, tsFromString, tsFromExiv, tzFromGPS } = require('../../file-org
 function isA(originalString, type, exivTarget, TSTarget = originalString, extra = {}) {
 	const parsed = tsFromString(originalString);
 	expect(parsed.type)
-		.withContext(`${originalString}: Interpreted wrongly as: `)
+		.withContext(`${originalString}: Interpreted wrongly as`)
 		.toBe(type);
 
 	expect(parsed.exiv())
-		.withContext(`${originalString}: Not correctly interpreted as exiv: `)
+		.withContext(`${originalString}: Not correctly interpreted as exiv`)
 		.toBe(exivTarget);
 
-	expect(parsed.TS())
-		.withContext(`${originalString}: Not correctly interpreted as TS: `)
+	expect(parsed.humanReadable())
+		.withContext(`${originalString}: Not correctly interpreted as TS`)
 		.toBe(TSTarget);
 
 	for(const k of Object.keys(extra)) {
 		expect(parsed[k])
-			.withContext(`${originalString}: Key [${k}] incorrect: `)
+			.withContext(`${originalString}: Key [${k}] incorrect`)
 			.toBe(extra[k]);
 	}
 }
@@ -208,11 +208,11 @@ describe('timestamp-test', function() {
 			expect(tsFromString('2019-01-02 03-04-05', 'Europe/Brussels').exiv()).toBe('2019:01:02 03:04:05');
 			expect(tsFromString('2019-01-02 03-04-05', 'Asia/Taipei')    .exiv()).toBe('2019:01:02 03:04:05');
 
-			expect(tsFromExiv('2019:07:02 15:16:17')                   .TS()).toBe('2019-07-02 15-16-17', 'summer time');
-			expect(tsFromExiv('2019:02:02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-02-02 15-16-17', 'Winter time');
-			expect(tsFromExiv('2019:02:02 15:16:17', 'Asia/Dhaka')     .TS()).toBe('2019-02-02 15-16-17', 'Dhaka');
+			expect(tsFromExiv('2019:07:02 15:16:17')                   .humanReadable()).toBe('2019-07-02 15-16-17', 'summer time');
+			expect(tsFromExiv('2019:02:02 15:16:17', 'Europe/Brussels').humanReadable()).toBe('2019-02-02 15-16-17', 'Winter time');
+			expect(tsFromExiv('2019:02:02 15:16:17', 'Asia/Dhaka')     .humanReadable()).toBe('2019-02-02 15-16-17', 'Dhaka');
 
-			expect(tsFromExiv('2019:07:02 15:16:17', 'Europe/Brussels').TS()).toBe('2019-07-02 15-16-17', 'summer time');
+			expect(tsFromExiv('2019:07:02 15:16:17', 'Europe/Brussels').humanReadable()).toBe('2019-07-02 15-16-17', 'summer time');
 
 			expect(tsFromString('2019-01-02 03-04-05').exiv())               .toBe('2019:01:02 03:04:05');
 
@@ -224,16 +224,16 @@ describe('timestamp-test', function() {
 
 		it('should be clonable', function() {
 			let ts0 = tsFromString('2018-01-02');
-			expect(ts0.year).toBe(2018);
-			expect(ts0.TS()).toBe('2018-01-02');
+			expect(ts0.moment.year()).toBe(2018);
+			expect(ts0.humanReadable()).toBe('2018-01-02');
 
 			let ts1 = ts0.clone();
-			ts1.year = 2019;
-			expect(ts0.year).toBe(2018);
-			expect(ts0.TS()).toBe('2018-01-02');
+			ts1.moment.year(2019);
+			expect(ts0.moment.year()).toBe(2018);
+			expect(ts0.humanReadable()).toBe('2018-01-02');
 
-			expect(ts1.year).toBe(2019);
-			expect(ts1.TS()).toBe('2019-01-02');
+			expect(ts1.moment.year()).toBe(2019);
+			expect(ts1.humanReadable()).toBe('2019-01-02');
 		});
 
 		it('should match timestamps', function() {

@@ -21,7 +21,7 @@ exports.builder = {
 const presentIt = (k, v) => {
 	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
 	if (v instanceof Timestamp) {
-		return v.TS();
+		return v.humanReadable();
 	}
 	return v;
 };

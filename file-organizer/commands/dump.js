@@ -71,7 +71,7 @@ exports.handler = function (noptions) {
 						+ l(fi.generic_original_extension, padExtension)
 						+ sep
 						+ (fi.exiv_timestamp
-							? l(fi.exiv_timestamp.TS(), padTimestamp)
+							? l(fi.exiv_timestamp.humanReadable(), padTimestamp)
 							: messages.IconFailure + ' ' + l(fi.filenameTS.original, padTimestamp - 2).red
 						)
 						+ sep

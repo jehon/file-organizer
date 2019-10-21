@@ -20,7 +20,7 @@ class FileTimestamped extends FileGeneric {
 		// Parse the original filename to see if we can get some data
 		if (this.filenameTS.original) {
 			const ts2 = tsFromString(this.filenameTS.original);
-			if (ts2.year > 0) {
+			if (ts2.isTimestamped() > 0) {
 				this.filenameTS = ts2;
 			}
 		}
@@ -38,8 +38,10 @@ class FileTimestamped extends FileGeneric {
 			newTS = tsFromString(newTS);
 		}
 
-		for(const k of [ 'year', 'month', 'day', 'hour', 'minute', 'second']) {
-			this.calculatedTS[k] = newTS[k];
+		if (newTS.isTimestamped()) {
+			this.calculatedTS.moment = newTS.moment.clone();
+		} else {
+			this.calculatedTS.moment = null;
 		}
 
 		return true;
@@ -47,8 +49,8 @@ class FileTimestamped extends FileGeneric {
 
 	getCanonicalFilename() {
 		let proposedFilename = '';
-		if (this.calculatedTS.TS() > '') {
-			proposedFilename += this.calculatedTS.TS();
+		if (this.calculatedTS.humanReadable() > '') {
+			proposedFilename += this.calculatedTS.humanReadable();
 		}
 		if (this.calculatedTS.comment > '') {
 			proposedFilename += ' ' + this.calculatedTS.comment;
@@ -143,9 +145,9 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		{
-			if (options.forceTimestampFromFilename && this.calculatedTS.TS() != this.filenameTS.TS()) {
+			if (options.forceTimestampFromFilename && this.calculatedTS.humanReadable() != this.filenameTS.humanReadable()) {
 				this.addMessageInfo('TS_TIMESTAMP_FORCE', 'Updating timestamp',
-					this.filenameTS.TS()
+					this.filenameTS.humanReadable()
 				);
 				this.setCalculatedTS(this.filenameTS);
 			}
@@ -155,14 +157,14 @@ class FileTimestamped extends FileGeneric {
 			res = res && this.addMessageImpossible('TS_NO_COMMENT', 'No comment found');
 		}
 
-		if (this.calculatedTS.TS() == '') {
+		if (!this.calculatedTS.isTimestamped()) {
 			res = res && this.addMessageImpossible('TS_NO_TIMESTAMP', 'No timestamp found');
 		} else {
 			// Check filename according to parent folder TS
-			if (this.parent.calculatedTS.year > 0) {
+			if (this.parent.calculatedTS.isTimestamped()) {
 				if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
 					res = res && this.addMessageImpossible('TS_PARENT_INCOHERENT',
-						`calculated timestamp incoherent to parent folder (${this.calculatedTS.TS()} / ${this.parent.calculatedTS.TS()})`
+						`calculated timestamp incoherent to parent folder (${this.calculatedTS.humanReadable()} / ${this.parent.calculatedTS.humanReadable()})`
 					);
 				}
 			}

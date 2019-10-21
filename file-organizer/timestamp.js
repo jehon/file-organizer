@@ -70,19 +70,17 @@ exports.defaultValues = {
 	yearMax:   0
 };
 
-const MomentJSParseTS = 'YYYY-MM-DD HH-mm-SS';
 const EMPTY_EXIV = '0000:00:00 00:00:00';
 
 class Timestamp {
 	constructor(str = '', tz = false) {
-		Object.assign(this, exports.defaultValues);
+		const parsed = Object.assign({}, exports.defaultValues);
 
 		this.string   = str;
 
-		let matches = {};
 		for(const k of Object.keys(matchers)) {
 			const re = new RegExp(matchers[k], 'gm');
-			matches = re.exec(str);
+			const matches = re.exec(str);
 			if (matches && matches.groups) {
 				this.type     = k;
 
@@ -90,32 +88,43 @@ class Timestamp {
 					if (m[0] == '_') {
 						continue;
 					}
-					this[m]   = parseInfo(matches.groups, m, this[m]);
+					parsed[m] = parseInfo(matches.groups, m, parsed[m]);
 				}
 				break;
 			}
 		}
 
-		if (this.isTextOnly()) {
-			// Nothing to do
+		this.original = parsed.original;
+		this.comment  = parsed.comment;
+		this.yearMin  = parsed.yearMin;
+		this.yearMax  = parsed.yearMax;
+
+		if (this.isRange()) {
 			this.moment = null;
 		} else {
-			if (this.isRange()) {
+			this.moment = null;
+			if (parsed.year < 1) {
+				// Nothing to do
 				this.moment = null;
 			} else {
 				// // We hardcode a limit where the day has no meaning...
-				if (this.month < 0 || (this.year < 1998 && this.day < 2 && this.hour < 1 && this.minute < 1 && this.minute < 1)) {
+				if (parsed.month < 0
+						|| (parsed.year < 1998 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)) {
+					this.moment = moment([ parsed.year ]);
 					this.yearOnly();
+				} else {
+					if (parsed.day < 0) {
+						this.moment = moment([ parsed.year, parsed.month - 1 ]);
+						this.yearMonthOnly();
+					} else {
+						// Normal case
+						this.moment = moment([ parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second ]);
+						if (tz) {
+							this.moment.tz(tz, true); // true: force to keep the initial value
+						}
+        			}
 				}
 
-				if (this.day < 0) {
-					this.yearMonthOnly();
-				}
-
-				this.moment = moment([ this.year, this.month - 1, this.day, this.hour, this.minute, this.second ]);
-				if (tz) {
-					this.moment.tz(tz, true); // true: force to keep the initial value
-				}
 			}
 		}
 
@@ -123,78 +132,62 @@ class Timestamp {
 	}
 
 	clone() {
-		return Object.assign(new Timestamp(), this);
+		return Object.assign(new Timestamp(), this, {
+			moment: (this.moment ? this.moment.clone() : null)
+		});
 	}
 
 	yearMonthOnly() {
-		this.day = 2;
-		this.hour = 2;
-		this.minute = 2;
-		this.second = 2;
+		this.moment.date(2); // day of month
+		this.moment.hour(2);
+		this.moment.minute(2);
+		this.moment.second(2);
 	}
 
 	yearOnly() {
-		this.month = 1;
-		this.day = 1;
-		this.hour = 1;
-		this.minute = 1;
-		this.second = 1;
-	}
-
-	isTextOnly() {
-		return !this.isRange() && this.year < 1;
+		this.moment.month(0); // 0 based -> eq "1"
+		this.moment.date(1);  // day of month
+		this.moment.hour(1);
+		this.moment.minute(1);
+		this.moment.second(1);
 	}
 
 	isRange() {
 		return this.yearMin > 0 && this.yearMax > 0;
 	}
 
+	isTextOnly() {
+		return !this.isRange() && !this.moment;
+	}
+
+	isTimestamped() {
+		return this.moment;
+	}
+
 	isYearMonthOnly() {
-		return !this.isRange() && this.TS().length == 7;
+		return this.isTimestamped() && this.humanReadable().length == 7;
 	}
 
 	isYearOnly() {
-		return !this.isRange() && this.TS().length == 4;
+		return this.isTimestamped() && this.humanReadable().length == 4;
 	}
 
-	TS() {
-		let res = '';
-		if (this.isTextOnly()) {
+	humanReadable() {
+		if (!this.isTimestamped()) {
 			return '';
 		}
-		if (this.isRange()) {
-			return '';
-		}
-		if (this.year == 0) {
-			return res;
-		}
-		res = res
-			+ ('' + this.year)        .padStart(4, '0')
-			+ '-' + ('' + this.month) .padStart(2, '0')
-			+ '-' + ('' + this.day)   .padStart(2, '0')
 
-			+ ' ' + ('' + this.hour)  .padStart(2, '0')
-			+ '-' + ('' + this.minute).padStart(2, '0')
-			+ '-' + ('' + this.second).padStart(2, '0');
-
-		return res
+		return this.moment.format('YYYY-MM-DD HH-mm-ss')
 			.replace('-01-01 01-01-01', '')
 			.replace(   '-02 02-02-02', '')
 			.replace(      ' 00-00-00', '');
 	}
 
 	exiv() {
-		if (this.isTextOnly() || this.isRange()) {
+		if (!this.isTimestamped()) {
 			return EMPTY_EXIV;
 		}
-		// return this.moment.format('YYYY:MM:DD HH:mm:ss');
-
-		return ('' + Math.max(0, this.year))       .padStart(4 , '0')
-			+ ':' + ('' + Math.max(0, this.month)) .padStart(2, '0')
-			+ ':' + ('' + Math.max(0, this.day))   .padStart(2, '0')
-			+ ' ' + ('' + Math.max(0, this.hour))  .padStart(2, '0')
-			+ ':' + ('' + Math.max(0, this.minute)).padStart(2, '0')
-			+ ':' + ('' + Math.max(0, this.second)).padStart(2, '0');
+		return this.moment.format('YYYY:MM:DD HH:mm:ss');
 	}
 
 	// match test if the timestamp match against (larger) ts
@@ -204,10 +197,10 @@ class Timestamp {
 		}
 
 		if (larger.isRange()) {
-			return this.year >= larger.yearMin && this.year <= larger.yearMax;
+			return this.moment.year() >= larger.yearMin && this.moment.year() <= larger.yearMax;
 		}
 
-		if (this.TS().startsWith(larger.TS())) {
+		if (this.humanReadable().startsWith(larger.humanReadable())) {
 			return true;
 		}
 
@@ -219,7 +212,7 @@ class Timestamp {
 		if (!this.match(t2)) {
 			return false;
 		}
-		return (this.TS() == t2.TS());
+		return (this.humanReadable() == t2.humanReadable());
 	}
 
 	// MatchAgainstLithe test if the timestamp match against (larger) ts, but by closest month
@@ -227,44 +220,42 @@ class Timestamp {
 		if (this.match(larger)) {
 			return true;
 		}
+		if (larger.isRange()) {
+			return false;
+		}
+
 		{ // By same month
-			const lts = Object.assign(new Timestamp(), larger);
-			lts.yearMonthOnly();
-			if (this.match(lts)) {
+			const ref = larger.clone();
+			ref.yearMonthOnly();
+			if (this.match(ref)) {
 				return true;
 			}
 		}
 		{ // By month before
-			const before = Object.assign(new Timestamp(), larger);
-			if (before.isYearOnly()) {
+			const ref = larger.clone();
+			if (ref.isYearOnly()) {
 				// Match by year
-				before.month = 1;
-			}
-			if (before.month == 1) {
-				before.year = before.year - 1;
-				before.month = 12;
+				ref.moment.subtract(1, 'year');
+				ref.moment.month(11);
 			} else {
-				before.month = before.month - 1;
+				ref.moment.subtract(1, 'month');
 			}
-			before.yearMonthOnly();
-			if (this.match(before)) {
+			ref.yearMonthOnly();
+			if (this.match(ref)) {
 				return true;
 			}
 		}
 		{ // By month after
-			const after = Object.assign(new Timestamp(), larger);
-			if (after.isYearOnly()) {
+			const ref = larger.clone();
+			if (ref.isYearOnly()) {
 				// Match by year
-				after.month = 12;
-			}
-			if (after.month == 12) {
-				after.year = after.year + 1;
-				after.month = 1;
+				ref.moment.add(1, 'year');
+				ref.moment.month(0);
 			} else {
-				after.month = after.month + 1;
+				ref.moment.add(1, 'month');
 			}
-			after.yearMonthOnly();
-			if (this.match(after)) {
+			ref.yearMonthOnly();
+			if (this.match(ref)) {
 				return true;
 			}
 		}
