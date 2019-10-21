@@ -203,7 +203,6 @@ describe('timestamp-test', function() {
 		//
 		//
 
-		// TODO: WIP
 		xit('should generate exiv tag', () => {
 			expect(tsFromString('2019-01-02 03-04-05')                   .exiv()).toBe('2019:01:02 03:04:05');
 			expect(tsFromString('2019-01-02 03-04-05', 'Europe/Brussels').exiv()).toBe('2019:01:02 03:04:05');
@@ -242,7 +241,7 @@ describe('timestamp-test', function() {
 
 			// Invalid
 			expect(tsFromString('2018-01-02').match(tsFromString(''))).toBeTruthy();
-			expect(tsFromString('').match(tsFromString('2018'))).toBeFalsy();
+			expect(tsFromString('').match(tsFromString('2018'))).toBeTruthy();
 			expect(tsFromString('').match(tsFromString(''))).toBeTruthy();
 		});
 
@@ -264,7 +263,6 @@ describe('timestamp-test', function() {
 			expect(tsFromString('2018-01-02').matchLithe(tsFromString('2017-12'))).toBeTruthy();
 			expect(tsFromString('2018-12-30').matchLithe(tsFromString('2019-01'))).toBeTruthy();
 
-
 			expect(tsFromString('2018-01-02').matchLithe(tsFromString('2017'))).toBeTruthy();
 			expect(tsFromString('2018-12-30').matchLithe(tsFromString('2019'))).toBeTruthy();
 
@@ -274,12 +272,9 @@ describe('timestamp-test', function() {
 
 		it('should match timestamps range', function() {
 			const bt = tsFromString('1990-2000 rest');
-			expect(bt.year).toBe(0);
-			expect(bt.month).toBe(0);
+			expect(bt.isRange()).toBeTruthy();
 
 			expect(bt.yearMin).toBe(1990);
-
-
 			expect(bt.yearMax).toBe(2000);
 			expect(bt.comment).toBe('rest');
 

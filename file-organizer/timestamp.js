@@ -72,6 +72,7 @@ exports.defaultValues = {
 };
 
 const MomentJSParseTS = 'YYYY-MM-DD HH-mm-SS';
+const EMPTY_EXIV = '0000:00:00 00:00:00';
 
 class Timestamp {
 	constructor(str = '', tz = false) {
@@ -96,26 +97,29 @@ class Timestamp {
 			}
 		}
 
-		// // We hardcode a limit where the day has no meaning...
-		if (this.month < 0 || (this.year < 1998 && this.day < 2 && this.hour < 1 && this.minute < 1 && this.minute < 1)) {
-			this.month = 1;
-			this.day = 1;
-			this.hour = 1;
-			this.minute = 1;
-			this.second = 1;
+		if (this.isTextOnly()) {
+			// Nothing to do
+			this.moment = null;
+		} else {
+			if (this.isRange()) {
+				this.moment = null;
+			} else {
+				// // We hardcode a limit where the day has no meaning...
+				if (this.month < 0 || (this.year < 1998 && this.day < 2 && this.hour < 1 && this.minute < 1 && this.minute < 1)) {
+					this.yearOnly();
+				}
+
+				if (this.day < 0) {
+					this.yearMonthOnly();
+				}
+
+				this.moment = moment([ this.year, this.month - 1, this.day, this.hour, this.minute, this.second ]);
+				if (tz) {
+					this.moment.tz(tz, true); // true: force to keep the initial value
+				}
+			}
 		}
 
-		if (this.day < 0) {
-			this.day = 2;
-			this.hour = 2;
-			this.minute = 2;
-			this.second = 2;
-		}
-
-		this.moment = moment([ this.year, this.month - 1, this.day, this.hour, this.minute, this.second ]);
-		if (tz) {
-			this.moment.tz(tz, true); // true: force to keep the initial value
-		}
 		return;
 	}
 
@@ -123,8 +127,45 @@ class Timestamp {
 		return Object.assign(new Timestamp(), this);
 	}
 
+	yearMonthOnly() {
+		this.day = 2;
+		this.hour = 2;
+		this.minute = 2;
+		this.second = 2;
+	}
+
+	yearOnly() {
+		this.month = 1;
+		this.day = 1;
+		this.hour = 1;
+		this.minute = 1;
+		this.second = 1;
+	}
+
+	isTextOnly() {
+		return !this.isRange() && this.year < 1;
+	}
+
+	isRange() {
+		return this.yearMin > 0 && this.yearMax > 0;
+	}
+
+	isYearMonthOnly() {
+		return !this.isRange() && this.TS().length == 7;
+	}
+
+	isYearOnly() {
+		return !this.isRange() && this.TS().length == 4;
+	}
+
 	TS() {
 		let res = '';
+		if (this.isTextOnly()) {
+			return '';
+		}
+		if (this.isRange()) {
+			return '';
+		}
 		if (this.year == 0) {
 			return res;
 		}
@@ -150,27 +191,33 @@ class Timestamp {
 		// 	exiv.tz(tz, true); // true: force to keep the initial value
 		// 	return exiv.utc().format('YYYY:MM:DD HH:mm:ss');
 		// }
-
-		if (this.year < 1) {
-			return '0000:00:00 00:00:00';
+		if (this.isTextOnly() || this.isRange()) {
+			return EMPTY_EXIV;
 		}
+		// return this.moment.format('YYYY:MM:DD HH:mm:ss');
 
-		return ('' + Math.max(0, this.year)).padStart(2 , '0')
-			+ ':' + ('' + Math.max(0, this.month)).padStart(2, '0')
-			+ ':' + ('' + Math.max(0, this.day)).padStart(2, '0')
-			+ ' ' + ('' + Math.max(0, this.hour)).padStart(2, '0')
+		return ('' + Math.max(0, this.year))       .padStart(4 , '0')
+			+ ':' + ('' + Math.max(0, this.month)) .padStart(2, '0')
+			+ ':' + ('' + Math.max(0, this.day))   .padStart(2, '0')
+			+ ' ' + ('' + Math.max(0, this.hour))  .padStart(2, '0')
 			+ ':' + ('' + Math.max(0, this.minute)).padStart(2, '0')
 			+ ':' + ('' + Math.max(0, this.second)).padStart(2, '0');
 	}
 
 	// match test if the timestamp match against (larger) ts
 	match(larger) {
-		if (larger.yearMin > 0 && larger.yearMax > 0) {
+		if (this.isTextOnly()) {
+			return true;
+		}
+
+		if (larger.isRange()) {
 			return this.year >= larger.yearMin && this.year <= larger.yearMax;
 		}
+
 		if (this.TS().startsWith(larger.TS())) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -189,15 +236,14 @@ class Timestamp {
 		}
 		{ // By same month
 			const lts = Object.assign(new Timestamp(), larger);
-			lts.day = 0;
+			lts.yearMonthOnly();
 			if (this.match(lts)) {
 				return true;
 			}
 		}
 		{ // By month before
 			const before = Object.assign(new Timestamp(), larger);
-			before.day = 0;
-			if (before.month == 0) {
+			if (before.isYearOnly()) {
 				// Match by year
 				before.month = 1;
 			}
@@ -207,14 +253,14 @@ class Timestamp {
 			} else {
 				before.month = before.month - 1;
 			}
+			before.yearMonthOnly();
 			if (this.match(before)) {
 				return true;
 			}
 		}
 		{ // By month after
 			const after = Object.assign(new Timestamp(), larger);
-			after.day = 0;
-			if (after.month == 0) {
+			if (after.isYearOnly()) {
 				// Match by year
 				after.month = 12;
 			}
@@ -224,6 +270,7 @@ class Timestamp {
 			} else {
 				after.month = after.month + 1;
 			}
+			after.yearMonthOnly();
 			if (this.match(after)) {
 				return true;
 			}
