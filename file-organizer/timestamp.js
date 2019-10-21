@@ -120,9 +120,9 @@ class Timestamp {
 						// Normal case
 						this.moment = moment([ parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second ]);
 						if (tz) {
-							this.moment.tz(tz, true); // true: force to keep the initial value
+							this.forceTimezone(tz);
 						}
-        			}
+					}
 				}
 
 			}
@@ -170,6 +170,12 @@ class Timestamp {
 
 	isYearOnly() {
 		return this.isTimestamped() && this.humanReadable().length == 4;
+	}
+
+	forceTimezone(tz) {
+		if (this.isTimestamped()) {
+			this.moment.tz(tz, true); // true: force to keep the initial value
+		}
 	}
 
 	humanReadable() {

@@ -162,8 +162,8 @@ module.exports = class FileExiv extends FileTimestamped {
 		});
 	}
 
-	async exivWriteTimestamp(ts, tz = false) {
-		return exivWrite(this, this.constExivTS, ts.exiv(tz))
+	async exivWriteTimestamp(ts) {
+		return exivWrite(this, this.constExivTS, ts.exiv())
 			.then(() => {
 				this.exiv_timestamp = ts;
 				this.setCalculatedTS(ts);
