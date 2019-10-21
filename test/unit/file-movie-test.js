@@ -15,7 +15,7 @@ const AndroidMP4 = '2019-09-03 12-48/20190903_124726.mp4';
 const AndroidMP4_TS = '2019-09-03 12-47-31';
 const AndroidMP4_EXIV_TS = '2019:09:03 10:47:31';
 
-describe('file-movie-test', () => {
+xdescribe('file-movie-test', () => {
 	it('should get exiv from files', async () => {
 		// Adroid files
 		expect((await getMov(canonMOV)).exiv_timestamp_raw).toBe(canonMOV_TS);

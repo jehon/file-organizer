@@ -57,24 +57,24 @@ const matchers = {
 };
 
 exports.defaultValues = {
-	year:     0,
-	month:    0,
-	day:      0,
-	hour:    -1,
-	minute:   0,
-	second:   0,
+	year:      0,
+	month:    -1, // -> YYYY:01:01 01:01:01
+	day:      -1, // -> YYYY:MM:02 02:02:02
+	hour:      0,
+	minute:    0,
+	second:    0,
 
 	original: '', // in the tag, the filename
 	comment:  '',  // in the tag, the rest (out of the filename)
 
-	yearMin:  0,
-	yearMax:  0
+	yearMin:   0,
+	yearMax:   0
 };
 
 const MomentJSParseTS = 'YYYY-MM-DD HH-mm-SS';
 
 class Timestamp {
-	constructor(str = '') {
+	constructor(str = '', tz = false) {
 		Object.assign(this, exports.defaultValues);
 
 		this.string   = str;
@@ -95,7 +95,27 @@ class Timestamp {
 				break;
 			}
 		}
-		this._moment = moment([ this.year, this.month - 1, this.day, this.hour, this.minute, this.second ]);
+
+		// // We hardcode a limit where the day has no meaning...
+		if (this.month < 0 || (this.year < 1998 && this.day < 2 && this.hour < 1 && this.minute < 1 && this.minute < 1)) {
+			this.month = 1;
+			this.day = 1;
+			this.hour = 1;
+			this.minute = 1;
+			this.second = 1;
+		}
+
+		if (this.day < 0) {
+			this.day = 2;
+			this.hour = 2;
+			this.minute = 2;
+			this.second = 2;
+		}
+
+		this.moment = moment([ this.year, this.month - 1, this.day, this.hour, this.minute, this.second ]);
+		if (tz) {
+			this.moment.tz(tz, true); // true: force to keep the initial value
+		}
 		return;
 	}
 
@@ -108,37 +128,31 @@ class Timestamp {
 		if (this.year == 0) {
 			return res;
 		}
-		res += ('' + this.year).padStart(4, '0');
-		if (this.month == 0) {
-			return res;
-		}
-		if (this.month == 1 && this.day == 1 && this.hour == 0 && this.minute == 0 && this.second == 0) {
-			return res;
-		}
-		res += '-' + ('' + this.month).padStart(2, '0');
-		if (this.day == 0) {
-			return res;
-		}
-		// We hardcode a limit where the day has no meaning...
-		if (this.day < 0 || (this.year < 1998 && this.day < 2 && this.hour == 0 && this.minute == 0 && this.second == 0)) {
-			return res;
-		}
-		res += '-' + ('' + this.day).padStart(2, '0');
-		if (this.hour < 0 || (this.hour == 0 && this.minute == 0 && this.second == 0)) {
-			return res;
-		}
-		res += ' ' + ('' + this.hour).padStart(2, '0');
-		res += '-' + ('' + this.minute).padStart(2, '0');
-		res += '-' + ('' + this.second).padStart(2, '0');
-		return res;
+		res = res
+			+ ('' + this.year)        .padStart(4, '0')
+			+ '-' + ('' + this.month) .padStart(2, '0')
+			+ '-' + ('' + this.day)   .padStart(2, '0')
+
+			+ ' ' + ('' + this.hour)  .padStart(2, '0')
+			+ '-' + ('' + this.minute).padStart(2, '0')
+			+ '-' + ('' + this.second).padStart(2, '0');
+
+		return res
+			.replace('-01-01 01-01-01', '')
+			.replace(   '-02 02-02-02', '')
+			.replace(      ' 00-00-00', '');
 	}
 
-	exiv(tz = false) {
-		if (tz && this.TS().length > 10) {
-			// We have a time and a timezone
-			const exiv = this._moment.clone();
-			exiv.tz(tz, true); // true: force to keep the initial value
-			return exiv.utc().format('YYYY:MM:DD HH:mm:ss');
+	exiv() {
+		// if (tz && this.TS().length > 10) {
+		// 	// We have a time and a timezone
+		// 	const exiv = this.moment.clone();
+		// 	exiv.tz(tz, true); // true: force to keep the initial value
+		// 	return exiv.utc().format('YYYY:MM:DD HH:mm:ss');
+		// }
+
+		if (this.year < 1) {
+			return '0000:00:00 00:00:00';
 		}
 
 		return ('' + Math.max(0, this.year)).padStart(2 , '0')
@@ -224,8 +238,6 @@ exports.tsFromString = function(str) {
 };
 
 exports.tsFromExiv = function(str, tz = false) {
-	// TODO: simplify this parsing !
-	// TODO: take into account tz !
 	return new Timestamp(str, tz);
 };
 
