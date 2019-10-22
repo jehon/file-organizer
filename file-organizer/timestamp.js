@@ -108,7 +108,7 @@ class Timestamp {
 				this.moment = null;
 			} else {
 				// // We hardcode a limit where the day has no meaning...
-				if (parsed.month < 0
+				if (parsed.month < 1
 						|| (parsed.year < 1998 && parsed.month < 2 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
 				) {
 					this.moment = moment.utc([ parsed.year ]);
