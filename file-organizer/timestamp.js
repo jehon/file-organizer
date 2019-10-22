@@ -29,14 +29,13 @@ const yearUnammed = /[0-9][0-9][0-9][0-9]/;
 
 const tsOnly = /^${ts.source}$/;
 
-
 const raw8_3 = new RegExp('^(?<original>[A-Z0-9_]{8})$');
 
 const final = new RegExp(`^${ts.source}( (?<comment>[^[]*))?( \\[(?<original>.+)\\])?$`);
 
 const android = /^(?<original>(VID|IMG)_(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))$/;
 
-const screen = /^(?<original>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))(?<_tag>(?<comment>.*))?$/;
+const screen = /^(?<original>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))(?<comment>.*)?$/;
 
 const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})( (?<comment>.*))?$`);
 
@@ -57,32 +56,31 @@ const matchers = {
 };
 
 exports.defaultValues = {
-	year:     0,
-	month:    0,
-	day:      0,
-	hour:    -1,
-	minute:   0,
-	second:   0,
+	year:      0,
+	month:    -1, // -> YYYY:01:01 01:01:01
+	day:      -1, // -> YYYY:MM:02 02:02:02
+	hour:      0,
+	minute:    0,
+	second:    0,
 
 	original: '', // in the tag, the filename
 	comment:  '',  // in the tag, the rest (out of the filename)
 
-	yearMin:  0,
-	yearMax:  0
+	yearMin:   0,
+	yearMax:   0
 };
 
-const MomentJSParseTS = 'YYYY-MM-DD HH-mm-SS';
+const EMPTY_EXIV = '0000:00:00 00:00:00';
 
 class Timestamp {
-	constructor(str = '') {
-		Object.assign(this, exports.defaultValues);
+	constructor(str = '', tz = false) {
+		const parsed = Object.assign({}, exports.defaultValues);
 
 		this.string   = str;
 
-		let matches = {};
 		for(const k of Object.keys(matchers)) {
 			const re = new RegExp(matchers[k], 'gm');
-			matches = re.exec(str);
+			const matches = re.exec(str);
 			if (matches && matches.groups) {
 				this.type     = k;
 
@@ -90,68 +88,125 @@ class Timestamp {
 					if (m[0] == '_') {
 						continue;
 					}
-					this[m]   = parseInfo(matches.groups, m, this[m]);
+					parsed[m] = parseInfo(matches.groups, m, parsed[m]);
 				}
 				break;
 			}
 		}
-		if (this.comment2 > '') {
-			this.comment = this.comment2;
+
+		this.original = parsed.original;
+		this.comment  = parsed.comment;
+		this.yearMin  = parsed.yearMin;
+		this.yearMax  = parsed.yearMax;
+
+		if (this.isRange()) {
+			this.moment = null;
+		} else {
+			this.moment = null;
+			if (parsed.year < 1) {
+				// Nothing to do
+				this.moment = null;
+			} else {
+				// // We hardcode a limit where the day has no meaning...
+				if (parsed.month < 0
+						|| (parsed.year < 1998 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)) {
+					this.moment = moment.utc([ parsed.year ]);
+					this.yearOnly();
+				} else {
+					if (parsed.day < 0) {
+						this.moment = moment.utc([ parsed.year, parsed.month - 1 ]);
+						this.yearMonthOnly();
+					} else {
+						// Normal case
+						this.moment = moment.utc([ parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second ]);
+						if (tz) {
+							this.utcToTimezone(tz);
+						}
+					}
+				}
+
+			}
 		}
 
 		return;
 	}
 
 	clone() {
-		return Object.assign(new Timestamp(), this);
+		return Object.assign(new Timestamp(), this, {
+			moment: (this.moment ? this.moment.clone() : null)
+		});
 	}
 
-	TS() {
-		let res = '';
-		if (this.year == 0) {
-			return res;
-		}
-		res += ('' + this.year).padStart(4, '0');
-		if (this.month == 0) {
-			return res;
-		}
-		if (this.month == 1 && this.day == 1 && this.hour == 0 && this.minute == 0 && this.second == 0) {
-			return res;
-		}
-		res += '-' + ('' + this.month).padStart(2, '0');
-		if (this.day == 0) {
-			return res;
-		}
-		// We hardcode a limit where the day has no meaning...
-		if (this.day < 0 || (this.year < 1998 && this.day < 2 && this.hour == 0 && this.minute == 0 && this.second == 0)) {
-			return res;
-		}
-		res += '-' + ('' + this.day).padStart(2, '0');
-		if (this.hour < 0 || (this.hour == 0 && this.minute == 0 && this.second == 0)) {
-			return res;
-		}
-		res += ' ' + ('' + this.hour).padStart(2, '0');
-		res += '-' + ('' + this.minute).padStart(2, '0');
-		res += '-' + ('' + this.second).padStart(2, '0');
-		return res;
+	yearMonthOnly() {
+		this.moment.date(2); // day of month
+		this.moment.hour(2);
+		this.moment.minute(2);
+		this.moment.second(2);
 	}
 
-	TSinUTC(tz = 'Europe/Brussels') {
-		if (this.hour <= 0 && this.minute == 0 && this.second == 0) {
-			return this.TS();
+	yearOnly() {
+		this.moment.month(0); // 0 based -> eq "1"
+		this.moment.date(1);  // day of month
+		this.moment.hour(1);
+		this.moment.minute(1);
+		this.moment.second(1);
+	}
+
+	isRange() {
+		return this.yearMin > 0 && this.yearMax > 0;
+	}
+
+	isTextOnly() {
+		return !this.isRange() && !this.moment;
+	}
+
+	isTimestamped() {
+		return this.moment;
+	}
+
+	isYearOnly() {
+		return this.isTimestamped() && this.humanReadable().length == 4;
+	}
+
+	utcToTimezone(tz) {
+		if (this.isTimestamped()) {
+			this.moment = this.moment.tz(tz); // true: force to keep the initial value, false: convert
 		}
-		const m = moment.tz(this.TS(), MomentJSParseTS, tz);
-		return m.utc().format(MomentJSParseTS);
+	}
+
+	humanReadable() {
+		if (!this.isTimestamped()) {
+			return '';
+		}
+
+		return this.moment.format('YYYY-MM-DD HH-mm-ss')
+			.replace('-01-01 01-01-01', '')
+			.replace(   '-02 02-02-02', '')
+			.replace(      ' 00-00-00', '');
+	}
+
+	exiv() {
+		if (!this.isTimestamped()) {
+			return EMPTY_EXIV;
+		}
+		const utc = this.moment.clone().utc();
+		return utc.format('YYYY:MM:DD HH:mm:ss');
 	}
 
 	// match test if the timestamp match against (larger) ts
 	match(larger) {
-		if (larger.yearMin > 0 && larger.yearMax > 0) {
-			return this.year >= larger.yearMin && this.year <= larger.yearMax;
-		}
-		if (this.TS().startsWith(larger.TS())) {
+		if (this.isTextOnly()) {
 			return true;
 		}
+
+		if (larger.isRange()) {
+			return this.moment.year() >= larger.yearMin && this.moment.year() <= larger.yearMax;
+		}
+
+		if (this.humanReadable().startsWith(larger.humanReadable())) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -160,7 +215,7 @@ class Timestamp {
 		if (!this.match(t2)) {
 			return false;
 		}
-		return (this.TS() == t2.TS());
+		return (this.humanReadable() == t2.humanReadable());
 	}
 
 	// MatchAgainstLithe test if the timestamp match against (larger) ts, but by closest month
@@ -168,44 +223,42 @@ class Timestamp {
 		if (this.match(larger)) {
 			return true;
 		}
+		if (larger.isRange()) {
+			return false;
+		}
+
 		{ // By same month
-			const lts = Object.assign(new Timestamp(), larger);
-			lts.day = 0;
-			if (this.match(lts)) {
+			const ref = larger.clone();
+			ref.yearMonthOnly();
+			if (this.match(ref)) {
 				return true;
 			}
 		}
 		{ // By month before
-			const before = Object.assign(new Timestamp(), larger);
-			before.day = 0;
-			if (before.month == 0) {
+			const ref = larger.clone();
+			if (ref.isYearOnly()) {
 				// Match by year
-				before.month = 1;
-			}
-			if (before.month == 1) {
-				before.year = before.year - 1;
-				before.month = 12;
+				ref.moment.subtract(1, 'year');
+				ref.moment.month(11);
 			} else {
-				before.month = before.month - 1;
+				ref.moment.subtract(1, 'month');
 			}
-			if (this.match(before)) {
+			ref.yearMonthOnly();
+			if (this.match(ref)) {
 				return true;
 			}
 		}
 		{ // By month after
-			const after = Object.assign(new Timestamp(), larger);
-			after.day = 0;
-			if (after.month == 0) {
+			const ref = larger.clone();
+			if (ref.isYearOnly()) {
 				// Match by year
-				after.month = 12;
-			}
-			if (after.month == 12) {
-				after.year = after.year + 1;
-				after.month = 1;
+				ref.moment.add(1, 'year');
+				ref.moment.month(0);
 			} else {
-				after.month = after.month + 1;
+				ref.moment.add(1, 'month');
 			}
-			if (this.match(after)) {
+			ref.yearMonthOnly();
+			if (this.match(ref)) {
 				return true;
 			}
 		}
@@ -218,15 +271,8 @@ exports.tsFromString = function(str) {
 	return new Timestamp(str);
 };
 
-exports.tsFromDate = function(date) {
-	const ts  = new Timestamp('');
-	ts.year   = date.getUTCFullYear();
-	ts.month  = date.getUTCMonth() + 1;
-	ts.day    = date.getUTCDate();
-	ts.hour   = date.getUTCHours();
-	ts.minute = date.getUTCMinutes();
-	ts.second = date.getUTCSeconds();
-	return ts;
+exports.tsFromExiv = function(str, tz = false) {
+	return new Timestamp(str, tz);
 };
 
 exports.Timestamp = Timestamp;
@@ -253,9 +299,6 @@ exports.tzFromGPS = function(GPS) {
 	return tzlookup(lat, long);
 };
 
-exports.tsFromDateAndTimezone = function(date, tz) {
-	// https://stackoverflow.com/a/43527200/1954789
-	const now = moment(date + 'Z');
-	now.tz(tz);
-	return exports.tsFromString(now.format('YYYY-MM-DD HH:mm:ss'));
+exports.currentTzOffset = function() {
+	return moment().utcOffset();
 };

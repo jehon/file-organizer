@@ -11,14 +11,16 @@ async function getPict(dPath) {
 
 describe('file-picture-test', () => {
 	it('should get exiv from files', async () => {
-		expect((await getPict('20150306_153340 Cable internet dans la rue.jpg')).exiv_timestamp.TS()).toBe('2015-03-06 15-33-40');
-		expect((await getPict('canon.JPG')).exiv_timestamp.TS()).toBe('2018-02-04 13-17-50');
-		expect((await getPict('petitAppPhoto.jpg')).exiv_timestamp.TS()).toBe('2020-01-19 01-24-02');
+		// No exiv at all
+		expect((await getPict('no_exiv.jpg')).exiv_timestamp.humanReadable()).toBe('');
+
+		// Picture
+		expect((await getPict('20150306_153340 Cable internet dans la rue.jpg')).exiv_timestamp.humanReadable()).toBe('2015-03-06 15-33-40');
+		expect((await getPict('canon.JPG')).exiv_timestamp.humanReadable()).toBe('2018-02-04 13-17-50');
+		expect((await getPict('petitAppPhoto.jpg')).exiv_timestamp.humanReadable()).toBe('2020-01-19 01-24-02');
 
 		// Adroid files
-		expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exiv_timestamp.TS()).toBe('2019-09-03 12-47-21');
-
-		expect((await getPict('no_exiv.jpg')).exiv_timestamp.TS()).toBe('');
+		expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exiv_timestamp.humanReadable()).toBe('2019-09-03 12-47-21');
 	});
 
 	it('should get exiv rotation from files', async () => {
@@ -44,13 +46,13 @@ describe('file-picture-test', () => {
 
 	it('should write timestamps correctly', async() =>  {
 		const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
-		expect(new1.exiv_timestamp.TS()).toBe('2015-03-06 15-33-40');
+		expect(new1.exiv_timestamp.humanReadable()).toBe('2015-03-06 15-33-40');
 
 		await new1.exivWriteTimestamp(tsFromString('2016-02-04 01-02-03'));
-		expect(new1.exiv_timestamp.TS()).toBe('2016-02-04 01-02-03');
+		expect(new1.exiv_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
 
 		await new1.exivWriteTimestamp(tsFromString('2014-05-06'));
-		expect(new1.exiv_timestamp.TS()).toBe('2014-05-06');
+		expect(new1.exiv_timestamp.humanReadable()).toBe('2014-05-06');
 
 		new1.remove();
 	});
@@ -78,9 +80,13 @@ describe('file-picture-test', () => {
 
 		it('should rotate pictures when necessary', async() => {
 			const new1 = await createFileGeneric('rotated-bottom-left.jpg');
+
+			// Set data to go to the target test
 			new1.exiv_timestamp = tsFromString('2018-01-02');
-			new1.calculatedTS.year = 2018;
-			new1.calculatedTS.comment = 'should rotate pictures when necessary';
+			new1.exiv_timestamp_raw = new1.exiv_timestamp.exiv();
+			new1.calculatedTS = new1.exiv_timestamp;
+			new1.calculatedTS.comment = new1.exiv_comment;
+
 			expect(new1.exiv_orientation).toBe(270);
 			await new1.check();
 			expect(Array.from(new1.messages.keys())).toContain('PICT_ROTATE');
@@ -90,12 +96,13 @@ describe('file-picture-test', () => {
 
 		it('should set comment if necessary', async() => {
 			const new1 = await createFileGeneric('no_exiv.jpg');
-			expect(new1.exiv_comment).toBe('');
-			expect(new1.exiv_timestamp.TS()).toBe('');
 
+			// Set data to go to the target test
 			new1.exiv_timestamp = tsFromString('2018-01-02');
+			new1.exiv_timestamp_raw = new1.exiv_timestamp.exiv();
+			new1.calculatedTS = new1.exiv_timestamp;
 
-			new1.calculatedTS.year = 2018;
+			expect(new1.exiv_comment).toBe('');
 			new1.calculatedTS.comment = 'override comment';
 
 			await new1.check();

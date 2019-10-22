@@ -1,6 +1,6 @@
 
 const FileExiv = require('./file-exiv.js');
-const { tsFromDateAndTimezone } = require('./timestamp.js');
+const { tsFromExiv, tzFromGPS } = require('./timestamp.js');
 
 module.exports = class FileMovie extends FileExiv {
 	get constExivTS() { return 'CreateDate'; }
@@ -8,20 +8,34 @@ module.exports = class FileMovie extends FileExiv {
 	async exivReadAll(file) {
 		return super.exivReadAll(file)
 			.then(exivData => {
-				if (!exivData[this.constExivTS] && exivData.DateTimeOriginal) {
-					// TODO: here, we should write it in "check"
-					exivData[this.constExivTS] = exivData.DateTimeOriginal;
-				}
-				if (exivData.calculatedTimezone) {
-					exivData[this.constExivTS] = tsFromDateAndTimezone(exivData[this.constExivTS].replace(':', '-').replace(':', '-'), exivData.calculatedTimezone).TS();
+				if (exivData.GPSPosition) {
+					exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
 				}
 				return exivData;
 			});
 	}
 
-	async exivWriteTimestamp(ts) {
-		if (this.calculatedTimezone) {
-			throw new Error('Movie write timestamp not implemented');
+	async exivReload() {
+		return super.exivReload().then(exivData => {
+			this.exiv_calculated_timezone = exivData.calculatedTimezone;
+			this.exiv_timestamp           = tsFromExiv(exivData[this.constExivTS], this.exiv_calculated_timezone);
+			return exivData;
+		});
+	}
+
+	async check() {
+		return super.check();
+
+		// // TODO: here, we should write it in "check"
+		// if (!exivData[this.constExivTS] && exivData.DateTimeOriginal) {
+		// 	exivData[this.constExivTS] = exivData.DateTimeOriginal;
+		// }
+	}
+
+	async exivWriteTimestamp(ts_original) {
+		const ts = ts_original.clone();
+		if (this.exiv_calculated_timezone) {
+			ts.moment = ts.moment.tz(this.exiv_calculated_timezone, true);
 		}
 		return super.exivWriteTimestamp(ts);
 	}

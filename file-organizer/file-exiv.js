@@ -14,7 +14,7 @@
  */
 
 const FileTimestamped = require('./file-timestamped.js');
-const { tsFromString, tzFromGPS } = require('./timestamp.js');
+const { tsFromExiv, tzFromGPS } = require('./timestamp.js');
 const options = require('./options.js');
 const fileUtils = require('./file-utils.js');
 
@@ -74,29 +74,6 @@ async function exivWrite(file, tag, value) {
 	);
 }
 
-async function exivReadAll(file) {
-	debugExiv('exivReadAll:', file.getPath());
-	const defaultResult = {
-		'UserComment': '',
-		'Orientation': '',
-		'GPSPosition': '',
-		'calculatedTimezone': ''
-	};
-	defaultResult[this.constExivTS] = '';
-
-	return runExiv('-j',
-		'-m', // Ignore minor errors and warnings
-		file.getPath())
-		.then(result => {
-			let exivData = JSON.parse(result)[0];
-			debugExiv('exivReadAll got:', file.getPath(), exivData['DateTimeOriginal']);
-			if (exivData.GPSPosition) {
-				exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
-			}
-			return Object.assign({}, defaultResult, exivData);
-		});
-}
-
 function translateRotation(rotation) {
 	switch(rotation) {
 	// What is the top-left corner?
@@ -138,46 +115,59 @@ module.exports = class FileExiv extends FileTimestamped {
 		await this.exivReload();
 
 		this.setCalculatedTS(this.exiv_timestamp);
+		if (options.forceTimestampFromFilename) {
+			this.calculatedTS = this.filenameTS.clone();
+		}
+
 		if (this.exiv_comment) {
 			this.calculatedTS.comment = this.exiv_comment
 			// 	.replace(/( |-|[0-9]{2,10})+$/, '')
 			;
 		}
 
-		if (options.forceTimestampFromFilename) {
-			this.calculatedTS = this.filenameTS.clone();
-		}
-
 		return this;
 	}
 
 	async exivReadAll() {
-		return exivReadAll(this);
+		debugExiv('exivReadAll:', this.getPath());
+		const defaultResult = {
+			'UserComment': '',
+			'Orientation': '',
+			'GPSPosition': '',
+			'calculatedTimezone': ''
+		};
+		defaultResult[this.constExivTS] = '';
+
+		return runExiv('-j',
+			'-m', // Ignore minor errors and warnings
+			this.getPath())
+			.then(result => {
+				let exivData = JSON.parse(result)[0];
+				debugExiv('exivReadAll got:', this.getPath(), exivData[this.constExivTS]);
+				if (exivData.GPSPosition) {
+					exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
+				}
+				return Object.assign({}, defaultResult, exivData);
+			});
 	}
 
-	async exivReload(){
+	async exivReload() {
 		return this.exivReadAll().then(exivData => {
-			this.exiv_timestamp           = tsFromString(exivData[this.constExivTS]);
+			this.exiv_timestamp_raw       = exivData[this.constExivTS];
+			this.exiv_timestamp           = tsFromExiv(exivData[this.constExivTS], this.exiv_calculated_timezone);
 			this.exiv_comment             = exivData['UserComment'];
 			this.exiv_orientation         = translateRotation(exivData['Orientation']);
-			this.exiv_calculated_timezone = exivData.calculatedTimezone;
-
-			return this;
+			return exivData;
 		});
 	}
 
-	async exivWriteTimestamp(ts) {
-		ts = ts.TS();
-		const empty = '0000-00-01 00-00-00';
-		if (ts.length < empty.length) {
-			ts = ts + empty.substr(ts.length);
-			this.addMessageInfo('EXIV_UPGRADE_TIMESTAMP', 'Update timestamp to ' + ts);
-		}
-
-		return exivWrite(this, this.constExivTS, ts.split('-').join(':'))
+	async exivWriteTimestamp(ts_original) {
+		const ts = ts_original.clone();
+		return exivWrite(this, this.constExivTS, ts.exiv())
 			.then(() => {
-				this.exiv_timestamp = tsFromString(ts);
-				this.setCalculatedTS(tsFromString(ts));
+				this.exiv_timestamp_raw = ts.exiv();
+				this.exiv_timestamp     = tsFromExiv(this.exiv_timestamp_raw, this.exiv_calculated_timezone);
+				this.setCalculatedTS(ts);
 				return this;
 			});
 	}
@@ -205,9 +195,9 @@ module.exports = class FileExiv extends FileTimestamped {
 			);
 		}
 
-		if (this.exiv_timestamp.TS() != this.calculatedTS.TS() && this.calculatedTS.TS()) {
+		if (this.exiv_timestamp_raw != this.calculatedTS.exiv() && this.calculatedTS.humanReadable()) {
 			res = res && await this.addMessageCommit('EXIV_WRITE_TIMESTAMP', 'Write timestamp',
-				this.calculatedTS.TS(),
+				this.calculatedTS.humanReadable(),
 				() => this.exivWriteTimestamp(this.calculatedTS)
 			);
 		}

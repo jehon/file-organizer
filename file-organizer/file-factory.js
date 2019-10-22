@@ -57,8 +57,10 @@ async function fileFactory(filepath, parent = null) {
 	case '.pdf':
 	case '.txt':
 		return new FileGeneric(filepath, parent);
+
 	case '.doc*':
 		return new FileManual(filepath, parent);
+
 	case '.jpg':
 	case '.jpeg':
 		return new FilePicture(filepath, parent);

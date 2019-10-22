@@ -9,17 +9,17 @@ const { fileDelete } = require('../../file-organizer/file-utils.js');
 describe('file-timestamped-test', () => {
 	it('should get the timestamp', function() {
 		const new1 = new FileTimestamped('20150306_153340 Cable internet dans la rue.jpg');
-		expect(new1.calculatedTS.TS()).toBe('2015-03-06 15-33-40');
+		expect(new1.calculatedTS.humanReadable()).toBe('2015-03-06 15-33-40');
 
 		const new2 = new FileTimestamped('IMG_20150306_153340.jpg');
-		expect(new2.calculatedTS.TS()).toBe('2015-03-06 15-33-40');
+		expect(new2.calculatedTS.humanReadable()).toBe('2015-03-06 15-33-40');
 	});
 
 	it('should set calculated ts', () => {
 		const new3 = new FileTimestamped('test [DSC00001].jpg');
-		expect(new3.calculatedTS.TS()).toBe('');
+		expect(new3.calculatedTS.humanReadable()).toBe('');
 		new3.setCalculatedTS(tsFromString('2018-01-02 03-04-05'));
-		expect(new3.calculatedTS.TS()).toBe('2018-01-02 03-04-05');
+		expect(new3.calculatedTS.humanReadable()).toBe('2018-01-02 03-04-05');
 	});
 
 	it('should calculate a canonicalFilename', () => {
@@ -50,7 +50,7 @@ describe('file-timestamped-test', () => {
 	describe('check', () => {
 		it('should parse original file', async () => {
 			const new1 = new FileTimestamped('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
-			expect(new1.filenameTS.year).toBe(2012);
+			expect(new1.filenameTS.moment.year()).toBe(2012);
 			expect(new1.filenameTS.comment).toBe('vie de famille');
 		});
 
