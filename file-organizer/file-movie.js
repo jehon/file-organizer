@@ -32,7 +32,11 @@ module.exports = class FileMovie extends FileExiv {
 		// }
 	}
 
-	// async exivWriteTimestamp(ts) {
-	// 	return super.exivWriteTimestamp(ts);
-	// }
+	async exivWriteTimestamp(ts_original) {
+		const ts = ts_original.clone();
+		if (this.exiv_calculated_timezone) {
+			ts.moment = ts.moment.tz(this.exiv_calculated_timezone, true);
+		}
+		return super.exivWriteTimestamp(ts);
+	}
 };

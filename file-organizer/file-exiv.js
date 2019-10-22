@@ -161,15 +161,13 @@ module.exports = class FileExiv extends FileTimestamped {
 		});
 	}
 
-	async exivWriteTimestamp(ts) {
-		const t = ts.clone();
-		if (this.exiv_calculated_timezone) {
-			t.utcToTimezone(this.exiv_calculated_timezone);
-		}
-		return exivWrite(this, this.constExivTS, t.exiv())
+	async exivWriteTimestamp(ts_original) {
+		const ts = ts_original.clone();
+		return exivWrite(this, this.constExivTS, ts.exiv())
 			.then(() => {
-				this.exiv_timestamp = t;
-				this.setCalculatedTS(t);
+				this.exiv_timestamp_raw = ts.exiv();
+				this.exiv_timestamp     = tsFromExiv(this.exiv_timestamp_raw, this.exiv_calculated_timezone);
+				this.setCalculatedTS(ts);
 				return this;
 			});
 	}
