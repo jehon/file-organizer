@@ -103,6 +103,19 @@ describe('timestamp-test', function() {
 				});
 		});
 
+		it('should parse old elements', function() {
+			isA('1980',
+				'final', '1980:01:01 01:01:01', '1980');
+			isA('1980-01',
+				'final', '1980:01:01 01:01:01', '1980');
+			isA('1980-02',
+				'final', '1980:02:02 02:02:02', '1980-02');
+			isA('1980-02-01',
+				'final', '1980:02:02 02:02:02', '1980-02');
+			isA('1980-02-03',
+				'final', '1980:02:03 00:00:00', '1980-02-03');
+		});
+
 		it('should parse timestamps elements', function() {
 			// With timezone
 			isA('2019:03:24 12:14:46+01:00',
