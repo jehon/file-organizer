@@ -189,7 +189,8 @@ class Timestamp {
 		if (!this.isTimestamped()) {
 			return EMPTY_EXIV;
 		}
-		return this.moment.utc().format('YYYY:MM:DD HH:mm:ss');
+		const utc = this.moment.clone().utc();
+		return utc.format('YYYY:MM:DD HH:mm:ss');
 	}
 
 	// match test if the timestamp match against (larger) ts
