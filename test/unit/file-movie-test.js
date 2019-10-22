@@ -35,7 +35,7 @@ describe('file-movie-test', () => {
 		expect((await getMov(AndroidMP4)).exiv_comment).toBe('');
 	});
 
-	fit('should write timestamps correctly with MOV', async() =>  {
+	it('should write timestamps correctly with MOV', async() =>  {
 		const new1 = await createFileGeneric(canonMOV);
 		expect(new1.exiv_calculated_timezone).toBe('');
 		expect(new1.exiv_timestamp.exiv()).toBe(canonMOV_EXIV_TS);
@@ -48,25 +48,28 @@ describe('file-movie-test', () => {
 
 		const new2 = await fileFactory(new1.getPath());
 		await new2.loadData();
-		expect(new1.exiv_calculated_timezone).toBe('');
-		expect(new1.exiv_timestamp.exiv()).toBe('2016:02:04 01:02:03');
+		expect(new2.exiv_calculated_timezone).toBe('');
+		expect(new2.exiv_timestamp.exiv()).toBe('2016:02:04 01:02:03');
 		expect(new2.exiv_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
 
 		new1.remove();
 	});
 
-	fit('should write timestamps correctly with MP4', async() =>  {
+	it('should write timestamps correctly with MP4', async() =>  {
 		const new1 = await createFileGeneric(AndroidMP4);
 		expect(new1.exiv_calculated_timezone).toBe('Europe/Brussels');
 		expect(new1.exiv_timestamp.exiv()).toBe(AndroidMP4_EXIV_TS);
 
 		await new1.exivWriteTimestamp(tsFromString('2016-02-04 01-02-03'));
+		expect(new1.exiv_calculated_timezone).toBe('Europe/Brussels');
 		expect(new1.exiv_timestamp.exiv()).toBe('2016:02:04 00:02:03');
 		expect(new1.exiv_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
 
-		const new2 = await createFileGeneric(AndroidMP4);
-		expect(new1.exiv_calculated_timezone).toBe('Europe/Brussels');
-		expect(new1.exiv_timestamp.exiv()).toBe('2016:02:04 00:02:03');
+		const new2 = await fileFactory(new1.getPath());
+		await new2.loadData();
+		expect(new2.exiv_calculated_timezone).toBe('Europe/Brussels');
+		expect(new2.exiv_timestamp_raw).toBe('2016:02:04 00:02:03');
+		expect(new2.exiv_timestamp.exiv()).toBe('2016:02:04 00:02:03');
 		expect(new2.exiv_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
 
 		new1.remove();
