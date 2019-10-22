@@ -110,17 +110,17 @@ class Timestamp {
 				// // We hardcode a limit where the day has no meaning...
 				if (parsed.month < 0
 						|| (parsed.year < 1998 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)) {
-					this.moment = moment([ parsed.year ]);
+					this.moment = moment.utc([ parsed.year ]);
 					this.yearOnly();
 				} else {
 					if (parsed.day < 0) {
-						this.moment = moment([ parsed.year, parsed.month - 1 ]);
+						this.moment = moment.utc([ parsed.year, parsed.month - 1 ]);
 						this.yearMonthOnly();
 					} else {
 						// Normal case
-						this.moment = moment([ parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second ]);
+						this.moment = moment.utc([ parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second ]);
 						if (tz) {
-							this.forceTimezone(tz);
+							this.utcToTimezone(tz);
 						}
 					}
 				}
@@ -164,17 +164,13 @@ class Timestamp {
 		return this.moment;
 	}
 
-	isYearMonthOnly() {
-		return this.isTimestamped() && this.humanReadable().length == 7;
-	}
-
 	isYearOnly() {
 		return this.isTimestamped() && this.humanReadable().length == 4;
 	}
 
-	forceTimezone(tz) {
+	utcToTimezone(tz) {
 		if (this.isTimestamped()) {
-			this.moment.tz(tz, true); // true: force to keep the initial value
+			this.moment = this.moment.tz(tz); // true: force to keep the initial value, false: convert
 		}
 	}
 
@@ -193,7 +189,7 @@ class Timestamp {
 		if (!this.isTimestamped()) {
 			return EMPTY_EXIV;
 		}
-		return this.moment.format('YYYY:MM:DD HH:mm:ss');
+		return this.moment.utc().format('YYYY:MM:DD HH:mm:ss');
 	}
 
 	// match test if the timestamp match against (larger) ts
@@ -300,4 +296,8 @@ exports.tzFromGPS = function(GPS) {
 	const long = p(coord[1]);
 
 	return tzlookup(lat, long);
+};
+
+exports.currentTzOffset = function() {
+	return moment().utcOffset();
 };

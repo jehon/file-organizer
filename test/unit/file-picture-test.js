@@ -11,14 +11,16 @@ async function getPict(dPath) {
 
 describe('file-picture-test', () => {
 	it('should get exiv from files', async () => {
+		// No exiv at all
+		expect((await getPict('no_exiv.jpg')).exiv_timestamp.humanReadable()).toBe('');
+
+		// Picture
 		expect((await getPict('20150306_153340 Cable internet dans la rue.jpg')).exiv_timestamp.humanReadable()).toBe('2015-03-06 15-33-40');
 		expect((await getPict('canon.JPG')).exiv_timestamp.humanReadable()).toBe('2018-02-04 13-17-50');
 		expect((await getPict('petitAppPhoto.jpg')).exiv_timestamp.humanReadable()).toBe('2020-01-19 01-24-02');
 
 		// Adroid files
 		expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exiv_timestamp.humanReadable()).toBe('2019-09-03 12-47-21');
-
-		expect((await getPict('no_exiv.jpg')).exiv_timestamp.humanReadable()).toBe('');
 	});
 
 	it('should get exiv rotation from files', async () => {

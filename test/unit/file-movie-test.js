@@ -15,8 +15,8 @@ const AndroidMP4 = '2019-09-03 12-48/20190903_124726.mp4';
 const AndroidMP4_TS = '2019-09-03 12-47-31';
 const AndroidMP4_EXIV_TS = '2019:09:03 10:47:31';
 
-describe('file-movie-test', () => {
-	xit('should get exiv from files', async () => {
+fdescribe('file-movie-test', () => {
+	it('should get exiv from files', async () => {
 		// Canon files
 		let mov;
 		mov =  await getMov(canonMOV);
@@ -25,6 +25,7 @@ describe('file-movie-test', () => {
 		// Adroid files
 		mov = await getMov(AndroidMP4);
 		expect(mov.exiv_timestamp_raw).toBe(AndroidMP4_EXIV_TS);
+		expect(mov.exiv_calculated_timezone).toBe('Europe/Brussels');
 		expect(mov.exiv_timestamp.humanReadable()).toBe(AndroidMP4_TS);
 	});
 

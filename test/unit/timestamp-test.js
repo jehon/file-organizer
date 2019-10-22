@@ -1,5 +1,5 @@
 
-const { regexps, tsFromString, tsFromExiv, tzFromGPS } = require('../../file-organizer/timestamp.js');
+const { regexps, tsFromString, tsFromExiv, tzFromGPS, currentTzOffset } = require('../../file-organizer/timestamp.js');
 
 function isA(originalString, type, exivTarget, TSTarget = originalString, extra = {}) {
 	const parsed = tsFromString(originalString);
@@ -203,23 +203,25 @@ describe('timestamp-test', function() {
 		//
 		//
 
-		it('should read exiv tag', () => {
-			expect(tsFromString('2019-01-02 03-04-05')                   .exiv()).toBe('2019:01:02 03:04:05');
-			expect(tsFromString('2019-01-02 03-04-05', 'Europe/Brussels').exiv()).toBe('2019:01:02 03:04:05');
-			expect(tsFromString('2019-01-02 03-04-05', 'Asia/Taipei')    .exiv()).toBe('2019:01:02 03:04:05');
-
-			expect(tsFromExiv('2019:07:02 15:16:17')                   .humanReadable()).toBe('2019-07-02 15-16-17', 'summer time');
-			expect(tsFromExiv('2019:02:02 15:16:17', 'Europe/Brussels').humanReadable()).toBe('2019-02-02 15-16-17', 'Winter time');
-			expect(tsFromExiv('2019:02:02 15:16:17', 'Asia/Dhaka')     .humanReadable()).toBe('2019-02-02 15-16-17', 'Dhaka');
-
-			expect(tsFromExiv('2019:07:02 15:16:17', 'Europe/Brussels').humanReadable()).toBe('2019-07-02 15-16-17', 'summer time');
-
-			expect(tsFromString('2019-01-02 03-04-05').exiv())               .toBe('2019:01:02 03:04:05');
-
-			// Special cases
-			expect(tsFromString('2018').exiv())   .toBe('2018:01:01 01:01:01');
+		it('should generate exiv timestamp', () => {
+			// Date only cases
+			expect(tsFromString('2018'   ).exiv()).toBe('2018:01:01 01:01:01');
 			expect(tsFromString('2018-01').exiv()).toBe('2018:01:02 02:02:02');
 			expect(tsFromString('2018-02').exiv()).toBe('2018:02:02 02:02:02');
+
+			// exiv is always in utc
+			expect(tsFromExiv('2019:07:02 15:16:17', 'Europe/Brussels').exiv()).toBe('2019:07:02 15:16:17');
+			expect(tsFromExiv('2019:07:02 15:16:17', 'Asia/Dhaka')     .exiv()).toBe('2019:07:02 15:16:17');
+
+			// Normal case
+			expect(tsFromString('2019-01-02 03-04-05').exiv()).toBe('2019:01:02 03:04:05');
+
+
+			expect(tsFromExiv('2019:07:02 15:16:17')                   .humanReadable()).withContext('No timezone').toBe('2019-07-02 15-16-17');
+			expect(tsFromExiv('2019:07:02 15:16:17', 'Europe/Brussels').humanReadable()).withContext('Summer time').toBe('2019-07-02 17-16-17');
+			expect(tsFromExiv('2019:02:02 15:16:17', 'Europe/Brussels').humanReadable()).withContext('Winter time').toBe('2019-02-02 16-16-17');
+
+			expect(tsFromString('2019-01-02 03-04-05').exiv())               .toBe('2019:01:02 03:04:05');
 		});
 
 		it('should be clonable', function() {
