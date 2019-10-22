@@ -1,5 +1,5 @@
 
-const { regexps, tsFromString, tsFromExiv, tzFromGPS, currentTzOffset } = require('../../file-organizer/timestamp.js');
+const { regexps, tsFromString, tsFromExiv, tzFromGPS } = require('../../file-organizer/timestamp.js');
 
 function isA(originalString, type, exivTarget, TSTarget = originalString, extra = {}) {
 	const parsed = tsFromString(originalString);

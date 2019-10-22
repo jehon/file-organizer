@@ -1,6 +1,5 @@
 
 const path = require('path');
-const process = require('process');
 
 const chalk = require('chalk');
 
