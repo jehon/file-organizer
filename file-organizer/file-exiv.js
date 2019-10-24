@@ -21,8 +21,8 @@ const fileUtils = require('./file-utils.js');
 const debugExiv = require('debug')('exivtool');
 const debugExivOutput = debugExiv.extend('output');
 
-const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
-const exivExecLimiter = pLimit(5);
+const { default: PQueue } = require('p-queue'); // https://www.npmjs.com/package/p-queue
+const exivExecLimiter = new PQueue({ concurrency: 5 });
 
 var commandExistsSync = require('command-exists').sync;
 // returns true/false; doesn't throw
@@ -32,8 +32,8 @@ if (!commandExistsSync('exiftool')) {
 }
 
 // @Limited(x)
-async function runExiv(...params) {
-	return exivExecLimiter(() =>
+async function runExiv(priority, params) {
+	return exivExecLimiter.add(() =>
 		fileUtils.fileExec('exiftool', [ ...params])
 			.then(log => { debugExiv('runExiv result: ', log); return log; })
 			.catch(processResult => {
@@ -61,16 +61,18 @@ async function runExiv(...params) {
 
 				throw processResult;
 			})
-			.then(log => log ? log :'')
-	);
+			.then(log => log ? log :''),
+	{ priority });
 }
 
 async function exivWrite(file, tag, value) {
 	debugExiv('exivWrite:', file.getPath(), tag, value);
-	return runExiv(
-		'-overwrite_original',
-		'-m', // Ignore minor errors and warnings
-		`-${tag}=${value}`, file.getPath()
+	return runExiv(10,
+		[
+			'-overwrite_original',
+			'-m', // Ignore minor errors and warnings
+			`-${tag}=${value}`, file.getPath()
+		]
 	);
 }
 
@@ -138,9 +140,12 @@ module.exports = class FileExiv extends FileTimestamped {
 		};
 		defaultResult[this.constExivTS] = '';
 
-		return runExiv('-j',
-			'-m', // Ignore minor errors and warnings
-			this.getPath())
+		return runExiv(0,
+			[
+				'-j',
+				'-m', // Ignore minor errors and warnings
+				this.getPath()
+			])
 			.then(result => {
 				let exivData = JSON.parse(result)[0];
 				debugExiv('exivReadAll got:', this.getPath(), exivData[this.constExivTS]);
