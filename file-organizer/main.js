@@ -6,6 +6,9 @@ const fileFactory = require('./file-factory.js');
 const options = require('./options.js');
 const messages = require('./messages.js');
 
+// TODO: Fix problem in version < 4.1 coming from jsonfile 4.0.0 in fs-extra 8.1.0
+require('graceful-fs');
+
 Object.assign(options, yargs
 	.options({
 		'dryRun': {
