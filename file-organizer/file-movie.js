@@ -1,25 +1,25 @@
 
-const FileExiv = require('./file-exiv.js');
-const { tsFromExiv, tzFromGPS } = require('./timestamp.js');
+const FileExif = require('./file-exif.js');
+const { tsFromExif, tzFromGPS } = require('./timestamp.js');
 
-module.exports = class FileMovie extends FileExiv {
-	get constExivTS() { return 'CreateDate'; }
+module.exports = class FileMovie extends FileExif {
+	get constExifTS() { return 'CreateDate'; }
 
-	async exivReadAll(file) {
-		return super.exivReadAll(file)
-			.then(exivData => {
-				if (exivData.GPSPosition) {
-					exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
+	async exifReadAll(file) {
+		return super.exifReadAll(file)
+			.then(exifData => {
+				if (exifData.GPSPosition) {
+					exifData.calculatedTimezone = tzFromGPS(exifData.GPSPosition);
 				}
-				return exivData;
+				return exifData;
 			});
 	}
 
-	async exivReload() {
-		return super.exivReload().then(exivData => {
-			this.exiv_calculated_timezone = exivData.calculatedTimezone;
-			this.exiv_timestamp           = tsFromExiv(exivData[this.constExivTS], this.exiv_calculated_timezone);
-			return exivData;
+	async exifReload() {
+		return super.exifReload().then(exifData => {
+			this.exif_calculated_timezone = exifData.calculatedTimezone;
+			this.exif_timestamp           = tsFromExif(exifData[this.constExifTS], this.exif_calculated_timezone);
+			return exifData;
 		});
 	}
 
@@ -27,16 +27,16 @@ module.exports = class FileMovie extends FileExiv {
 		return super.check();
 
 		// // TODO: here, we should write it in "check"
-		// if (!exivData[this.constExivTS] && exivData.DateTimeOriginal) {
-		// 	exivData[this.constExivTS] = exivData.DateTimeOriginal;
+		// if (!exifData[this.constExifTS] && exifData.DateTimeOriginal) {
+		// 	exifData[this.constExifTS] = exifData.DateTimeOriginal;
 		// }
 	}
 
-	async exivWriteTimestamp(ts_original) {
+	async exifWriteTimestamp(ts_original) {
 		const ts = ts_original.clone();
-		if (this.exiv_calculated_timezone) {
-			ts.moment = ts.moment.tz(this.exiv_calculated_timezone, true);
+		if (this.exif_calculated_timezone) {
+			ts.moment = ts.moment.tz(this.exif_calculated_timezone, true);
 		}
-		return super.exivWriteTimestamp(ts);
+		return super.exifWriteTimestamp(ts);
 	}
 };

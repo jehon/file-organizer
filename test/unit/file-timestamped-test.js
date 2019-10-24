@@ -90,32 +90,32 @@ describe('file-timestamped-test', () => {
 
 		describe('should guess comment', () => {
 			it('should take the new comment from file', async () => {
-				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
-				await new1.exivWriteComment('');
+				const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
+				await new1.exifWriteComment('');
 
 				// new2 is a virtual alias of new1 with fields initialized
 				const new2 = await fileFactory(new1.getPath());
 				await new2.loadData();
-				expect(new2.exiv_comment).toBe('');
-				expect(new2.filenameTS.comment).toBe('exivok01');
+				expect(new2.exif_comment).toBe('');
+				expect(new2.filenameTS.comment).toBe('exifok01');
 
 				await new2.check();
-				await new2.exivReload();
-				expect(new2.exiv_comment).toBe('exivok01');
-				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 exivok01');
+				await new2.exifReload();
+				expect(new2.exif_comment).toBe('exifok01');
+				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 exifok01');
 
 				new2.remove();
 			});
 
 			it('should take the new comment from the folder', async () => {
-				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
-				await new1.exivWriteComment('');
+				const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
+				await new1.exifWriteComment('');
 				await new1.changeFilename('1998-12-31 12-10-11');
 
 				// new2 is a virtual alias of new1 with fields initialized
 				const new2 = await fileFactory(new1.getPath());
 				await new2.loadData();
-				expect(new2.exiv_comment).toBe('');
+				expect(new2.exif_comment).toBe('');
 				expect(new2.filenameTS.comment).toBe('');
 				new2._parent = new FileFolder('1998 parent comment');
 				expect(new2.parent.filenameTS.comment).toBe('parent comment');
@@ -136,17 +136,17 @@ describe('file-timestamped-test', () => {
 			});
 
 			it('should keep original comment', async () => {
-				const new1 = await createFileGeneric('1998-12-31 12-10-11 exivok01.jpg');
-				await new1.exivWriteComment('x test');
+				const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
+				await new1.exifWriteComment('x test');
 
 				// new2 is a virtual alias of new1 with fields initialized
 				const new2 = await fileFactory(new1.getPath());
 				await new2.loadData();
-				expect(new2.exiv_comment).toBe('x test');
+				expect(new2.exif_comment).toBe('x test');
 
 				await new2.check();
-				await new2.exivReload();
-				expect(new2.exiv_comment).toBe('x test');
+				await new2.exifReload();
+				expect(new2.exif_comment).toBe('x test');
 				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 x test');
 
 				new2.remove();

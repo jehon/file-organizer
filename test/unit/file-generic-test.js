@@ -69,8 +69,8 @@ describe('file-generic-test', () => {
 		it('should normalize extensions when necessary', async() => {
 			const new1 = await createFileGeneric('rotated-bottom-left.jpg');
 			await new1.rename('test.jpeg');
-			new1.exiv_timestamp = tsFromString('2018-01-02');
-			new1.exiv_comment = 'comment';
+			new1.exif_timestamp = tsFromString('2018-01-02');
+			new1.exif_comment = 'comment';
 			await FileGeneric.prototype.check.call(new1); // new1.check();
 			expect(Array.from(new1.messages.keys())).toContain('FILE_EXT_NORMALIZE');
 			expect(new1.getExtension()).toBe('.jpg');

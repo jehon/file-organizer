@@ -1,15 +1,15 @@
 
-const { regexps, tsFromString, tsFromExiv, tzFromGPS } = require('../../file-organizer/timestamp.js');
+const { regexps, tsFromString, tsFromExif, tzFromGPS } = require('../../file-organizer/timestamp.js');
 
-function isA(originalString, type, exivTarget, TSTarget = originalString, extra = {}) {
+function isA(originalString, type, exifTarget, TSTarget = originalString, extra = {}) {
 	const parsed = tsFromString(originalString);
 	expect(parsed.type)
 		.withContext(`${originalString}: Interpreted wrongly as`)
 		.toBe(type);
 
-	expect(parsed.exiv())
-		.withContext(`${originalString}: Not correctly interpreted as exiv`)
-		.toBe(exivTarget);
+	expect(parsed.exif())
+		.withContext(`${originalString}: Not correctly interpreted as exif`)
+		.toBe(exifTarget);
 
 	expect(parsed.humanReadable())
 		.withContext(`${originalString}: Not correctly interpreted as TS`)
@@ -216,25 +216,25 @@ describe('timestamp-test', function() {
 		//
 		//
 
-		it('should generate exiv timestamp', () => {
+		it('should generate exif timestamp', () => {
 			// Date only cases
-			expect(tsFromString('2018'   ).exiv()).toBe('2018:01:01 01:01:01');
-			expect(tsFromString('2018-01').exiv()).toBe('2018:01:02 02:02:02');
-			expect(tsFromString('2018-02').exiv()).toBe('2018:02:02 02:02:02');
+			expect(tsFromString('2018'   ).exif()).toBe('2018:01:01 01:01:01');
+			expect(tsFromString('2018-01').exif()).toBe('2018:01:02 02:02:02');
+			expect(tsFromString('2018-02').exif()).toBe('2018:02:02 02:02:02');
 
-			// exiv is always in utc
-			expect(tsFromExiv('2019:07:02 15:16:17', 'Europe/Brussels').exiv()).toBe('2019:07:02 15:16:17');
-			expect(tsFromExiv('2019:07:02 15:16:17', 'Asia/Dhaka')     .exiv()).toBe('2019:07:02 15:16:17');
+			// exif is always in utc
+			expect(tsFromExif('2019:07:02 15:16:17', 'Europe/Brussels').exif()).toBe('2019:07:02 15:16:17');
+			expect(tsFromExif('2019:07:02 15:16:17', 'Asia/Dhaka')     .exif()).toBe('2019:07:02 15:16:17');
 
 			// Normal case
-			expect(tsFromString('2019-01-02 03-04-05').exiv()).toBe('2019:01:02 03:04:05');
+			expect(tsFromString('2019-01-02 03-04-05').exif()).toBe('2019:01:02 03:04:05');
 
 
-			expect(tsFromExiv('2019:07:02 15:16:17')                   .humanReadable()).withContext('No timezone').toBe('2019-07-02 15-16-17');
-			expect(tsFromExiv('2019:07:02 15:16:17', 'Europe/Brussels').humanReadable()).withContext('Summer time').toBe('2019-07-02 17-16-17');
-			expect(tsFromExiv('2019:02:02 15:16:17', 'Europe/Brussels').humanReadable()).withContext('Winter time').toBe('2019-02-02 16-16-17');
+			expect(tsFromExif('2019:07:02 15:16:17')                   .humanReadable()).withContext('No timezone').toBe('2019-07-02 15-16-17');
+			expect(tsFromExif('2019:07:02 15:16:17', 'Europe/Brussels').humanReadable()).withContext('Summer time').toBe('2019-07-02 17-16-17');
+			expect(tsFromExif('2019:02:02 15:16:17', 'Europe/Brussels').humanReadable()).withContext('Winter time').toBe('2019-02-02 16-16-17');
 
-			expect(tsFromString('2019-01-02 03-04-05').exiv())               .toBe('2019:01:02 03:04:05');
+			expect(tsFromString('2019-01-02 03-04-05').exif())               .toBe('2019:01:02 03:04:05');
 		});
 
 		it('should be clonable', function() {

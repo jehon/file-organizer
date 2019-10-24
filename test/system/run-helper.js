@@ -93,7 +93,7 @@ async function itRun(ctx, args, fn) {
 }
 exports.itRun = itRun;
 
-async function getFileExivField(ctx, field, f) {
+async function getFileExifField(ctx, field, f) {
 	const res = await runMain(ctx, 'info', '-k', field, f);
 	res.assertSuccess();
 	return res.stdout.trim();
@@ -129,12 +129,12 @@ exports.assert = {
 			},
 			withTS: (data = false) => {
 				promise = promise
-					.then(() => exports.assert.fileHasExivTimestamp(ctx, f, data, foriginal));
+					.then(() => exports.assert.fileHasExifTimestamp(ctx, f, data, foriginal));
 				return obj;
 			},
 			withComment: (data = false) => {
 				promise = promise
-					.then(() => exports.assert.fileHasExivcomment(ctx, f, data, foriginal));
+					.then(() => exports.assert.fileHasExifcomment(ctx, f, data, foriginal));
 				return obj;
 			},
 			done: () => promise
@@ -149,19 +149,19 @@ exports.assert = {
 	},
 
 
-	fileHasExivTimestamp: async function (ctx, f, data = false, foriginal = false) {
+	fileHasExifTimestamp: async function (ctx, f, data = false, foriginal = false) {
 		if (data === false) {
 			data = datas[foriginal ? foriginal : f].ts;
 		}
-		const res = await getFileExivField(ctx, 'exiv_timestamp', f);
-		expect(res).toEqual(data, `File ${f} must have exiv timestamp ${data} but have ${res}`);
+		const res = await getFileExifField(ctx, 'exif_timestamp', f);
+		expect(res).toEqual(data, `File ${f} must have exif timestamp ${data} but have ${res}`);
 	},
 
-	fileHasExivcomment: async function (ctx, f, data = false, foriginal = false) {
+	fileHasExifcomment: async function (ctx, f, data = false, foriginal = false) {
 		if (data === false) {
 			data = datas[foriginal ? foriginal : f].comment;
 		}
-		const res = await getFileExivField(ctx, 'exiv_comment', f);
-		expect(res).toEqual(data, `File ${f} must have exiv comment ${data} but have ${res}`);
+		const res = await getFileExifField(ctx, 'exif_comment', f);
+		expect(res).toEqual(data, `File ${f} must have exif comment ${data} but have ${res}`);
 	}
 };

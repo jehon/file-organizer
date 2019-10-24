@@ -70,7 +70,7 @@ exports.defaultValues = {
 	yearMax:   0
 };
 
-const EMPTY_EXIV = '0000:00:00 00:00:00';
+const EMPTY_EXIF = '0000:00:00 00:00:00';
 
 class Timestamp {
 	constructor(str = '', tz = false) {
@@ -188,9 +188,9 @@ class Timestamp {
 			.replace(      ' 00-00-00', '');
 	}
 
-	exiv() {
+	exif() {
 		if (!this.isTimestamped()) {
-			return EMPTY_EXIV;
+			return EMPTY_EXIF;
 		}
 		const utc = this.moment.clone().utc();
 		return utc.format('YYYY:MM:DD HH:mm:ss');
@@ -274,7 +274,7 @@ exports.tsFromString = function(str) {
 	return new Timestamp(str);
 };
 
-exports.tsFromExiv = function(str, tz = false) {
+exports.tsFromExif = function(str, tz = false) {
 	return new Timestamp(str, tz);
 };
 

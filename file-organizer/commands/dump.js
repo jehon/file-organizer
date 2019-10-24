@@ -70,13 +70,13 @@ exports.handler = function (noptions) {
 						+ sep
 						+ l(fi.generic_original_extension, padExtension)
 						+ sep
-						+ (fi.exiv_timestamp
-							? l(fi.exiv_timestamp.humanReadable(), padTimestamp)
+						+ (fi.exif_timestamp
+							? l(fi.exif_timestamp.humanReadable(), padTimestamp)
 							: messages.IconFailure + ' ' + l(fi.filenameTS.original, padTimestamp - 2).red
 						)
 						+ sep
-						+ (fi.exiv_comment
-							? l(fi.exiv_comment, padComment)
+						+ (fi.exif_comment
+							? l(fi.exif_comment, padComment)
 							: messages.IconFailure + ' ' + l(fi.filenameTS.comment, padComment - 2).red
 						)
 						;

@@ -3,7 +3,7 @@ const FileMovie = require('./file-movie.js');
 // const fileUtils = require('./file-utils.js');
 
 module.exports = class FileMovieMov extends FileMovie {
-	get constExivTS() { return 'CreateDate'; }
+	get constExifTS() { return 'CreateDate'; }
 
 	check() {
 	// 	this.addMessageConvert(

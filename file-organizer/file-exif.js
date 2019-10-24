@@ -14,15 +14,15 @@
  */
 
 const FileTimestamped = require('./file-timestamped.js');
-const { tsFromExiv, tzFromGPS } = require('./timestamp.js');
+const { tsFromExif, tzFromGPS } = require('./timestamp.js');
 const options = require('./options.js');
 const fileUtils = require('./file-utils.js');
 
-const debugExiv = require('debug')('exivtool');
-const debugExivOutput = debugExiv.extend('output');
+const debugExif = require('debug')('exiftool');
+const debugExifOutput = debugExif.extend('output');
 
 const { default: PQueue } = require('p-queue'); // https://www.npmjs.com/package/p-queue
-const exivExecLimiter = new PQueue({ concurrency: 5 });
+const exifExecLimiter = new PQueue({ concurrency: 5 });
 
 var commandExistsSync = require('command-exists').sync;
 // returns true/false; doesn't throw
@@ -32,14 +32,14 @@ if (!commandExistsSync('exiftool')) {
 }
 
 // @Limited(x)
-async function runExiv(priority, params) {
-	return exivExecLimiter.add(() =>
+async function runExif(priority, params) {
+	return exifExecLimiter.add(() =>
 		fileUtils.fileExec('exiftool', [ ...params])
-			.then(log => { debugExiv('runExiv result: ', log); return log; })
+			.then(log => { debugExif('runExif result: ', log); return log; })
 			.catch(processResult => {
 				console.error(processResult);
-				debugExiv('runExiv result:', processResult.code);
-				debugExivOutput('runExiv output:', processResult.stdout, processResult.stderr);
+				debugExif('runExif result:', processResult.code);
+				debugExifOutput('runExif output:', processResult.stdout, processResult.stderr);
 				switch(processResult.code) {
 				case 0:   // ok, continue
 					break;
@@ -51,12 +51,12 @@ async function runExiv(priority, params) {
 				default:
 					console.error(`
 *********
-*** runExiv process: ${processResult.code}
+*** runExif process: ${processResult.code}
 *** exiftool '${params.join(' , ')}'
 *** ${processResult.stderr.toString()}
 *********
 `);
-					throw new Error('runExiv failed');
+					throw new Error('runExif failed');
 				}
 
 				throw processResult;
@@ -65,9 +65,9 @@ async function runExiv(priority, params) {
 	{ priority });
 }
 
-async function exivWrite(file, tag, value) {
-	debugExiv('exivWrite:', file.getPath(), tag, value);
-	return runExiv(10,
+async function exifWrite(file, tag, value) {
+	debugExif('exifWrite:', file.getPath(), tag, value);
+	return runExif(10,
 		[
 			'-overwrite_original',
 			'-m', // Ignore minor errors and warnings
@@ -102,27 +102,27 @@ function translateRotation(rotation) {
 		return 0;
 
 	default:
-		throw new Error(`exivReadRotation: could not understand value: ${rotation}`);
+		throw new Error(`exifReadRotation: could not understand value: ${rotation}`);
 	}
 
 }
 
-module.exports = class FileExiv extends FileTimestamped {
-	get constExivTS() { return 'DateTimeOriginal'; }
+module.exports = class FileExif extends FileTimestamped {
+	get constExifTS() { return 'DateTimeOriginal'; }
 
 	async loadData() {
 		await super.loadData();
 
 		// This take time during construction
-		await this.exivReload();
+		await this.exifReload();
 
-		this.setCalculatedTS(this.exiv_timestamp);
+		this.setCalculatedTS(this.exif_timestamp);
 		if (options.forceTimestampFromFilename) {
 			this.calculatedTS = this.filenameTS.clone();
 		}
 
-		if (this.exiv_comment) {
-			this.calculatedTS.comment = this.exiv_comment
+		if (this.exif_comment) {
+			this.calculatedTS.comment = this.exif_comment
 			// 	.replace(/( |-|[0-9]{2,10})+$/, '')
 			;
 		}
@@ -130,57 +130,57 @@ module.exports = class FileExiv extends FileTimestamped {
 		return this;
 	}
 
-	async exivReadAll() {
-		debugExiv('exivReadAll:', this.getPath());
+	async exifReadAll() {
+		debugExif('exifReadAll:', this.getPath());
 		const defaultResult = {
 			'UserComment': '',
 			'Orientation': '',
 			'GPSPosition': '',
 			'calculatedTimezone': ''
 		};
-		defaultResult[this.constExivTS] = '';
+		defaultResult[this.constExifTS] = '';
 
-		return runExiv(0,
+		return runExif(0,
 			[
 				'-j',
 				'-m', // Ignore minor errors and warnings
 				this.getPath()
 			])
 			.then(result => {
-				let exivData = JSON.parse(result)[0];
-				debugExiv('exivReadAll got:', this.getPath(), exivData[this.constExivTS]);
-				if (exivData.GPSPosition) {
-					exivData.calculatedTimezone = tzFromGPS(exivData.GPSPosition);
+				let exifData = JSON.parse(result)[0];
+				debugExif('exifReadAll got:', this.getPath(), exifData[this.constExifTS]);
+				if (exifData.GPSPosition) {
+					exifData.calculatedTimezone = tzFromGPS(exifData.GPSPosition);
 				}
-				return Object.assign({}, defaultResult, exivData);
+				return Object.assign({}, defaultResult, exifData);
 			});
 	}
 
-	async exivReload() {
-		return this.exivReadAll().then(exivData => {
-			this.exiv_timestamp_raw       = exivData[this.constExivTS];
-			this.exiv_timestamp           = tsFromExiv(exivData[this.constExivTS], this.exiv_calculated_timezone);
-			this.exiv_comment             = exivData['UserComment'];
-			this.exiv_orientation         = translateRotation(exivData['Orientation']);
-			return exivData;
+	async exifReload() {
+		return this.exifReadAll().then(exifData => {
+			this.exif_timestamp_raw       = exifData[this.constExifTS];
+			this.exif_timestamp           = tsFromExif(exifData[this.constExifTS], this.exif_calculated_timezone);
+			this.exif_comment             = exifData['UserComment'];
+			this.exif_orientation         = translateRotation(exifData['Orientation']);
+			return exifData;
 		});
 	}
 
-	async exivWriteTimestamp(ts_original) {
+	async exifWriteTimestamp(ts_original) {
 		const ts = ts_original.clone();
-		return exivWrite(this, this.constExivTS, ts.exiv())
+		return exifWrite(this, this.constExifTS, ts.exif())
 			.then(() => {
-				this.exiv_timestamp_raw = ts.exiv();
-				this.exiv_timestamp     = tsFromExiv(this.exiv_timestamp_raw, this.exiv_calculated_timezone);
+				this.exif_timestamp_raw = ts.exif();
+				this.exif_timestamp     = tsFromExif(this.exif_timestamp_raw, this.exif_calculated_timezone);
 				this.setCalculatedTS(ts);
 				return this;
 			});
 	}
 
-	async exivWriteComment(msg) {
-		return exivWrite(this, 'UserComment', msg)
+	async exifWriteComment(msg) {
+		return exifWrite(this, 'UserComment', msg)
 			.then(() => {
-				this.exiv_comment = msg;
+				this.exif_comment = msg;
 				this.calculatedTS.comment = msg;
 				return this;
 			});
@@ -192,18 +192,18 @@ module.exports = class FileExiv extends FileTimestamped {
 			return false;
 		}
 
-		if (this.exiv_comment != this.calculatedTS.comment && this.calculatedTS.comment) {
+		if (this.exif_comment != this.calculatedTS.comment && this.calculatedTS.comment) {
 			const c = this.calculatedTS.comment;
-			res = res && await this.addMessageCommit('EXIV_WRITE_COMMENT', 'Write comment',
+			res = res && await this.addMessageCommit('EXIF_WRITE_COMMENT', 'Write comment',
 				c,
-				() => this.exivWriteComment(c)
+				() => this.exifWriteComment(c)
 			);
 		}
 
-		if (this.exiv_timestamp_raw != this.calculatedTS.exiv() && this.calculatedTS.humanReadable()) {
-			res = res && await this.addMessageCommit('EXIV_WRITE_TIMESTAMP', 'Write timestamp',
-				`${this.calculatedTS.humanReadable()} (${this.calculatedTS.exiv()}) <- ${this.exiv_timestamp_raw}`,
-				() => this.exivWriteTimestamp(this.calculatedTS)
+		if (this.exif_timestamp_raw != this.calculatedTS.exif() && this.calculatedTS.humanReadable()) {
+			res = res && await this.addMessageCommit('EXIF_WRITE_TIMESTAMP', 'Write timestamp',
+				`${this.calculatedTS.humanReadable()} (${this.calculatedTS.exif()}) <- ${this.exif_timestamp_raw}`,
+				() => this.exifWriteTimestamp(this.calculatedTS)
 			);
 		}
 		return res;
