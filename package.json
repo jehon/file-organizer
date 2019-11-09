@@ -5,7 +5,7 @@
   "license": "ISC",
   "dependencies": {
     "ansi-escapes": "4.2.1",
-    "chalk": "2.4.2",
+    "chalk": "3.0.0",
     "colors": "1.4.0",
     "command-exists": "1.2.8",
     "debug": "4.1.1",
