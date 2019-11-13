@@ -123,7 +123,7 @@ module.exports = class FileExif extends FileTimestamped {
 		}
 
 		if (this.exif_title) {
-			this.calculatedTS.comment = this.exif_title
+			this.calculatedTS.title = this.exif_title
 			// 	.replace(/( |-|[0-9]{2,10})+$/, '')
 			;
 		}
@@ -182,7 +182,7 @@ module.exports = class FileExif extends FileTimestamped {
 		return exifWrite(this, this.constExifTitle, msg)
 			.then(() => {
 				this.exif_title = msg;
-				this.calculatedTS.comment = msg;
+				this.calculatedTS.title = msg;
 				return this;
 			});
 	}
@@ -193,8 +193,8 @@ module.exports = class FileExif extends FileTimestamped {
 			return false;
 		}
 
-		if (this.exif_title != this.calculatedTS.comment && this.calculatedTS.comment) {
-			const c = this.calculatedTS.comment;
+		if (this.exif_title != this.calculatedTS.title && this.calculatedTS.title) {
+			const c = this.calculatedTS.title;
 			res = res && await this.addMessageCommit('EXIF_WRITE_COMMENT', 'Write comment',
 				c,
 				() => this.exifWriteTitle(c)

@@ -51,7 +51,7 @@ describe('file-timestamped-test', () => {
 		it('should parse original file', async () => {
 			const new1 = new FileTimestamped('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
 			expect(new1.filenameTS.moment.year()).toBe(2012);
-			expect(new1.filenameTS.comment).toBe('vie de famille');
+			expect(new1.filenameTS.title).toBe('vie de famille');
 		});
 
 		describe('should check coherence with parent folder', () => {
@@ -97,7 +97,7 @@ describe('file-timestamped-test', () => {
 				const new2 = await fileFactory(new1.getPath());
 				await new2.loadData();
 				expect(new2.exif_title).toBe('');
-				expect(new2.filenameTS.comment).toBe('exifok01');
+				expect(new2.filenameTS.title).toBe('exifok01');
 
 				await new2.check();
 				await new2.exifReload();
@@ -116,9 +116,9 @@ describe('file-timestamped-test', () => {
 				const new2 = await fileFactory(new1.getPath());
 				await new2.loadData();
 				expect(new2.exif_title).toBe('');
-				expect(new2.filenameTS.comment).toBe('');
+				expect(new2.filenameTS.title).toBe('');
 				new2._parent = new FileFolder('1998 parent comment');
-				expect(new2.parent.filenameTS.comment).toBe('parent comment');
+				expect(new2.parent.filenameTS.title).toBe('parent comment');
 
 				try {
 					// TODO(cleanup): this check lead to a lot of error

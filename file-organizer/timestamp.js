@@ -31,17 +31,17 @@ const tsOnly = /^${ts.source}$/;
 
 const raw8_3 = new RegExp('^(?<original>[A-Z0-9_]{8})$');
 
-const final = new RegExp(`^${ts.source}( (?<comment>[^[]*))?( \\[(?<original>.+)\\])?$`);
+const final = new RegExp(`^${ts.source}( (?<title>[^[]*))?( \\[(?<original>.+)\\])?$`);
 
 const android = /^(?<original>(VID|IMG)_(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))$/;
 
-const screen = /^(?<original>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))(?<comment>.*)?$/;
+const screen = /^(?<original>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))(?<title>.*)?$/;
 
-const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})( (?<comment>.*))?$`);
+const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})( (?<title>.*))?$`);
 
-const minimal = new RegExp(`^(?!${ts.source})(?<original>(?<comment>(?!.* - )(?!.* ${removeNames(ts)}).*))`);
+const minimal = new RegExp(`^(?!${ts.source})(?<original>(?<title>(?!.* - )(?!.* ${removeNames(ts)}).*))`);
 
-const invalid = /^(?<comment>(?<original>.*$))/; // Fallback
+const invalid = /^(?<title>(?<original>.*$))/; // Fallback
 
 const matchers = {
 	raw8_3,
@@ -64,7 +64,7 @@ exports.defaultValues = {
 	second:    0,
 
 	original: '', // in the tag, the filename
-	comment:  '',  // in the tag, the rest (out of the filename)
+	title:    '',  // in the tag, the rest (out of the filename)
 
 	yearMin:   0,
 	yearMax:   0
@@ -95,7 +95,7 @@ class Timestamp {
 		}
 
 		this.original = parsed.original;
-		this.comment  = parsed.comment;
+		this.title  = parsed.title;
 		this.yearMin  = parsed.yearMin;
 		this.yearMax  = parsed.yearMax;
 

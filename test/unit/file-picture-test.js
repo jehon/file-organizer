@@ -85,7 +85,7 @@ describe('file-picture-test', () => {
 			new1.exif_timestamp = tsFromString('2018-01-02');
 			new1.exif_timestamp_raw = new1.exif_timestamp.exif();
 			new1.calculatedTS = new1.exif_timestamp;
-			new1.calculatedTS.comment = new1.exif_title;
+			new1.calculatedTS.title = new1.exif_title;
 
 			expect(new1.exif_orientation).toBe(270);
 			await new1.check();
@@ -103,7 +103,7 @@ describe('file-picture-test', () => {
 			new1.calculatedTS = new1.exif_timestamp;
 
 			expect(new1.exif_title).toBe('');
-			new1.calculatedTS.comment = 'override comment';
+			new1.calculatedTS.title = 'override comment';
 
 			await new1.check();
 			expect(Array.from(new1.messages.keys())).toContain('EXIF_WRITE_COMMENT');

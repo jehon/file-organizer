@@ -18,7 +18,7 @@ exports.builder = {
 const padFilename  = 60;
 const padExtension = 5;
 const padTimestamp = 22;
-const padComment   = 50;
+const padTitle   = 50;
 
 function l(str, ll) {
 	str = '' + str;
@@ -50,9 +50,9 @@ exports.handler = function (noptions) {
 		+ '|'
 		+ l('timestamp', padTimestamp)
 		+ '|'
-		+ l('comment', padComment)
+		+ l('title', padTitle)
 	);
-	console.info('-'.repeat(padFilename + padExtension + padTimestamp + padComment + 4));
+	console.info('-'.repeat(padFilename + padExtension + padTimestamp + padTitle + 4));
 
 	return Promise.all(options.files.map(
 		f0 => f0.iterate(
@@ -76,8 +76,8 @@ exports.handler = function (noptions) {
 						)
 						+ sep
 						+ (fi.exif_title
-							? l(fi.exif_title, padComment)
-							: messages.IconFailure + ' ' + l(fi.filenameTS.comment, padComment - 2).red
+							? l(fi.exif_title, padTitle)
+							: messages.IconFailure + ' ' + l(fi.filenameTS.title, padTitle - 2).red
 						)
 						;
 

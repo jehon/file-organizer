@@ -154,14 +154,18 @@ exports.assert = {
 			data = datas[foriginal ? foriginal : f].ts;
 		}
 		const res = await getFileExifField(ctx, 'exif_timestamp', f);
-		expect(res).toEqual(data, `File ${f} must have exif timestamp ${data} but have ${res}`);
+		expect(res)
+			.withContext(`File ${f} must have exif timestamp ${data} but have ${res}`)
+			.toEqual(data);
 	},
 
 	fileHasExifcomment: async function (ctx, f, data = false, foriginal = false) {
 		if (data === false) {
-			data = datas[foriginal ? foriginal : f].comment;
+			data = datas[foriginal ? foriginal : f].title;
 		}
 		const res = await getFileExifField(ctx, 'exif_title', f);
-		expect(res).toEqual(data, `File ${f} must have exif comment ${data} but have ${res}`);
+		expect(res)
+			.withContext(`File ${f} must have exif comment ${data} but have ${res}`)
+			.toEqual(data);
 	}
 };

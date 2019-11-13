@@ -1,8 +1,8 @@
 
-function b(ts, comment) {
+function b(ts, title) {
 	return {
 		ts,
-		comment
+		title
 	};
 }
 
