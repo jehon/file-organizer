@@ -161,7 +161,7 @@ exports.assert = {
 		if (data === false) {
 			data = datas[foriginal ? foriginal : f].comment;
 		}
-		const res = await getFileExifField(ctx, 'exif_comment', f);
+		const res = await getFileExifField(ctx, 'exif_title', f);
 		expect(res).toEqual(data, `File ${f} must have exif comment ${data} but have ${res}`);
 	}
 };

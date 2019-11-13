@@ -34,14 +34,14 @@ describe('file-picture-test', () => {
 	});
 
 	it('should get comment from files', async () => {
-		expect((await getPict('20150306_153340 Cable internet dans la rue.jpg')).exif_comment).toBe('User comments');
-		expect((await getPict('canon.JPG')).exif_comment).toBe('');
-		expect((await getPict('petitAppPhoto.jpg')).exif_comment).toBe('');
+		expect((await getPict('20150306_153340 Cable internet dans la rue.jpg')).exif_title).toBe('User comments');
+		expect((await getPict('canon.JPG')).exif_title).toBe('');
+		expect((await getPict('petitAppPhoto.jpg')).exif_title).toBe('');
 
 		// Android files
-		expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exif_comment).toBe('');
+		expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exif_title).toBe('');
 
-		expect((await getPict('no_exif.jpg')).exif_comment).toBe('');
+		expect((await getPict('no_exif.jpg')).exif_title).toBe('');
 	});
 
 	it('should write timestamps correctly', async() =>  {
@@ -59,15 +59,15 @@ describe('file-picture-test', () => {
 
 	it('should write comments correctly', async() =>  {
 		const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
-		expect(new1.exif_comment).toBe('User comments');
-		await new1.exifWriteComment('My new comment with àn accent');
-		expect(new1.exif_comment).toBe('My new comment with àn accent');
+		expect(new1.exif_title).toBe('User comments');
+		await new1.exifWriteTitle('My new comment with àn accent');
+		expect(new1.exif_title).toBe('My new comment with àn accent');
 		new1.remove();
 
 		const new2 = await createFileGeneric('canon.JPG');
-		expect(new2.exif_comment).toBe('');
-		await new2.exifWriteComment('My other comment with àn accent');
-		expect(new2.exif_comment).toBe('My other comment with àn accent');
+		expect(new2.exif_title).toBe('');
+		await new2.exifWriteTitle('My other comment with àn accent');
+		expect(new2.exif_title).toBe('My other comment with àn accent');
 		new2.remove();
 	});
 
@@ -85,7 +85,7 @@ describe('file-picture-test', () => {
 			new1.exif_timestamp = tsFromString('2018-01-02');
 			new1.exif_timestamp_raw = new1.exif_timestamp.exif();
 			new1.calculatedTS = new1.exif_timestamp;
-			new1.calculatedTS.comment = new1.exif_comment;
+			new1.calculatedTS.comment = new1.exif_title;
 
 			expect(new1.exif_orientation).toBe(270);
 			await new1.check();
@@ -102,12 +102,12 @@ describe('file-picture-test', () => {
 			new1.exif_timestamp_raw = new1.exif_timestamp.exif();
 			new1.calculatedTS = new1.exif_timestamp;
 
-			expect(new1.exif_comment).toBe('');
+			expect(new1.exif_title).toBe('');
 			new1.calculatedTS.comment = 'override comment';
 
 			await new1.check();
 			expect(Array.from(new1.messages.keys())).toContain('EXIF_WRITE_COMMENT');
-			expect(new1.exif_comment).toBe('override comment');
+			expect(new1.exif_title).toBe('override comment');
 			new1.remove();
 
 			options.resetToDefault();

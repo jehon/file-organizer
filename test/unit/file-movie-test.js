@@ -31,8 +31,8 @@ describe('file-movie-test', () => {
 
 	it('should get comment from files', async () => {
 		// Android files
-		expect((await getMov(canonMOV)).exif_comment).toBe('');
-		expect((await getMov(AndroidMP4)).exif_comment).toBe('');
+		expect((await getMov(canonMOV)).exif_title).toBe('');
+		expect((await getMov(AndroidMP4)).exif_title).toBe('');
 	});
 
 	it('should write timestamps correctly with MOV', async() =>  {
@@ -79,14 +79,14 @@ describe('file-movie-test', () => {
 	it('should write comments correctly', async() =>  {
 		const newComment = 'test';
 		const new1 = await createFileGeneric(canonMOV);
-		expect(new1.exif_comment).toBe('');
+		expect(new1.exif_title).toBe('');
 
-		await new1.exifWriteComment(newComment);
-		expect(new1.exif_comment).toBe(newComment);
+		await new1.exifWriteTitle(newComment);
+		expect(new1.exif_title).toBe(newComment);
 
 		const new2 = await fileFactory(new1.getPath());
 		await new2.loadData();
-		expect(new2.exif_comment).toBe(newComment);
+		expect(new2.exif_title).toBe(newComment);
 
 		new1.remove();
 	});

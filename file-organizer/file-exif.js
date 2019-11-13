@@ -122,8 +122,8 @@ module.exports = class FileExif extends FileTimestamped {
 			this.calculatedTS = this.filenameTS.clone();
 		}
 
-		if (this.exif_comment) {
-			this.calculatedTS.comment = this.exif_comment
+		if (this.exif_title) {
+			this.calculatedTS.comment = this.exif_title
 			// 	.replace(/( |-|[0-9]{2,10})+$/, '')
 			;
 		}
@@ -161,7 +161,7 @@ module.exports = class FileExif extends FileTimestamped {
 		return this.exifReadAll().then(exifData => {
 			this.exif_timestamp_raw       = exifData[this.constExifTS];
 			this.exif_timestamp           = tsFromExif(exifData[this.constExifTS], this.exif_calculated_timezone);
-			this.exif_comment             = exifData[this.constExifTitle];
+			this.exif_title             = exifData[this.constExifTitle];
 			this.exif_orientation         = translateRotation(exifData['Orientation']);
 			return exifData;
 		});
@@ -178,10 +178,10 @@ module.exports = class FileExif extends FileTimestamped {
 			});
 	}
 
-	async exifWriteComment(msg) {
+	async exifWriteTitle(msg) {
 		return exifWrite(this, this.constExifTitle, msg)
 			.then(() => {
-				this.exif_comment = msg;
+				this.exif_title = msg;
 				this.calculatedTS.comment = msg;
 				return this;
 			});
@@ -193,11 +193,11 @@ module.exports = class FileExif extends FileTimestamped {
 			return false;
 		}
 
-		if (this.exif_comment != this.calculatedTS.comment && this.calculatedTS.comment) {
+		if (this.exif_title != this.calculatedTS.comment && this.calculatedTS.comment) {
 			const c = this.calculatedTS.comment;
 			res = res && await this.addMessageCommit('EXIF_WRITE_COMMENT', 'Write comment',
 				c,
-				() => this.exifWriteComment(c)
+				() => this.exifWriteTitle(c)
 			);
 		}
 

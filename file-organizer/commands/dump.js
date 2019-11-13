@@ -75,8 +75,8 @@ exports.handler = function (noptions) {
 							: messages.IconFailure + ' ' + l(fi.filenameTS.original, padTimestamp - 2).red
 						)
 						+ sep
-						+ (fi.exif_comment
-							? l(fi.exif_comment, padComment)
+						+ (fi.exif_title
+							? l(fi.exif_title, padComment)
 							: messages.IconFailure + ' ' + l(fi.filenameTS.comment, padComment - 2).red
 						)
 						;
