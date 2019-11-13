@@ -109,6 +109,7 @@ function translateRotation(rotation) {
 
 module.exports = class FileExif extends FileTimestamped {
 	get constExifTS() { return 'DateTimeOriginal'; }
+	get constExifTitle() { return 'UserComment'; }
 
 	async loadData() {
 		await super.loadData();
@@ -133,12 +134,12 @@ module.exports = class FileExif extends FileTimestamped {
 	async exifReadAll() {
 		debugExif('exifReadAll:', this.getPath());
 		const defaultResult = {
-			'UserComment': '',
 			'Orientation': '',
 			'GPSPosition': '',
 			'calculatedTimezone': ''
 		};
 		defaultResult[this.constExifTS] = '';
+		defaultResult[this.constExifTitle] = '';
 
 		return runExif(0,
 			[
@@ -160,7 +161,7 @@ module.exports = class FileExif extends FileTimestamped {
 		return this.exifReadAll().then(exifData => {
 			this.exif_timestamp_raw       = exifData[this.constExifTS];
 			this.exif_timestamp           = tsFromExif(exifData[this.constExifTS], this.exif_calculated_timezone);
-			this.exif_comment             = exifData['UserComment'];
+			this.exif_comment             = exifData[this.constExifTitle];
 			this.exif_orientation         = translateRotation(exifData['Orientation']);
 			return exifData;
 		});
@@ -178,7 +179,7 @@ module.exports = class FileExif extends FileTimestamped {
 	}
 
 	async exifWriteComment(msg) {
-		return exifWrite(this, 'UserComment', msg)
+		return exifWrite(this, this.constExifTitle, msg)
 			.then(() => {
 				this.exif_comment = msg;
 				this.calculatedTS.comment = msg;
