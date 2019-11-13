@@ -104,7 +104,7 @@ class FileTimestamped extends FileGeneric {
 
 		let res = true;
 		if (this.calculatedTS.title && this.calculatedTS.title == this.calculatedTS.original) {
-			this.addMessageInfo('TS_DUP_COMMENT', 'remove duplicate comment/original',
+			this.addMessageInfo('TS_DUP_TITLE', 'remove duplicate title/original',
 				'remove original filename'
 			);
 			this.calculatedTS.original = '';
@@ -112,32 +112,32 @@ class FileTimestamped extends FileGeneric {
 
 		{
 			if (options.setComment  && this.calculatedTS.title != options.setComment) {
-				this.addMessageInfo('TS_COMMENT_OPTION_SET', 'force the comment as requested on command line',
+				this.addMessageInfo('TS_TITLE_OPTION_SET', 'force the title as requested on command line',
 					options.setComment
 				);
 				this.setCalculatedTitle(options.setComment);
 			}
 			if (options.forceCommentFromFilename && this.calculatedTS.title != this.filenameTS.title) {
-				this.addMessageInfo('TS_COMMENT_OPTION_FILENAME', 'force the comment from the filename',
+				this.addMessageInfo('TS_TITLE_OPTION_FILENAME', 'force the title from the filename',
 					this.filenameTS.title
 				);
 				this.setCalculatedTitle(this.filenameTS.title);
 			}
 			if (options.forceCommentFromFolder && this.calculatedTS.title != this.parent.filenameTS.title) {
-				this.addMessageInfo('TS_COMMENT_OPTION_FOLDER', 'force the comment from the parent folder',
+				this.addMessageInfo('TS_TITLE_OPTION_FOLDER', 'force the title from the parent folder',
 					this.parent.filenameTS.title
 				);
 				this.setCalculatedTitle(this.parent.filenameTS.title);
 			}
 
 			if (!this.calculatedTS.title && this.filenameTS.title && this.calculatedTS.title != this.filenameTS.title) {
-				this.addMessageInfo('TS_COMMENT_FILENAME', 'set the comment from the filename',
+				this.addMessageInfo('TS_TITLE_FILENAME', 'set the title from the filename',
 					this.filenameTS.title
 				);
 				this.setCalculatedTitle(this.filenameTS.title);
 			}
 			if (!this.calculatedTS.title && this.parent.filenameTS.title && this.calculatedTS.title != this.parent.filenameTS.title) {
-				this.addMessageInfo('TS_COMMENT_FOLDER', 'set the comment from the parent folder',
+				this.addMessageInfo('TS_TITLE_FOLDER', 'set the title from the parent folder',
 					this.parent.filenameTS.title
 				);
 				this.setCalculatedTitle(this.parent.filenameTS.title);
@@ -154,7 +154,7 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		if (!this.calculatedTS.title) {
-			res = res && this.addMessageImpossible('TS_NO_COMMENT', 'No comment found');
+			res = res && this.addMessageImpossible('TS_NO_TITLE', 'No title found');
 		}
 
 		if (!this.calculatedTS.isTimestamped()) {

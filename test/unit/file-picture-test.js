@@ -33,7 +33,7 @@ describe('file-picture-test', () => {
 		expect((await getPict('no_exif.jpg')).exif_orientation).toBe(0);
 	});
 
-	it('should get comment from files', async () => {
+	it('should get title from files', async () => {
 		expect((await getPict('20150306_153340 Cable internet dans la rue.jpg')).exif_title).toBe('User comments');
 		expect((await getPict('canon.JPG')).exif_title).toBe('');
 		expect((await getPict('petitAppPhoto.jpg')).exif_title).toBe('');
@@ -57,17 +57,17 @@ describe('file-picture-test', () => {
 		new1.remove();
 	});
 
-	it('should write comments correctly', async() =>  {
+	it('should write titles correctly', async() =>  {
 		const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
 		expect(new1.exif_title).toBe('User comments');
-		await new1.exifWriteTitle('My new comment with àn accent');
-		expect(new1.exif_title).toBe('My new comment with àn accent');
+		await new1.exifWriteTitle('My new title with àn accent');
+		expect(new1.exif_title).toBe('My new title with àn accent');
 		new1.remove();
 
 		const new2 = await createFileGeneric('canon.JPG');
 		expect(new2.exif_title).toBe('');
-		await new2.exifWriteTitle('My other comment with àn accent');
-		expect(new2.exif_title).toBe('My other comment with àn accent');
+		await new2.exifWriteTitle('My other title with àn accent');
+		expect(new2.exif_title).toBe('My other title with àn accent');
 		new2.remove();
 	});
 
@@ -94,7 +94,7 @@ describe('file-picture-test', () => {
 			new1.remove();
 		});
 
-		it('should set comment if necessary', async() => {
+		it('should set title if necessary', async() => {
 			const new1 = await createFileGeneric('no_exif.jpg');
 
 			// Set data to go to the target test
@@ -103,11 +103,11 @@ describe('file-picture-test', () => {
 			new1.calculatedTS = new1.exif_timestamp;
 
 			expect(new1.exif_title).toBe('');
-			new1.calculatedTS.title = 'override comment';
+			new1.calculatedTS.title = 'override title';
 
 			await new1.check();
-			expect(Array.from(new1.messages.keys())).toContain('EXIF_WRITE_COMMENT');
-			expect(new1.exif_title).toBe('override comment');
+			expect(Array.from(new1.messages.keys())).toContain('EXIF_WRITE_TITLE');
+			expect(new1.exif_title).toBe('override title');
 			new1.remove();
 
 			options.resetToDefault();

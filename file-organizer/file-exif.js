@@ -195,7 +195,7 @@ module.exports = class FileExif extends FileTimestamped {
 
 		if (this.exif_title != this.calculatedTS.title && this.calculatedTS.title) {
 			const c = this.calculatedTS.title;
-			res = res && await this.addMessageCommit('EXIF_WRITE_COMMENT', 'Write comment',
+			res = res && await this.addMessageCommit('EXIF_WRITE_TITLE', 'Write comment',
 				c,
 				() => this.exifWriteTitle(c)
 			);
