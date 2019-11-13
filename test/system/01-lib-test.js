@@ -17,12 +17,12 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 
 		await assert.fileExists(ctx, 'basic/DSC_2506.MOV')
 			.withTS('2019-09-19 07-48-25')
-			.withComment('')
+			.withTitle('')
 			.done();
 
 		await assert.fileExists(ctx, 'basic/DSC_2506.MOV')
 			.withTS()
-			.withComment()
+			.withTitle()
 			.done();
 	});
 });

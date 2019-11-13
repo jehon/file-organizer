@@ -88,8 +88,8 @@ describe('file-timestamped-test', () => {
 			});
 		});
 
-		describe('should guess comment', () => {
-			it('should take the new comment from file', async () => {
+		describe('should guess title', () => {
+			it('should take the new title from file', async () => {
 				const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
 				await new1.exifWriteTitle('');
 
@@ -107,7 +107,7 @@ describe('file-timestamped-test', () => {
 				new2.remove();
 			});
 
-			it('should take the new comment from the folder', async () => {
+			it('should take the new title from the folder', async () => {
 				const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
 				await new1.exifWriteTitle('');
 				await new1.changeFilename('1998-12-31 12-10-11');
@@ -117,8 +117,8 @@ describe('file-timestamped-test', () => {
 				await new2.loadData();
 				expect(new2.exif_title).toBe('');
 				expect(new2.filenameTS.title).toBe('');
-				new2._parent = new FileFolder('1998 parent comment');
-				expect(new2.parent.filenameTS.title).toBe('parent comment');
+				new2._parent = new FileFolder('1998 parent title');
+				expect(new2.parent.filenameTS.title).toBe('parent title');
 
 				try {
 					// TODO(cleanup): this check lead to a lot of error
@@ -130,12 +130,12 @@ describe('file-timestamped-test', () => {
 					// expected
 				}
 				// !! new2 is in a non-existant folder
-				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 parent comment');
+				expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 parent title');
 
 				new1.remove();
 			});
 
-			it('should keep original comment', async () => {
+			it('should keep original title', async () => {
 				const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
 				await new1.exifWriteTitle('x test');
 

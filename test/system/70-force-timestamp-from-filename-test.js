@@ -25,7 +25,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 			return assert.fileExists(ctx, fts ? fts : f)
 				.from(f)
 				.withTS(ts)
-				.withComment('basic')
+				.withTitle('basic')
 				.done();
 		}
 
@@ -35,7 +35,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 		await assert.fileExists(ctx, 'basic/2017-01-02 03-04-09 my comment [my original name].jpg')
 			.from('basic/2018-01-02 03-04-05 my comment [my original name].jpg')
 			.withTS('2017-01-02 03-04-09')
-			.withComment('my comment')
+			.withTitle('my comment')
 			.done();
 
 

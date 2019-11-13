@@ -14,7 +14,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 			if (!fnew) {
 				fnew = fold;
 			}
-			return assert.fileExists(ctx, fnew).from(fold).withTS().withComment(c).done();
+			return assert.fileExists(ctx, fnew).from(fold).withTS().withTitle(c).done();
 		}
 
 		await t('basic/DSC_2506.MOV',            `basic/2019-09-19 07-48-25 ${c} [DSC_2506].mov`);

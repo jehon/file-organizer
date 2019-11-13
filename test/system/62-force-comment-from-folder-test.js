@@ -9,13 +9,13 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 
 		await result.assertConsistency();
 
-		function t(fold, fnew, comment)  {
+		function t(fold, fnew, title)  {
 			if (!fnew) {
 				fnew = fold;
 			}
-			comment = comment ? comment : path.basename(path.dirname(fnew));
+			title = title ? title : path.basename(path.dirname(fnew));
 			return assert.fileExists(ctx, fnew).from(fold).withTS()
-				.withComment(comment)
+				.withTitle(title)
 				.done();
 		}
 

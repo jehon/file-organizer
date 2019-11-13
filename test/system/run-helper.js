@@ -104,7 +104,7 @@ exports.assert = {
 	untouched: function(ctx, f) {
 		return exports.assert.fileExists(ctx, f)
 			.withTS()
-			.withComment()
+			.withTitle()
 			.done();
 	},
 	fileExists: function (ctx, f) {
@@ -123,7 +123,7 @@ exports.assert = {
 			untouched: () => {
 				promise = promise
 					.then(() => obj.withTS())
-					.then(() => obj.withComment())
+					.then(() => obj.withTitle())
 					.then(() => obj.done());
 				return obj;
 			},
@@ -132,9 +132,9 @@ exports.assert = {
 					.then(() => exports.assert.fileHasExifTimestamp(ctx, f, data, foriginal));
 				return obj;
 			},
-			withComment: (data = false) => {
+			withTitle: (data = false) => {
 				promise = promise
-					.then(() => exports.assert.fileHasExifcomment(ctx, f, data, foriginal));
+					.then(() => exports.assert.fileHasExifTitle(ctx, f, data, foriginal));
 				return obj;
 			},
 			done: () => promise
@@ -159,13 +159,13 @@ exports.assert = {
 			.toEqual(data);
 	},
 
-	fileHasExifcomment: async function (ctx, f, data = false, foriginal = false) {
+	fileHasExifTitle: async function (ctx, f, data = false, foriginal = false) {
 		if (data === false) {
 			data = datas[foriginal ? foriginal : f].title;
 		}
 		const res = await getFileExifField(ctx, 'exif_title', f);
 		expect(res)
-			.withContext(`File ${f} must have exif comment ${data} but have ${res}`)
+			.withContext(`File ${f} must have exif title ${data} but have ${res}`)
 			.toEqual(data);
 	}
 };
