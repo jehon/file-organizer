@@ -10,7 +10,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 		// await ctx.listAll();
 	});
 
-	itRun(ctx, [ 'regularize', '--fcff', '--ftsfn' ], async (result) => {
+	itRun(ctx, [ 'regularize', '--force-title-from-folder', '--force-timestamp-from-filename' ], async (result) => {
 		pending('Indexed is not available');
 
 		result.assertSuccess();

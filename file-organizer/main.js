@@ -26,18 +26,18 @@ Object.assign(options, yargs
 			type: 'array',
 			default: [ ],
 		},
-		'setComment': {
-			alias: [ 'set-comment', 'c' ],
+		'setTitle': {
+			alias: [ 'set-title', 'c' ],
 			type: 'string',
 			default: ''
 		},
-		'forceCommentFromFilename': {
-			alias: [ 'force-comment-from-filename', 'fcfn' ],
+		'forceTitleFromFilename': {
+			alias: [ 'force-title-from-filename', 'ftfn' ],
 			type: 'boolean',
 			default: false
 		},
-		'forceCommentFromFolder': {
-			alias: [ 'force-comment-from-folder', 'fcff' ],
+		'forceTitleFromFolder': {
+			alias: [ 'force-title-from-folder', 'ftff' ],
 			type: 'boolean',
 			default: false
 		},

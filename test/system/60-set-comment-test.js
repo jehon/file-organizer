@@ -5,7 +5,7 @@ const { describeAndSetup, itRun, assert } = require('./run-helper.js');
 
 describeAndSetup(path.basename(__filename), (ctx) => {
 	const c = 'test comment';
-	itRun(ctx, [ 'regularize', '--set-comment', c ], async (result) => {
+	itRun(ctx, [ 'regularize', '--set-title', c ], async (result) => {
 		result.assertSuccess();
 
 		await result.assertConsistency();

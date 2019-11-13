@@ -111,19 +111,19 @@ class FileTimestamped extends FileGeneric {
 		}
 
 		{
-			if (options.setComment  && this.calculatedTS.title != options.setComment) {
+			if (options.setTitle  && this.calculatedTS.title != options.setTitle) {
 				this.addMessageInfo('TS_TITLE_OPTION_SET', 'force the title as requested on command line',
-					options.setComment
+					options.setTitle
 				);
-				this.setCalculatedTitle(options.setComment);
+				this.setCalculatedTitle(options.setTitle);
 			}
-			if (options.forceCommentFromFilename && this.calculatedTS.title != this.filenameTS.title) {
+			if (options.forceTitleFromFilename && this.calculatedTS.title != this.filenameTS.title) {
 				this.addMessageInfo('TS_TITLE_OPTION_FILENAME', 'force the title from the filename',
 					this.filenameTS.title
 				);
 				this.setCalculatedTitle(this.filenameTS.title);
 			}
-			if (options.forceCommentFromFolder && this.calculatedTS.title != this.parent.filenameTS.title) {
+			if (options.forceTitleFromFolder && this.calculatedTS.title != this.parent.filenameTS.title) {
 				this.addMessageInfo('TS_TITLE_OPTION_FOLDER', 'force the title from the parent folder',
 					this.parent.filenameTS.title
 				);

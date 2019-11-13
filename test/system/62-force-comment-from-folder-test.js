@@ -4,7 +4,7 @@ const path = require('path');
 const { describeAndSetup, itRun, assert } = require('./run-helper.js');
 
 describeAndSetup(path.basename(__filename), (ctx) => {
-	itRun(ctx, [ 'regularize', '--force-comment-from-folder' ], async (result) => {
+	itRun(ctx, [ 'regularize', '--force-title-from-folder' ], async (result) => {
 		result.assertSuccess();
 
 		await result.assertConsistency();
