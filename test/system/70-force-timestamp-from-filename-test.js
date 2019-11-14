@@ -40,7 +40,7 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 
 
 		await assert.untouched(ctx, '2019 test/1.jpeg'); // Faulty: no timestamp in exif or filename
-		await assert.untouched(ctx, '2019 test/DSC_2506.MOV'); // Faulty: no comment in exif or filename
+		await assert.untouched(ctx, '2019 test/DSC_2506.MOV'); // Faulty: no title in exif or filename
 
 	});
 });
