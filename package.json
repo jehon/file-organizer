@@ -18,7 +18,7 @@
     "p-queue": "6.2.1",
     "shell-exec": "1.0.2",
     "tz-lookup": "6.1.25",
-    "yargs": "15.0.2"
+    "yargs": "15.1.0"
   },
   "devDependencies": {
     "current-git-branch": "1.1.0",
