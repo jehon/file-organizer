@@ -35,6 +35,9 @@ const final = new RegExp(`^${ts.source}( (?<title>[^[]*))?( \\[(?<original>.+)\\
 
 const android = /^(?<original>(VID|IMG)_(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))$/;
 
+/* ex: IMG-20180915-WA0001 */
+const whatsapp = /^(?<original>(VID|IMG)-(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})-WA[0-9]+)$/;
+
 const screen = /^(?<original>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))(?<title>.*)?$/;
 
 const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})( (?<title>.*))?$`);
@@ -48,6 +51,7 @@ const matchers = {
 	tsOnly,
 	final,
 	android,
+	whatsapp,
 	screen,
 	yearRange,
 	minimal,

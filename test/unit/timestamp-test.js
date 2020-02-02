@@ -144,6 +144,11 @@ describe('timestamp-test', function() {
 					title: ''
 				});
 
+			isA('IMG-20180915-WA0001',
+				'whatsapp', '2018:09:15 00:00:00', '2018-09-15', {
+					original: 'IMG-20180915-WA0001'
+				});
+
 			expect(regexps.android.test('IMG_20180304_050607')).toBeTruthy();
 			expect(regexps.android.test('VID_20121215_111704')).toBeTruthy();
 		});
