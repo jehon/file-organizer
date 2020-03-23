@@ -10,9 +10,9 @@ exports.describe = 'Regularize the files';
 exports.handler = function (noptions) {
     Object.assign(options, noptions);
 
-    // if (!options.headless) {
-    //     require('../gui.js');
-    // }
+    if (!options.headless) {
+        require('../gui.js');
+    }
 
     return Promise.all(options.files.map(
         fi => fi.iterate(

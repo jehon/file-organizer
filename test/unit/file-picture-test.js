@@ -5,6 +5,8 @@ const FilePicture = require('../../file-organizer/file-picture.js');
 
 const { tsFromString } = require('../../file-organizer/timestamp.js');
 
+const { resetOptionsForUnitTesting } = require('./run-helper.js');
+
 async function getPict(dPath) {
     return new FilePicture(dataPath(dPath)).loadData();
 }
@@ -44,7 +46,7 @@ describe('file-picture-test', () => {
         expect((await getPict('no_exif.jpg')).exif_title).toBe('');
     });
 
-    it('should write timestamps correctly', async() =>  {
+    it('should write timestamps correctly', async () => {
         const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
         expect(new1.exif_timestamp.humanReadable()).toBe('2015-03-06 15-33-40');
 
@@ -57,7 +59,7 @@ describe('file-picture-test', () => {
         new1.remove();
     });
 
-    it('should write titles correctly', async() =>  {
+    it('should write titles correctly', async () => {
         const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
         expect(new1.exif_title).toBe('User comments');
         await new1.exifWriteTitle('My new title with àn accent');
@@ -72,13 +74,13 @@ describe('file-picture-test', () => {
     });
 
     describe('check', () => {
-        it('should be problems when no exif is present', async() => {
+        it('should be problems when no exif is present', async () => {
             const new1 = await getPict('no_exif.jpg');
             await new1.check();
             expect(Array.from(new1.messages.keys())).toContain('TS_NO_TIMESTAMP');
         });
 
-        it('should rotate pictures when necessary', async() => {
+        it('should rotate pictures when necessary', async () => {
             const new1 = await createFileGeneric('rotated-bottom-left.jpg');
 
             // Set data to go to the target test
@@ -94,7 +96,7 @@ describe('file-picture-test', () => {
             new1.remove();
         });
 
-        it('should set title if necessary', async() => {
+        it('should set title if necessary', async () => {
             const new1 = await createFileGeneric('no_exif.jpg');
 
             // Set data to go to the target test
@@ -110,7 +112,7 @@ describe('file-picture-test', () => {
             expect(new1.exif_title).toBe('override title');
             new1.remove();
 
-            options.resetToDefault();
+            resetOptionsForUnitTesting();
         });
     });
 });
