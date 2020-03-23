@@ -3,7 +3,7 @@
 const FileUnsupported = require('../file-unsupported.js');
 const options = require('../options.js');
 
-exports.command = [ '$0 [files..]', 'regularize [files..]' ];
+exports.command = ['$0 [files..]', 'regularize [files..]'];
 
 exports.describe = 'Regularize the files';
 

@@ -12,7 +12,7 @@ require('graceful-fs');
 Object.assign(options, yargs
 	.options({
 		'dryRun': {
-			alias: [ 'dry-run', 'n'],
+			alias: ['dry-run', 'n'],
 			type: 'boolean',
 			coerce: (val) => {
 				if (val) {
@@ -21,28 +21,32 @@ Object.assign(options, yargs
 				return val;
 			}
 		},
+		'headless': {
+			type: 'boolean',
+			default: false
+		},
 		'files': {
-			alias: [ 'f' ],
+			alias: ['f'],
 			type: 'array',
-			default: [ ],
+			default: [],
 		},
 		'setTitle': {
-			alias: [ 'set-title', 'c' ],
+			alias: ['set-title', 'c'],
 			type: 'string',
 			default: ''
 		},
 		'forceTitleFromFilename': {
-			alias: [ 'force-title-from-filename', 'ftfn' ],
+			alias: ['force-title-from-filename', 'ftfn'],
 			type: 'boolean',
 			default: false
 		},
 		'forceTitleFromFolder': {
-			alias: [ 'force-title-from-folder', 'ftff' ],
+			alias: ['force-title-from-folder', 'ftff'],
 			type: 'boolean',
 			default: false
 		},
 		'forceTimestampFromFilename': {
-			alias: [ 'force-timestamp-from-filename', 'ftsfn' ],
+			alias: ['force-timestamp-from-filename', 'ftsfn'],
 			type: 'boolean',
 			default: false
 		}

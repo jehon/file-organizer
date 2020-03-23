@@ -5,7 +5,8 @@ const defaultOptions = {
 	dryRun: false,
 	withFileSummary: isInteractive(),
 	withStats: isInteractive(),
-	showHidden: false
+	showHidden: false,
+	headless: false
 };
 
 const options = {};
