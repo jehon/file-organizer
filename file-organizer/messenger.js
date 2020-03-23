@@ -9,3 +9,4 @@ module.exports.notify = function (channel, data) {
     console.info(channel, ": ", JSON.stringify(data));
 }
 
+module.exports.notify('main', 'started');
