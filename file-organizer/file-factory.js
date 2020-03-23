@@ -15,59 +15,59 @@ const FileConvertSource = require('./file-convert-source.js');
 const FileUnsupported = require('./file-unsupported.js');
 
 async function fileFactory(filepath, parent = null) {
-	if (filepath instanceof FileGeneric) {
-		return filepath;
-	}
+    if (filepath instanceof FileGeneric) {
+        return filepath;
+    }
 
-	// File infos
-	const fname = fileUtils.getFullFilename(filepath);
-	const fext = fileUtils.getExtension(filepath).toLowerCase();
+    // File infos
+    const fname = fileUtils.getFullFilename(filepath);
+    const fext = fileUtils.getExtension(filepath).toLowerCase();
 
-	// By filename:
-	switch (fname) {
-	case '#recycle':
-	case '@eaDir':
-		return new FileHidden(filepath, parent);
-	case 'Thumbs.db':
-	case '.picasa.ini':
-		return new FileDelete(filepath, parent);
-	}
+    // By filename:
+    switch (fname) {
+        case '#recycle':
+        case '@eaDir':
+            return new FileHidden(filepath, parent);
+        case 'Thumbs.db':
+        case '.picasa.ini':
+            return new FileDelete(filepath, parent);
+    }
 
-	if (fname != '.' && (fname[0] == '.' || fext == '.')) {
-		// Skip '.xxx'
-		// Skip 'xxx' (no extension)
-		return new FileHidden(filepath, parent);
-	}
-	if (fname.endsWith(FileGeneric.convertedSuffix)) {
-		return new FileConvertSource(filepath, parent);
-	}
+    if (fname != '.' && (fname[0] == '.' || fext == '.')) {
+        // Skip '.xxx'
+        // Skip 'xxx' (no extension)
+        return new FileHidden(filepath, parent);
+    }
+    if (fname.endsWith(FileGeneric.convertedSuffix)) {
+        return new FileConvertSource(filepath, parent);
+    }
 
-	try {
-		// Is it real? Let's go further
-		const stat = await fs.promises.stat(filepath);
-		if (stat.isDirectory()) {
-			return new FileFolder(filepath, parent);
-		}
-	} catch {
-	// ok
-	}
+    try {
+        // Is it real? Let's go further
+        const stat = await fs.promises.stat(filepath);
+        if (stat.isDirectory()) {
+            return new FileFolder(filepath, parent);
+        }
+    } catch {
+        // ok
+    }
 
-	// By extension
-	switch (fext) {
-	case '.pdf':
-	case '.txt':
-		return new FileGeneric(filepath, parent);
+    // By extension
+    switch (fext) {
+        case '.pdf':
+        case '.txt':
+            return new FileGeneric(filepath, parent);
 
-	case '.doc*':
-		return new FileManual(filepath, parent);
+        case '.doc*':
+            return new FileManual(filepath, parent);
 
-	case '.jpg':
-	case '.jpeg':
-		return new FilePicture(filepath, parent);
+        case '.jpg':
+        case '.jpeg':
+            return new FilePicture(filepath, parent);
 
-	case '.mov':
-	case '.mp4':  // 67  // TODO (extensions): unsupported
-		return new FileMovie(filepath, parent);
+        case '.mov':
+        case '.mp4':  // 67  // TODO (extensions): unsupported
+            return new FileMovie(filepath, parent);
 
 	// case '.avi':  // 17  // TODO (extensions): unsupported
 	// case '.mpg':  // 29  // TODO (extensions): unsupported
@@ -83,8 +83,8 @@ async function fileFactory(filepath, parent = null) {
 	// case '.mts':  // ?   // TODO (extensions): unsupported
 	// case '.png':  // ?   // TODO (extensions): unsupported
 	// case '.dng':  // ?   // TODO (extensions): unsupported
-	}
-	return new FileUnsupported(filepath, parent);
+    }
+    return new FileUnsupported(filepath, parent);
 }
 
 module.exports = fileFactory;

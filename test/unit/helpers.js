@@ -12,19 +12,19 @@ const fileFactory = require('../../file-organizer/file-factory.js');
 
 // FileGeneric: copy to
 exports.createFileGeneric = async function(subPath) {
-	const fullSource = exports.dataPath(subPath);
-	const newName = path.parse(fullSource).base;
+    const fullSource = exports.dataPath(subPath);
+    const newName = path.parse(fullSource).base;
 
-	fs.copyFileSync(
-		fullSource,
-		path.join(exports.tempPath(), newName)
-	);
-	return fileFactory(path.join(exports.tempPath(), newName))
-		.then(f => f.loadData());
+    fs.copyFileSync(
+        fullSource,
+        path.join(exports.tempPath(), newName)
+    );
+    return fileFactory(path.join(exports.tempPath(), newName))
+        .then(f => f.loadData());
 };
 
 exports.fileExists = async function(filePath) {
-	return fs.promises.stat(filePath)
-		.then(() => true)
-		.catch(() => false);
+    return fs.promises.stat(filePath)
+        .then(() => true)
+        .catch(() => false);
 };

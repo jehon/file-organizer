@@ -15,7 +15,7 @@ module.exports = {
     "rules": {
         "indent": [
             "error",
-            "tab"
+            4, { "SwitchCase": 1 }
         ],
         "linebreak-style": [
             "error",
@@ -28,17 +28,17 @@ module.exports = {
         "semi": [
             "error",
             "always"
-		],
-		"no-unused-vars": [
-			ew,
-			{ "argsIgnorePattern": "^_" }
-		],
-		"no-console": [
-			ew,
-			{ "allow": [ "info", "warn", "error" ] }
-		],
-		"no-trailing-spaces": [
-			"error"
-		]
+        ],
+        "no-unused-vars": [
+            ew,
+            { "argsIgnorePattern": "^_" }
+        ],
+        "no-console": [
+            ew,
+            { "allow": ["info", "warn", "error"] }
+        ],
+        "no-trailing-spaces": [
+            "error"
+        ]
     }
 };
