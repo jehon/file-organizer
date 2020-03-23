@@ -1,7 +1,7 @@
 
 const Task = require('../../file-organizer/main/tasks/task.js');
 const options = require('../../file-organizer/options.js');
-const messager = require('../../file-organizer/main/messager.js');
+const messenger = require('../../file-organizer/messenger.js');
 
 const {
     TASK_CREATED,
@@ -13,7 +13,7 @@ const {
 
 describe('task-test', function () {
     beforeEach(() => {
-        spyOn(messager, 'notify').and.returnValue(true);
+        spyOn(messenger, 'notify').and.returnValue(true);
         spyOn(Task.prototype, 'notify').and.callThrough();
     })
 
@@ -29,7 +29,7 @@ describe('task-test', function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_SUCCESS);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_FINALLY);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messager.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify).toHaveBeenCalledTimes(i);
     })
 
     it('should run a simple task with true', async function () {
@@ -44,7 +44,7 @@ describe('task-test', function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_SUCCESS);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_FINALLY);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messager.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify).toHaveBeenCalledTimes(i);
     })
 
     it('should run a simple task with false', async function () {
@@ -59,7 +59,7 @@ describe('task-test', function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_FAILURE);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_FINALLY);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messager.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify).toHaveBeenCalledTimes(i);
     })
 
     it('should run a simple task with error', async function () {
@@ -75,7 +75,7 @@ describe('task-test', function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_FAILURE);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_FINALLY);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messager.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify).toHaveBeenCalledTimes(i);
     })
 
     it('should run a simple task with message', async function () {
@@ -85,7 +85,7 @@ describe('task-test', function () {
         const res = await t.run();
         expect(res.success).toBeTruthy();
         expect(res.messages).toBe('euh');
-        expect(messager.notify).toHaveBeenCalledTimes(4);
+        expect(messenger.notify).toHaveBeenCalledTimes(4);
     })
 
     it('should run if not dryRun', async function () {
@@ -103,7 +103,7 @@ describe('task-test', function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_SUCCESS);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_FINALLY);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messager.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify).toHaveBeenCalledTimes(i);
     })
 
     it('should not run if dryRun', async function () {
@@ -120,6 +120,6 @@ describe('task-test', function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_SKIPPED);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_FINALLY);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messager.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify).toHaveBeenCalledTimes(i);
     })
 });

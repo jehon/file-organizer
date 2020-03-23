@@ -1,11 +1,11 @@
 
 const options = require('../../options.js');
-const messager = require('../messager.js');
+const messenger = require('../../messenger.js');
 const { TASK_CREATED, TASK_SKIPPED, TASK_STARTED, TASK_SUCCESS, TASK_FAILURE, TASK_FINALLY } = require('../../constants.js');
 
 module.exports = class Task {
     constructor(file, title, action) {
-        this.id = messager.getEntityId();
+        this.id = messenger.getEntityId();
         this.file = file;
         this.title = title;
         this.action = action;
@@ -15,7 +15,7 @@ module.exports = class Task {
     }
 
     notify(type) {
-        messager.notify(this.id, {
+        messenger.notify(this.id, {
             file: this.file.id,
             type
         });

@@ -1,10 +1,10 @@
 
 const ShellTask = require('../../file-organizer/main/tasks/shell-task.js');
-const messager = require('../../file-organizer/main/messager.js');
+const messenger = require('../../file-organizer/messenger.js');
 
 describe('shell-task-test', function () {
     beforeEach(() => {
-        spyOn(messager, 'notify').and.returnValue(true);
+        spyOn(messenger, 'notify').and.returnValue(true);
         spyOn(ShellTask.prototype, 'notify').and.callThrough();
     })
 
