@@ -4,7 +4,6 @@ module.exports.TASK_SKIPPED = 'task_skipped';
 module.exports.TASK_STARTED = 'task_started';
 module.exports.TASK_SUCCESS = 'task_success';
 module.exports.TASK_FAILURE = 'task_failure';
-module.exports.TASK_FINALLY = 'task_finally';
 
 module.exports.FILE_CREATED = 'file_created';
 module.exports.FILE_SUCCESS = 'file_success';

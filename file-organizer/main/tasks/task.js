@@ -1,7 +1,7 @@
 
 const options = require('../../options.js');
 const messenger = require('../../messenger.js');
-const { TASK_CREATED, TASK_SKIPPED, TASK_STARTED, TASK_SUCCESS, TASK_FAILURE, TASK_FINALLY } = require('../../constants.js');
+const { TASK_CREATED, TASK_SKIPPED, TASK_STARTED, TASK_SUCCESS, TASK_FAILURE } = require('../../constants.js');
 
 module.exports = class Task {
     constructor(file, title, action) {
@@ -34,7 +34,6 @@ module.exports = class Task {
     async runIfCommit() {
         if (options.dryRun) {
             this.notify(TASK_SKIPPED);
-            this.notify(TASK_FINALLY);
             return this.result(true);
         }
         return this.run();
@@ -55,7 +54,6 @@ module.exports = class Task {
             res = false;
         }
         this.notify(res ? TASK_SUCCESS : TASK_FAILURE);
-        this.notify(TASK_FINALLY);
         return this.result(false, res);
     }
 };
