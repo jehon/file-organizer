@@ -16,6 +16,9 @@ module.exports.notify = function (channel, data) {
 
 module.exports.register = function (cb) {
     guiCallback = cb;
-};
+    for (const e of list) {
+        cb(e.channel, e.data);
+    };
+}
 
 module.exports.notify('main', 'started');
