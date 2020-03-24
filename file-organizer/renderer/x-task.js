@@ -9,6 +9,7 @@ class XTask extends HTMLElement {
     constructor() {
         super();
         this.status = "created";
+        this.data = {};
     }
 
     attributeChangedCallback(attributeName, oldValue, newValue) {
@@ -26,8 +27,9 @@ class XTask extends HTMLElement {
     adapt() {
         this.setAttribute('status', this.status);
         this.innerHTML = `<div>
-            <h3><img class='icon' src="img/${this.status}.png">Task ${this.id}</h3>
-            ${JSON.stringify(this.data)}
+            <h3><img class='icon' src="img/${this.status}.png">Task ${this.data ? this.data.title : this.id}</h3>
+            <div class='messages'>${this.data.messages ? this.data.messages : ''}</div>
+            <div class='details' >${this.data.details ? this.data.details : ''}</div>
         </div>`;
     }
 }

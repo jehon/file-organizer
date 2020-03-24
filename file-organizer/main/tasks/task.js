@@ -17,7 +17,10 @@ module.exports = class Task {
     notify(type) {
         messenger.notify(this.id, {
             file: this.file.id,
-            type
+            type,
+            title: this.title,
+            messages: this.messages,
+            details: this.details
         });
     }
 
