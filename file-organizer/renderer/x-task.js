@@ -10,11 +10,10 @@ class XTask extends HTMLElement {
         this._id = newValue;
         if (this._id) {
             listener(this._id, (type, data) => {
-                console.log('task ', this._id, type, data);
                 this.status = type;
                 this.data = { ...this.data, ...data };
                 this.adapt();
-            })
+            });
             this.adapt();
         }
     }
@@ -24,7 +23,7 @@ class XTask extends HTMLElement {
         this.innerHTML = `<div>
             <h3>Task ${this.id}</h3>
             ${JSON.stringify(this.data)}
-        </div>`
+        </div>`;
     }
 }
 

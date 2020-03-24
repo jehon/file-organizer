@@ -12,7 +12,7 @@ options.headless = false;
 require('./file-organizer/gui.js');
 
 (async function () {
-    notify('hello world', {})
+    notify('hello world', {});
 
     notify('main', { type: constants.TASK_CREATED, id: 1001 });
     notify(1001, { type: constants.TASK_CREATED });

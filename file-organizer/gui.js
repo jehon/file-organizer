@@ -19,7 +19,7 @@ if (app) {
             });
             mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'));
             mainWindow.webContents.on('dom-ready', () => register(onEvent));
-            mainWindow.webContents.openDevTools()
+            mainWindow.webContents.openDevTools();
         });
 } else {
     console.info('No app found, not launching gui');

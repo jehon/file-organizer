@@ -5,4 +5,4 @@ module.exports = function (channel, cb) {
     ipcRenderer.on(channel, (_event, data) => {
         cb(data.type, data);
     });
-}
+};
