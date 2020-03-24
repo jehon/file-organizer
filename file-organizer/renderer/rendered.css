@@ -13,3 +13,7 @@ img.icon {
 .messages {
     padding-left: 20px;
 }
+
+x-task[status='success'] {
+    display: none
+}

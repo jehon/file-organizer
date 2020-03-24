@@ -10,7 +10,7 @@ module.exports.getEntityId = function () {
 
 module.exports.notify = function (channel, data) {
     list.push({ channel, data });
-    console.info(channel, ': ', JSON.stringify(data));
+    // console.info(channel, ': ', JSON.stringify(data));
     guiCallback(channel, data);
 };
 
