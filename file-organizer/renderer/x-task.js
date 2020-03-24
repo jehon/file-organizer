@@ -8,7 +8,7 @@ class XTask extends HTMLElement {
 
     constructor() {
         super();
-        this.status = "created";
+        this.status = 'created';
         this.data = {};
     }
 

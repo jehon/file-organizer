@@ -12,8 +12,7 @@ function onEvent(channel, data) {
 if (app) {
     app.whenReady()
         .then(() => {
-            const { width, height } = screen.getPrimaryDisplay().workAreaSize
-            console.log(width, height);
+            const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
             const mainWindow = new BrowserWindow({
                 width: Math.floor(parseInt(width) * 0.8),

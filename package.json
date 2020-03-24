@@ -30,6 +30,7 @@
     "scripts": {
         "clean": "rm -fr tmp",
         "eslint": "eslint .",
+        "eslint-fix": "eslint --fix .",
         "start": "electron file-organizer/main.js",
         "start-headless": "electron file-organizer/main.js --headless",
         "demo": "electron demo.js",

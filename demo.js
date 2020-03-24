@@ -33,7 +33,7 @@ require('./file-organizer/gui.js');
     notify(1005, { type: constants.TASK_STARTED });
 
     wait(1);
-    notify(1004, { type: constants.TASK_SUCCESS, messages: 'yahoo', details: "it's done" }); // final
+    notify(1004, { type: constants.TASK_SUCCESS, messages: 'yahoo', details: 'it\'s done' }); // final
     notify(1005, { type: constants.TASK_FAILURE, messages: 'Houston, we have had a problem', details: 'An explosion' }); // final
 
 })();
