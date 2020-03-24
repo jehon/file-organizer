@@ -6,15 +6,20 @@ const path = require('path');
 const { register } = require('./messenger.js');
 
 function onEvent(channel, data) {
-    BrowserWindow.getAllWindows().forEach(b => b.webContents.send(channel, data));
+    BrowserWindow.getAllWindows().forEach(b => b.webContents.send('' + channel, data));
 }
 
 if (app) {
     app.whenReady()
         .then(() => {
-            const mainWindow = new BrowserWindow();
+            const mainWindow = new BrowserWindow({
+                webPreferences: {
+                    nodeIntegration: true
+                }
+            });
             mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'));
             mainWindow.webContents.on('dom-ready', () => register(onEvent));
+            mainWindow.webContents.openDevTools()
         });
 } else {
     console.info('No app found, not launching gui');
