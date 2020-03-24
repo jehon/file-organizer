@@ -15,6 +15,6 @@ module.exports.resetOptionsForUnitTesting = function () {
     options.withFileSummary = false;
     options.withStats = false;
     options.headless = true;
-}
+};
 
 module.exports.resetOptionsForUnitTesting();

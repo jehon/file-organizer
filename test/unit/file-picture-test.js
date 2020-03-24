@@ -1,5 +1,4 @@
 
-const options = require('../../file-organizer/options.js');
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FilePicture = require('../../file-organizer/file-picture.js');
 
