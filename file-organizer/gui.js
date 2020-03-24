@@ -1,8 +1,9 @@
 
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require('electron');
-const { register } = require('./messenger.js');
 const path = require('path');
+
+const { register } = require('./messenger.js');
 
 function onEvent(channel, data) {
     BrowserWindow.getAllWindows().forEach(b => b.webContents.send(channel, data));
