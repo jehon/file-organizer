@@ -1,3 +1,3 @@
 
-require('./x-main.js');
-require('./x-task.js');
+
+require('./x-taskslist.js');
