@@ -31,7 +31,7 @@ module.exports = {
         ],
         "no-unused-vars": [
             ew,
-            { "argsIgnorePattern": "^_" }
+            { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
         ],
         "no-console": [
             ew,

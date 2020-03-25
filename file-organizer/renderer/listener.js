@@ -10,8 +10,8 @@ module.exports.listener = function (cb) {
         cb(data.id, data.type, data);
     }
 
-    for (const [key, data] of history) {
-        send(cb, data)
+    for (const [_key, data] of history) {
+        send(cb, data);
     }
 
     ipcRenderer.on(CHANNEL_MAIN, (_event, data) => {
@@ -38,4 +38,4 @@ module.exports.listenerFor = function (id, cb) {
         sendIf(cb, data);
     });
 
-}
+};

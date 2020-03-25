@@ -4,8 +4,6 @@ require('./x-task.js');
 const { listener } = require('./listener.js');
 const constants = require('../constants.js');
 
-const tasksElement = document.querySelector('#tasks');
-
 class XTasksList extends HTMLElement {
     // static get observedAttributes() {
     //     return ['id'];
@@ -38,8 +36,7 @@ class XTasksList extends HTMLElement {
         this.successElement = this.querySelector('#success');
         this.failureElement = this.querySelector('#failure');
 
-        listener((id, type, data) => {
-            console.log(id, type, data);
+        listener((id, type, _data) => {
             switch (type) {
                 case constants.TASK_CREATED:
                     this.tasksElement.insertAdjacentHTML('beforeend', `<x-task id="${id}"></x-task>`);
