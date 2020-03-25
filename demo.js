@@ -38,5 +38,4 @@ function withHistory(data) {
     await wait(1);
     withHistory({ id: 1004, type: constants.TASK_SUCCESS, messages: 'yahoo', details: 'it\'s done' }); // final
     withHistory({ id: 1005, type: constants.TASK_FAILURE, messages: 'Houston, we have had a problem', details: 'An explosion' }); // final
-
 })();
