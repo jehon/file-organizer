@@ -36,8 +36,8 @@ class XTasksList extends HTMLElement {
         this.successElement = this.querySelector('#success');
         this.failureElement = this.querySelector('#failure');
 
-        listener((id, type, _data) => {
-            switch (type) {
+        listener((id, status, _data) => {
+            switch (status) {
                 case constants.TASK_CREATED:
                     this.tasksElement.insertAdjacentHTML('beforeend', `<x-task id="${id}"></x-task>`);
                     this.createdCount++;

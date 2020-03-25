@@ -9,17 +9,24 @@ module.exports = class Task {
         this.file = file;
         this.title = title;
         this.action = action;
+        this.category = '';
         this.messages = '';
         this.details = '';
         this.notify(TASK_CREATED);
     }
 
-    notify(type) {
+    withCategory(cat) {
+        this.category = cat;
+        return this;
+    }
+
+    notify(status) {
         messenger.notify({
             id: this.id,
             file: this.file.id,
-            type,
+            status: status,
             title: this.title,
+            category: this.category,
             messages: this.messages,
             details: this.details
         });

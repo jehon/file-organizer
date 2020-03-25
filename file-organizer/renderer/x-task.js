@@ -15,8 +15,8 @@ class XTask extends HTMLElement {
     attributeChangedCallback(attributeName, oldValue, newValue) {
         this._id = newValue;
         if (this._id) {
-            listenerFor(this._id, (type, data) => {
-                this.status = type.replace('task_', '');
+            listenerFor(this._id, (status, data) => {
+                this.status = status.replace('task_', '');
                 this.data = { ...this.data, ...data };
                 this.adapt();
             });

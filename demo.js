@@ -23,19 +23,19 @@ function withHistory(data) {
 }
 
 (async function () {
-    withHistory({ id: 1001, type: constants.TASK_CREATED, title: 'task is created...' }); // final
-    withHistory({ id: 1002, type: constants.TASK_CREATED, title: 'task is skipped...' });
-    withHistory({ id: 1003, type: constants.TASK_CREATED, title: 'task is started...' });
-    withHistory({ id: 1004, type: constants.TASK_CREATED, title: 'task is success' });
-    withHistory({ id: 1005, type: constants.TASK_CREATED, title: 'task is failure' });
+    withHistory({ id: 1001, status: constants.TASK_CREATED, title: 'task is created...' }); // final
+    withHistory({ id: 1002, status: constants.TASK_CREATED, title: 'task is skipped...' });
+    withHistory({ id: 1003, status: constants.TASK_CREATED, title: 'task is started...' });
+    withHistory({ id: 1004, status: constants.TASK_CREATED, title: 'task is success' });
+    withHistory({ id: 1005, status: constants.TASK_CREATED, title: 'task is failure' });
 
     await wait(1);
-    withHistory({ id: 1002, type: constants.TASK_SKIPPED }); // final
-    withHistory({ id: 1003, type: constants.TASK_STARTED }); // final
-    withHistory({ id: 1004, type: constants.TASK_STARTED });
-    withHistory({ id: 1005, type: constants.TASK_STARTED });
+    withHistory({ id: 1002, status: constants.TASK_SKIPPED }); // final
+    withHistory({ id: 1003, status: constants.TASK_STARTED }); // final
+    withHistory({ id: 1004, status: constants.TASK_STARTED });
+    withHistory({ id: 1005, status: constants.TASK_STARTED });
 
     await wait(1);
-    withHistory({ id: 1004, type: constants.TASK_SUCCESS, messages: 'yahoo', details: 'it\'s done' }); // final
-    withHistory({ id: 1005, type: constants.TASK_FAILURE, messages: 'Houston, we have had a problem', details: 'An explosion' }); // final
+    withHistory({ id: 1004, status: constants.TASK_SUCCESS, messages: 'yahoo', details: 'it\'s done' }); // final
+    withHistory({ id: 1005, status: constants.TASK_FAILURE, messages: 'Houston, we have had a problem', details: 'An explosion' }); // final
 })();

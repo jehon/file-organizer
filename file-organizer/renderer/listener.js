@@ -7,7 +7,7 @@ const { CHANNEL_MAIN } = require('../constants.js');
 module.exports.listener = function (cb) {
     function send(cb, data) {
         // To have the same treatment in history and direct call
-        cb(data.id, data.type, data);
+        cb(data.id, data.status, data);
     }
 
     for (const [_key, data] of history) {
@@ -24,7 +24,7 @@ module.exports.listenerFor = function (id, cb) {
     function sendIf(cb, data) {
         if (id == data.id) {
             // To have the same treatment in history and direct call
-            cb(data.type, data);
+            cb(data.status, data);
         }
     }
 
