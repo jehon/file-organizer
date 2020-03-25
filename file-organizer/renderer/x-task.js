@@ -1,5 +1,5 @@
 
-const listener = require('./listener.js');
+const { listenerFor } = require('./listener.js');
 
 class XTask extends HTMLElement {
     static get observedAttributes() {
@@ -15,7 +15,7 @@ class XTask extends HTMLElement {
     attributeChangedCallback(attributeName, oldValue, newValue) {
         this._id = newValue;
         if (this._id) {
-            listener(this._id, (type, data) => {
+            listenerFor(this._id, (type, data) => {
                 this.status = type.replace('task_', '');
                 this.data = { ...this.data, ...data };
                 this.adapt();
@@ -25,6 +25,7 @@ class XTask extends HTMLElement {
     }
 
     adapt() {
+        console.log(this.id, this.data);
         this.setAttribute('status', this.status);
         this.innerHTML = `<div>
             <h3><img class='icon' src="img/${this.status}.png">Task ${this.data ? this.data.title : this.id}</h3>

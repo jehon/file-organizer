@@ -8,17 +8,16 @@ module.exports.getEntityId = function () {
     return id++;
 };
 
-module.exports.notify = function (channel, data) {
-    list.push({ channel, data });
-    // console.info(channel, ': ', JSON.stringify(data));
-    guiCallback(channel, data);
+module.exports.notify = function (data) {
+    list.push(data);
+    guiCallback(data);
 };
 
 module.exports.register = function (cb) {
     guiCallback = cb;
-    for (const e of list) {
-        cb(e.channel, e.data);
+    for (const data of list) {
+        cb(data);
     }
 };
 
-module.exports.notify('main', 'started');
+module.exports.notify('started');

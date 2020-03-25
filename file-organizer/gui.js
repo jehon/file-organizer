@@ -2,11 +2,12 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, screen } = require('electron');
 const path = require('path');
+const { CHANNEL_MAIN } = require('./constants.js');
 
 const { register } = require('./messenger.js');
 
-function onEvent(channel, data) {
-    BrowserWindow.getAllWindows().forEach(b => b.webContents.send('' + channel, data));
+function sendEvent(data) {
+    BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));
 }
 
 if (app) {
@@ -22,7 +23,7 @@ if (app) {
                 }
             });
             mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'));
-            mainWindow.webContents.on('dom-ready', () => register(onEvent));
+            mainWindow.webContents.on('dom-ready', () => register(sendEvent));
             mainWindow.webContents.openDevTools();
         });
 } else {
