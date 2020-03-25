@@ -17,3 +17,19 @@ img.icon {
 x-task[status='success'] {
     display: none
 }
+
+x-task[status='created'] {
+    color: darkgray;
+}
+
+x-task[status='skipped'] {
+    color: orange;
+}
+
+x-task[status='started'] {
+    color: green;
+}
+
+x-task[status='failure'] {
+    color: red;
+}
