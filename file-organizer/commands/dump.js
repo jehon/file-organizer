@@ -35,13 +35,12 @@ function r(str, ll) {
     return str.padEnd(ll);
 }
 
-exports.handler = function (noptions) {
+exports.handler = async function (noptions) {
     Object.assign(options, noptions, {
         headless: true,
-        dryRun: true
+        dryRun: true,
+        withFileSummary: false
     });
-    options.dryRun = true;
-    options.withFileSummary = false;
 
     console.info('  '
         + l('filename', padFilename)
@@ -57,7 +56,7 @@ exports.handler = function (noptions) {
     return Promise.all(options.files.map(
         f0 => f0.iterate(
             fi => fi.loadData()
-                .then(async fi => { await fi.check(); return fi; })
+                .then(fi => fi.check().then(() => fi))
                 .then(fi => {
                     const ok = fi.stats.fixSkipped == 0;
                     if (!options.all && ok) {
@@ -88,8 +87,8 @@ exports.handler = function (noptions) {
                     }
 
                 })
-        ))
-    )
+        )
+    ))
         .then(() => {
             console.info('\n\n');
             FileUnsupported.dumpDiscoveredExtension();

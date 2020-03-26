@@ -33,7 +33,7 @@ exports.handler = async function (noptions) {
         withFileSummary: false
     });
 
-    fileFactory(options.file)
+    return fileFactory(options.file)
         .then(f => f.loadData())
         .then(f => {
             if (options.key) {
