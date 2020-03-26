@@ -39,19 +39,19 @@ async function runMain(ctx, ...args) {
     // console.log('+', ...args);
     const cmdLine = rootPath('/file-organizer/main.js') + ' "' + args.join('" "') + '"';
     // { stdout: '', stderr: '', cmd: '', code: x }
-    const  result = await shellExec(cmdLine, {
+    const result = await shellExec(cmdLine, {
         cwd: ctx.tempPath()
         // }).then((res) => { console.log('-'); return res;
     });
 
     result.cwd = ctx.tempPath();
 
-    result.assertSuccess = function() {
+    result.assertSuccess = function () {
         expect(this.code).toBe(0);
         expect(this.stderr).toBe('');
     };
 
-    result.dump = function() {
+    result.dump = function () {
         process.stdout.write('******' + args.join(' ') + '\n');
         process.stdout.write(result.stdout + '\n');
         process.stdout.write('------' + '\n');
@@ -70,12 +70,12 @@ async function itRun(ctx, args, fn) {
         fsExtra.writeFile(tempPath(ctx.testName + '-output.log'), result.stdout);
         fsExtra.writeFile(tempPath(ctx.testName + '-output.err'), result.stderr);
 
-        result.assertContain = function(str)  {
+        result.assertContain = function (str) {
             expect(this.stdout).toContain(str);
         };
 
-        result.assertConsistency = async function(dir = '') {
-            const l = async function(p, n) {
+        result.assertConsistency = async function (dir = '') {
+            const l = async function (p, n) {
                 return fs.promises.readdir(ctx.tempPath(p))
                     .then(list => expect(list.length)
                         .withContext(`(in folder '${p}' [${ctx.tempPath(dir)}])`)
@@ -101,7 +101,7 @@ async function getFileExifField(ctx, field, f) {
 
 
 exports.assert = {
-    untouched: function(ctx, f) {
+    untouched: function (ctx, f) {
         return exports.assert.fileExists(ctx, f)
             .withTS()
             .withTitle()

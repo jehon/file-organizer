@@ -10,7 +10,7 @@ exports.describe = 'Get some info about the file';
 
 exports.builder = {
     key: {
-        alias: [ 'k' ],
+        alias: ['k'],
         default: ''
     },
     file: {
@@ -28,6 +28,7 @@ const presentIt = (k, v) => {
 
 exports.handler = async function (noptions) {
     Object.assign(options, noptions, {
+        headless: true,
         dryRun: true,
         withStats: false,
         withFileSummary: false

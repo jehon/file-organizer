@@ -37,6 +37,7 @@ function r(str, ll) {
 
 exports.handler = function (noptions) {
     Object.assign(options, noptions, {
+        headless: true,
         dryRun: true
     });
     options.dryRun = true;

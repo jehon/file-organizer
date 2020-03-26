@@ -6,11 +6,8 @@ const { CHANNEL_MAIN } = require('./constants.js');
 
 const { register } = require('./messenger.js');
 
-function sendEvent(data) {
-    BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));
-}
-
 if (app) {
+
     app.whenReady()
         .then(() => {
             const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -23,7 +20,9 @@ if (app) {
                 }
             });
             mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'));
-            mainWindow.webContents.on('dom-ready', () => register(sendEvent));
+            mainWindow.webContents.on('dom-ready', () => register((data) => {
+                BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));
+            }));
             mainWindow.webContents.openDevTools();
         });
 } else {
