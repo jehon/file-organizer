@@ -4,7 +4,11 @@ const { app, BrowserWindow, screen } = require('electron');
 const path = require('path');
 const { CHANNEL_MAIN } = require('./constants.js');
 
+// Remove warning: https://github.com/electron/electron/issues/18397
+app.allowRendererProcessReuse = true;
+
 const { register } = require('./messenger.js');
+const options = require('./options.js');
 
 if (app) {
 
@@ -27,6 +31,13 @@ if (app) {
 
             mainWindow.webContents.openDevTools();
         });
+
+    // Close (exit) when all windows are closed
+    app.on('window-all-closed', function () {
+        if (!options.headless) {
+            app.quit();
+        }
+    });
 } else {
     console.info('No app found, not launching gui');
 }

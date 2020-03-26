@@ -66,4 +66,10 @@ Object.assign(options, yargs
             .then(nlist => argv.files = nlist)
             .then(() => argv);
     })
-    .argv);
+    .onFinishCommand(() => {
+        if (options.headless) {
+            process.exit(0);
+        }
+    })
+    .argv
+);
