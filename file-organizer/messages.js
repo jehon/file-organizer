@@ -9,9 +9,9 @@ const IconSuccess = chalk.green('✓');
 const IconFailure = chalk.red.bold('✘');
 const IconSkipped = chalk.magenta('⚐');
 
-module.exports.IconSuccess    = IconSuccess;
-module.exports.IconFailure    = IconFailure;
-module.exports.IconSkipped    = IconSkipped;
+module.exports.IconSuccess = IconSuccess;
+module.exports.IconFailure = IconFailure;
+module.exports.IconSkipped = IconSkipped;
 
 const stats = {
     pendingFiles: 0,
@@ -22,27 +22,27 @@ const stats = {
 };
 module.exports.stats = stats;
 
-module.exports.statsSetPendingFiles = function(i) {
+module.exports.statsSetPendingFiles = function (i) {
     stats.pendingFiles = i;
     dumpStats();
 };
 
-module.exports.statsAddFileToTotal = function(i = 1) {
+module.exports.statsAddFileToTotal = function (i = 1) {
     stats.filesTotal += i;
     dumpStats();
 };
 
-module.exports.statsAddFixToTotal = function() {
+module.exports.statsAddFixToTotal = function () {
     stats.fixesTotal++;
     dumpStats();
 };
 
-module.exports.statsAddErrorToTotal = function() {
+module.exports.statsAddErrorToTotal = function () {
     stats.errorsTotal++;
     dumpStats();
 };
 
-module.exports.statsAddSkippedFix = function() {
+module.exports.statsAddSkippedFix = function () {
     stats.fixesSkipped++;
     dumpStats();
 };
