@@ -30,7 +30,6 @@ exports.handler = async function (noptions) {
     Object.assign(options, noptions, {
         headless: true,
         dryRun: true,
-        withStats: false,
         withFileSummary: false
     });
 

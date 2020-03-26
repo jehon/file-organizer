@@ -13,7 +13,6 @@ beforeAll(async () => {
 module.exports.resetOptionsForUnitTesting = function () {
     options.resetToDefault();
     options.withFileSummary = false;
-    options.withStats = false;
     options.headless = true;
 };
 

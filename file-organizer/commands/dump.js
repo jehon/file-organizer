@@ -42,7 +42,6 @@ exports.handler = function (noptions) {
     });
     options.dryRun = true;
     options.withFileSummary = false;
-    options.withStats = false;
 
     console.info('  '
         + l('filename', padFilename)
