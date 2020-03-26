@@ -49,7 +49,7 @@ class FileGeneric {
         }
         if (options.withFileSummary) {
             if (this.messages.size > 0) {
-                messages.writeLine(
+                process.stdout.write(
                     '*** '
                     + fileUtils.getPathRelativeTo(this.parent.getPath()) + '/' + chalk.bold(this.getFilename()) + this.getExtension()
                     + (this._originalFilePath != this.getPath() ? '\n  < ' + fileUtils.getPathRelativeTo(this._originalFilePath) : '')

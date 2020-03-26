@@ -1,5 +1,4 @@
 
-const messages = require('../messages.js');
 const options = require('../options.js');
 const fileFactory = require('../file-factory.js');
 const { Timestamp } = require('../timestamp.js');
@@ -38,12 +37,12 @@ exports.handler = async function (noptions) {
         .then(f => {
             if (options.key) {
                 if (options.key in f) {
-                    messages.writeLine(presentIt('', f[options.key]));
+                    process.stdout.write(presentIt('', f[options.key]) + '\n');
                 } else {
-                    messages.writeLine('');
+                    process.stdout.write('\n');
                 }
             } else {
-                messages.writeLine(JSON.stringify(f, presentIt, 2));
+                process.stdout.write(JSON.stringify(f, presentIt, 2) + '\n');
             }
         });
 };

@@ -81,9 +81,9 @@ exports.handler = async function (noptions) {
                         ;
 
                     if (ok) {
-                        messages.writeLine(messages.IconSuccess + ' ' + msg);
+                        process.stdout.write(messages.IconSuccess + ' ' + msg + '\n');
                     } else {
-                        messages.writeLine(messages.IconFailure + ' ' + msg.red);
+                        process.stdout.write(messages.IconFailure + ' ' + msg.red + '\n');
                     }
 
                 })

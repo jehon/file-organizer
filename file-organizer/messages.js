@@ -39,13 +39,6 @@ module.exports.statsAddSkippedFix = function () {
     stats.fixesSkipped++;
 };
 
-// const messagesPerFiles = {};
-
-function writeLine(args) {
-    process.stdout.write(args + '\n');
-}
-module.exports.writeLine = writeLine;
-
 function notifyError(e) {
     console.error('!! ');
     console.error('!! Error: ', e.getMessage ? e.getMessage() : '', e);
