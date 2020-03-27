@@ -1,6 +1,9 @@
 os: linux
 dist: bionic
 
+services:
+    - xvfb
+
 language: node_js
 node_js:
     - "12"
@@ -10,9 +13,6 @@ addons:
             - exiftran
             - libimage-exiftool-perl
             - coreutils
-
-services:
-    - xvfb
 
 script:
     - chmod +x ./file-organizer.sh
