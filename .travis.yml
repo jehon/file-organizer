@@ -1,3 +1,9 @@
+os: linux
+dist: bionic
+
+services:
+    - xvfb
+
 language: node_js
 node_js:
     - "12"
@@ -8,12 +14,9 @@ addons:
             - libimage-exiftool-perl
             - coreutils
 
-services:
-    - xvfb
-
-before_script:
-    - ./file-organizer.sh dump test/data
-
 script:
-    - npm run test
+    - chmod +x ./file-organizer.sh
+    - ./file-organizer.sh dump test/data
+    - npm run test-unit
+    - npm run test-system
     - npm run style
