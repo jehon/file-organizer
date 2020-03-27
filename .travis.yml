@@ -6,13 +6,14 @@ addons:
         packages:
             - exiftran
             - libimage-exiftool-perl
-            - coreutils
+            - coreutil
+            - xvfb
 
 services:
     - xvfb
 
 before_script:
-    - ./file-organizer.sh dump test/data
+    - xvfb-run ./file-organizer.sh dump test/data
 
 script:
     - npm run test
