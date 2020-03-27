@@ -48,8 +48,16 @@ async function runMain(ctx, ...args) {
     result.cwd = ctx.tempPath();
 
     result.assertSuccess = function () {
-        expect(this.code).toBe(0);
-        expect(this.stderr).toBe('');
+        if (this.code > 0 || this.stderr.length > 0) {
+            process.stdout.write(this.stdout);
+            process.stdout.write(this.stderr);
+        }
+        expect(this.code)
+            .withContext(this.stdout + '\n####\n' + this.stderr)
+            .toBe(0);
+        expect(this.stderr)
+            .withContext(this.stdout + '\n####\n' + this.stderr)
+            .toBe('');
     };
 
     result.dump = function () {
