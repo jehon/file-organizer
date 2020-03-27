@@ -9,7 +9,9 @@ addons:
             - libimage-exiftool-perl
             - coreutils
 
+before_script:
+    - cd test/data && ../../file-organizer.sh dump && echo "*** ok ***"
+
 script:
     - npm run test
-    - cd test/data && ../../file-organizer.sh dump && echo "*** ok ***"; cd ../../
     - npm run style
