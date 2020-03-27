@@ -17,6 +17,6 @@ addons:
 script:
     - chmod +x ./file-organizer.sh
     - ./file-organizer.sh dump test/data
-    #- xvfb-run ./file-organizer.sh dump test/data
-    - npm run test
+    - npm run test-unit
+    - npm run test-system
     - npm run style
