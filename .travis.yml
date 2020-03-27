@@ -12,7 +12,7 @@ services:
     - xvfb
 
 before_script:
-    - file-organizer.sh dump test/data
+    - ./file-organizer.sh dump test/data
 
 script:
     - npm run test
