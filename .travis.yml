@@ -15,6 +15,7 @@ services:
     - xvfb
 
 script:
-    - xvfb-run --server-args="-screen 0 1024x768x24" ./file-organizer.sh dump test/data
+    - chmod +x ./file-organizer.sh
+    - xvfb-run ./file-organizer.sh dump test/data
     # - npm run test
     # - npm run style
