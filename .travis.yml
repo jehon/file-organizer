@@ -1,7 +1,6 @@
 language: node_js
 node_js:
     - "12"
-
 addons:
     apt:
         packages:
@@ -9,8 +8,11 @@ addons:
             - libimage-exiftool-perl
             - coreutils
 
+services:
+    - xvfb
+
 before_script:
-    - ./file-organizer.sh dump test/data
+    - xvfb-run ./file-organizer.sh dump test/data
 
 script:
     - npm run test
