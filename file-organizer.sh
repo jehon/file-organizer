@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "Inside file-organizer.sh"
+
 set -e
 set -x
 
