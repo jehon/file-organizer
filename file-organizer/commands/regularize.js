@@ -3,22 +3,26 @@
 const FileUnsupported = require('../file-unsupported.js');
 const options = require('../options.js');
 
-exports.command = [ '$0 [files..]', 'regularize [files..]' ];
+exports.command = ['$0 [files..]', 'regularize [files..]'];
 
 exports.describe = 'Regularize the files';
 
 exports.handler = function (noptions) {
-	Object.assign(options, noptions);
+    Object.assign(options, noptions);
 
-	return Promise.all(options.files.map(
-		fi => fi.iterate(
-			f => f.loadData()
-				.then(f => f.check())
-		))
-	)
-		.then(() => {
-			console.info('\n\nDone');
-			FileUnsupported.dumpDiscoveredExtension();
-			// console.info(FileGeneric.pendings);
-		});
+    if (!options.headless) {
+        require('../gui.js');
+    }
+
+    return Promise.all(options.files.map(
+        fi => fi.iterate(
+            f => f.loadData()
+                .then(f => f.check())
+        ))
+    )
+        .then(() => {
+            console.info('\n\nDone');
+            FileUnsupported.dumpDiscoveredExtension();
+            // console.info(FileGeneric.pendings);
+        });
 };

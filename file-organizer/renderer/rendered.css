@@ -1,0 +1,35 @@
+
+img.icon {
+   height: 16px; 
+   padding-left: 10px;
+   padding-right: 10px;
+}
+
+.details {
+    padding-left: 20px;
+    font-size: smaller;
+}
+
+.messages {
+    padding-left: 20px;
+}
+
+x-task[status='success'] {
+    display: none
+}
+
+x-task[status='created'] {
+    color: darkgray;
+}
+
+x-task[status='skipped'] {
+    color: orange;
+}
+
+x-task[status='started'] {
+    color: green;
+}
+
+x-task[status='failure'] {
+    color: red;
+}

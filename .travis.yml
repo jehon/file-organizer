@@ -1,15 +1,22 @@
+os: linux
+dist: bionic
+
+services:
+    - xvfb
+
 language: node_js
 node_js:
-  - "12"
-
+    - "12"
 addons:
-  apt:
-    packages:
-    - exiftran
-    - libimage-exiftool-perl
-    - coreutils
+    apt:
+        packages:
+            - exiftran
+            - libimage-exiftool-perl
+            - coreutils
 
 script:
-  - npm run test
-  - npm run style
-  
+    - chmod +x ./file-organizer.sh
+    - ./file-organizer.sh dump test/data
+    - npm run test-unit
+    - npm run test-system
+    - npm run style

@@ -13,30 +13,30 @@ const debug = require('debug')('file-utils');
 const debugExec = debug.extend('exec');
 
 function getAbsolutePath(relativePath) {
-	if (relativePath[0] == '/') {
-		return relativePath;
-	}
-	return path.join(process.cwd(), relativePath);
+    if (relativePath[0] == '/') {
+        return relativePath;
+    }
+    return path.join(process.cwd(), relativePath);
 }
 
 function getPathRelativeTo(filepath, root = process.cwd()) {
-	return path.relative(root, filepath);
+    return path.relative(root, filepath);
 }
 
 function getDirname(relativePath) {
-	return path.parse(relativePath).dir;
+    return path.parse(relativePath).dir;
 }
 
 function getFullFilename(relativePath) {
-	return path.parse(relativePath).base;
+    return path.parse(relativePath).base;
 }
 
 function getFilename(relativePath) {
-	return path.parse(relativePath).name;
+    return path.parse(relativePath).name;
 }
 
 function getExtension(relativePath) {
-	return path.parse(relativePath).ext;
+    return path.parse(relativePath).ext;
 }
 
 
@@ -44,107 +44,107 @@ const reservedNames = new Map();
 const releasedNames = new Set();
 
 function reserveNameForMe(filePath, forMe) {
-	reservedNames.set(filePath.toUpperCase(), forMe);
-	releasedNames.delete(filePath.toUpperCase());
+    reservedNames.set(filePath.toUpperCase(), forMe);
+    releasedNames.delete(filePath.toUpperCase());
 }
 
 function isReservedNameForSomeoneElse(filePath, forMe) {
-	return reservedNames.has(filePath.toUpperCase()) && reservedNames.get(filePath.toUpperCase()) != forMe;
+    return reservedNames.has(filePath.toUpperCase()) && reservedNames.get(filePath.toUpperCase()) != forMe;
 }
 
 function isReservedNameForMe(filePath, forMe) {
-	return reservedNames.has(filePath.toUpperCase()) && reservedNames.get(filePath.toUpperCase()) == forMe;
+    return reservedNames.has(filePath.toUpperCase()) && reservedNames.get(filePath.toUpperCase()) == forMe;
 }
 
 function releaseName(filePath) {
-	reservedNames.delete(filePath.toUpperCase());
-	releasedNames.add(filePath.toUpperCase());
+    reservedNames.delete(filePath.toUpperCase());
+    releasedNames.add(filePath.toUpperCase());
 }
 function isReleasedName(filePath) {
-	return reservedNames.has(filePath.toUpperCase());
+    return reservedNames.has(filePath.toUpperCase());
 }
 
 async function fileDelete(filePath) {
-	return fs.promises.unlink(filePath);
+    return fs.promises.unlink(filePath);
 }
 
 async function checkAndReserveName(filePath, forMe) {
-	if (isReservedNameForMe(filePath, forMe)) {
-		return true;
-	}
+    if (isReservedNameForMe(filePath, forMe)) {
+        return true;
+    }
 
-	if (isReservedNameForSomeoneElse(filePath, forMe)) {
-		throw 'already reserved';
-	}
+    if (isReservedNameForSomeoneElse(filePath, forMe)) {
+        throw 'already reserved';
+    }
 
-	if (isReleasedName(filePath)) {
-		return true;
-	}
+    if (isReleasedName(filePath)) {
+        return true;
+    }
 
-	return fs.promises.stat(filePath)
-		.then(() => {
-			// If it exists, we can't reserve it...
-			throw 'exists on disk';
-		}, () => {
-			// If it does not, then let's reserve it...
-			reserveNameForMe(filePath, forMe);
-			return true;
-		});
+    return fs.promises.stat(filePath)
+        .then(() => {
+            // If it exists, we can't reserve it...
+            throw 'exists on disk';
+        }, () => {
+            // If it does not, then let's reserve it...
+            reserveNameForMe(filePath, forMe);
+            return true;
+        });
 }
 
 async function fileRename(filePathOriginal, filePathDest) {
-	if (filePathOriginal == filePathDest) {
-		return true;
-	}
+    if (filePathOriginal == filePathDest) {
+        return true;
+    }
 
-	if (filePathOriginal.toUpperCase() == filePathDest.toUpperCase()) {
-		return fileRename(filePathOriginal, filePathOriginal + '.case')
-			.then(() => fileRename(filePathOriginal + '.case', filePathDest))
-			.then(() => true);
-	}
+    if (filePathOriginal.toUpperCase() == filePathDest.toUpperCase()) {
+        return fileRename(filePathOriginal, filePathOriginal + '.case')
+            .then(() => fileRename(filePathOriginal + '.case', filePathDest))
+            .then(() => true);
+    }
 
-	releaseName(filePathOriginal);
+    releaseName(filePathOriginal);
 
-	return checkAndReserveName(filePathDest, filePathOriginal)
-		.catch((e) => {
-			throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal}) (${e})`);
-		})
-		.then(() => fs.promises.rename(filePathOriginal, filePathDest ))
-		.then(() => releaseName(filePathDest))
-		.then(() => true);
+    return checkAndReserveName(filePathDest, filePathOriginal)
+        .catch((e) => {
+            throw new Error(`A file with the same name already exists (${filePathDest} from ${filePathOriginal}) (${e})`);
+        })
+        .then(() => fs.promises.rename(filePathOriginal, filePathDest ))
+        .then(() => releaseName(filePathDest))
+        .then(() => true);
 }
 
 async function fileExec(file, params = []) {
-	debugExec(file, ...params);
-	return new Promise((resolve, reject) => {
-		childProcess.execFile(file, params, (error, stdout, stderr) => {
-			debugExec(file, ...params, '->', stdout, stderr, error);
-			if (! stdout) {
-				stdout = '';
-			}
-			if (! stderr) {
-				stderr = '';
-			}
-			if (error) {
-				error.stdout = stdout;
-				error.stderr = stderr;
-				reject(error);
-			} else {
-				resolve(stdout);
-			}
-		});
-	});
+    debugExec(file, ...params);
+    return new Promise((resolve, reject) => {
+        childProcess.execFile(file, params, (error, stdout, stderr) => {
+            debugExec(file, ...params, '->', stdout, stderr, error);
+            if (! stdout) {
+                stdout = '';
+            }
+            if (! stderr) {
+                stderr = '';
+            }
+            if (error) {
+                error.stdout = stdout;
+                error.stderr = stderr;
+                reject(error);
+            } else {
+                resolve(stdout);
+            }
+        });
+    });
 }
 
 module.exports = {
-	getAbsolutePath,
-	getPathRelativeTo,
-	getDirname,
-	getFullFilename,
-	getFilename,
-	getExtension,
-	fileDelete,
-	fileRename,
-	fileExec,
-	checkAndReserveName,
+    getAbsolutePath,
+    getPathRelativeTo,
+    getDirname,
+    getFullFilename,
+    getFilename,
+    getExtension,
+    fileDelete,
+    fileRename,
+    fileExec,
+    checkAndReserveName,
 };
