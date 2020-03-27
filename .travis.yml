@@ -6,8 +6,7 @@ addons:
         packages:
             - exiftran
             - libimage-exiftool-perl
-            - coreutil
-            - xvfb
+            - coreutils
 
 services:
     - xvfb
