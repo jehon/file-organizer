@@ -3,9 +3,9 @@
 echo "Inside file-organizer.sh"
 
 set -e
-set -x
+# set -x
 
 SWD="$( dirname "$0")"
-echo "SWD: $SWD"
+# echo "SWD: $SWD"
 
 "$SWD"/node_modules/.bin/electron "$SWD"/file-organizer/main.js "$@"
