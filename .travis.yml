@@ -10,7 +10,7 @@ addons:
             - coreutils
 
 before_script:
-    - cd test/data && ../../file-organizer.sh dump && echo "*** ok ***"
+    - ./file-organizer.sh dump test/data
 
 script:
     - npm run test
