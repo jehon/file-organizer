@@ -5,7 +5,6 @@ const messenger = require('../../file-organizer/messenger.js');
 
 const {
     TASK_CREATED,
-    TASK_SKIPPED,
     TASK_STARTED,
     TASK_SUCCESS,
     TASK_FAILURE
@@ -82,38 +81,5 @@ describe('task-test', function () {
         expect(res.success).toBeTruthy();
         expect(res.messages).toBe('euh');
         expect(messenger.notify).toHaveBeenCalledTimes(3);
-    });
-
-    it('should run if not dryRun', async function () {
-        options.dryRun = false;
-        const t = new Task({ id: 1 }, 'task test',
-            function () { this.messages = 'euh'; }
-        );
-        const res = await t.runIfCommit();
-        expect(res.skipped).toBeFalsy();
-        expect(res.success).toBeTruthy();
-        expect(res.messages).toBe('euh');
-        let i = 0;
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_CREATED);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_STARTED);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_SUCCESS);
-        expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messenger.notify).toHaveBeenCalledTimes(i);
-    });
-
-    it('should not run if dryRun', async function () {
-        options.dryRun = true;
-        const t = new Task({ id: 1 }, 'task test',
-            function () { this.messages = 'euh'; }
-        );
-        const res = await t.runIfCommit();
-        expect(res.skipped).toBeTruthy();
-        expect(res.success).toBeFalsy();
-        expect(res.messages).toBe('');
-        let i = 0;
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_CREATED);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(TASK_SKIPPED);
-        expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messenger.notify).toHaveBeenCalledTimes(i);
     });
 });

@@ -43,10 +43,6 @@ class XTasksList extends HTMLElement {
                     this.createdCount++;
                     this.createdElement.innerHTML = '' + this.createdCount;
                     break;
-                case constants.TASK_SKIPPED:
-                    this.skippedCount++;
-                    this.skippedElement.innerHTML = '' + this.skippedCount;
-                    break;
                 case constants.TASK_STARTED:
                     this.startedCount++;
                     this.startedElement.innerHTML = '' + this.startedCount;

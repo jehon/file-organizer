@@ -37,7 +37,6 @@ exports.describeAndSetup = describeAndSetup;
 // TODO(cleanup): use async-promise (see file-utils) to be uniform all around
 async function runMain(ctx, ...args) {
     // console.log('+', ...args);
-    // const cmdLine = rootPath('/file-organizer/main.js') + ' "' + args.join('" "') + '"';
     const cmdLine = rootPath('/file-organizer.sh') + ' --headless "' + args.join('" "') + '"';
     // { stdout: '', stderr: '', cmd: '', code: x }
     const result = await shellExec(cmdLine, {
