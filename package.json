@@ -18,6 +18,7 @@
         "p-queue": "6.3.0",
         "shell-exec": "1.0.2",
         "tz-lookup": "6.1.25",
+        "watch": "^1.0.2",
         "yargs": "15.3.1"
     },
     "devDependencies": {
@@ -33,9 +34,10 @@
         "start": "electron file-organizer/main.js",
         "start-headless": "electron file-organizer/main.js --headless",
         "demo": "electron demo.js",
-        "test": "npm run --silent clean && npm run --silent test-unit && npm run --silent test-system",
+        "test": "npm run --silent test-unit && npm run --silent test-system",
         "style": "npm run --silent eslint && npm run --silent depcheck",
-        "test-unit": "jasmine --config=test/unit/jasmine.json",
+        "test-unit": "npm run --silent clean && jasmine --config=test/unit/jasmine.json",
+        "test-unit-continuously": "watch 'npm run test-unit' file-organizer test",
         "test-system": "jasmine --config=test/system/jasmine.json",
         "depcheck": "depcheck"
     },
