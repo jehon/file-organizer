@@ -1,6 +1,6 @@
 
-const ShellTask = require('../../file-organizer/main/tasks/shell-task.js');
-const messenger = require('../../file-organizer/messenger.js');
+const ShellTask = require('../../file-organizer/main/shell-task.js');
+const messenger = require('../../file-organizer/main/messenger.js');
 
 describe('shell-task-test', function () {
     beforeEach(() => {

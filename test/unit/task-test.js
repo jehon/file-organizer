@@ -1,6 +1,6 @@
 
-const Task = require('../../file-organizer/main/tasks/task.js');
-const messenger = require('../../file-organizer/messenger.js');
+const Task = require('../../file-organizer/main/task.js');
+const messenger = require('../../file-organizer/main/messenger.js');
 
 const { TYPE_TASK,
     STATUS_CREATED,

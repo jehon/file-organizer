@@ -7,7 +7,7 @@ const { CHANNEL_MAIN } = require('./constants.js');
 // Remove warning: https://github.com/electron/electron/issues/18397
 app.allowRendererProcessReuse = true;
 
-const { register } = require('./messenger.js');
+const { register } = require('./main/messenger.js');
 const options = require('./options.js');
 
 if (app) {

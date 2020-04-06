@@ -1,11 +1,11 @@
 
-const messenger = require('../../messenger.js');
+const messenger = require('./messenger.js');
 const { TYPE_TASK,
     STATUS_CREATED,
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
-} = require('../../constants.js');
+} = require('../constants.js');
 
 module.exports = class Task {
     constructor(file, title, action) {
@@ -25,11 +25,12 @@ module.exports = class Task {
     }
 
     notify(status) {
+        this.status = status;
         messenger.notify({
             id: this.id,
             type: TYPE_TASK,
             file: this.file.id,
-            status: status,
+            status: this.status,
             title: this.title,
             category: this.category,
             messages: this.messages,

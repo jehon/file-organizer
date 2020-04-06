@@ -1,6 +1,6 @@
 
 const options = require('./file-organizer/options.js');
-const { notify } = require('./file-organizer/messenger.js');
+const { notify } = require('./file-organizer/main/messenger.js');
 const {
     TYPE_TASK,
     STATUS_CREATED,

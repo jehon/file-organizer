@@ -12,7 +12,7 @@ module.exports.STATUS_ANALYSING = 'status_analysing';
 
 // Analysing -> success / failure / need_action
 module.exports.STATUS_SUCCESS = 'status_success';
-module.exports.STATUS_FAILURE = 'status_failure';
+module.exports.STATUS_FAILURE = 'status_failure'; // Final status: is impossible to fix
 module.exports.STATUS_NEED_ACTION = 'status_need_action';
 
 // updating -> updating_success / updating_failure
