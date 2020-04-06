@@ -1,6 +1,10 @@
 
 const messenger = require('../../main/messenger.js');
-const { TYPE_INFO } = require('../../constants.js');
+const {
+    TYPE_INFO,
+    STATUS_CREATED,
+    STATUS_ACTED_SUCCESS
+} = require('../../constants.js');
 
 module.exports = class Information {
     constructor(file, title, initialValue) {
@@ -44,5 +48,6 @@ module.exports = class Information {
     update(newValue) {
         this.newValue = newValue;
         this.simulatedValue = undefined;
+        this.notify(STATUS_ACTED_SUCCESS);
     }
 };

@@ -2,6 +2,7 @@
 const messenger = require('./messenger.js');
 const { TYPE_TASK,
     STATUS_CREATED,
+    STATUS_NEED_ACTION,
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
@@ -17,6 +18,7 @@ module.exports = class Task {
         this.messages = '';
         this.details = '';
         this.notify(STATUS_CREATED);
+        this.notify(STATUS_NEED_ACTION);
     }
 
     withCategory(cat) {
