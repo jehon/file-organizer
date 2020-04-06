@@ -14,22 +14,34 @@ img.icon {
     padding-left: 20px;
 }
 
-x-task[status='success'] {
-    display: none
-}
-
-x-task[status='created'] {
+[status='status_created'] {
     color: darkgray;
 }
 
-x-task[status='skipped'] {
+[status='status_analysing'] {
+    color: darkgray;
+}
+
+[status='status_success'] {
+    display: none;
+}
+
+[status='status_failure'] {
+    color: red;
+}
+
+[status='status_need_action'] {
     color: orange;
 }
 
-x-task[status='started'] {
-    color: green;
+[status='status_acting'] {
+    color: blue;
 }
 
-x-task[status='failure'] {
+[status='status_acted_success'] {
+    color: lightblue;
+}
+
+[status='status_acted_failure'] {
     color: red;
 }

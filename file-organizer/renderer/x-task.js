@@ -1,5 +1,11 @@
 
-const { listenerFor } = require('./listener.js');
+const { listenerForId } = require('./listener.js');
+
+require('./x-status.js');
+
+const {
+    STATUS_CREATED
+} = require('../constants.js');
 
 class XTask extends HTMLElement {
     static get observedAttributes() {
@@ -8,15 +14,18 @@ class XTask extends HTMLElement {
 
     constructor() {
         super();
-        this.status = 'created';
+        this.status = STATUS_CREATED;
         this.data = {};
     }
 
     attributeChangedCallback(attributeName, oldValue, newValue) {
+        if (!newValue) {
+            return;
+        }
         this._id = newValue;
         if (this._id) {
-            listenerFor(this._id, (status, data) => {
-                this.status = status.replace('task_', '');
+            listenerForId(this._id, (status, data) => {
+                this.status = status;
                 this.data = { ...this.data, ...data };
                 this.adapt();
             });
@@ -27,7 +36,7 @@ class XTask extends HTMLElement {
     adapt() {
         this.setAttribute('status', this.status);
         this.innerHTML = `<div>
-            <h3><img class='icon' src="img/${this.status}.png">Task ${this.data ? this.data.title : this.id}</h3>
+            <h3><x-status status='${this.status}'></x-status>Task ${this.data ? this.data.title : this.id}</h3>
             <div class='messages'>${this.data.messages ? this.data.messages : ''}</div>
             <div class='details' >${this.data.details ? this.data.details : ''}</div>
         </div>`;

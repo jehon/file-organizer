@@ -21,8 +21,13 @@ describe('shell-task-test', function () {
         const t = new ShellTask({ id: 1 }, 'task test',
             ['anything']
         );
-        const res = await t.run();
-        expect(res.messages).toContain(' anything ENOENT');
-        expect(res.success).toBeFalsy();
+        try {
+            await t.run();
+            expect(false)
+                .withContext('should be rejected')
+                .toBeTruthy();
+        } catch (e) {
+            expect(e.messages).toContain(' anything ENOENT');
+        }
     });
 });

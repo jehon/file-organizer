@@ -1,7 +1,11 @@
 
-const options = require('../../options.js');
 const messenger = require('../../messenger.js');
-const { TASK_CREATED, TASK_STARTED, TASK_SUCCESS, TASK_FAILURE } = require('../../constants.js');
+const { TYPE_TASK,
+    STATUS_CREATED,
+    STATUS_ACTING,
+    STATUS_ACTED_SUCCESS,
+    STATUS_ACTED_FAILURE
+} = require('../../constants.js');
 
 module.exports = class Task {
     constructor(file, title, action) {
@@ -12,7 +16,7 @@ module.exports = class Task {
         this.category = '';
         this.messages = '';
         this.details = '';
-        this.notify(TASK_CREATED);
+        this.notify(STATUS_CREATED);
     }
 
     withCategory(cat) {
@@ -23,6 +27,7 @@ module.exports = class Task {
     notify(status) {
         messenger.notify({
             id: this.id,
+            type: TYPE_TASK,
             file: this.file.id,
             status: status,
             title: this.title,
@@ -32,18 +37,17 @@ module.exports = class Task {
         });
     }
 
-    result(skipped, success) {
+    result(success) {
         return {
             title: this.title,
-            skipped,
-            success: skipped ? false : success,
+            success,
             messages: this.messages,
             details: this.details
         };
     }
 
     async run() {
-        this.notify(TASK_STARTED);
+        this.notify(STATUS_ACTING);
 
         let res = true;
         try {
@@ -56,7 +60,12 @@ module.exports = class Task {
             this.messages = e;
             res = false;
         }
-        this.notify(res ? TASK_SUCCESS : TASK_FAILURE);
-        return this.result(false, res);
+        if (!res) {
+            this.notify(STATUS_ACTED_FAILURE);
+            throw this.result(false);
+        }
+
+        this.notify(STATUS_ACTED_SUCCESS);
+        return this.result(true);
     }
 };
