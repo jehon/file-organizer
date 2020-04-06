@@ -13,7 +13,7 @@ module.exports.TYPE_TASK = 'type_task';
  */
 
 /* FFIP~ ─┤           */ module.exports.STATUS_CREATED = 'status_created';
-/* FF...  ├──┐        */ module.exports.STATUS_ANALYSING = 'status_analysing';
+/* FF.P.  ├──┐        */ module.exports.STATUS_ANALYSING = 'status_analysing';
 /* FF...  │  ├──x     */ module.exports.STATUS_SUCCESS = 'status_success';
 /* ++.P.  |  ├──x     */ module.exports.STATUS_FAILURE = 'status_failure';
 /* ++.PT  └──┤        */ module.exports.STATUS_NEED_ACTION = 'status_need_action';

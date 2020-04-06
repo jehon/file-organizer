@@ -9,6 +9,9 @@ module.exports.getEntityId = function () {
 };
 
 module.exports.notify = function (data) {
+    if (!data.id || !data.type) {
+        throw `Invalid data: no id or no data: ${JSON.stringify(data)}`;
+    }
     list.push(data);
     guiCallback(data);
 };
@@ -19,5 +22,3 @@ module.exports.register = function (cb) {
         cb(data);
     }
 };
-
-module.exports.notify('started');

@@ -2,6 +2,7 @@
 const messenger = require('../../main/messenger.js');
 const { TYPE_PROBLEM,
     STATUS_CREATED,
+    STATUS_ANALYSING,
     STATUS_FAILURE,
     STATUS_NEED_ACTION,
     STATUS_ACTED_SUCCESS,
@@ -15,6 +16,7 @@ module.exports = class Problem {
         this.title = title;
         this.details = details;
         this.notify(STATUS_CREATED);
+        this.notify(STATUS_ANALYSING);
     }
 
     notify(status) {
