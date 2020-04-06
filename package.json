@@ -4,7 +4,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "chalk": "3.0.0",
+        "chalk": "4.0.0",
         "colors": "1.4.0",
         "command-exists": "1.2.8",
         "debug": "4.1.1",
@@ -14,7 +14,7 @@
         "is-interactive": "1.0.0",
         "moment": "2.24.0",
         "moment-timezone": "0.5.28",
-        "p-limit": "2.2.2",
+        "p-limit": "2.3.0",
         "p-queue": "6.3.0",
         "shell-exec": "1.0.2",
         "tz-lookup": "6.1.25",
