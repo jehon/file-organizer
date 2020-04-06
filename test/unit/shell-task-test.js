@@ -21,13 +21,10 @@ describe('shell-task-test', function () {
         const t = new ShellTask({ id: 1 }, 'task test',
             ['anything']
         );
-        try {
-            await t.run();
-            expect(false)
-                .withContext('should be rejected')
-                .toBeTruthy();
-        } catch (e) {
-            expect(e.messages).toContain(' anything ENOENT');
-        }
+
+        await expectAsync(t.run())
+            .toBeRejectedWith(jasmine.objectContaining({
+                messages: 'spawn anything ENOENT'
+            }));
     });
 });

@@ -19,8 +19,9 @@ describe('task-test', function () {
         const t = new Task({ id: 1 }, 'task test',
             () => { }
         );
-        const res = await t.run();
-        expect(res.success).toBeTruthy();
+        await expectAsync(t.run())
+            .toBeResolvedTo(jasmine.objectContaining({ success: true }));
+
         let i = 0;
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
@@ -34,8 +35,9 @@ describe('task-test', function () {
         const t = new Task({ id: 1 }, 'task test',
             () => true
         );
-        const res = await t.run();
-        expect(res.success).toBeTruthy();
+        await expectAsync(t.run())
+            .toBeResolvedTo(jasmine.objectContaining({ success: true }));
+
         let i = 0;
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
@@ -49,42 +51,32 @@ describe('task-test', function () {
         const t = new Task({ id: 1 }, 'task test',
             () => false
         );
-        try {
-            await t.run();
-            expect(false)
-                .withContext('should be rejected')
-                .toBeTruthy();
-        } catch (e) {
-            // Should be rejected
-            let i = 0;
-            expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
-            expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
-            expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_FAILURE);
-            expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-            expect(messenger.notify).toHaveBeenCalledTimes(i);
-            expect(messenger.notify.calls.argsFor(0)[0].type).toBe(TYPE_TASK);
-        }
+        await expectAsync(t.run()).toBeRejected();
+
+        let i = 0;
+        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
+        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
+        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_FAILURE);
+        expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify.calls.argsFor(0)[0].type).toBe(TYPE_TASK);
     });
 
     it('should run a simple task with error', async function () {
         const t = new Task({ id: 1 }, 'task test',
             () => { throw 'new error'; }
         );
-        try {
-            await t.run();
-            expect(false)
-                .withContext('should be rejected')
-                .toBeTruthy();
-        } catch (e) {
-            // Should be rejected
-            let i = 0;
-            expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
-            expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
-            expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_FAILURE);
-            expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-            expect(messenger.notify).toHaveBeenCalledTimes(i);
-            expect(messenger.notify.calls.argsFor(0)[0].type).toBe(TYPE_TASK);
-        }
+
+        await expectAsync(t.run()).toBeRejected();
+
+        // Should be rejected
+        let i = 0;
+        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
+        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
+        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_FAILURE);
+        expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify).toHaveBeenCalledTimes(i);
+        expect(messenger.notify.calls.argsFor(0)[0].type).toBe(TYPE_TASK);
     });
 
     it('should run a simple task with message', async function () {
