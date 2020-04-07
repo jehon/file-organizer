@@ -34,7 +34,7 @@ function withHistory(data) {
     withHistory({ id: 1004, status: STATUS_CREATED, type: TYPE_TASK, title: 'task is success' });
     withHistory({ id: 1005, status: STATUS_CREATED, type: TYPE_TASK, title: 'task is failure' });
 
-    await wait(5);
+    await wait(2);
     withHistory({ id: 1003, status: STATUS_ACTING }); // final
     withHistory({ id: 1004, status: STATUS_ACTING });
     withHistory({ id: 1005, status: STATUS_ACTING });

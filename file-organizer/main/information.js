@@ -3,7 +3,9 @@ const messenger = require('../../main/messenger.js');
 const {
     TYPE_INFO,
     STATUS_CREATED,
-    STATUS_ACTED_SUCCESS
+    STATUS_FAILURE,
+    STATUS_ACTED_SUCCESS,
+    STATUS_ACTED_FAILURE
 } = require('../../constants.js');
 
 module.exports = class Information {
