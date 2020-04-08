@@ -1,4 +1,8 @@
 
+progress {
+    width: 100%;
+}
+
 img.icon {
    height: 16px; 
    padding-left: 10px;
@@ -42,10 +46,10 @@ img.icon {
     color: lightblue;
 }
 
-[status='status_acted_failure'] {
-    color: red;
+x-task[status='status_acted_success'] {
+    display: none;
 }
 
-progress {
-    width: 100%;
+[status='status_acted_failure'] {
+    color: red;
 }

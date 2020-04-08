@@ -7,21 +7,23 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch jasmine",
-            "program": "${workspaceFolder}/node_modules/.bin/jasmine",
-            "args": [
-                "--config=test/unit/jasmine.json"
+            "name": "demo",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+            "program": "${workspaceFolder}/demo.js",
+            "skipFiles": [
+                "<node_internals>/**"
             ]
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "run on 01-test-lib",
-            "preLaunchTask": "jh reset 01-lib-test",
-            "cwd": "${workspaceFolder}/tmp/01-lib-test.js",
-            "program": "${workspaceFolder}/file-organizer/main.js",
+            "name": "Launch jasmine",
+            "program": "${workspaceFolder}/node_modules/.bin/jasmine",
             "args": [
-                "-n"
+                "--config=test/unit/jasmine.json"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
             ]
         }
     ]

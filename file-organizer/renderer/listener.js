@@ -39,3 +39,11 @@ module.exports.listenerForType = function (type, cb) {
         }
     })
 };
+
+module.exports.listenerForParent = function (parent_id, cb) {
+    module.exports.listener((cb_type, id, status, data) => {
+        if (data.parent == parent_id) {
+            cb(id, status, data);
+        }
+    })
+};

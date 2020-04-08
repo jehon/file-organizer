@@ -1,5 +1,5 @@
 
-require('./x-task.js');
+require('./x-file.js');
 
 const XList = require('./x-list.js');
 
@@ -20,6 +20,7 @@ class XFilesList extends XList {
         super(TYPE_FILE);
 
         this.innerHTML = `
+            <h2>Files</h2>
             <div>
                 Created: <span counter='${STATUS_CREATED}'>0</span>
                 Analysing: <span counter='${STATUS_ANALYSING}'>0</span>
@@ -32,9 +33,9 @@ class XFilesList extends XList {
                 Action success: <span counter='${STATUS_ACTED_SUCCESS}'>0</span>
                 Action failure: <span counter='${STATUS_ACTED_FAILURE}'>0</span>
             </div>
-            <div id='tasks'></div>
+            <div id='created'></div>
         `;
-        this.createdElements = this.querySelector('#tasks');
+        this.createdElements = this.querySelector('#created');
     }
 
     onCreate(id) {

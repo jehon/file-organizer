@@ -2,7 +2,7 @@
 const list = [];
 let guiCallback = (_channel, _data) => { };
 
-let id = 0;
+let id = 1;
 
 module.exports.getEntityId = function () {
     return id++;
@@ -13,6 +13,9 @@ module.exports.notify = function (data) {
         throw `Invalid data: no id or no data: ${JSON.stringify(data)}`;
     }
     list.push(data);
+
+    console.info("> ", JSON.stringify(data));
+
     guiCallback(data);
 };
 

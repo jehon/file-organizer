@@ -9,9 +9,9 @@ const { TYPE_TASK,
 } = require('../constants.js');
 
 module.exports = class Task {
-    constructor(file, title, action) {
+    constructor(parent, title, action) {
         this.id = messenger.getEntityId();
-        this.file = file;
+        this.parent = parent;
         this.title = title;
         this.action = action;
         this.category = '';
@@ -31,13 +31,14 @@ module.exports = class Task {
         messenger.notify({
             id: this.id,
             type: TYPE_TASK,
-            file: this.file.id,
+            parent: this.parent.id,
             status: this.status,
             title: this.title,
             category: this.category,
             messages: this.messages,
             details: this.details
         });
+        return this;
     }
 
     result(success) {

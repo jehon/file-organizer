@@ -22,6 +22,7 @@ function uz(val, def = 0) {
 class XList extends HTMLElement {
     constructor(refType) {
         super();
+        this.parent_id = 0;
         this.counters = {};
         this.history = {};
         this.refType = refType;
@@ -38,7 +39,7 @@ class XList extends HTMLElement {
                     + uz(this.counters[STATUS_SUCCESS])
                     + uz(this.counters[STATUS_FAILURE]);
 
-                e.setAttribute('max', this.total);
+                e.setAttribute('max', Math.max(1, this.total));
                 e.setAttribute('value', p);
             });
         }
@@ -69,7 +70,18 @@ class XList extends HTMLElement {
         });
     }
 
-    filter(_id, _status, _data) {
+    static get observedAttributes() {
+        return ['parent'];
+    }
+
+    attributeChangedCallback(attributeName, oldValue, newValue) {
+        this.parent_id = newValue;
+    }
+
+    filter(_id, _status, data) {
+        if (this.parent_id > 0) {
+            return data.parent = this.parent_id;
+        }
         return true;
     }
 
