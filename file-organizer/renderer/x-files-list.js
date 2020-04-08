@@ -28,6 +28,7 @@ class XFilesList extends XList {
             </div>
             <div>
                 Need action: <span counter='${STATUS_NEED_ACTION}'>0</span>
+                Acting: <span counter='${STATUS_ACTING}'>0</span>
                 Action success: <span counter='${STATUS_ACTED_SUCCESS}'>0</span>
                 Action failure: <span counter='${STATUS_ACTED_FAILURE}'>0</span>
             </div>

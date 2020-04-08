@@ -45,3 +45,7 @@ img.icon {
 [status='status_acted_failure'] {
     color: red;
 }
+
+progress {
+    width: 100%;
+}

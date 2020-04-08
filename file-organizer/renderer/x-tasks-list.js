@@ -22,6 +22,7 @@ class XTasksList extends XList {
                 Success: <span counter='${STATUS_ACTED_SUCCESS}'>0</span>
                 Failure: <span counter='${STATUS_ACTED_FAILURE}'>0</span>
             </div>
+            <progress category='total'></progress>
             <div id='created'></div>
         `;
         this.createdElements = this.querySelector('#created');

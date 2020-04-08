@@ -1,45 +1,15 @@
 
-const { listenerForId } = require('./listener.js');
-
 require('./x-status.js');
+const XItem = require('./x-item.js');
 
-const {
-    STATUS_CREATED
-} = require('../constants.js');
-
-class XTask extends HTMLElement {
-    static get observedAttributes() {
-        return ['id'];
-    }
-
-    constructor() {
-        super();
-        this.status = STATUS_CREATED;
-        this.data = {};
-    }
-
-    attributeChangedCallback(attributeName, oldValue, newValue) {
-        if (!newValue) {
-            return;
-        }
-        this._id = newValue;
-        if (this._id) {
-            listenerForId(this._id, (status, data) => {
-                this.status = status;
-                this.data = { ...this.data, ...data };
-                this.adapt();
-            });
-            this.adapt();
-        }
-    }
-
-    adapt() {
-        this.setAttribute('status', this.status);
+class XTask extends XItem {
+    adapt(data, ...args) {
+        super.adapt(data, ...args);
         this.innerHTML = `<div>
-            <h3><x-status status='${this.status}'></x-status>Task ${this.data ? this.data.title : this.id}</h3>
-            <div class='messages'>${this.data.messages ? this.data.messages : ''}</div>
-            <div class='details' >${this.data.details ? this.data.details : ''}</div>
-        </div>`;
+            <h3><x-status status='${data.status}'></x-status>Task ${data.title ? data.title : data.id}</h3>
+            <div class='messages'>${data.messages ? data.messages : ''}</div>
+            <div class='details' >${data.details ? data.details : ''}</div>
+        </div > `;
     }
 }
 
