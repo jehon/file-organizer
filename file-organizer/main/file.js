@@ -3,6 +3,9 @@
 const messenger = require('./messenger.js');
 const { TYPE_FILE,
     STATUS_CREATED,
+    STATUS_ANALYSING,
+    STATUS_FAILURE, // TODO
+    STATUS_SUCCESS, // TODO
     STATUS_NEED_ACTION,
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
@@ -40,17 +43,43 @@ module.exports = class File {
         return t.run();
     }
 
+    async runAnalyse() {
+        this.notify(STATUS_ANALYSING)
+        this.analyse().then(
+            (d) => {
+                console.log("run analysis done", this.status);
+                if (this.status == STATUS_ANALYSING) {
+                    // We did not enqueue any action
+                    this.notify(STATUS_SUCCESS);
+                }
+                return d;
+            },
+            (e) => {
+                this.notify(STATUS_FAILURE);
+                throw e;
+            }
+        )
+    }
+
+    async analyse() {
+        // TODO: success & failure ?
+        return Promise.resolve();
+    }
+
     enqueueAct(t) {
+        this.notify(STATUS_NEED_ACTION);
         t.parent = this.id;
-        this.actChain = this.actChain.then(t.run);
+        this.actChain = this.actChain.then(t.run)
         return this;
     }
 
     async act() {
+        this.notify(STATUS_ACTING);
+        this.actChain.then(
+            (data) => { this.notify(STATUS_ACTED_SUCCESS); return data; },
+            (e) => { this.notify(STATUS_ACTED_FAILURE); throw e; }
+        );
         return this.actChainStart();
     }
 
-    async analyse() {
-        return Promise.resolve();
-    }
 };

@@ -18,47 +18,39 @@ async function wait(secs) {
 }
 
 options.headless = false;
+options.debug = true;
 
-require('./file-organizer/gui.js');
+require('./file-organizer/gui.js').then(() => {
+    const t = 1;
 
-const history = new Map();
-
-function wh(id, status, data = {}) {
-    if (history.has(id)) {
-        const old = history.get(id);
-        data = { ...old, ...data };
+    async function w(secs) {
+        return new Promise(resolve => setTimeout(() => resolve(1), secs * 1000))
     }
-    history.set(id, data);
-    notify({ id, status, ...data });
-}
 
-async function w(secs) {
-    return new Promise(resolve => setTimeout(() => resolve(1), secs * 1000))
-}
-
-class DemoFile extends File {
-    async analyse() {
-        return super.analyse()
-            .then(this.createAndRun(Task, "analyse 1", () => w(1)))
-            .then(this.createAndRun(Task, "analyse 2", () => w(1)));
+    class DemoFile extends File {
+        async analyse() {
+            return super.analyse()
+                .then(this.createAndRun(Task, "analyse 1", () => w(t)))
+                .then(this.createAndRun(Task, "analyse 2", () => w(t)));
+        }
     }
-}
 
 
-(async function () {
-    const f = new DemoFile("test");
+    (async function () {
+        const f = new DemoFile("test");
 
-    // const t3 = new Task(f, "erroneous", () => w(1).then(() => Promise.reject("rejected reason")));
+        // const t3 = new Task(f, "erroneous", () => w(1).then(() => Promise.reject("rejected reason")));
 
-    await wait(2);
-    console.log("Analysing...");
-    await f.analyse();
-    console.log("Analysing done");
+        await wait(2 * t);
+        console.log("Analysing...");
+        await f.runAnalyse();
+        console.log("Analysing done");
 
-    await wait(2);
-    console.log("Acting...");
-    await f.act();
-    console.log("Acting done");
+        await wait(2 * t);
+        console.log("Acting...");
+        await f.act();
+        console.log("Acting done");
 
-    // t3.run().catch(() => { });
-})();
+        // t3.run().catch(() => { });
+    })();
+});
