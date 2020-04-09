@@ -25,6 +25,11 @@ Object.assign(options, yargs
             type: 'boolean',
             default: false
         },
+        'debug': {
+            alias: ['d'],
+            type: 'boolean',
+            default: false
+        },
         'files': {
             alias: ['f'],
             type: 'array',

@@ -10,34 +10,43 @@ app.allowRendererProcessReuse = true;
 const { register } = require('./main/messenger.js');
 const options = require('./options.js');
 
-if (app) {
+module.exports = new Promise((resolve, reject) => {
+    if (app) {
+        app.whenReady()
+            .then(() => {
+                console.info("App is ready");
+                const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
-    app.whenReady()
-        .then(() => {
-            const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+                const mainWindow = new BrowserWindow({
+                    width: Math.min(1024, Math.floor(parseInt(width) * 0.8)),
+                    height: Math.min(800, Math.floor(parseInt(height) * 0.8)),
+                    webPreferences: {
+                        nodeIntegration: true
+                    }
+                });
 
-            const mainWindow = new BrowserWindow({
-                width: Math.min(1024, Math.floor(parseInt(width) * 0.8)),
-                height: Math.min(800, Math.floor(parseInt(height) * 0.8)),
-                webPreferences: {
-                    nodeIntegration: true
+                if (options.debug) {
+                    mainWindow.webContents.openDevTools();
                 }
+
+                console.info("waiting for dom ready");
+                mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'))
+                    .then(() => {
+                        register((data) => {
+                            BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));
+                        })
+                        resolve();
+                    });
+
+                // Close (exit) when all windows are closed
+                app.on('window-all-closed', function () {
+                    if (!options.headless) {
+                        app.quit();
+                    }
+                });
             });
-            mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'));
-
-            mainWindow.webContents.on('dom-ready', () => register((data) => {
-                BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));
-            }));
-
-            mainWindow.webContents.openDevTools();
-        });
-
-    // Close (exit) when all windows are closed
-    app.on('window-all-closed', function () {
-        if (!options.headless) {
-            app.quit();
-        }
-    });
-} else {
-    console.info('No app found, not launching gui');
-}
+    } else {
+        console.info('No app found, not launching gui');
+        resolve();
+    }
+});
