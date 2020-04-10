@@ -8,6 +8,8 @@ function n(id) {
     return "" + id;
 }
 
+ipcRenderer.setMaxListeners(1000 * 1000);
+
 module.exports.listener = function (cb) {
     function send(cb, data) {
         // To have the same treatment in history and direct call
@@ -18,14 +20,18 @@ module.exports.listener = function (cb) {
         send(cb, data);
     }
 
-    ipcRenderer.on(CHANNEL_MAIN, (_event, data) => {
+    const fn = (_event, data) => {
         history.set(n(data.id), data);
         send(cb, data);
-    });
+    };
+
+    ipcRenderer.on(CHANNEL_MAIN, fn);
+
+    return () => ipcRenderer.off(CHANNEL_MAIN, fn);
 };
 
 module.exports.listenerForId = function (id, cb) {
-    module.exports.listener((_type, cb_id, status, data) => {
+    return module.exports.listener((_type, cb_id, status, data) => {
         if (id == cb_id) {
             cb(status, data);
         }
@@ -33,7 +39,7 @@ module.exports.listenerForId = function (id, cb) {
 };
 
 module.exports.listenerForType = function (type, cb) {
-    module.exports.listener((cb_type, id, status, data) => {
+    return module.exports.listener((cb_type, id, status, data) => {
         if (type == cb_type) {
             cb(id, status, data);
         }
@@ -41,7 +47,7 @@ module.exports.listenerForType = function (type, cb) {
 };
 
 module.exports.listenerForParent = function (parent_id, cb) {
-    module.exports.listener((cb_type, id, status, data) => {
+    return module.exports.listener((_type, id, status, data) => {
         if (data.parent == parent_id) {
             cb(id, status, data);
         }

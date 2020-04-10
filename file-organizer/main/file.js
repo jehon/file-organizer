@@ -39,15 +39,15 @@ module.exports = class File {
     }
 
     async createAndRun(_class, title, action) {
-        const t = new Task(this, title, action);
+        const t = new Task(title, action)
+            .withParent(this);
         return t.run();
     }
 
     async runAnalyse() {
-        this.notify(STATUS_ANALYSING)
-        this.analyse().then(
+        this.notify(STATUS_ANALYSING);
+        return this.analyse().then(
             (d) => {
-                console.log("run analysis done", this.status);
                 if (this.status == STATUS_ANALYSING) {
                     // We did not enqueue any action
                     this.notify(STATUS_SUCCESS);
@@ -68,18 +68,21 @@ module.exports = class File {
 
     enqueueAct(t) {
         this.notify(STATUS_NEED_ACTION);
-        t.parent = this.id;
-        this.actChain = this.actChain.then(t.run)
+        t.withParent(this);
+        this.actChain = this.actChain.then(() => t.run())
         return this;
     }
 
     async act() {
+        if (this.status != STATUS_NEED_ACTION) {
+            return;
+        }
         this.notify(STATUS_ACTING);
-        this.actChain.then(
+        this.actChainStart();
+        return this.actChain.then(
             (data) => { this.notify(STATUS_ACTED_SUCCESS); return data; },
             (e) => { this.notify(STATUS_ACTED_FAILURE); throw e; }
         );
-        return this.actChainStart();
     }
 
 };

@@ -17,7 +17,7 @@ describe('task-test', function () {
     });
 
     it('should run a simple task', async function () {
-        const t = new Task({ id: 1 }, 'task test',
+        const t = new Task('task test',
             () => { }
         );
         await expectAsync(t.run())
@@ -34,7 +34,7 @@ describe('task-test', function () {
     });
 
     it('should run a simple task with true', async function () {
-        const t = new Task({ id: 1 }, 'task test',
+        const t = new Task('task test',
             () => true
         );
         await expectAsync(t.run())
@@ -51,7 +51,7 @@ describe('task-test', function () {
     });
 
     it('should run a simple task with false', async function () {
-        const t = new Task({ id: 1 }, 'task test',
+        const t = new Task('task test',
             () => false
         );
         await expectAsync(t.run()).toBeRejected();
@@ -67,7 +67,7 @@ describe('task-test', function () {
     });
 
     it('should run a simple task with error', async function () {
-        const t = new Task({ id: 1 }, 'task test',
+        const t = new Task('task test',
             () => { throw 'new error'; }
         );
 
@@ -85,7 +85,7 @@ describe('task-test', function () {
     });
 
     it('should run a simple task with message', async function () {
-        const t = new Task({ id: 1 }, 'task test',
+        const t = new Task('task test',
             function () { this.messages = 'euh'; }
         );
         const res = await t.run();

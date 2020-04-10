@@ -44,7 +44,7 @@ class XStatus extends HTMLElement {
         this.shadowRoot.innerHTML = `
         <css-inherit></css-inherit>
         <span class='${this.status}'>
-            <img class='icon' src="img/${img}">${this.data ? this.data.title : this.id}
+            <img class='icon' src="img/${img}" title="${this.status}">${this.data ? this.data.title : this.id}
         </span>`;
     }
 }

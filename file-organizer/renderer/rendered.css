@@ -53,3 +53,10 @@ x-task[status='status_acted_success'] {
 [status='status_acted_failure'] {
     color: red;
 }
+
+x-file {
+    display: block;
+    border: 1px black solid;
+    padding: 5px;
+    margin: 5px;
+}

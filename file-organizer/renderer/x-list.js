@@ -27,24 +27,22 @@ class XList extends HTMLElement {
         this.history = {};
         this.refType = refType;
         this.total = 0;
+    }
 
-        const updateCounter = (status) => {
-            this.querySelectorAll(`[counter=${status}]`).forEach(
-                el => el.innerHTML = '' + this.counters[status]
-            );
+    static get observedAttributes() {
+        return ['parent'];
+    }
 
-            this.querySelectorAll('progress[category=total]').forEach(e => {
-                const p = uz(this.counters[STATUS_ACTED_SUCCESS])
-                    + uz(this.counters[STATUS_ACTED_FAILURE])
-                    + uz(this.counters[STATUS_SUCCESS])
-                    + uz(this.counters[STATUS_FAILURE]);
-
-                e.setAttribute('max', Math.max(1, this.total));
-                e.setAttribute('value', p);
-            });
+    attributeChangedCallback(attributeName, oldValue, newValue) {
+        switch (attributeName) {
+            case "parent":
+                this.parent_id = newValue;
+                break;
         }
+    }
 
-        listenerForType(this.refType, (id, status, data) => {
+    connectedCallback() {
+        this.off = listenerForType(this.refType, (id, status, data) => {
             if (!this.filter(id, status, data)) {
                 return;
             }
@@ -56,7 +54,7 @@ class XList extends HTMLElement {
                 // We had that value before...
                 const oldStatus = this.history[id].status;
                 this.counters[oldStatus]--;
-                updateCounter(oldStatus);
+                this.updateCounter(oldStatus);
             } else {
                 this.onCreate(id, status, data);
                 this.total++;
@@ -66,21 +64,36 @@ class XList extends HTMLElement {
             this.history[id] = data;
             this.counters[status]++;
 
-            updateCounter(status);
+            this.updateCounter(status);
         });
     }
 
-    static get observedAttributes() {
-        return ['parent'];
+    disconnectedCallback() {
+        if (this.off) {
+            this.off();
+        }
+        this.off = null;
     }
 
-    attributeChangedCallback(attributeName, oldValue, newValue) {
-        this.parent_id = newValue;
+    updateCounter(status) {
+        this.querySelectorAll(`[counter=${status}]`).forEach(
+            el => el.innerHTML = '' + this.counters[status]
+        );
+
+        this.querySelectorAll('progress[category=total]').forEach(e => {
+            const p = uz(this.counters[STATUS_ACTED_SUCCESS])
+                + uz(this.counters[STATUS_ACTED_FAILURE])
+                + uz(this.counters[STATUS_SUCCESS])
+                + uz(this.counters[STATUS_FAILURE]);
+
+            e.setAttribute('max', Math.max(1, this.total));
+            e.setAttribute('value', p);
+        });
     }
 
     filter(_id, _status, data) {
         if (this.parent_id > 0) {
-            return data.parent = this.parent_id;
+            return data.parent == this.parent_id;
         }
         return true;
     }
