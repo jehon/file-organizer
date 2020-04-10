@@ -10,11 +10,11 @@ app.allowRendererProcessReuse = true;
 const { register } = require('./main/messenger.js');
 const options = require('./options.js');
 
-module.exports = new Promise((resolve, reject) => {
+module.exports = new Promise((resolve, _reject) => {
     if (app) {
         app.whenReady()
             .then(() => {
-                console.info("App is ready");
+                console.info('App is ready');
                 const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
                 const mainWindow = new BrowserWindow({
@@ -29,12 +29,12 @@ module.exports = new Promise((resolve, reject) => {
                     mainWindow.webContents.openDevTools();
                 }
 
-                console.info("waiting for dom ready");
+                console.info('waiting for dom ready');
                 mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'))
                     .then(() => {
                         register((data) => {
                             BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));
-                        })
+                        });
                         resolve();
                     });
 

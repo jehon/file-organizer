@@ -5,7 +5,7 @@ const history = new Map();
 const { CHANNEL_MAIN } = require('../constants.js');
 
 function n(id) {
-    return "" + id;
+    return '' + id;
 }
 
 ipcRenderer.setMaxListeners(1000 * 1000);
@@ -35,7 +35,7 @@ module.exports.listenerForId = function (id, cb) {
         if (id == cb_id) {
             cb(status, data);
         }
-    })
+    });
 };
 
 module.exports.listenerForType = function (type, cb) {
@@ -43,7 +43,7 @@ module.exports.listenerForType = function (type, cb) {
         if (type == cb_type) {
             cb(id, status, data);
         }
-    })
+    });
 };
 
 module.exports.listenerForParent = function (parent_id, cb) {
@@ -51,5 +51,5 @@ module.exports.listenerForParent = function (parent_id, cb) {
         if (data.parent == parent_id) {
             cb(id, status, data);
         }
-    })
+    });
 };

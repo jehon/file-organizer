@@ -58,7 +58,7 @@ module.exports = class File {
                 this.notify(STATUS_FAILURE);
                 throw e;
             }
-        )
+        );
     }
 
     async analyse() {
@@ -69,7 +69,7 @@ module.exports = class File {
     enqueueAct(t) {
         this.notify(STATUS_NEED_ACTION);
         t.withParent(this);
-        this.actChain = this.actChain.then(() => t.run())
+        this.actChain = this.actChain.then(() => t.run());
         return this;
     }
 

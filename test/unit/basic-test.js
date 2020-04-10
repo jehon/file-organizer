@@ -19,5 +19,5 @@ describe('basic test', () => {
 
         await expectAsync(Promise.reject({ a: 1, b: 2 }))
             .toBeRejectedWith(jasmine.objectContaining({ a: 1 }));
-    })
+    });
 });

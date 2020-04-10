@@ -2,12 +2,12 @@
 const { listenerForType } = require('./listener.js');
 
 const {
-    STATUS_CREATED,
-    STATUS_ANALYSING,
+    // STATUS_CREATED,
+    // STATUS_ANALYSING,
     STATUS_SUCCESS,
     STATUS_FAILURE,
-    STATUS_NEED_ACTION,
-    STATUS_ACTING,
+    // STATUS_NEED_ACTION,
+    // STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
 } = require('../constants.js');
@@ -35,7 +35,7 @@ class XList extends HTMLElement {
 
     attributeChangedCallback(attributeName, oldValue, newValue) {
         switch (attributeName) {
-            case "parent":
+            case 'parent':
                 this.parent_id = newValue;
                 break;
         }
@@ -60,7 +60,7 @@ class XList extends HTMLElement {
                 this.total++;
             }
 
-            // We update 
+            // We update
             this.history[id] = data;
             this.counters[status]++;
 
