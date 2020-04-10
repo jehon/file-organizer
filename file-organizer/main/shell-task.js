@@ -5,17 +5,17 @@ const Task = require('./task.js');
 const debug = require('debug')('shell-task');
 
 module.exports = class ShellTask extends Task {
-    constructor(file, title, params = []) {
-        super(file, title, () => this.runInShell(params));
+    constructor(title, params = []) {
+        super(title, () => this.runInShell(params));
     }
 
     runInShell(params = []) {
-        const file = params.shift();
-        debug(file, ...params);
+        const execFile = params.shift();
+        debug(execFile, ...params);
 
         return new Promise((resolve, _reject) => {
-            childProcess.execFile(file, params, (error, stdout, stderr) => {
-                debug(file, ...params, '->', stdout, '#', stderr, '#', error);
+            childProcess.execFile(execFile, params, (error, stdout, stderr) => {
+                debug(execFile, ...params, '->', stdout, '#', stderr, '#', error);
                 if (!stdout) {
                     stdout = '';
                 }

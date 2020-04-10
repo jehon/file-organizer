@@ -9,7 +9,7 @@ describe('shell-task-test', function () {
     });
 
     it('should run a simple task', async function () {
-        const t = new ShellTask({ id: 1 }, 'task test',
+        const t = new ShellTask('task test',
             ['ls', '/']
         );
         const res = await t.run();
@@ -18,7 +18,7 @@ describe('shell-task-test', function () {
     });
 
     it('should run a simple task that fail', async function () {
-        const t = new ShellTask({ id: 1 }, 'task test',
+        const t = new ShellTask('task test',
             ['anything']
         );
 
