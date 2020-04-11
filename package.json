@@ -26,7 +26,8 @@
         "current-git-branch": "1.1.0",
         "depcheck": "0.9.2",
         "eslint": "6.8.0",
-        "jasmine": "3.5.0"
+        "jasmine": "3.5.0",
+        "nyc": "15.0.1"
     },
     "scripts": {
         "clean": "rm -fr tmp",
@@ -37,7 +38,7 @@
         "demo": "electron demo.js",
         "test": "npm run --silent test-unit && npm run --silent test-system",
         "style": "npm run --silent eslint && npm run --silent depcheck",
-        "test-unit": "npm run --silent clean && jasmine --config=test/unit/jasmine.json",
+        "test-unit": "npm run --silent clean && nyc --reporter=html --reporter=text-summary jasmine --config=test/unit/jasmine.json",
         "test-unit-continuously": "watch 'npm run test-unit' file-organizer test",
         "test-system": "xvfb-run jasmine --config=test/system/jasmine.json",
         "depcheck": "depcheck"
