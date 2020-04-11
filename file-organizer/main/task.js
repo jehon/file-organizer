@@ -49,10 +49,9 @@ module.exports = class Task {
         return this;
     }
 
-    result(success) {
+    result() {
         return {
             title: this.title,
-            success,
             messages: this.messages,
             details: this.details
         };
@@ -74,10 +73,10 @@ module.exports = class Task {
         }
         if (!res) {
             this.notify(STATUS_ACTED_FAILURE);
-            throw this.result(false);
+            throw this.messages;
         }
 
         this.notify(STATUS_ACTED_SUCCESS);
-        return this.result(true);
+        return res;
     }
 };

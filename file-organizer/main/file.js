@@ -75,7 +75,10 @@ module.exports = class File {
 
     async act() {
         if (this.status != STATUS_NEED_ACTION) {
-            return;
+            if (this.status == STATUS_SUCCESS) {
+                return true;
+            }
+            return false;
         }
         this.notify(STATUS_ACTING);
         this.actChainStart();
