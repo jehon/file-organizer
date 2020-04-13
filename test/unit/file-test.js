@@ -4,7 +4,7 @@ const File = require('../../file-organizer/main/file.js');
 const Task = require('../../file-organizer/main/task.js');
 const messenger = require('../../file-organizer/main/messenger.js');
 
-const { TYPE_FILE,
+const {
     STATUS_CREATED,
     STATUS_ANALYSING,
     STATUS_SUCCESS,
