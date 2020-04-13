@@ -40,7 +40,7 @@
         "style": "npm run --silent eslint && npm run --silent depcheck",
         "test-unit": "npm run --silent clean && nyc --reporter=html --reporter=text-summary jasmine --config=test/unit/jasmine.json",
         "test-unit-continuously": "watch 'npm run test-unit' file-organizer test",
-        "test-system": "xvfb-run jasmine --config=test/system/jasmine.json",
+        "test-system": "jasmine --config=test/system/jasmine.json",
         "depcheck": "depcheck"
     },
     "nyc": {
