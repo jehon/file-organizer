@@ -27,7 +27,7 @@ class DemoFile extends File {
     }
 }
 
-fdescribe('file-test', function () {
+describe('file-test', function () {
     describe('state machine', () => {
         let f;
 

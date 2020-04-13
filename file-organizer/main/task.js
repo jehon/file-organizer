@@ -8,7 +8,7 @@ const { TYPE_TASK,
     STATUS_ACTED_FAILURE
 } = require('../constants.js');
 
-module.exports = class Task {
+class Task {
     constructor(title, action) {
         this.id = messenger.getEntityId();
         this.parent = -1;
@@ -27,10 +27,10 @@ module.exports = class Task {
         return this;
     }
 
-    withCategory(cat) {
-        this.category = cat;
-        return this;
-    }
+    // withCategory(cat) {
+    //     this.category = cat;
+    //     return this;
+    // }
 
     notify(status) {
         if (status) {
@@ -49,34 +49,22 @@ module.exports = class Task {
         return this;
     }
 
-    result() {
-        return {
-            title: this.title,
-            messages: this.messages,
-            details: this.details
-        };
-    }
-
     async run() {
         this.notify(STATUS_ACTING);
-
-        let res = true;
         try {
-            res = await this.action();
-
-            if (res === undefined) {
-                res = true;
-            }
+            const res = await this.action();
+            this.notify(STATUS_ACTED_SUCCESS);
+            return res;
         } catch (e) {
-            this.messages = e;
-            res = false;
-        }
-        if (!res) {
+            if (!this.messages) {
+                this.messages = e;
+            }
             this.notify(STATUS_ACTED_FAILURE);
-            throw this.messages;
+            throw e;
         }
-
-        this.notify(STATUS_ACTED_SUCCESS);
-        return res;
     }
-};
+}
+
+module.exports = Task;
+module.exports.TaskSuccessFactory = (msg) => new Task(`success task ${msg}`, () => msg);
+module.exports.TaskFailureFactory = (msg) => new Task(`failing task ${msg}`, () => { throw new Error(msg); });

@@ -38,8 +38,9 @@ module.exports = class File {
         return this;
     }
 
+    // ??????
     async createAndRun(_class, title, action) {
-        const t = new Task(title, action)
+        const t = (new Task(title, action))
             .withParent(this);
         return t.run();
     }

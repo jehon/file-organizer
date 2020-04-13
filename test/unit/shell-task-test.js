@@ -12,19 +12,33 @@ describe('shell-task-test', function () {
         const t = new ShellTask('task test',
             ['ls', '/']
         );
-        const res = await t.run();
-        expect(res.details).toContain('dev');
-        expect(res.success).toBeTruthy();
+        await expectAsync(t.run()).toBeResolvedTo(jasmine.stringMatching(/.*\ndev\n.*/));
     });
 
     it('should run a simple task that fail', async function () {
         const t = new ShellTask('task test',
-            ['anything']
+            ['ls', '/anything']
         );
 
         await expectAsync(t.run())
-            .toBeRejectedWith(jasmine.objectContaining({
-                messages: 'spawn anything ENOENT'
-            }));
+            .toBeRejectedWithError(/.*ls: cannot access '\/anything': No such file or directory/);
+    });
+
+    it('should be ok without output', async function () {
+        const t = new ShellTask('task test',
+            ['true']
+        );
+
+        await expectAsync(t.run())
+            .toBeResolved();
+    });
+
+    it('should fail when exit code is not 0', async function () {
+        const t = new ShellTask('task test',
+            ['false']
+        );
+
+        await expectAsync(t.run())
+            .toBeRejectedWithError('Command failed: false');
     });
 });
