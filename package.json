@@ -36,11 +36,12 @@
         "start": "electron file-organizer/main.js",
         "start-headless": "electron file-organizer/main.js --headless",
         "demo": "electron demo.js",
-        "test": "npm run --silent test-unit && npm run --silent test-system",
+        "test": "npm run --silent test-unit && npm run --silent test-system-xvfb",
         "style": "npm run --silent eslint && npm run --silent depcheck",
         "test-unit": "npm run --silent clean && nyc --reporter=html --reporter=text-summary jasmine --config=test/unit/jasmine.json",
         "test-unit-continuously": "watch 'npm run test-unit' file-organizer test",
         "test-system": "jasmine --config=test/system/jasmine.json",
+        "test-system-xvfb": "xvfb-run npm run --silent test-system",
         "depcheck": "depcheck"
     },
     "nyc": {
