@@ -40,4 +40,9 @@ exports.getNotifyCallsForFile = function (f, i = false) {
         return list;
     }
     return list[i];
-}
+};
+
+exports.getStatusHistoryForFile = function (f) {
+    return exports.getNotifyCallsForFile(f)
+        .map(args => args[0]);
+};

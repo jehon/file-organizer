@@ -1,12 +1,12 @@
 
 const { dataPath } = require('./helpers.js');
 const fileFactory = require('../../file-organizer/file-factory.js');
-const FileFolder  = require('../../file-organizer/file-folder.js');
+const FileFolder = require('../../file-organizer/file-folder.js');
 
-const FileDelete  = require('../../file-organizer/file-delete.js');
+const FileDelete = require('../../file-organizer/file-delete.js');
 const FileGeneric = require('../../file-organizer/file-generic.js');
-const FileHidden  = require('../../file-organizer/file-hidden.js');
-const FileMovie   = require('../../file-organizer/file-movie.js');
+const FileHidden = require('../../file-organizer/main/file-hidden.js');
+const FileMovie = require('../../file-organizer/file-movie.js');
 const FilePicture = require('../../file-organizer/file-picture.js');
 
 describe('file-factory-test', () => {

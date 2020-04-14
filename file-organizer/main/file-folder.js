@@ -3,13 +3,14 @@ const fs = require('fs');
 const path = require('path');
 
 const File = require('./file.js');
+const FileHidden = require('./file-hidden.js');
 const Task = require('./task.js');
 const options = require('../options.js');
 
 class TaskFolderListing extends Task {
     constructor() {
         const fileFactory = require('../file-factory.js');
-        super("Get the folder list", () =>
+        super('Get the folder list', () =>
             fs.promises.readdir(this.parent.path)
                 .then(list => list.filter(f => f != '.' && f != '..'))
                 .then(list => Promise.all(
@@ -29,9 +30,9 @@ class FileFolder extends File {
             .then(list =>
                 Promise.all(list.map(
                     // Iterate on each child
-                    f => f.analyse(apply)
+                    f => f.analyse()
                 ))
-            )
+            );
     }
 
     // async check() {

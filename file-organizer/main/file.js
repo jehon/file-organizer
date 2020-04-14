@@ -1,6 +1,6 @@
 
+const options = require('../options.js');
 const messenger = require('./messenger.js');
-const Task = require('./task.js');
 const { TYPE_FILE,
     STATUS_CREATED,
     STATUS_ANALYSING,
@@ -108,5 +108,13 @@ module.exports = class File {
             (data) => { this.notify(STATUS_ACTED_SUCCESS); return data; },
             (e) => { this.notify(STATUS_ACTED_FAILURE); throw e; }
         );
+    }
+
+    async loadData() { return this.runAnalyse(); }
+
+    async check() {
+        return Promise.resolve()
+            .then(() => options.dryRun ? true : this.act())
+            .then(() => true);
     }
 };
