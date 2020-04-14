@@ -2,6 +2,7 @@
 const path = require('path');
 const fs = require('fs');
 
+const File = require('../../file-organizer/main/file.js');
 const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))), ...args);
 
 // Test
@@ -11,7 +12,7 @@ exports.tempPath = (...args) => rootPath('tmp', 'unit', ...args);
 const fileFactory = require('../../file-organizer/file-factory.js');
 
 // FileGeneric: copy to
-exports.createFileGeneric = async function(subPath) {
+exports.createFileGeneric = async function (subPath) {
     const fullSource = exports.dataPath(subPath);
     const newName = path.parse(fullSource).base;
 
@@ -23,8 +24,20 @@ exports.createFileGeneric = async function(subPath) {
         .then(f => f.loadData());
 };
 
-exports.fileExists = async function(filePath) {
+exports.fileExists = async function (filePath) {
     return fs.promises.stat(filePath)
         .then(() => true)
         .catch(() => false);
 };
+
+exports.getNotifyCallsForFile = function (f, i = false) {
+    // When creating a file, it notifies the creation of the parent's
+    // we does need to filter on this
+    const list = File.prototype.notify.calls.all()
+        .filter(data => data.object.id == f.id)
+        .map(data => data.args);
+    if (i === false) {
+        return list;
+    }
+    return list[i];
+}

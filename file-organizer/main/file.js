@@ -1,6 +1,6 @@
 
-
 const messenger = require('./messenger.js');
+const Task = require('./task.js');
 const { TYPE_FILE,
     STATUS_CREATED,
     STATUS_ANALYSING,
@@ -12,18 +12,40 @@ const { TYPE_FILE,
     STATUS_ACTED_FAILURE
 } = require('../constants.js');
 
-const Task = require('./task.js');
+const path = require('path');
+
+const parentsMap = new Map();
 
 module.exports = class File {
-    constructor(path, parent = null) {
+    constructor(filePath, parentFile = null) {
         this.id = messenger.getEntityId();
-        this.path = path;
-        this.parent = parent;
+        this.path = filePath;
+        this.parentFile = parentFile;
         this.notify(STATUS_CREATED);
         this.actChain = new Promise((resolve, reject) => {
             this.actChainStart = resolve;
             this.actChainAbort = reject;
         });
+    }
+
+    get parent() {
+        if (this.parentFile === null) {
+            let parentDir = path.dirname(this.path);
+            if (parentDir == '/') {
+                this.parentFile = false;
+            } else {
+                if (parentDir == '.') {
+                    parentDir = process.cwd();
+                }
+
+                if (!parentsMap.has(parentDir)) {
+                    parentsMap.set(parentDir,
+                        new (require('./file-folder.js'))(parentDir));
+                }
+                this.parentFile = parentsMap.get(parentDir);
+            }
+        }
+        return this.parentFile;
     }
 
     notify(status) {
@@ -32,15 +54,14 @@ module.exports = class File {
             id: this.id,
             type: TYPE_FILE,
             path: this.path,
-            parent: this.parent,
+            parent: (this.parent ? this.parent.id : false),
             status: this.status,
         });
         return this;
     }
 
-    // ??????
-    async createAndRun(_class, title, action) {
-        const t = (new Task(title, action))
+    async createAndRun(taskClass, ...args) {
+        const t = (new taskClass(...args))
             .withParent(this);
         return t.run();
     }
@@ -88,5 +109,4 @@ module.exports = class File {
             (e) => { this.notify(STATUS_ACTED_FAILURE); throw e; }
         );
     }
-
 };

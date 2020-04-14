@@ -15,6 +15,8 @@ const {
     STATUS_ACTED_FAILURE
 } = require('../../file-organizer/constants.js');
 
+const { getNotifyCallsForFile } = require('./helpers.js');
+
 class DemoFile extends File {
     withAnalyse(fn) {
         this.fnAnalyse = fn;
@@ -42,51 +44,51 @@ describe('file-test', function () {
             f.withAnalyse(() => true);
 
             let i = 0;
-            expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
+            expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
 
             await expectAsync(f.runAnalyse())
                 .toBeResolvedTo(true);
 
-            expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ANALYSING);
-            expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_SUCCESS);
-            expect(File.prototype.notify).toHaveBeenCalledTimes(i);
+            expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
+            expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_SUCCESS);
+            expect(getNotifyCallsForFile(f).length).toBe(i);
 
             await expectAsync(f.act()).toBeResolvedTo(true);
-            expect(File.prototype.notify).toHaveBeenCalledTimes(i);
+            expect(getNotifyCallsForFile(f).length).toBe(i);
         });
 
         it('should analyse a file impossible', async function () {
             f.withAnalyse(() => { throw 'impossible'; });
 
             let i = 0;
-            expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
+            expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
 
             await expectAsync(f.runAnalyse())
                 .toBeRejectedWith('impossible');
 
-            expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ANALYSING);
-            expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_FAILURE);
-            expect(File.prototype.notify).toHaveBeenCalledTimes(i);
+            expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
+            expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_FAILURE);
+            expect(getNotifyCallsForFile(f).length).toBe(i);
 
             await expectAsync(f.act()).toBeResolvedTo(false);
-            expect(File.prototype.notify).toHaveBeenCalledTimes(i);
+            expect(getNotifyCallsForFile(f).length).toBe(i);
         });
 
         it('should analyse a file by tasks', async function () {
             f.withAnalyse(() => { f.createAndRun(Task, 'test', () => true); });
 
             let i = 0;
-            expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
+            expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
 
             await expectAsync(f.runAnalyse())
                 .toBeResolved();
 
-            expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ANALYSING);
-            expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_SUCCESS);
-            expect(File.prototype.notify).toHaveBeenCalledTimes(i);
+            expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
+            expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_SUCCESS);
+            expect(getNotifyCallsForFile(f).length).toBe(i);
 
             await expectAsync(f.act()).toBeResolvedTo(true);
-            expect(File.prototype.notify).toHaveBeenCalledTimes(i);
+            expect(getNotifyCallsForFile(f).length).toBe(i);
         });
 
         describe('with tasks', function () {
@@ -100,32 +102,32 @@ describe('file-test', function () {
                 let i = 0;
                 t = new Task('test task', () => true);
 
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
                 await expectAsync(f.runAnalyse()).toBeResolved();
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ANALYSING);
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_NEED_ACTION);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);
 
                 await expectAsync(f.act()).toBeResolvedTo(true);
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_SUCCESS);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTING);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTED_SUCCESS);
 
-                expect(File.prototype.notify).toHaveBeenCalledTimes(i);
+                expect(getNotifyCallsForFile(f).length).toBe(i);
             });
 
             it('with failing task', async function () {
                 let i = 0;
                 t = new Task('test task', () => { throw 'impossible'; });
 
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
                 await expectAsync(f.runAnalyse()).toBeResolved();
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ANALYSING);
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_NEED_ACTION);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);
 
                 await expectAsync(f.act()).toBeRejectedWith('impossible');
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
-                expect(File.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_FAILURE);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTING);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTED_FAILURE);
 
-                expect(File.prototype.notify).toHaveBeenCalledTimes(i);
+                expect(getNotifyCallsForFile(f).length).toBe(i);
             });
         });
     });
