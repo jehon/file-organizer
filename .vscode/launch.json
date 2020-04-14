@@ -7,9 +7,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "demo",
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
-            "program": "${workspaceFolder}/demo.js",
+            "name": "Launch jasmine",
+            "program": "${workspaceFolder}/node_modules/.bin/jasmine",
+            "args": [
+                "--config=test/unit/jasmine.json"
+            ],
             "skipFiles": [
                 "<node_internals>/**"
             ]
@@ -17,11 +19,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch jasmine",
-            "program": "${workspaceFolder}/node_modules/.bin/jasmine",
-            "args": [
-                "--config=test/unit/jasmine.json"
-            ],
+            "name": "demo",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+            "program": "${workspaceFolder}/demo.js",
             "skipFiles": [
                 "<node_internals>/**"
             ]
