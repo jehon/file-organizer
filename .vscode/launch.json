@@ -13,7 +13,8 @@
                 "--config=test/unit/jasmine.json"
             ],
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "node_modules/**"
             ]
         },
         {
