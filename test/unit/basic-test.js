@@ -1,5 +1,7 @@
 
-describe('basic test', () => {
+const { basename } = require('path');
+
+describe(basename(__filename), () => {
     it('should be true', () => {
         expect(true).toBeTruthy();
     });

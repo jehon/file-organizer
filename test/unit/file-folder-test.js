@@ -1,13 +1,15 @@
 
+const { basename } = require('path');
+
 const { dataPath } = require('./helpers.js');
 const FileFolder = require('../../file-organizer/file-folder.js');
 const FileGeneric = require('../../file-organizer/file-generic.js');
 
-describe('file-folder-test', () => {
+describe(basename(__filename), () => {
     it('should pass on all files', async () => {
         const folder = new FileFolder(dataPath());
         let res = 0;
-        for(const f of await folder.getList()) {
+        for (const f of await folder.getList()) {
             expect(f).toEqual(jasmine.any(FileGeneric));
             expect(f.parent.getPath()).toBe(dataPath());
             expect(f.getFilename()).not.toBe('.');

@@ -1,4 +1,5 @@
 
+const { basename } = require('path');
 const path = require('path');
 
 const { tempPath, createFileGeneric, dataPath } = require('./helpers.js');
@@ -8,7 +9,7 @@ const helpers = require('./helpers.js');
 
 const { tsFromString } = require('../../file-organizer/timestamp.js');
 
-describe('file-generic-test', () => {
+describe(basename(__filename), () => {
     describe('attributes', () => {
         it('should get attributes', async () => {
             const fpath = path.join(dataPath(), 'test.txt');
@@ -19,7 +20,7 @@ describe('file-generic-test', () => {
             expect(new1.getPath()).toBe(fpath);
         });
 
-        it('should get the parent', function() {
+        it('should get the parent', function () {
             expect((new FileGeneric(path.join(dataPath(), 'test.txt')))
                 .parent.getPath())
                 .toBe(dataPath());
@@ -43,7 +44,7 @@ describe('file-generic-test', () => {
             await fileUtils.fileDelete(new1.getPath());
         });
 
-        it('should remove the file', async function() {
+        it('should remove the file', async function () {
             const new1 = await createFileGeneric('jh-patch-file-patch.txt');
 
             let filename = new1.getPath();
@@ -66,7 +67,7 @@ describe('file-generic-test', () => {
             expect(new1.getExtension()).toBe('.jpg');
         });
 
-        it('should normalize extensions when necessary', async() => {
+        it('should normalize extensions when necessary', async () => {
             const new1 = await createFileGeneric('rotated-bottom-left.jpg');
             await new1.rename('test.jpeg');
             new1.exif_timestamp = tsFromString('2018-01-02');

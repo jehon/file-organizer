@@ -1,4 +1,6 @@
 
+const { basename } = require('path');
+
 const { dataPath, createFileGeneric } = require('./helpers.js');
 const FileMovie = require('../../file-organizer/file-movie.js');
 const fileFactory = require('../../file-organizer/file-factory.js');
@@ -15,11 +17,11 @@ const AndroidMP4 = '2019-09-03 12-48/20190903_124726.mp4';
 const AndroidMP4_TS = '2019-09-03 12-47-31';
 const AndroidMP4_EXIF_TS = '2019:09:03 10:47:31';
 
-describe('file-movie-test', () => {
+describe(basename(__filename), () => {
     it('should get exif from files', async () => {
         // Canon files
         let mov;
-        mov =  await getMov(canonMOV);
+        mov = await getMov(canonMOV);
         expect(mov.exif_timestamp_raw).toBe(canonMOV_EXIF_TS);
 
         // Adroid files
@@ -35,7 +37,7 @@ describe('file-movie-test', () => {
         expect((await getMov(AndroidMP4)).exif_title).toBe('');
     });
 
-    it('should write timestamps correctly with MOV', async() =>  {
+    it('should write timestamps correctly with MOV', async () => {
         const new1 = await createFileGeneric(canonMOV);
         expect(new1.exif_calculated_timezone).toBe('');
         expect(new1.exif_timestamp.exif()).toBe(canonMOV_EXIF_TS);
@@ -55,7 +57,7 @@ describe('file-movie-test', () => {
         new1.remove();
     });
 
-    it('should write timestamps correctly with MP4', async() =>  {
+    it('should write timestamps correctly with MP4', async () => {
         const new1 = await createFileGeneric(AndroidMP4);
         expect(new1.exif_calculated_timezone).toBe('Europe/Brussels');
         expect(new1.exif_timestamp.exif()).toBe(AndroidMP4_EXIF_TS);
@@ -76,7 +78,7 @@ describe('file-movie-test', () => {
     });
 
 
-    it('should write titles correctly', async() =>  {
+    it('should write titles correctly', async () => {
         const newTitle = 'test';
         const new1 = await createFileGeneric(canonMOV);
         expect(new1.exif_title).toBe('');

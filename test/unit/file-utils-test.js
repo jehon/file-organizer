@@ -1,10 +1,12 @@
 
+const { basename } = require('path');
+
 const { createFileGeneric } = require('./helpers.js');
 const fileUtils = require('../../file-organizer/file-utils.js');
 const helpers = require('./helpers.js');
 
-describe('file-utils-test', function() {
-    it('should findIndexedFilename', async function() {
+describe(basename(__filename), function () {
+    it('should findIndexedFilename', async function () {
         expect(await helpers.fileExists(__filename)).toBeTruthy();
         expect(await helpers.fileExists(__filename + '.brol')).toBeFalsy();
 
@@ -16,16 +18,16 @@ describe('file-utils-test', function() {
         expect(await helpers.fileExists(new1.getPath())).toBeFalsy();
     });
 
-    it('should launch subprocesses', async function() {
-        expect(await fileUtils.fileExec('ls', [ '/' ])).toContain('dev');
+    it('should launch subprocesses', async function () {
+        expect(await fileUtils.fileExec('ls', ['/'])).toContain('dev');
         await expectAsync(fileUtils.fileExec('anything')).toBeRejected();
-        await expectAsync(fileUtils.fileExec('ls', [ '/anything' ])).toBeRejectedWithError();
+        await expectAsync(fileUtils.fileExec('ls', ['/anything'])).toBeRejectedWithError();
 
         // Erase just written error message
         process.stdout.write('\u001B[1A\r\u001B[K');
     });
 
-    it('should work with reservations', async function() {
+    it('should work with reservations', async function () {
         const new1 = await createFileGeneric('jh-patch-file-patch.txt');
         const new2Name = new1.getPath() + '.ok';
 

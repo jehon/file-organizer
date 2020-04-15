@@ -1,4 +1,5 @@
 
+const { basename } = require('path');
 
 const File = require('../../file-organizer/main/file.js');
 const Task = require('../../file-organizer/main/task.js');
@@ -31,7 +32,7 @@ class DemoFile extends File {
     }
 }
 
-describe('file-test', function () {
+describe(basename(__filename), function () {
     describe('state machine', () => {
         let f;
 

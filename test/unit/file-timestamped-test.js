@@ -1,4 +1,6 @@
 
+const { basename } = require('path');
+
 const { tempPath, createFileGeneric } = require('./helpers.js');
 const fileFactory = require('../../file-organizer/file-factory.js');
 const FileTimestamped = require('../../file-organizer/file-timestamped.js');
@@ -6,8 +8,8 @@ const FileFolder = require('../../file-organizer/file-folder.js');
 const { tsFromString } = require('../../file-organizer/timestamp.js');
 const { fileDelete } = require('../../file-organizer/file-utils.js');
 
-describe('file-timestamped-test', () => {
-    it('should get the timestamp', function() {
+describe(basename(__filename), () => {
+    it('should get the timestamp', function () {
         const new1 = new FileTimestamped('20150306_153340 Cable internet dans la rue.jpg');
         expect(new1.calculatedTS.humanReadable()).toBe('2015-03-06 15-33-40');
 
@@ -28,7 +30,7 @@ describe('file-timestamped-test', () => {
         expect((new FileTimestamped('2020-01-19 01-24-02 petitAppPhoto')).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
     });
 
-    it('should find an indexed filename', async function() {
+    it('should find an indexed filename', async function () {
         const n1 = await createFileGeneric('canon.JPG');
         await n1.check();
         expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
@@ -55,7 +57,7 @@ describe('file-timestamped-test', () => {
         });
 
         describe('should check coherence with parent folder', () => {
-            it('should be ok when no file date and no folder date', async() => {
+            it('should be ok when no file date and no folder date', async () => {
                 // already ok: no file date and no folder date
                 const new1 = new FileTimestamped(tempPath('canon.jpg'));
                 await new1.check();
@@ -69,13 +71,13 @@ describe('file-timestamped-test', () => {
             // 	expect(FileGeneric.prototype.check).toHaveBeenCalledTimes(1);
             // });
 
-            it('should be ok when file date and folder date are coherent', async() => {
+            it('should be ok when file date and folder date are coherent', async () => {
                 const new1 = new FileTimestamped(tempPath('1998-12-31 virtual', '1998-12-31 12-13-24 test.jpg'));
                 await new1.check();
                 expect(Array.from(new1.messages.keys())).not.toContain('TS_PARENT_INCOHERENT');
             });
 
-            it('should be ok when file date and folder range date are coherent', async() => {
+            it('should be ok when file date and folder range date are coherent', async () => {
                 const new1 = new FileTimestamped(tempPath('1996-2000 virtual', '1998-12-31 12-13-24 test.jpg'));
                 await new1.check();
                 expect(Array.from(new1.messages.keys())).not.toContain('TS_PARENT_INCOHERENT');

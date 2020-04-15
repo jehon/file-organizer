@@ -1,4 +1,6 @@
 
+const { basename } = require('path');
+
 const FileHidden = require('../../file-organizer/main/file-hidden.js');
 const File = require('../../file-organizer/main/file.js');
 const {
@@ -9,7 +11,7 @@ const {
 
 const { getStatusHistoryForFile } = require('./helpers.js');
 
-describe('file-picture-test', () => {
+describe(basename(__filename), () => {
     beforeEach(() => {
         spyOn(File.prototype, 'notify').and.callThrough();
     });

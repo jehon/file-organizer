@@ -1,10 +1,11 @@
 
+const { basename } = require('path');
 const fs = require('fs');
 
 const { dataPath, tempPath, createFileGeneric } = require('./helpers.js');
 
-describe('helpers-test', function() {
-    it('should have a data path', function() {
+describe(basename(__filename), function () {
+    it('should have a data path', function () {
         expect(fs.existsSync(dataPath())).toBeTruthy();
         expect(fs.existsSync(dataPath('..', 'data'))).toBeTruthy();
     });

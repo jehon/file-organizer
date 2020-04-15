@@ -1,7 +1,9 @@
 
+const { basename } = require('path');
+
 const messenger = require('../../file-organizer/main/messenger.js');
 
-describe(__filename, function () {
+describe(basename(__filename), function () {
     // beforeEach(() => {
     //     spyOn(messenger, 'notify').and.returnValue(true);
     // });

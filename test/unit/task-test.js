@@ -1,4 +1,6 @@
 
+const { basename } = require('path');
+
 const Task = require('../../file-organizer/main/task.js');
 const { TaskSuccessFactory, TaskFailureFactory } = Task;
 const messenger = require('../../file-organizer/main/messenger.js');
@@ -11,7 +13,7 @@ const { TYPE_TASK,
     STATUS_ACTED_FAILURE
 } = require('../../file-organizer/constants.js');
 
-describe('task-test', function () {
+describe(basename(__filename), function () {
     beforeEach(() => {
         spyOn(messenger, 'notify').and.returnValue(true);
         spyOn(Task.prototype, 'notify').and.callThrough();
