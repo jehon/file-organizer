@@ -4,8 +4,8 @@ const messenger = require('./messenger.js');
 const { TYPE_FILE,
     STATUS_CREATED,
     STATUS_ANALYSING,
-    STATUS_FAILURE, // TODO
-    STATUS_SUCCESS, // TODO
+    STATUS_FAILURE,
+    STATUS_SUCCESS,
     STATUS_NEED_ACTION,
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
@@ -20,6 +20,7 @@ module.exports = class File {
     constructor(filePath, parentFile = null) {
         this.id = messenger.getEntityId();
         this.path = filePath;
+        this.category = this.constructor.name;
         this.parentFile = parentFile;
         this.notify(STATUS_CREATED);
         this.actChain = new Promise((resolve, reject) => {
@@ -53,6 +54,7 @@ module.exports = class File {
         messenger.notify({
             id: this.id,
             type: TYPE_FILE,
+            category: this.category,
             path: this.path,
             parent: (this.parent ? this.parent.id : false),
             status: this.status,
