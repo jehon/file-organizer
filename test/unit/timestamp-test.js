@@ -43,66 +43,75 @@ describe(basename(__filename), function () {
                 'final', '2018:09:08 13:14:15', '2018-09-08 13-14-15');
 
             isA('2018-09-08 13-14-15 [file]',
-                'final', '2018:09:08 13:14:15', '2018-09-08 13-14-15', {
-                original: 'file',
-                title: ''
-            });
+                'final', '2018:09:08 13:14:15', '2018-09-08 13-14-15',
+                {
+                    original: 'file',
+                    title: ''
+                });
 
             isA('2018-09-08 13-14-15 test [file]',
-                'final', '2018:09:08 13:14:15', '2018-09-08 13-14-15', {
-                original: 'file',
-                title: 'test'
-            });
+                'final', '2018:09:08 13:14:15', '2018-09-08 13-14-15',
+                {
+                    original: 'file',
+                    title: 'test'
+                });
 
             isA('2018-09-08 test [file]',
-                'final', '2018:09:08 00:00:00', '2018-09-08', {
-                original: 'file',
-                title: 'test'
-            });
+                'final', '2018:09:08 00:00:00', '2018-09-08',
+                {
+                    original: 'file',
+                    title: 'test'
+                });
 
             // Year only
             isA('2018 test [file]',
-                'final', '2018:01:01 01:01:01', '2018', {
-                original: 'file',
-                title: 'test'
-            });
+                'final', '2018:01:01 01:01:01', '2018',
+                {
+                    original: 'file',
+                    title: 'test'
+                });
 
             // Year only
             isA('2018 test',
-                'final', '2018:01:01 01:01:01', '2018', {
-                original: '',
-                title: 'test'
-            });
+                'final', '2018:01:01 01:01:01', '2018',
+                {
+                    original: '',
+                    title: 'test'
+                });
 
             isA('2015-12-11 02-03-55 Bangladesh - A la mer',
-                'final', '2015:12:11 02:03:55', '2015-12-11 02-03-55', {
-                original: '',
-                title: 'Bangladesh - A la mer'
-            });
+                'final', '2015:12:11 02:03:55', '2015-12-11 02-03-55',
+                {
+                    original: '',
+                    title: 'Bangladesh - A la mer'
+                });
 
             isA('2019-03-24 12-14-46',
                 'final', '2019:03:24 12:14:46');
 
             // Year only
             isA('2018 bonjour 2019',
-                'final', '2018:01:01 01:01:01', '2018', {
-                original: '',
-                title: 'bonjour 2019'
-            });
+                'final', '2018:01:01 01:01:01', '2018',
+                {
+                    original: '',
+                    title: 'bonjour 2019'
+                });
 
             // Year-month only
             isA('2018-01 bonjour 2019',
-                'final', '2018:01:02 02:02:02', '2018-01', {
-                original: '',
-                title: 'bonjour 2019'
-            });
+                'final', '2018:01:02 02:02:02', '2018-01',
+                {
+                    original: '',
+                    title: 'bonjour 2019'
+                });
 
             // Year-month-day only
             isA('2018-01-15 bonjour 2019',
-                'final', '2018:01:15 00:00:00', '2018-01-15', {
-                original: '',
-                title: 'bonjour 2019'
-            });
+                'final', '2018:01:15 00:00:00', '2018-01-15',
+                {
+                    original: '',
+                    title: 'bonjour 2019'
+                });
         });
 
         it('should parse old elements', function () {
@@ -121,35 +130,40 @@ describe(basename(__filename), function () {
         it('should parse timestamps elements', function () {
             // With timezone
             isA('2019:03:24 12:14:46+01:00',
-                'final', '2019:03:24 12:14:46', '2019-03-24 12-14-46', {
-            });
+                'final', '2019:03:24 12:14:46', '2019-03-24 12-14-46',
+                {
+                });
         });
 
         it('should parse canon pictures and movies', function () {
             isA('DSC_1234',
-                'raw8_3', '0000:00:00 00:00:00', '', {
-                original: 'DSC_1234',
-                title: ''
-            });
+                'raw8_3', '0000:00:00 00:00:00', '',
+                {
+                    original: 'DSC_1234',
+                    title: ''
+                });
         });
 
         it('should parse "android" elements', function () {
             isA('VID_20180102_030405',
-                'android', '2018:01:02 03:04:05', '2018-01-02 03-04-05', {
-                original: 'VID_20180102_030405',
-                title: ''
-            });
+                'android', '2018:01:02 03:04:05', '2018-01-02 03-04-05',
+                {
+                    original: 'VID_20180102_030405',
+                    title: ''
+                });
 
             isA('IMG_20180102_030405',
-                'android', '2018:01:02 03:04:05', '2018-01-02 03-04-05', {
-                original: 'IMG_20180102_030405',
-                title: ''
-            });
+                'android', '2018:01:02 03:04:05', '2018-01-02 03-04-05',
+                {
+                    original: 'IMG_20180102_030405',
+                    title: ''
+                });
 
             isA('IMG-20180915-WA0001',
-                'whatsapp', '2018:09:15 00:00:00', '2018-09-15', {
-                original: 'IMG-20180915-WA0001'
-            });
+                'whatsapp', '2018:09:15 00:00:00', '2018-09-15',
+                {
+                    original: 'IMG-20180915-WA0001'
+                });
 
             expect(regexps.android.test('IMG_20180304_050607')).toBeTruthy();
             expect(regexps.android.test('VID_20121215_111704')).toBeTruthy();
@@ -157,61 +171,60 @@ describe(basename(__filename), function () {
 
         it('should parse "screen" elements', function () {
             isA('20150306_153340',
-                'screen', '2015:03:06 15:33:40', '2015-03-06 15-33-40', {
-                original: '20150306_153340',
-                title: '',
-            });
+                'screen', '2015:03:06 15:33:40', '2015-03-06 15-33-40',
+                {
+                    original: '20150306_153340',
+                    title: '',
+                });
 
             isA('20150306_153340 Cable internet dans la rue',
-                'screen', '2015:03:06 15:33:40', '2015-03-06 15-33-40', {
-                original: '20150306_153340',
-                title: 'Cable internet dans la rue',
-            });
+                'screen', '2015:03:06 15:33:40', '2015-03-06 15-33-40',
+                {
+                    original: '20150306_153340',
+                    title: 'Cable internet dans la rue',
+                });
         });
 
         it('should parse "yearRange" elements', function () {
             isA('2015-2016',
-                'yearRange', '0000:00:00 00:00:00', '', {
-                yearMin: 2015,
-                yearMax: 2016,
-                title: '',
-            });
+                'yearRange', '0000:00:00 00:00:00', '',
+                {
+                    yearMin: 2015,
+                    yearMax: 2016,
+                    title: '',
+                });
 
             isA('2015-2016 with title',
-                'yearRange', '0000:00:00 00:00:00', '', {
-                yearMin: 2015,
-                yearMax: 2016,
-                title: 'with title',
-            });
+                'yearRange', '0000:00:00 00:00:00', '',
+                {
+                    yearMin: 2015,
+                    yearMax: 2016,
+                    title: 'with title',
+                });
         });
 
         it('should parse minimal format', function () {
             isA('canon',
-                'minimal', '0000:00:00 00:00:00', '', {
-                title: 'canon'
-            });
+                'minimal', '0000:00:00 00:00:00', '',
+                { title: 'canon' });
 
             isA('canon brol',
-                'minimal', '0000:00:00 00:00:00', '', {
-                title: 'canon brol'
-            });
+                'minimal', '0000:00:00 00:00:00', '',
+                { title: 'canon brol' });
         });
 
         it('should detect invalid formats', function () {
             isA('2018-01-02-03',
-                'invalid', '0000:00:00 00:00:00', '', {
-                original: '2018-01-02-03'
-            });
+                'invalid', '0000:00:00 00:00:00', '',
+                { original: '2018-01-02-03' });
 
             isA('brol - machin',
-                'invalid', '0000:00:00 00:00:00', '', {
-                original: 'brol - machin'
-            });
+                'invalid', '0000:00:00 00:00:00', '',
+                { original: 'brol - machin' });
 
             isA('brol 2018-01-02 machin',
-                'invalid', '0000:00:00 00:00:00', '', {
-                original: 'brol 2018-01-02 machin'
-            });
+                'invalid', '0000:00:00 00:00:00', '',
+                { original: 'brol 2018-01-02 machin' });
 
         });
     });
