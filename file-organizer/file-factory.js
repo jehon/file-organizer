@@ -5,9 +5,10 @@ const fileUtils = require('./file-utils.js');
 const FileGeneric = require('./file-generic.js');
 const FileFolder = require('./file-folder.js');
 
-const FileDelete = require('./file-delete.js');
+// const File = require('./main/file.js');
+const FileDelete = require('./main/file-delete.js');
 const FileHidden = require('./main/file-hidden.js');
-const FileManual = require('./file-manual.js');
+const FileManual = require('./main/file-manual.js');
 const FileMovie = require('./file-movie.js');
 const FilePicture = require('./file-picture.js');
 const FileConvertSource = require('./file-convert-source.js');

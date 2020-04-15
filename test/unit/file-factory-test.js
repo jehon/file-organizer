@@ -5,7 +5,8 @@ const { dataPath } = require('./helpers.js');
 const fileFactory = require('../../file-organizer/file-factory.js');
 const FileFolder = require('../../file-organizer/file-folder.js');
 
-const FileDelete = require('../../file-organizer/file-delete.js');
+// const File = require('../../file-organizer/main/file.js');
+const FileDelete = require('../../file-organizer/main/file-delete.js');
 const FileGeneric = require('../../file-organizer/file-generic.js');
 const FileHidden = require('../../file-organizer/main/file-hidden.js');
 const FileMovie = require('../../file-organizer/file-movie.js');

@@ -24,6 +24,14 @@ exports.createFileGeneric = async function (subPath) {
         .then(f => f.loadData());
 };
 
+exports.createFileFrom = async function (subPath) {
+    const f = await exports.createFileGeneric(subPath);
+    if (f instanceof File) {
+        return f;
+    }
+    return new File(f.getPath());
+};
+
 exports.fileExists = async function (filePath) {
     return fs.promises.stat(filePath)
         .then(() => true)
