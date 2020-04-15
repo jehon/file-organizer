@@ -1,6 +1,6 @@
 
 const options = require('../options.js');
-const FileUnsupported = require('../file-unsupported.js');
+const FileUnsupported = require('../main/file-unsupported.js');
 const FileMovie = require('../file-movie.js');
 
 exports.command = 'legacy';

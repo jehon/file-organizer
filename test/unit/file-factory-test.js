@@ -7,14 +7,15 @@ const FileFolder = require('../../file-organizer/file-folder.js');
 
 // const File = require('../../file-organizer/main/file.js');
 const FileDelete = require('../../file-organizer/main/file-delete.js');
-const FileGeneric = require('../../file-organizer/file-generic.js');
+// const FileGeneric = require('../../file-organizer/file-generic.js');
+const FileManual = require('../../file-organizer/main/file-manual.js');
 const FileHidden = require('../../file-organizer/main/file-hidden.js');
 const FileMovie = require('../../file-organizer/file-movie.js');
 const FilePicture = require('../../file-organizer/file-picture.js');
 
 describe(basename(__filename), () => {
-    it('should work for non-existing files', async () => {
-        expect(await fileFactory('anything')).toEqual(jasmine.any(FileGeneric));
+    xit('should work for non-existing files', async () => {
+        expect(await fileFactory('anything.doc')).toEqual(jasmine.any(FileManual));
     });
 
     it('should give the correct type for folders', async () => {

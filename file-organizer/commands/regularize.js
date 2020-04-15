@@ -1,6 +1,6 @@
 
 // const FileGeneric = require('../file-generic.js');
-const FileUnsupported = require('../file-unsupported.js');
+const FileUnsupported = require('../main/file-unsupported.js');
 const options = require('../options.js');
 
 exports.command = ['$0 [files..]', 'regularize [files..]'];

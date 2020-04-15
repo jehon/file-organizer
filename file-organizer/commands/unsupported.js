@@ -1,7 +1,7 @@
 
 const options = require('../options.js');
 const fileUtils = require('../file-utils.js');
-const FileUnsupported = require('../file-unsupported.js');
+const FileUnsupported = require('../main/file-unsupported.js');
 
 exports.command = 'unsupported';
 

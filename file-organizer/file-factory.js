@@ -13,7 +13,7 @@ const FileMovie = require('./file-movie.js');
 const FilePicture = require('./file-picture.js');
 const FileConvertSource = require('./file-convert-source.js');
 
-const FileUnsupported = require('./file-unsupported.js');
+const FileUnsupported = require('./main/file-unsupported.js');
 
 async function fileFactory(filepath, parent = null) {
     if (filepath instanceof FileGeneric) {
