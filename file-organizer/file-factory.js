@@ -11,7 +11,7 @@ const FileHidden = require('./main/file-hidden.js');
 const FileManual = require('./main/file-manual.js');
 const FileMovie = require('./file-movie.js');
 const FilePicture = require('./file-picture.js');
-const FileConvertSource = require('./file-convert-source.js');
+const FileConvertSource = require('./main/file-convert-source.js');
 
 const FileUnsupported = require('./main/file-unsupported.js');
 
