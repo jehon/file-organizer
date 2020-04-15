@@ -11,6 +11,7 @@ const { TYPE_FILE,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
 } = require('../constants.js');
+const fileUtils = require('../file-utils.js');
 
 const path = require('path');
 
@@ -20,13 +21,30 @@ module.exports = class File {
     constructor(filePath, parentFile = null) {
         this.id = messenger.getEntityId();
         this.path = filePath;
-        this.category = this.constructor.name;
         this.parentFile = parentFile;
         this.notify(STATUS_CREATED);
         this.actChain = new Promise((resolve, reject) => {
             this.actChainStart = resolve;
             this.actChainAbort = reject;
         });
+    }
+
+    get category() {
+        return this.constructor.name;
+    }
+
+    /**
+	 * Without extension
+	 */
+    get filename() {
+        return fileUtils.getFilename(this.path);
+    }
+
+    /**
+	 * Format: .blabla
+	 */
+    get extension() {
+        return fileUtils.getExtension(this.path);
     }
 
     get parent() {

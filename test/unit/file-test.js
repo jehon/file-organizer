@@ -2,6 +2,8 @@
 const { basename } = require('path');
 
 const File = require('../../file-organizer/main/file.js');
+const FileManual = require('../../file-organizer/main/file-manual.js');
+
 const Task = require('../../file-organizer/main/task.js');
 const messenger = require('../../file-organizer/main/messenger.js');
 
@@ -33,6 +35,32 @@ class DemoFile extends File {
 }
 
 describe(basename(__filename), function () {
+    describe('attributes', () => {
+        it('should give a category', () => {
+            expect((new File('a')).category).toBe('File');
+            expect((new FileManual('a')).category).toBe('FileManual');
+        });
+
+        it('should parse extension', () => {
+            expect((new File('a.txt')).extension).toBe('.txt');
+            expect((new File('a')).extension).toBe('');
+        });
+
+        it('should parse filename', () => {
+            expect((new File('a.txt')).filename).toBe('a');
+            expect((new File('a')).filename).toBe('a');
+            expect((new File('test/a.txt')).filename).toBe('a');
+            expect((new File('test/a')).filename).toBe('a');
+        });
+
+        it('should give a parent', () => {
+            expect((new File('test/brol/a.txt')).parent.path).toBe('test/brol');
+            expect((new File('test/a.txt')).parent.path).toBe('test');
+            expect((new File('test/a.txt')).parent.parent.path).toBe(process.cwd());
+            expect((new File('a.txt')).parent.path).toBe(process.cwd());
+        });
+    });
+
     describe('state machine', () => {
         let f;
 
