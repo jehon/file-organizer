@@ -5,6 +5,7 @@ const File = require('../../file-organizer/main/file.js');
 const Item = require('../../file-organizer/main/item.js');
 
 const Task = require('../../file-organizer/main/task.js');
+const Info = require('../../file-organizer/main/info.js');
 const messenger = require('../../file-organizer/main/messenger.js');
 
 const {
@@ -57,6 +58,11 @@ describe(basename(__filename), function () {
 
         it('should be constructed with a parent', () => {
             expect((new File('test/brol/a.txt', new File('/machin'))).parent.path).toBe('/machin');
+        })
+
+        it('should allow creating info', () => {
+            const f = new File('test');
+            expect(f.createInfo(Info, []).parent.id).toBe(f.id);
         })
     });
 

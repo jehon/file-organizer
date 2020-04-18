@@ -70,6 +70,10 @@ module.exports = class File extends Item {
         return this.parent;
     }
 
+    createInfo(infoClass, ...args) {
+        return new infoClass(...args, this);
+    }
+
     async createAndRun(taskClass, ...args) {
         return (new taskClass(...args, this)).run();
     }
