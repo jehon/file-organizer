@@ -1,6 +1,6 @@
 
 const list = [];
-let guiCallback = (_channel, _data) => { };
+let guiCallback = (_data) => { };
 
 let id = 1;
 
