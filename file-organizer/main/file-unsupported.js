@@ -3,6 +3,7 @@ const File = require('./file.js');
 const {
     STATUS_FAILURE
 } = require('../constants.js');
+const InfoProblem = require('./info-problem.js');
 
 const map = new Map();
 
@@ -15,6 +16,7 @@ class FileUnsupported extends File {
 
     async analyse() {
         return super.analyse()
+            .then(() => this.createInfo(InfoProblem, 'File type is unsupported'))
             .then(() => this.notify(STATUS_FAILURE));
     }
 }
