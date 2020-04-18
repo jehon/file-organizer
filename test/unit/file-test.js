@@ -54,6 +54,10 @@ describe(basename(__filename), function () {
             expect((new File('test/a.txt')).parent.parent.path).toBe(process.cwd());
             expect((new File('a.txt')).parent.path).toBe(process.cwd());
         });
+
+        it('should be constructed with a parent', () => {
+            expect((new File('test/brol/a.txt', new File('/machin'))).parent.path).toBe('/machin');
+        })
     });
 
     describe('state machine', () => {

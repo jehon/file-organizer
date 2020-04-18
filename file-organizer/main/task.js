@@ -16,8 +16,8 @@ class Task extends Item {
         return TYPE_TASK;
     }
 
-    constructor(title, action) {
-        super(title);
+    constructor(title, action, parent) {
+        super(title, parent);
         this.action = action;
         this.messages = '';
         this.notify(STATUS_NEED_ACTION);

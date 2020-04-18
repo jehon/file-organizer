@@ -13,10 +13,10 @@ module.exports = class Item {
         return 'Item';
     }
 
-    constructor(title = '') {
+    constructor(title = '', parent) {
         this.id = messenger.getEntityId();
         this.title = title;
-        this.parent = false;
+        this.parent = parent;
         this.notify(STATUS_CREATED);
     }
 
@@ -38,9 +38,10 @@ module.exports = class Item {
         if (status !== false) {
             this.status = status;
         }
-        let data = {
-            parent: this.parent.id
-        };
+        let data = {};
+        if (this.parent) {
+            data.parent = this.parent.id;
+        }
         for (let i of this.constructor.getNotifyProperties()) {
             data[i] = this[i];
         }

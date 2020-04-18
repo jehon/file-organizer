@@ -25,16 +25,17 @@ module.exports = class File extends Item {
         return TYPE_FILE;
     }
 
-    constructor(filePath) {
-        super(filePath);
+    constructor(filePath, parent) {
+        super(filePath, parent);
         this.path = filePath;
         this.actChain = new Promise((resolve, reject) => {
             this.actChainStart = resolve;
             this.actChainAbort = reject;
         });
-        this.parent = null;
-        this.calculateParent();
-        this.notify();
+        if (this.parent === undefined) {
+            this.calculateParent();
+            this.notify();
+        }
     }
 
     /**
@@ -52,29 +53,25 @@ module.exports = class File extends Item {
     }
 
     calculateParent() {
-        if (this.parent === null) {
-            let parentDir = path.dirname(this.path);
-            if (parentDir == '/') {
-                this.parent = false;
-            } else {
-                if (parentDir == '.') {
-                    parentDir = process.cwd();
-                }
-
-                if (!parentsMap.has(parentDir)) {
-                    parentsMap.set(parentDir,
-                        new (require('./file-folder.js'))(parentDir));
-                }
-                this.parent = parentsMap.get(parentDir);
+        let parentDir = path.dirname(this.path);
+        if (parentDir == '/') {
+            this.parent = false;
+        } else {
+            if (parentDir == '.') {
+                parentDir = process.cwd();
             }
+
+            if (!parentsMap.has(parentDir)) {
+                parentsMap.set(parentDir,
+                    new (require('./file-folder.js'))(parentDir));
+            }
+            this.parent = parentsMap.get(parentDir);
         }
         return this.parent;
     }
 
     async createAndRun(taskClass, ...args) {
-        const t = (new taskClass(...args))
-            .withParent(this);
-        return t.run();
+        return (new taskClass(...args, this)).run();
     }
 
     async runAnalyse() {
