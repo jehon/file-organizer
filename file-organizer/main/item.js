@@ -6,14 +6,14 @@ const {
 
 module.exports = class Item {
     static getNotifyProperties() {
-        return ["id", "type", "subType", "status", "title"];
+        return ['id', 'type', 'subType', 'status', 'title'];
     }
 
     static getType() {
-        return "Item";
+        return 'Item';
     }
 
-    constructor(title = "") {
+    constructor(title = '') {
         this.id = messenger.getEntityId();
         this.title = title;
         this.parent = false;
@@ -40,7 +40,7 @@ module.exports = class Item {
         }
         let data = {
             parent: this.parent.id
-        }
+        };
         for (let i of this.constructor.getNotifyProperties()) {
             data[i] = this[i];
         }

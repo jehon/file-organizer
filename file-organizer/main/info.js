@@ -1,5 +1,5 @@
 
-const Item = require('./item.js')
+const Item = require('./item.js');
 const {
     TYPE_INFO
 } = require('../constants.js');

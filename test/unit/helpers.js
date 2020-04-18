@@ -56,7 +56,7 @@ exports.getNotifyCallsForItem = function (f, i = false) {
     // we does need to filter on this
     const list = Item.prototype.notify.calls.all()
         .filter(data => data.object.id == f.id)
-        .map(data => data.args)
+        .map(data => data.args);
     if (i === false) {
         return list;
     }
@@ -68,4 +68,4 @@ exports.getStatusHistoryForItem = function (i) {
     return exports.getNotifyCallsForItem(i)
         .map(args => args[0])
         .filter(a => a);
-}
+};

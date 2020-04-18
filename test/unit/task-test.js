@@ -19,6 +19,11 @@ describe(basename(__filename), function () {
         spyOn(Task.prototype, 'notify').and.callThrough();
     });
 
+    it('should have the correct type', function () {
+        const t = new Task('task test', () => true);
+        expect(t.type).toBe(TYPE_TASK);
+    });
+
     it('should run a simple task', async function () {
         const t = new Task('task test', () => true);
         await expectAsync(t.run())

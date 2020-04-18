@@ -30,7 +30,6 @@ require('./file-organizer/gui.js').then(() => {
         }
     }
 
-
     (async function () {
         const f1 = new DemoFile('test (stay in analysis)');
         const f2 = new DemoFile('test2 (status_failure)');

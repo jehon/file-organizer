@@ -2,7 +2,6 @@
 const Item = require('./item.js');
 const options = require('../options.js');
 const { TYPE_FILE,
-    STATUS_CREATED,
     STATUS_ANALYSING,
     STATUS_FAILURE,
     STATUS_SUCCESS,
@@ -69,7 +68,7 @@ module.exports = class File extends Item {
                 this.parent = parentsMap.get(parentDir);
             }
         }
-        return this.parent
+        return this.parent;
     }
 
     async createAndRun(taskClass, ...args) {

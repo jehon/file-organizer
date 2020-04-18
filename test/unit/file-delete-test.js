@@ -17,7 +17,6 @@ const { getStatusHistoryForItem } = require('./helpers.js');
 describe(basename(__filename), function () {
     beforeEach(() => {
         spyOn(Item.prototype, 'notify').and.callThrough();
-        spyOn(console, 'info').and.returnValue();
     });
 
     it('should delete a file', async function () {

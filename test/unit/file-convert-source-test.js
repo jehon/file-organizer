@@ -14,7 +14,6 @@ const { getStatusHistoryForItem } = require('./helpers.js');
 describe(basename(__filename), () => {
     beforeEach(() => {
         spyOn(Item.prototype, 'notify').and.callThrough();
-        spyOn(console, 'info').and.returnValue();
     });
 
     it('should be always good', async function () {
