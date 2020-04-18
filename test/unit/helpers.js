@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 const File = require('../../file-organizer/main/file.js');
+const Item = require('../../file-organizer/main/item.js');
 const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))), ...args);
 
 // Test
@@ -50,7 +51,21 @@ exports.getNotifyCallsForFile = function (f, i = false) {
     return list[i];
 };
 
-exports.getStatusHistoryForFile = function (f) {
-    return exports.getNotifyCallsForFile(f)
-        .map(args => args[0]);
+exports.getNotifyCallsForItem = function (f, i = false) {
+    // When creating a file, it notifies the creation of the parent's
+    // we does need to filter on this
+    const list = Item.prototype.notify.calls.all()
+        .filter(data => data.object.id == f.id)
+        .map(data => data.args)
+    if (i === false) {
+        return list;
+    }
+    return list[i];
 };
+
+
+exports.getStatusHistoryForItem = function (i) {
+    return exports.getNotifyCallsForItem(i)
+        .map(args => args[0])
+        .filter(a => a);
+}

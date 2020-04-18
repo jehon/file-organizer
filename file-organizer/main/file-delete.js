@@ -6,7 +6,7 @@ const {
 
 module.exports = class FileDelete extends File {
     async analyse() {
-        await super.analyse();
         this.enqueueAct(new TaskFileDelete());
+        await super.analyse();
     }
 };

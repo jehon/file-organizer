@@ -1,6 +1,6 @@
 
+const Item = require('./item.js');
 const options = require('../options.js');
-const messenger = require('./messenger.js');
 const { TYPE_FILE,
     STATUS_CREATED,
     STATUS_ANALYSING,
@@ -17,41 +17,46 @@ const path = require('path');
 
 const parentsMap = new Map();
 
-module.exports = class File {
-    constructor(filePath, parentFile = null) {
-        this.id = messenger.getEntityId();
+module.exports = class File extends Item {
+    static getNotifyProperties() {
+        return super.getNotifyProperties().concat(['path']);
+    }
+
+    static getType() {
+        return TYPE_FILE;
+    }
+
+    constructor(filePath) {
+        super(filePath);
         this.path = filePath;
-        this.parentFile = parentFile;
-        this.notify(STATUS_CREATED);
         this.actChain = new Promise((resolve, reject) => {
             this.actChainStart = resolve;
             this.actChainAbort = reject;
         });
-    }
-
-    get category() {
-        return this.constructor.name;
+        this.parent = null;
+        this.calculateParent();
+        this.notify();
     }
 
     /**
-	 * Without extension
-	 */
+     * Without extension
+     */
     get filename() {
         return fileUtils.getFilename(this.path);
     }
 
     /**
-	 * Format: .blabla
-	 */
+     * Format: .blabla
+     */
     get extension() {
         return fileUtils.getExtension(this.path);
     }
 
-    get parent() {
-        if (this.parentFile === null) {
+    calculateParent() {
+        if (this.parent === null) {
             let parentDir = path.dirname(this.path);
             if (parentDir == '/') {
-                this.parentFile = false;
+                this.parent = false;
             } else {
                 if (parentDir == '.') {
                     parentDir = process.cwd();
@@ -61,23 +66,10 @@ module.exports = class File {
                     parentsMap.set(parentDir,
                         new (require('./file-folder.js'))(parentDir));
                 }
-                this.parentFile = parentsMap.get(parentDir);
+                this.parent = parentsMap.get(parentDir);
             }
         }
-        return this.parentFile;
-    }
-
-    notify(status) {
-        this.status = status;
-        messenger.notify({
-            id: this.id,
-            type: TYPE_FILE,
-            category: this.category,
-            path: this.path,
-            parent: (this.parent ? this.parent.id : false),
-            status: this.status,
-        });
-        return this;
+        return this.parent
     }
 
     async createAndRun(taskClass, ...args) {

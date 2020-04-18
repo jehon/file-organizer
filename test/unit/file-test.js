@@ -2,7 +2,7 @@
 const { basename } = require('path');
 
 const File = require('../../file-organizer/main/file.js');
-const FileManual = require('../../file-organizer/main/file-manual.js');
+const Item = require('../../file-organizer/main/item.js');
 
 const Task = require('../../file-organizer/main/task.js');
 const messenger = require('../../file-organizer/main/messenger.js');
@@ -18,7 +18,7 @@ const {
     STATUS_ACTED_FAILURE
 } = require('../../file-organizer/constants.js');
 
-const { getNotifyCallsForFile, getStatusHistoryForFile } = require('./helpers.js');
+const { getNotifyCallsForFile, getStatusHistoryForItem } = require('./helpers.js');
 const options = require('../../file-organizer/options.js');
 const { resetOptionsForUnitTesting } = require('./run-helper.js');
 
@@ -36,11 +36,6 @@ class DemoFile extends File {
 
 describe(basename(__filename), function () {
     describe('attributes', () => {
-        it('should give a category', () => {
-            expect((new File('a')).category).toBe('File');
-            expect((new FileManual('a')).category).toBe('FileManual');
-        });
-
         it('should parse extension', () => {
             expect((new File('a.txt')).extension).toBe('.txt');
             expect((new File('a')).extension).toBe('');
@@ -66,7 +61,7 @@ describe(basename(__filename), function () {
 
         beforeEach(() => {
             spyOn(messenger, 'notify').and.returnValue(true);
-            spyOn(File.prototype, 'notify').and.callThrough();
+            spyOn(Item.prototype, 'notify').and.callThrough();
 
             f = new DemoFile('file-test');
         });
@@ -79,7 +74,7 @@ describe(basename(__filename), function () {
             await expectAsync(f.runAnalyse())
                 .toBeResolvedTo(true);
 
-            expect(getStatusHistoryForFile(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
+            expect(getStatusHistoryForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
 
             await expectAsync(f.act()).toBeResolvedTo(true);
         });
@@ -90,7 +85,7 @@ describe(basename(__filename), function () {
             await expectAsync(f.runAnalyse())
                 .toBeRejectedWith('impossible');
 
-            expect(getStatusHistoryForFile(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
+            expect(getStatusHistoryForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
 
             await expectAsync(f.act()).toBeResolvedTo(false);
         });
@@ -101,7 +96,7 @@ describe(basename(__filename), function () {
             await expectAsync(f.runAnalyse())
                 .toBeResolved();
 
-            expect(getStatusHistoryForFile(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
+            expect(getStatusHistoryForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
 
             await expectAsync(f.act()).toBeResolvedTo(true);
         });
@@ -118,6 +113,7 @@ describe(basename(__filename), function () {
                 t = new Task('test task', () => true);
 
                 expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(undefined);
                 await expectAsync(f.runAnalyse()).toBeResolved();
                 expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
                 expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);
@@ -134,6 +130,7 @@ describe(basename(__filename), function () {
                 t = new Task('test task', () => { throw 'impossible'; });
 
                 expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
+                expect(getNotifyCallsForFile(f, i++)[0]).toBe(undefined);
                 await expectAsync(f.runAnalyse()).toBeResolved();
                 expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
                 expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);
@@ -154,6 +151,7 @@ describe(basename(__filename), function () {
                     t = Task.TaskSuccessFactory();
 
                     expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
+                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(undefined);
                     await expectAsync(f.loadData()).toBeResolved();
                     expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
                     expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);
@@ -172,6 +170,7 @@ describe(basename(__filename), function () {
                     t = Task.TaskSuccessFactory();
 
                     expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
+                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(undefined);
                     await expectAsync(f.loadData()).toBeResolved();
                     expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
                     expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);

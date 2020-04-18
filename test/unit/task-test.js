@@ -30,8 +30,6 @@ describe(basename(__filename), function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_SUCCESS);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messenger.notify).toHaveBeenCalledTimes(i);
-        expect(messenger.notify.calls.argsFor(0)[0].type).toBe(TYPE_TASK);
     });
 
     it('should run a simple task with true', async function () {
@@ -47,8 +45,6 @@ describe(basename(__filename), function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_SUCCESS);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messenger.notify).toHaveBeenCalledTimes(i);
-        expect(messenger.notify.calls.argsFor(0)[0].type).toBe(TYPE_TASK);
     });
 
     it('should run a simple task with error', async function () {
@@ -63,8 +59,6 @@ describe(basename(__filename), function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_FAILURE);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messenger.notify).toHaveBeenCalledTimes(i);
-        expect(messenger.notify.calls.argsFor(0)[0].type).toBe(TYPE_TASK);
     });
 
     it('should run a simple task with message', async function () {
@@ -77,7 +71,6 @@ describe(basename(__filename), function () {
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
         expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_SUCCESS);
         expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
-        expect(messenger.notify.calls.argsFor(0)[0].type).toBe(TYPE_TASK);
     });
 
     it('should work with subs', async function () {
