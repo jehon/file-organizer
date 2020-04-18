@@ -58,12 +58,12 @@ describe(basename(__filename), function () {
 
         it('should be constructed with a parent', () => {
             expect((new File('test/brol/a.txt', new File('/machin'))).parent.path).toBe('/machin');
-        })
+        });
 
         it('should allow creating info', () => {
             const f = new File('test');
             expect(f.createInfo(Info, []).parent.id).toBe(f.id);
-        })
+        });
     });
 
     describe('state machine', () => {
