@@ -38,7 +38,7 @@
         "demo": "electron demo.js",
         "test": "npm run --silent test-unit && npm run --silent test-system-xvfb",
         "style": "npm run --silent eslint && npm run --silent depcheck",
-        "test-unit": "nyc --reporter=lcov --reporter=text-summary npm run test-unit-raw",
+        "test-unit": "nyc npm run test-unit-raw",
         "test-unit-raw": "jasmine --config=test/unit/jasmine.json",
         "test-unit-continuously": "watch 'npm run test-unit' file-organizer test",
         "test-system": "jasmine --config=test/system/jasmine.json",
