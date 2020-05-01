@@ -13,7 +13,7 @@
         "fs-extra": "9.0.0",
         "graceful-fs": "4.2.4",
         "is-interactive": "1.0.0",
-        "moment": "2.25.0",
+        "moment": "2.25.1",
         "moment-timezone": "0.5.28",
         "p-limit": "2.3.0",
         "p-queue": "6.3.0",
