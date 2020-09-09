@@ -20,7 +20,7 @@
         "shell-exec": "1.0.2",
         "tz-lookup": "6.1.25",
         "watch": "1.0.2",
-        "yargs": "15.4.1"
+        "yargs": "16.0.1"
     },
     "devDependencies": {
         "current-git-branch": "1.1.0",
