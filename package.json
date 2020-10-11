@@ -16,7 +16,7 @@
         "moment": "2.29.1",
         "moment-timezone": "0.5.31",
         "p-limit": "3.0.2",
-        "p-queue": "6.6.1",
+        "p-queue": "6.6.2",
         "shell-exec": "1.0.2",
         "tz-lookup": "6.1.25",
         "watch": "1.0.2",
