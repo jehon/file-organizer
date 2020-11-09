@@ -1,12 +1,12 @@
 os: linux
-dist: bionic
+dist: focal
 
 services:
     - xvfb
 
 language: node_js
 node_js:
-    - "12"
+    - "14"
 addons:
     apt:
         packages:
