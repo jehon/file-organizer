@@ -9,7 +9,7 @@
         "command-exists": "1.2.9",
         "css-inherit": "github:jehon/css-inherit",
         "debug": "4.2.0",
-        "electron": "10.1.5",
+        "electron": "11.0.0-beta.20",
         "fs-extra": "9.0.1",
         "graceful-fs": "4.2.4",
         "is-interactive": "1.0.0",
@@ -23,19 +23,21 @@
         "yargs": "16.0.3"
     },
     "devDependencies": {
+        "babel-eslint": "^10.1.0",
         "current-git-branch": "1.1.0",
         "depcheck": "1.2.0",
         "eslint": "6.8.0",
+        "eslint-plugin-jsdoc": "^30.7.7",
         "jasmine": "3.6.3",
         "nyc": "15.1.0"
     },
     "scripts": {
         "clean": "rm -fr tmp",
+        "demo": "./demo.js",
         "eslint": "eslint .",
         "eslint-fix": "eslint --fix .",
         "start": "electron file-organizer/main.js",
         "start-headless": "electron file-organizer/main.js --headless",
-        "demo": "electron demo.js",
         "test": "npm run --silent test-unit && npm run --silent test-system-xvfb",
         "style": "npm run --silent eslint && npm run --silent depcheck",
         "test-unit": "nyc npm run test-unit-raw",
@@ -45,6 +47,8 @@
         "test-system-xvfb": "xvfb-run npm run --silent test-system",
         "depcheck": "depcheck"
     },
+    "main": "src/main.cjs",
+    "type": "module",
     "nyc": {
         "reporter": [
             "lcov",

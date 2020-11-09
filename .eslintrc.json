@@ -1,0 +1,52 @@
+{
+    "root": true,
+    "extends": [
+        "eslint:recommended",
+        "plugin:jsdoc/recommended"
+    ],
+    "env": {
+        "node": true,
+        "browser": true,
+        "es6": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "rules": {
+        "template-curly-spacing": "off",
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "^_"
+            }
+        ],
+        "no-console": [
+            "error",
+            {
+                "allow": [
+                    "warn",
+                    "error",
+                    "info",
+                    "assert"
+                ]
+            }
+        ],
+        "no-trailing-spaces": [
+            "error"
+        ]
+    }
+}
