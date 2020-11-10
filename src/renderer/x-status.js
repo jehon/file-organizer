@@ -1,14 +1,14 @@
 
-const {
+import {
     STATUS_CREATED,
     STATUS_ACTING,
     STATUS_ANALYSING,
     STATUS_NEED_ACTION
-} = require('../constants.js');
+} from '../common/constants.js';
 
-require('../../node_modules/css-inherit/css-inherit.js');
+import '../../node_modules/css-inherit/css-inherit.js';
 
-class XStatus extends HTMLElement {
+export default class XStatus extends HTMLElement {
     static get observedAttributes() {
         return ['status'];
     }

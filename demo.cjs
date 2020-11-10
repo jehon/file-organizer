@@ -4,6 +4,9 @@ const options = require('./file-organizer/options.js');
 const File = require('./file-organizer/main/file.js');
 const Task = require('./file-organizer/main/task.js');
 
+/**
+ * @param secs
+ */
 async function wait(secs) {
     return new Promise((resolve) => setTimeout(() => resolve(), secs * 1000));
 }
@@ -14,6 +17,9 @@ options.debug = true;
 require('./file-organizer/gui.js').then(() => {
     const t = 0.1;
 
+    /**
+     * @param secs
+     */
     async function w(secs) {
         return new Promise(resolve => setTimeout(() => resolve(1), secs * t * 1000));
     }

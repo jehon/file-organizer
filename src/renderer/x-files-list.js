@@ -1,9 +1,9 @@
 
-require('./x-file.js');
+import './x-file.js';
 
-const XList = require('./x-list.js');
+import XList from './x-list.js';
 
-const {
+import {
     TYPE_FILE,
     STATUS_CREATED,
     STATUS_ANALYSING,
@@ -13,9 +13,9 @@ const {
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
-} = require('../constants.js');
+} from '../common/constants.js';
 
-class XFilesList extends XList {
+export default class XFilesList extends XList {
     constructor() {
         super(TYPE_FILE);
 

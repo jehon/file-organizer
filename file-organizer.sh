@@ -6,7 +6,3 @@
 SWD="$( dirname "$0")"
 
 "$(npm bin)"/electron "$SWD" "$@"
-
-# ( "$(npm bin)"/electron "$SWD" "$@" \
-#      3>&1 1>&2 2>&3 | grep -v "ExperimentalWarning"
-# ) 3>&1 1>&2 2>&3

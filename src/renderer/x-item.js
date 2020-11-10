@@ -1,8 +1,8 @@
 
-const { listenerForId } = require('./listener.js');
-const { STATUS_CREATED } = require('../constants.js');
+import { listenerForId } from './listener.js';
+import { STATUS_CREATED } from '../common/constants.js';
 
-class XItem extends HTMLElement {
+export default class XItem extends HTMLElement {
     static get observedAttributes() {
         return ['id'];
     }
@@ -40,5 +40,3 @@ class XItem extends HTMLElement {
 }
 
 window.customElements.define('x-item', XItem);
-
-module.exports = XItem;

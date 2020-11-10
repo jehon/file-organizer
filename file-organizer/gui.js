@@ -30,7 +30,7 @@ module.exports = new Promise((resolve, _reject) => {
                 }
 
                 console.info('waiting for dom ready');
-                mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'))
+                mainWindow.loadFile(path.join(__dirname, '../src/renderer/index.html'))
                     .then(() => {
                         register((data) => {
                             BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));

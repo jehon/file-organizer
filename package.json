@@ -35,7 +35,7 @@
         "nyc": "15.1.0"
     },
     "scripts": {
-        "demo": "./demo.js",
+        "demo": "electron ./demo.cjs",
         "start": "electron src/main.cjs",
         "start-headless": "electron src/main.cjs --headless"
     },

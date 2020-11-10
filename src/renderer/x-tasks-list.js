@@ -1,17 +1,17 @@
 
-require('./x-task.js');
+import './x-task.js';
 
-const XList = require('./x-list.js');
+import XList from './x-list.js';
 
-const {
+import {
     TYPE_TASK,
     STATUS_CREATED,
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
-} = require('../constants.js');
+} from '../common/constants.js';
 
-class XTasksList extends XList {
+export default class XTasksList extends XList {
     constructor() {
         super(TYPE_TASK);
 

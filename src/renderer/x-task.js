@@ -1,8 +1,8 @@
 
-require('./x-status.js');
-const XItem = require('./x-item.js');
+import './x-status.js';
+import XItem from './x-item.js';
 
-class XTask extends XItem {
+export default class XTask extends XItem {
     adapt(data, ...args) {
         super.adapt(data, ...args);
         this.innerHTML = `<div>

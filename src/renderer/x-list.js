@@ -1,7 +1,7 @@
 
-const { listenerForType } = require('./listener.js');
+import { listenerForType } from './listener.js';
 
-const {
+import {
     // STATUS_CREATED,
     // STATUS_ANALYSING,
     STATUS_SUCCESS,
@@ -10,8 +10,12 @@ const {
     // STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
-} = require('../constants.js');
+} from '../common/constants.js';
 
+/**
+ * @param val
+ * @param def
+ */
 function uz(val, def = 0) {
     if (val === undefined || val === null) {
         return def;
@@ -19,7 +23,7 @@ function uz(val, def = 0) {
     return val;
 }
 
-class XList extends HTMLElement {
+export default class XList extends HTMLElement {
     constructor(refType) {
         super();
         this.parent_id = 0;
@@ -102,5 +106,3 @@ class XList extends HTMLElement {
 }
 
 window.customElements.define('x-list', XList);
-
-module.exports = XList;
