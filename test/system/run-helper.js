@@ -9,11 +9,21 @@ const datas = require('./data.js');
 const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))), ...args);
 
 // Test
+/**
+ * @param {...any} args
+ */
 function dataPath(...args) { return rootPath('test', 'data', 'system_test', ...args); }
+/**
+ * @param {...any} args
+ */
 function tempPath(...args) { return rootPath('tmp', ...args); }
 exports.dataPath = dataPath;
 exports.tempPath = tempPath;
 
+/**
+ * @param testName
+ * @param fn
+ */
 async function describeAndSetup(testName, fn) {
     const tPath = (...args) => tempPath(testName, ...args);
 
@@ -35,6 +45,10 @@ async function describeAndSetup(testName, fn) {
 exports.describeAndSetup = describeAndSetup;
 
 // TODO(cleanup): use async-promise (see file-utils) to be uniform all around
+/**
+ * @param ctx
+ * @param {...any} args
+ */
 async function runMain(ctx, ...args) {
     // console.log('+', ...args);
     const cmdLine = rootPath('/file-organizer.sh') + ' --headless "' + args.join('" "') + '"';
@@ -70,6 +84,11 @@ async function runMain(ctx, ...args) {
     return result;
 }
 
+/**
+ * @param ctx
+ * @param args
+ * @param fn
+ */
 async function itRun(ctx, args, fn) {
     it('should run with ' + args.join(' '), async () => {
         const result = await runMain(ctx, ...args);
@@ -101,6 +120,11 @@ async function itRun(ctx, args, fn) {
 }
 exports.itRun = itRun;
 
+/**
+ * @param ctx
+ * @param field
+ * @param f
+ */
 async function getFileExifField(ctx, field, f) {
     const res = await runMain(ctx, 'info', '-k', field, f);
     res.assertSuccess();

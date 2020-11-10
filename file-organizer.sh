@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
-set -e
-set -o pipefail
-# set -x
+# set -e
+# set -o pipefail
 
 SWD="$( dirname "$0")"
-# echo "SWD: $SWD"
 
-"$SWD"/node_modules/.bin/electron "$SWD"/src/main.cjs "$@" |& grep -v "ExperimentalWarning"
+"$(npm bin)"/electron "$SWD" "$@"
+
+# ( "$(npm bin)"/electron "$SWD" "$@" \
+#      3>&1 1>&2 2>&3 | grep -v "ExperimentalWarning"
+# ) 3>&1 1>&2 2>&3

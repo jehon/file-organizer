@@ -4,11 +4,14 @@ const path = require('path');
 const { describeAndSetup, itRun, assert } = require('./run-helper.js');
 
 describeAndSetup(path.basename(__filename), (ctx) => {
-    itRun(ctx, [ 'regularize', '-n' ], async (result) => {
+    itRun(ctx, ['regularize', '-n'], async (result) => {
         result.assertSuccess();
 
         await result.assertConsistency();
-        async function t(f)  {
+        /**
+         * @param f
+         */
+        async function t(f) {
             return assert.untouched(ctx, f);
         }
 

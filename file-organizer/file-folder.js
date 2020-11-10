@@ -7,10 +7,10 @@ const FileTimestamped = require('./file-timestamped.js');
 class FileFolder extends FileTimestamped {
     async check() {
         /**
-		 * We inherit from FileTimestamped, to have the timestamp
-		 * but we don't want to have their check, neither the check
-		 * of file-generic...
-		 */
+         * We inherit from FileTimestamped, to have the timestamp
+         * but we don't want to have their check, neither the check
+         * of file-generic...
+         */
         return true;
     }
 
@@ -22,7 +22,7 @@ class FileFolder extends FileTimestamped {
             .then(list => Promise.all(
                 list.map(async f => await fileFactory(path.join(this.getPath(), f), this))
             ))
-        // Remove "FileHidden" files if required
+            // Remove "FileHidden" files if required
             .then(list => { list.sort(); return list; });
         // .then(list => list.filter(f => options.showHidden || (! (f instanceof FileHidden))));
     }
@@ -34,7 +34,7 @@ class FileFolder extends FileTimestamped {
                 // Iterate on each child
                 f => f.iterate(apply)
             )))
-        // Iterate on us-self
+            // Iterate on us-self
             .then(() => super.iterate(apply));
     }
 }

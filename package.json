@@ -1,8 +1,10 @@
 {
     "name": "file-organizer",
     "version": "1.0.0",
-    "author": "",
-    "license": "ISC",
+    "private": true,
+    "author": "Jean Honlet",
+    "license": "MIT",
+    "repository": "https://github.com/jehon/file-organizer",
     "dependencies": {
         "chalk": "4.1.0",
         "colors": "1.4.0",
@@ -23,29 +25,19 @@
         "yargs": "16.0.3"
     },
     "devDependencies": {
-        "babel-eslint": "^10.1.0",
+        "@types/jasmine": "^3.6.1",
+        "babel-eslint": "10.1.0",
         "current-git-branch": "1.1.0",
         "depcheck": "1.3.0",
-        "eslint": "6.8.0",
-        "eslint-plugin-jsdoc": "^30.7.7",
+        "eslint": "7.13.0",
+        "eslint-plugin-jsdoc": "30.7.7",
         "jasmine": "3.6.3",
         "nyc": "15.1.0"
     },
     "scripts": {
-        "clean": "rm -fr tmp",
         "demo": "./demo.js",
-        "eslint": "eslint .",
-        "eslint-fix": "eslint --fix .",
-        "start": "electron file-organizer/main.js",
-        "start-headless": "electron file-organizer/main.js --headless",
-        "test": "npm run --silent test-unit && npm run --silent test-system-xvfb",
-        "style": "npm run --silent eslint && npm run --silent depcheck",
-        "test-unit": "nyc npm run test-unit-raw",
-        "test-unit-raw": "jasmine --config=test/unit/jasmine.json",
-        "test-unit-continuously": "watch 'npm run test-unit' file-organizer test",
-        "test-system": "jasmine --config=test/system/jasmine.json",
-        "test-system-xvfb": "xvfb-run npm run --silent test-system",
-        "depcheck": "depcheck"
+        "start": "electron src/main.cjs",
+        "start-headless": "electron src/main.cjs --headless"
     },
     "main": "src/main.cjs",
     "type": "module",

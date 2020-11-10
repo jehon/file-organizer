@@ -38,6 +38,9 @@ module.exports = class File extends Item {
         }
     }
 
+    // Mock during transition
+    iterate() { }
+
     /**
      * Without extension
      */
