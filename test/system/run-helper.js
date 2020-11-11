@@ -15,18 +15,6 @@ const rootPath = (...args) => path.join((path.dirname(path.dirname(path.dirname(
  * @property {function():Promise<Array<string>>} listAll list all files
  */
 
-/**
- * @typedef RunResult
- * @property {string} cwd of the run
- * @property {string} cmd of the command
- * @property {string} stdout of the run
- * @property {string} stderr of the run
- * @property {function():void} assertSuccess expect result code to be 0
- * @property {function():void} dump the stdout
- * @property {function(string):void} assertContain that stdout contain text
- * @property {function():Promise<void>} assertConsistency - that the same number of files are presents
- */
-
 // Test
 /**
  * Calculate the relative path to a file in data folder (test/data/system_Test)
@@ -75,80 +63,83 @@ export async function describeAndSetup(url, fn) {
     });
 }
 
-// TODO(cleanup): use async-promise (see file-utils) to be uniform all around
-/**
- * @param {Context} ctx of the test
- * @param {...any} args to be passed to the executable
- * @returns {Promise<RunResult>} of the test
- */
-async function runMain(ctx, ...args) {
-    // console.log('+', ...args);
-    const cmdLine = rootPath('/file-organizer.sh') + ' --headless "' + args.join('" "') + '"';
-    // { stdout: '', stderr: '', cmd: '', code: x }
-    const result = await shellExec(cmdLine, {
-        cwd: ctx.tempPath()
-        // }).then((res) => { console.log('-'); return res;
-    });
-
-    result.cwd = ctx.tempPath();
-
-    result.assertSuccess = function () {
-        if (this.code > 0 || this.stderr.length > 0) {
-            process.stdout.write(this.stdout);
-            process.stdout.write(this.stderr);
-        }
-        expect(this.code)
-            .withContext(this.stdout + '\n####\n' + this.stderr)
-            .toBe(0);
-        expect(this.stderr)
-            .withContext(this.stdout + '\n####\n' + this.stderr)
-            .toBe('');
-    };
-
-    result.dump = function () {
-        process.stdout.write('******' + args.join(' ') + '\n');
-        process.stdout.write(result.stdout + '\n');
-        process.stdout.write('------' + '\n');
-        process.stdout.write(result.stderr + '\n');
-        process.stdout.write('******' + '\n');
-    };
-
-    return result;
-}
-
 /**
  * @param {Context} ctx of the test
  * @param {Array<string>} args to be passed to the run
- * @param {function(RunResult):void} fn of the "it"
+ * @param {function(FORun):void} fn of the "it"
  */
 export async function itRun(ctx, args, fn) {
     it('should run with ' + args.join(' '), async () => {
-        const result = await runMain(ctx, ...args);
-
-        fsExtra.writeFile(tempPath(ctx.testName + '-output.cmd'), result.cmd);
-        fsExtra.writeFile(tempPath(ctx.testName + '-output.log'), result.stdout);
-        fsExtra.writeFile(tempPath(ctx.testName + '-output.err'), result.stderr);
-
-        result.assertContain = function (str) {
-            expect(this.stdout).toContain(str);
-        };
-
-        result.assertConsistency = async function (dir = '') {
-            const l = async function (p, n) {
-                return fs.promises.readdir(ctx.tempPath(p))
-                    .then(list => expect(list.length)
-                        .withContext(`(in folder '${p}' [${ctx.tempPath(dir)}])`)
-                        .toBe(n)
-                    );
-            };
-
-            l('basic', 4);
-            l('2019 test', 2);
-            return;
-        };
-
-        await fn(result);
+        const foRun = new FORun(ctx);
+        await foRun.run(...args);
+        await fn(foRun);
     });
+}
+
+export class FORun {
+    /**
+     * @param {Context} ctx of the test
+     */
+    constructor(ctx) {
+        this.ctx = ctx;
+        this.cwd = ctx.tempPath();
+    }
+
+    /**
+     * @param  {...any} args      * @param {...any} args to be passed to the executable
+     */
+    async run(...args) {
+        this.args = args;
+
+        this.cmdLine = rootPath('/file-organizer.sh') + ' --headless "' + this.args.join('" "') + '"';
+        // { stdout: '', stderr: '', cmd: '', code: x }
+        this.result = await shellExec(this.cmdLine, { cwd: this.cwd });
+
+        await Promise.all([
+            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.cmd'), this.result.cmd),
+            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.log'), this.result.stdout),
+            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.err'), this.result.stderr),
+        ]);
+    }
+
+    assertSuccess() {
+        if (this.result.code > 0 || this.result.stderr.length > 0) {
+            process.stdout.write(this.result.stdout);
+            process.stdout.write(this.result.stderr);
+        }
+        expect(this.result.code)
+            .withContext(this.result.stdout + '\n####\n' + this.result.stderr)
+            .toBe(0);
+        expect(this.result.stderr)
+            .withContext(this.result.stdout + '\n####\n' + this.result.stderr)
+            .toBe('');
+    }
+
+    dump() {
+        process.stdout.write('******' + this.cmdLine + '\n');
+        process.stdout.write(this.result.stdout + '\n');
+        process.stdout.write('------' + '\n');
+        process.stdout.write(this.result.stderr + '\n');
+        process.stdout.write('******' + '\n');
+    }
+
+    assertContain(str) {
+        expect(this.result.stdout).toContain(str);
+    }
+
+    async assertConsistency(dir = '') {
+        const l = async (p, n) => {
+            return fs.promises.readdir(this.ctx.tempPath(p))
+                .then(list => expect(list.length)
+                    .withContext(`(in folder '${p}' [${this.ctx.tempPath(dir)}])`)
+                    .toBe(n)
+                );
+        };
+
+        l('basic', 4);
+        l('2019 test', 2);
+        return;
+    }
 }
 
 /**
@@ -158,11 +149,11 @@ export async function itRun(ctx, args, fn) {
  * @returns {Promise<string>} with the exiv field
  */
 async function getFileExifField(ctx, field, f) {
-    const res = await runMain(ctx, 'info', '-k', field, f);
-    res.assertSuccess();
-    return res.stdout.trim();
+    const foRun = new FORun(ctx);
+    await foRun.run('info', '-k', field, f);
+    foRun.assertSuccess();
+    return foRun.result.stdout.trim();
 }
-
 
 export const assert = {
     untouched: function (ctx, f) {
@@ -174,8 +165,9 @@ export const assert = {
     fileExists: function (ctx, f) {
         const fpath = ctx.tempPath(f);
 
+        /** @type {Promise<void>} */
         let promise = fsExtra.pathExists(fpath)
-            .then((res) => expect(res).withContext(`File '${f}' must exists but does not`).toBeTruthy());
+            .then((res) => { expect(res).withContext(`File '${f}' must exists but does not`).toBeTruthy(); });
 
         let foriginal = f;
 
@@ -191,12 +183,12 @@ export const assert = {
                     .then(() => obj.done());
                 return obj;
             },
-            withTS: (data = false) => {
+            withTS: (data = null) => {
                 promise = promise
                     .then(() => assert.fileHasExifTimestamp(ctx, f, data, foriginal));
                 return obj;
             },
-            withTitle: (data = false) => {
+            withTitle: (data = null) => {
                 promise = promise
                     .then(() => assert.fileHasExifTitle(ctx, f, data, foriginal));
                 return obj;
@@ -213,8 +205,8 @@ export const assert = {
     },
 
 
-    fileHasExifTimestamp: async function (ctx, f, data = false, foriginal = false) {
-        if (data === false) {
+    fileHasExifTimestamp: async function (ctx, f, data = null, foriginal = null) {
+        if (data === null) {
             data = datas[foriginal ? foriginal : f].ts;
         }
         const res = await getFileExifField(ctx, 'exif_timestamp', f);
@@ -223,8 +215,8 @@ export const assert = {
             .toEqual(data);
     },
 
-    fileHasExifTitle: async function (ctx, f, data = false, foriginal = false) {
-        if (data === false) {
+    fileHasExifTitle: async function (ctx, f, data = null, foriginal = null) {
+        if (data === null) {
             data = datas[foriginal ? foriginal : f].title;
         }
         const res = await getFileExifField(ctx, 'exif_title', f);
@@ -233,4 +225,3 @@ export const assert = {
             .toEqual(data);
     }
 };
-

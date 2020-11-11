@@ -2,9 +2,9 @@
 import { describeAndSetup, itRun, assert } from './run-helper.js';
 
 describeAndSetup(import.meta.url, (ctx) => {
-    itRun(ctx, ['regularize'], async (result) => {
-        result.assertSuccess();
-        await result.assertConsistency();
+    itRun(ctx, ['regularize'], async (foRun) => {
+        foRun.assertSuccess();
+        await foRun.assertConsistency();
 
         /**
          * @param {string} fold - relative filepath to be checked

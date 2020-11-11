@@ -3,10 +3,10 @@ import { describeAndSetup, itRun, assert } from './run-helper.js';
 
 describeAndSetup(import.meta.url, (ctx) => {
     const c = 'test title';
-    itRun(ctx, ['regularize', '--set-title', c], async (result) => {
-        result.assertSuccess();
+    itRun(ctx, ['regularize', '--set-title', c], async (foRun) => {
+        foRun.assertSuccess();
 
-        await result.assertConsistency();
+        await foRun.assertConsistency();
 
         /**
          * @param {string} fold - relative filepath to be checked

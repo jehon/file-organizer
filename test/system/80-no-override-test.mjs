@@ -10,14 +10,14 @@ describeAndSetup(import.meta.url, (ctx) => {
         // await ctx.listAll();
     });
 
-    itRun(ctx, ['regularize', '--force-title-from-folder', '--force-timestamp-from-filename'], async (result) => {
+    itRun(ctx, ['regularize', '--force-title-from-folder', '--force-timestamp-from-filename'], async (foRun) => {
         pending('Indexed is not available');
 
-        result.assertSuccess();
+        foRun.assertSuccess();
         // result.dump();
         // await ctx.listAll();
 
-        await result.assertConsistency();
+        await foRun.assertConsistency();
 
         // Blocking file
         await assert.fileExists(ctx, 'basic/2019-03-24 12-14-37 basic [IMG_20190324_121437].jpg');

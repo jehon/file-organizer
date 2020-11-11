@@ -4,10 +4,10 @@ import path from 'path';
 import { describeAndSetup, itRun, assert } from './run-helper.js';
 
 describeAndSetup(import.meta.url, (ctx) => {
-    itRun(ctx, ['regularize', '--force-title-from-folder'], async (result) => {
-        result.assertSuccess();
+    itRun(ctx, ['regularize', '--force-title-from-folder'], async (foRun) => {
+        foRun.assertSuccess();
 
-        await result.assertConsistency();
+        await foRun.assertConsistency();
 
         /**
          * @param {string} fold - relative filepath to be checked

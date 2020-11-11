@@ -3,14 +3,14 @@
 import { describeAndSetup, itRun, assert } from './run-helper.js';
 
 describeAndSetup(import.meta.url, (ctx) => {
-    itRun(ctx, ['dump'], async (result) => {
-        result.assertSuccess();
+    itRun(ctx, ['dump'], async (foRun) => {
+        foRun.assertSuccess();
 
         // This would test concistency: :-)
         // import fs from 'fs';
         // fs.unlinkSync(ctx.tempPath('2019 test/1.jpg'));
 
-        await result.assertConsistency();
+        await foRun.assertConsistency();
 
         await assert.untouched(ctx, 'basic/DSC_2506.MOV');
 

@@ -15,10 +15,10 @@ describeAndSetup(import.meta.url, (ctx) => {
 
     });
 
-    itRun(ctx, ['regularize', '--force-timestamp-from-filename'], async (result) => {
-        result.assertSuccess();
+    itRun(ctx, ['regularize', '--force-timestamp-from-filename'], async (foRun) => {
+        foRun.assertSuccess();
 
-        await result.assertConsistency();
+        await foRun.assertConsistency();
 
         /**
          * @param {string} fold - relative filepath to be checked
