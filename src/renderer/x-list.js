@@ -13,8 +13,12 @@ import {
 } from '../common/constants.js';
 
 /**
- * @param val
- * @param def
+ * Send back the def if val is undefined
+ * TODO: use ??
+ *
+ * @param {number|undefined|null} val to be tested
+ * @param {number} def the default value
+ * @returns {number} the value
  */
 function uz(val, def = 0) {
     if (val === undefined || val === null) {
@@ -60,7 +64,7 @@ export default class XList extends HTMLElement {
                 this.counters[oldStatus]--;
                 this.updateCounter(oldStatus);
             } else {
-                this.onCreate(id, status, data);
+                this.onCreate(id);
                 this.total++;
             }
 
@@ -90,7 +94,7 @@ export default class XList extends HTMLElement {
                 + uz(this.counters[STATUS_SUCCESS])
                 + uz(this.counters[STATUS_FAILURE]);
 
-            e.setAttribute('max', Math.max(1, this.total));
+            e.setAttribute('max', '' + Math.max(1, this.total));
             e.setAttribute('value', p);
         });
     }

@@ -1,15 +1,14 @@
 
-const path = require('path');
+import { describeAndSetup, itRun, assert } from './run-helper.js';
 
-const { describeAndSetup, itRun, assert } = require('./run-helper.js');
-
-describeAndSetup(path.basename(__filename), (ctx) => {
+describeAndSetup(import.meta.url, (ctx) => {
     itRun(ctx, ['regularize', '-n'], async (result) => {
         result.assertSuccess();
 
         await result.assertConsistency();
         /**
-         * @param f
+         * @param {string} f relative filepath to be checked
+         * @returns {Promise} resolve when test is passed
          */
         async function t(f) {
             return assert.untouched(ctx, f);

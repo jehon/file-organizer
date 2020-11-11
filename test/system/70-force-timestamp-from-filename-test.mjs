@@ -1,10 +1,9 @@
 
-const path = require('path');
-const fs = require('fs');
+import fs from 'fs';
 
-const { describeAndSetup, itRun, assert } = require('./run-helper.js');
+import { describeAndSetup, itRun, assert } from './run-helper.js';
 
-describeAndSetup(path.basename(__filename), (ctx) => {
+describeAndSetup(import.meta.url, (ctx) => {
     beforeEach(() => {
         fs.renameSync(ctx.tempPath('basic/DSC_2506.MOV'),
             ctx.tempPath('basic/2017-01-02 01-02-03 [DSC_2506].mov'));
@@ -16,14 +15,20 @@ describeAndSetup(path.basename(__filename), (ctx) => {
 
     });
 
-    itRun(ctx, [ 'regularize', '--force-timestamp-from-filename' ], async (result) => {
+    itRun(ctx, ['regularize', '--force-timestamp-from-filename'], async (result) => {
         result.assertSuccess();
 
         await result.assertConsistency();
 
-        async function t(f, fts, ts)  {
-            return assert.fileExists(ctx, fts ? fts : f)
-                .from(f)
+        /**
+         * @param {string} fold - relative filepath to be checked
+         * @param {string} fnew - new filepath after run
+         * @param {string} ts - the timestamp
+         * @returns {Promise} resolve when test is passed
+         */
+        async function t(fold, fnew, ts) {
+            return assert.fileExists(ctx, fnew ? fnew : fold)
+                .from(fold)
                 .withTS(ts)
                 .withTitle('basic')
                 .done();

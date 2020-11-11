@@ -1,15 +1,14 @@
 
 
-const path = require('path');
+import { describeAndSetup, itRun, assert } from './run-helper.js';
 
-const { describeAndSetup, itRun, assert } = require('./run-helper.js');
-
-describeAndSetup(path.basename(__filename), (ctx) => {
-    itRun(ctx, [ 'dump' ], async (result) => {
+describeAndSetup(import.meta.url, (ctx) => {
+    itRun(ctx, ['dump'], async (result) => {
         result.assertSuccess();
 
         // This would test concistency: :-)
-        // require('fs').unlinkSync(ctx.tempPath('2019 test/1.jpg'));
+        // import fs from 'fs';
+        // fs.unlinkSync(ctx.tempPath('2019 test/1.jpg'));
 
         await result.assertConsistency();
 

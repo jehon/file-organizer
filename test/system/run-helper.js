@@ -1,30 +1,59 @@
 
-const path = require('path');
-const fs = require('fs');
-const fsExtra = require('fs-extra');
-const shellExec = require('shell-exec');
+import path from 'path';
+import fs from 'fs';
+import fsExtra from 'fs-extra';
+import shellExec from 'shell-exec';
 
-const datas = require('./data.js');
+import datas from './data.js';
 
-const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname))), ...args);
+const rootPath = (...args) => path.join((path.dirname(path.dirname(path.dirname(new URL(import.meta.url).pathname)))), ...args);
+
+/**
+ * @typedef Context
+ * @property {string} testName of the test
+ * @property {function(...string):string} tempPath calculate the temp path of an object
+ * @property {function():Promise<Array<string>>} listAll list all files
+ */
+
+/**
+ * @typedef RunResult
+ * @property {string} cwd of the run
+ * @property {string} cmd of the command
+ * @property {string} stdout of the run
+ * @property {string} stderr of the run
+ * @property {function():void} assertSuccess expect result code to be 0
+ * @property {function():void} dump the stdout
+ * @property {function(string):void} assertContain that stdout contain text
+ * @property {function():Promise<void>} assertConsistency - that the same number of files are presents
+ */
 
 // Test
 /**
- * @param {...any} args
+ * Calculate the relative path to a file in data folder (test/data/system_Test)
+ *
+ * @param {...string} args - the sub parts of the file
+ * @returns {string} the path
  */
-function dataPath(...args) { return rootPath('test', 'data', 'system_test', ...args); }
-/**
- * @param {...any} args
- */
-function tempPath(...args) { return rootPath('tmp', ...args); }
-exports.dataPath = dataPath;
-exports.tempPath = tempPath;
+export function dataPath(...args) { return rootPath('test', 'data', 'system_test', ...args); }
 
 /**
- * @param testName
- * @param fn
+ * Calculate the relative path to a file from the root folder
+ *
+ * @param {...string} args - the sub parts of the file
+ * @returns {string} the path
  */
-async function describeAndSetup(testName, fn) {
+export function tempPath(...args) { return rootPath('tmp', ...args); }
+
+/**
+ * Setup the describe with the filename as the test name
+ * And setup the tmp folder where the test can run
+ *
+ * @param {string} url - import.meta.url
+ * @param {function(*): void} fn - the describe function
+ */
+export async function describeAndSetup(url, fn) {
+    const testName = new URL(url).pathname.split('/').pop();
+
     const tPath = (...args) => tempPath(testName, ...args);
 
     describe(testName, () => {
@@ -35,6 +64,9 @@ async function describeAndSetup(testName, fn) {
             await fsExtra.copy(dataPath(), tPath());
         });
 
+        /**
+         * @type {Context} of the test
+         */
         return fn({
             testName,
             tempPath: tPath,
@@ -42,12 +74,12 @@ async function describeAndSetup(testName, fn) {
         });
     });
 }
-exports.describeAndSetup = describeAndSetup;
 
 // TODO(cleanup): use async-promise (see file-utils) to be uniform all around
 /**
- * @param ctx
- * @param {...any} args
+ * @param {Context} ctx of the test
+ * @param {...any} args to be passed to the executable
+ * @returns {Promise<RunResult>} of the test
  */
 async function runMain(ctx, ...args) {
     // console.log('+', ...args);
@@ -85,11 +117,11 @@ async function runMain(ctx, ...args) {
 }
 
 /**
- * @param ctx
- * @param args
- * @param fn
+ * @param {Context} ctx of the test
+ * @param {Array<string>} args to be passed to the run
+ * @param {function(RunResult):void} fn of the "it"
  */
-async function itRun(ctx, args, fn) {
+export async function itRun(ctx, args, fn) {
     it('should run with ' + args.join(' '), async () => {
         const result = await runMain(ctx, ...args);
 
@@ -112,18 +144,18 @@ async function itRun(ctx, args, fn) {
 
             l('basic', 4);
             l('2019 test', 2);
-            return true;
+            return;
         };
 
         await fn(result);
     });
 }
-exports.itRun = itRun;
 
 /**
- * @param ctx
- * @param field
- * @param f
+ * @param {Context} ctx of the test
+ * @param {string} field to be extracted
+ * @param {string} f - pathname of the file
+ * @returns {Promise<string>} with the exiv field
  */
 async function getFileExifField(ctx, field, f) {
     const res = await runMain(ctx, 'info', '-k', field, f);
@@ -132,9 +164,9 @@ async function getFileExifField(ctx, field, f) {
 }
 
 
-exports.assert = {
+export const assert = {
     untouched: function (ctx, f) {
-        return exports.assert.fileExists(ctx, f)
+        return assert.fileExists(ctx, f)
             .withTS()
             .withTitle()
             .done();
@@ -161,12 +193,12 @@ exports.assert = {
             },
             withTS: (data = false) => {
                 promise = promise
-                    .then(() => exports.assert.fileHasExifTimestamp(ctx, f, data, foriginal));
+                    .then(() => assert.fileHasExifTimestamp(ctx, f, data, foriginal));
                 return obj;
             },
             withTitle: (data = false) => {
                 promise = promise
-                    .then(() => exports.assert.fileHasExifTitle(ctx, f, data, foriginal));
+                    .then(() => assert.fileHasExifTitle(ctx, f, data, foriginal));
                 return obj;
             },
             done: () => promise
@@ -201,3 +233,4 @@ exports.assert = {
             .toEqual(data);
     }
 };
+
