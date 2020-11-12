@@ -11,7 +11,7 @@ exports.handler = function (noptions) {
     Object.assign(options, noptions);
 
     if (!options.headless) {
-        require('../gui.js');
+        import('../../src/gui.js');
     }
 
     return Promise.all(options.files.map(

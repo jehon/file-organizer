@@ -71,9 +71,17 @@ setup:
 clean:
 	rm -fr tmp node_modules
 
-.PHONY: start
-start: build
-	electron .
+# .PHONY: start
+# start: build
+# 	electron .
+
+start-test:
+	mkdir -p tmp/gui
+	cd tmp/gui && ../../reset.sh
+	cd tmp/gui && ../../file-organizer.sh regularize -n
+
+start-demo:
+	electron demo.cjs
 
 .PHONY: build
 build: dependencies

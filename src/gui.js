@@ -1,16 +1,22 @@
 
+import path from 'path';
+import { CHANNEL_MAIN } from './common/constants.js';
+
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, screen } = require('electron');
-const path = require('path');
-const { CHANNEL_MAIN } = require('./constants.js');
+
 
 // Remove warning: https://github.com/electron/electron/issues/18397
 app.allowRendererProcessReuse = true;
 
-const { register } = require('./main/messenger.js');
-const options = require('./options.js');
+import messengerApi from '../file-organizer/main/messenger.js';
+const { register } = messengerApi;
+import options from '../file-organizer/options.js';
 
-module.exports = new Promise((resolve, _reject) => {
+export default new Promise((resolve, _reject) => {
     if (app) {
         app.whenReady()
             .then(() => {
@@ -18,10 +24,11 @@ module.exports = new Promise((resolve, _reject) => {
                 const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
                 const mainWindow = new BrowserWindow({
-                    width: Math.min(1024, Math.floor(parseInt(width) * 0.8)),
-                    height: Math.min(800, Math.floor(parseInt(height) * 0.8)),
+                    width: Math.min(1024, Math.floor(parseInt('' + width) * 0.8)),
+                    height: Math.min(800, Math.floor(parseInt('' + height) * 0.8)),
                     webPreferences: {
-                        nodeIntegration: true
+                        nodeIntegration: true,
+                        contextIsolation: false
                     }
                 });
 
@@ -30,7 +37,7 @@ module.exports = new Promise((resolve, _reject) => {
                 }
 
                 console.info('waiting for dom ready');
-                mainWindow.loadFile(path.join(__dirname, '../src/renderer/index.html'))
+                mainWindow.loadFile('src/renderer/index.html')
                     .then(() => {
                         register((data) => {
                             BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));

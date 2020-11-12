@@ -14,7 +14,7 @@ async function wait(secs) {
 options.headless = false;
 options.debug = true;
 
-require('./file-organizer/gui.js').then(() => {
+import('./src/gui.js').then(() => {
     const t = 0.1;
 
     /**
