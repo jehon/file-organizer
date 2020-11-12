@@ -90,6 +90,7 @@ test: test-unit test-system
 
 .PHONY: test-unit
 test-unit: build
+	echo "$$PATH"
 	nyc jasmine --config=test/unit/jasmine.json
 
 .PHONY: test-system
@@ -98,16 +99,16 @@ test-system: build
 
 
 .PHONY: eslint
-lint: eslint depcheck
+lint: eslint
 
 .PHONY: eslint
-eslint:
-	$(NODE_MOD)/eslint .
+eslint: dependencies
+	eslint .
 
 .PHONY: eslint-fix
-eslint-fix:
-	$(NODE_MOD)/eslint . --fix
+eslint-fix: dependencies
+	eslint . --fix
 
 .PHONY: depcheck
-depcheck:
-	$(NODE_MOD)/depcheck
+depcheck: dependencies
+	depcheck

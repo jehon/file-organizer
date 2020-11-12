@@ -1,12 +1,10 @@
 
-const Item = require('./item.js');
+const Info = require('./info.js');
 const {
     STATUS_ANALYSING,
-    STATUS_ANALYSED,
-    STATUS_NEED_WORK,
+    STATUS_NEED_ACTION,
     STATUS_ACTED_SUCCESS,
-    STATUS_ACTED_FAILURE
-} = require('../../constants.js');
+} = require('../constants.js');
 
 module.exports = class InfoValue extends Info {
     static getNotifyProperties() {
@@ -22,15 +20,16 @@ module.exports = class InfoValue extends Info {
     }
 
     setValueOk() {
-        this.notify(STATUS_ANALYSED);
+        this.notify(STATUS_ACTED_SUCCESS);
     }
 
     setExpectedValue(exp) {
         this.expectedValue = exp;
-        this.notify(STATUS_NEED_WORK);
+        this.notify(STATUS_NEED_ACTION);
     }
 
     setActualValue(act) {
         this.actualValue = act;
+        this.notify(STATUS_ACTED_SUCCESS);
     }
 };
