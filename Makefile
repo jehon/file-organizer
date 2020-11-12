@@ -77,6 +77,7 @@ start: build
 
 .PHONY: build
 build: dependencies
+	chmod +x ./file-organizer.sh
 
 .PHONY: dependencies
 dependencies: node_modules/.dependencies
@@ -90,7 +91,6 @@ test: test-unit test-system
 
 .PHONY: test-unit
 test-unit: build
-	echo "$$PATH"
 	nyc jasmine --config=test/unit/jasmine.json
 
 .PHONY: test-system
