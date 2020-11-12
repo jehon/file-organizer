@@ -9,7 +9,7 @@
         "chalk": "4.1.0",
         "colors": "1.4.0",
         "command-exists": "1.2.9",
-        "css-inherit": "jehon/css-inherit",
+        "css-inherit": "git+https://github.com/jehon/css-inherit.git",
         "debug": "4.2.0",
         "electron": "11.0.0-beta.20",
         "fs-extra": "9.0.1",
