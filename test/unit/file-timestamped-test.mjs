@@ -1,14 +1,14 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const { tempPath, createFileGeneric } = require('./helpers.js');
-const fileFactory = require('../../file-organizer/file-factory.js');
-const FileTimestamped = require('../../file-organizer/file-timestamped.js');
-const FileFolder = require('../../file-organizer/file-folder.js');
-const { tsFromString } = require('../../file-organizer/timestamp.js');
-const { fileDelete } = require('../../file-organizer/file-utils.js');
+import { tempPath, createFileGeneric } from './help-functions.mjs';
+import fileFactory from '../../file-organizer/file-factory.js';
+import FileTimestamped from '../../file-organizer/file-timestamped.js';
+import FileFolder from '../../file-organizer/file-folder.js';
+import { tsFromString } from '../../file-organizer/timestamp.js';
+import { fileDelete } from '../../file-organizer/file-utils.js';
 
-describe(basename(__filename), () => {
+describe(t(import.meta), function () {
     it('should get the timestamp', function () {
         const new1 = new FileTimestamped('20150306_153340 Cable internet dans la rue.jpg');
         expect(new1.calculatedTS.humanReadable()).toBe('2015-03-06 15-33-40');
@@ -124,7 +124,7 @@ describe(basename(__filename), () => {
 
                 try {
                     // TODO(cleanup): this check lead to a lot of error
-                    // const fs = require('fs');
+                    // import fs from 'fs';
                     // spyOn(fs.promises, 'rename').and.returnValue(Promise.resolve(true));
                     // spyOn(spawn-promise, '?').and.returnValue(Promise.resolve(true));
                     await new2.check();

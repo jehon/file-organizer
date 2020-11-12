@@ -1,14 +1,14 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const File = require('../../file-organizer/main/file.js');
-const Item = require('../../file-organizer/main/item.js');
+import File from '../../file-organizer/main/file.js';
+import Item from '../../file-organizer/main/item.js';
 
-const Task = require('../../file-organizer/main/task.js');
-const Info = require('../../file-organizer/main/info.js');
-const messenger = require('../../file-organizer/main/messenger.js');
+import Task from '../../file-organizer/main/task.js';
+import Info from '../../file-organizer/main/info.js';
+import messenger from '../../file-organizer/main/messenger.js';
 
-const {
+import {
     STATUS_CREATED,
     STATUS_ANALYSING,
     STATUS_SUCCESS,
@@ -17,11 +17,11 @@ const {
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
-} = require('../../file-organizer/constants.js');
+} from '../../src/common/constants.js';
 
-const { getNotifyCallsForFile, getStatusHistoryForItem } = require('./helpers.js');
-const options = require('../../file-organizer/options.js');
-const { resetOptionsForUnitTesting } = require('./run-helper.js');
+import { getNotifyCallsForFile, getStatusHistoryForItem } from './help-functions.mjs';
+import options from '../../file-organizer/options.js';
+import { resetOptionsForUnitTesting } from './run-helper.mjs';
 
 class DemoFile extends File {
     withAnalyse(fn) {
@@ -35,7 +35,7 @@ class DemoFile extends File {
     }
 }
 
-describe(basename(__filename), function () {
+describe(t(import.meta), function () {
     describe('attributes', () => {
         it('should parse extension', () => {
             expect((new File('a.txt')).extension).toBe('.txt');

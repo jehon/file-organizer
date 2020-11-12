@@ -1,14 +1,14 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const Item = require('../../file-organizer/main/item.js');
-const {
+import Item from '../../file-organizer/main/item.js';
+import {
     STATUS_CREATED
-} = require('../../file-organizer/constants.js');
+} from '../../src/common/constants.js';
 
-const { getStatusHistoryForItem } = require('./helpers.js');
+import { getStatusHistoryForItem } from './help-functions.mjs';
 
-describe(basename(__filename), () => {
+describe(t(import.meta), function () {
     describe('with properties', function () {
         it('should handle properties', () => {
             const i = new Item('my title');

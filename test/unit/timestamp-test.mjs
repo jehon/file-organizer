@@ -1,8 +1,15 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const { regexps, tsFromString, tsFromExif, tzFromGPS } = require('../../file-organizer/timestamp.js');
+import { regexps, tsFromString, tsFromExif, tzFromGPS } from '../../file-organizer/timestamp.js';
 
+/**
+ * @param originalString
+ * @param type
+ * @param exifTarget
+ * @param TSTarget
+ * @param extra
+ */
 function isA(originalString, type, exifTarget, TSTarget = originalString, extra = {}) {
     const parsed = tsFromString(originalString);
     expect(parsed.type)
@@ -24,7 +31,7 @@ function isA(originalString, type, exifTarget, TSTarget = originalString, extra 
     }
 }
 
-describe(basename(__filename), function () {
+describe(t(import.meta), function () {
     describe('parsing human readable', function () {
         //
         //

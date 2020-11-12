@@ -1,10 +1,11 @@
 
-const { basename } = require('path');
-const fs = require('fs');
+import { t } from '../test-helper.js';
 
-const { dataPath, tempPath, createFileGeneric } = require('./helpers.js');
+import fs from 'fs';
 
-describe(basename(__filename), function () {
+import { dataPath, tempPath, createFileGeneric } from './help-functions.mjs';
+
+describe(t(import.meta), function () {
     it('should have a data path', function () {
         expect(fs.existsSync(dataPath())).toBeTruthy();
         expect(fs.existsSync(dataPath('..', 'data'))).toBeTruthy();

@@ -1,11 +1,11 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const { dataPath } = require('./helpers.js');
-const FileFolder = require('../../file-organizer/file-folder.js');
-const FileGeneric = require('../../file-organizer/file-generic.js');
+import { dataPath } from './help-functions.mjs';
+import FileFolder from '../../file-organizer/file-folder.js';
+import FileGeneric from '../../file-organizer/file-generic.js';
 
-describe(basename(__filename), () => {
+describe(t(import.meta), function () {
     it('should pass on all files', async () => {
         const folder = new FileFolder(dataPath());
         let res = 0;

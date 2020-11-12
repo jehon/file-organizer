@@ -1,25 +1,25 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const FileUnsupported = require('../../file-organizer/main/file-unsupported.js');
-const Item = require('../../file-organizer/main/item.js');
-const {
+import FileUnsupported from '../../file-organizer/main/file-unsupported.js';
+import Item from '../../file-organizer/main/item.js';
+import {
     STATUS_CREATED,
     STATUS_ANALYSING,
     STATUS_FAILURE
-} = require('../../file-organizer/constants.js');
+} from '../../src/common/constants.js';
 
-const { getStatusHistoryForItem } = require('./helpers.js');
+import { getStatusHistoryForItem } from './help-functions.mjs';
 
-describe(basename(__filename), () => {
+describe(t(import.meta), function () {
     beforeEach(() => {
         spyOn(Item.prototype, 'notify').and.callThrough();
+        console.info.calls.reset();
     });
 
     it('should be always good', async function () {
         FileUnsupported._map.clear();
 
-        console.info.calls.reset();
         expect(() => FileUnsupported.dumpDiscoveredExtension()).not.toThrow();
         expect(console.info).not.toHaveBeenCalled();
 

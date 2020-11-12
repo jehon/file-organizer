@@ -1,20 +1,20 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const FileDelete = require('../../file-organizer/main/file-delete.js');
-const Item = require('../../file-organizer/main/item.js');
-const {
+import FileDelete from '../../file-organizer/main/file-delete.js';
+import Item from '../../file-organizer/main/item.js';
+import {
     STATUS_CREATED,
     STATUS_ANALYSING,
     STATUS_NEED_ACTION,
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS
-} = require('../../file-organizer/constants.js');
+} from '../../src/common/constants.js';
 
-const { createFileFrom, fileExists } = require('./helpers.js');
-const { getStatusHistoryForItem } = require('./helpers.js');
+import { createFileFrom, fileExists } from './help-functions.mjs';
+import { getStatusHistoryForItem } from './help-functions.mjs';
 
-describe(basename(__filename), function () {
+describe(t(import.meta), function () {
     beforeEach(() => {
         spyOn(Item.prototype, 'notify').and.callThrough();
     });

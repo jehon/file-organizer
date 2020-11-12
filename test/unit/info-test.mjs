@@ -1,17 +1,17 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const Info = require('../../file-organizer/main/info.js');
-const Item = require('../../file-organizer/main/item.js');
+import Info from '../../file-organizer/main/info.js';
+import Item from '../../file-organizer/main/item.js';
 
-const {
+import {
     TYPE_INFO,
     STATUS_CREATED
-} = require('../../file-organizer/constants.js');
+} from '../../src/common/constants.js';
 
-const { getStatusHistoryForItem } = require('./helpers.js');
+import { getStatusHistoryForItem } from './help-functions.mjs';
 
-describe(basename(__filename), function () {
+describe(t(import.meta), function () {
     beforeEach(() => {
         spyOn(Item.prototype, 'notify').and.callThrough();
     });

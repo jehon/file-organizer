@@ -1,7 +1,7 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-describe(basename(__filename), () => {
+describe(t(import.meta), () => {
     it('should be true', () => {
         expect(true).toBeTruthy();
     });

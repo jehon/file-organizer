@@ -4,6 +4,8 @@ import fs from 'fs';
 import fsExtra from 'fs-extra';
 import shellExec from 'shell-exec';
 
+import { t } from '../test-helper.js';
+
 import datas from './data.js';
 
 const rootPath = (...args) => path.join((path.dirname(path.dirname(path.dirname(new URL(import.meta.url).pathname)))), ...args);
@@ -40,7 +42,7 @@ export function tempPath(...args) { return rootPath('tmp', ...args); }
  * @param {function(*): void} fn - the describe function
  */
 export async function describeAndSetup(url, fn) {
-    const testName = new URL(url).pathname.split('/').pop();
+    const testName = t(url);
 
     const tPath = (...args) => tempPath(testName, ...args);
 

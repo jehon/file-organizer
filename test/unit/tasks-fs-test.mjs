@@ -1,12 +1,12 @@
 
-const { basename } = require('path');
-const {
+import { t } from '../test-helper.js';
+import {
     TaskFileDelete
-} = require('../../file-organizer/main/tasks-fs.js');
+} from '../../file-organizer/main/tasks-fs.js';
 
-const { createFileFrom, fileExists } = require('./helpers.js');
+import { createFileFrom, fileExists } from './help-functions.mjs';
 
-describe(basename(__filename), function () {
+describe(t(import.meta), function () {
     it('should delete a file', async function () {
         const f = await createFileFrom('jh-patch-file-patch.txt');
 

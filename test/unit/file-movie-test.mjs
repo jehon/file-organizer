@@ -1,11 +1,14 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const { dataPath, createFileGeneric } = require('./helpers.js');
-const FileMovie = require('../../file-organizer/file-movie.js');
-const fileFactory = require('../../file-organizer/file-factory.js');
-const { tsFromString } = require('../../file-organizer/timestamp.js');
+import { dataPath, createFileGeneric } from './help-functions.mjs';
+import FileMovie from '../../file-organizer/file-movie.js';
+import fileFactory from '../../file-organizer/file-factory.js';
+import { tsFromString } from '../../file-organizer/timestamp.js';
 
+/**
+ * @param dPath
+ */
 async function getMov(dPath) {
     return new FileMovie(dataPath(dPath)).loadData();
 }
@@ -17,7 +20,7 @@ const AndroidMP4 = '2019-09-03 12-48/20190903_124726.mp4';
 const AndroidMP4_TS = '2019-09-03 12-47-31';
 const AndroidMP4_EXIF_TS = '2019:09:03 10:47:31';
 
-describe(basename(__filename), () => {
+describe(t(import.meta), function () {
     it('should get exif from files', async () => {
         // Canon files
         let mov;

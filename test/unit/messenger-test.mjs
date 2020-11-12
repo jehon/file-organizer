@@ -1,9 +1,9 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const messenger = require('../../file-organizer/main/messenger.js');
+import messenger from '../../file-organizer/main/messenger.js';
 
-describe(basename(__filename), function () {
+describe(t(import.meta), function () {
     // beforeEach(() => {
     //     spyOn(messenger, 'notify').and.returnValue(true);
     // });

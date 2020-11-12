@@ -1,18 +1,21 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const { dataPath, createFileGeneric } = require('./helpers.js');
-const FilePicture = require('../../file-organizer/file-picture.js');
+import { dataPath, createFileGeneric } from './help-functions.mjs';
+import FilePicture from '../../file-organizer/file-picture.js';
 
-const { tsFromString } = require('../../file-organizer/timestamp.js');
+import { tsFromString } from '../../file-organizer/timestamp.js';
 
-const { resetOptionsForUnitTesting } = require('./run-helper.js');
+import { resetOptionsForUnitTesting } from './run-helper.mjs';
 
+/**
+ * @param dPath
+ */
 async function getPict(dPath) {
     return new FilePicture(dataPath(dPath)).loadData();
 }
 
-describe(basename(__filename), () => {
+describe(t(import.meta), function () {
     it('should get exif from files', async () => {
         // No exif at all
         expect((await getPict('no_exif.jpg')).exif_timestamp.humanReadable()).toBe('');

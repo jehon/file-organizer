@@ -1,17 +1,17 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const FileConvertSource = require('../../file-organizer/main/file-convert-source.js');
-const Item = require('../../file-organizer/main/item.js');
-const {
+import FileConvertSource from '../../file-organizer/main/file-convert-source.js';
+import Item from '../../file-organizer/main/item.js';
+import {
     STATUS_CREATED,
     STATUS_ANALYSING,
     STATUS_FAILURE
-} = require('../../file-organizer/constants.js');
+} from '../../src/common/constants.js';
 
-const { getStatusHistoryForItem } = require('./helpers.js');
+import { getStatusHistoryForItem } from './help-functions.mjs';
 
-describe(basename(__filename), () => {
+describe(t(import.meta), function () {
     beforeEach(() => {
         spyOn(Item.prototype, 'notify').and.callThrough();
     });

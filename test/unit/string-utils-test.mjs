@@ -1,9 +1,9 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const { ellipseLeft } = require('../../file-organizer/string-utils');
+import { ellipseLeft } from '../../file-organizer/string-utils.js';
 
-describe(basename(__filename), function () {
+describe(t(import.meta), function () {
     it('should elipseLeft', function () {
         expect(ellipseLeft('0123456789', 5)).toBe('...89');
         expect(ellipseLeft('0123456789', 15)).toBe('0123456789     ');

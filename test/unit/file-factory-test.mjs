@@ -1,19 +1,19 @@
 
-const { basename } = require('path');
+import { t } from '../test-helper.js';
 
-const { dataPath } = require('./helpers.js');
-const fileFactory = require('../../file-organizer/file-factory.js');
-const FileFolder = require('../../file-organizer/file-folder.js');
+import { dataPath } from './help-functions.mjs';
+import fileFactory from '../../file-organizer/file-factory.js';
+import FileFolder from '../../file-organizer/file-folder.js';
 
-// const File = require('../../file-organizer/main/file.js');
-const FileDelete = require('../../file-organizer/main/file-delete.js');
-// const FileGeneric = require('../../file-organizer/file-generic.js');
-const FileManual = require('../../file-organizer/main/file-manual.js');
-const FileHidden = require('../../file-organizer/main/file-hidden.js');
-const FileMovie = require('../../file-organizer/file-movie.js');
-const FilePicture = require('../../file-organizer/file-picture.js');
+// import File from '../../file-organizer/main/file.js';
+import FileDelete from '../../file-organizer/main/file-delete.js';
+// import FileGeneric from '../../file-organizer/file-generic.js';
+import FileManual from '../../file-organizer/main/file-manual.js';
+import FileHidden from '../../file-organizer/main/file-hidden.js';
+import FileMovie from '../../file-organizer/file-movie.js';
+import FilePicture from '../../file-organizer/file-picture.js';
 
-describe(basename(__filename), () => {
+describe(t(import.meta), function () {
     xit('should work for non-existing files', async () => {
         expect(await fileFactory('anything.doc')).toEqual(jasmine.any(FileManual));
     });

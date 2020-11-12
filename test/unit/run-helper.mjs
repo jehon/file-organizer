@@ -1,8 +1,8 @@
 
-const fs = require('fs');
-const { tempPath } = require('./helpers.js');
+import fs from 'fs';
+import { tempPath } from './help-functions.mjs';
 
-const options = require('../../file-organizer/options.js');
+import options from '../../file-organizer/options.js';
 
 // Clean up the temp folder !
 beforeAll(async () => {
@@ -10,10 +10,11 @@ beforeAll(async () => {
         .then(() => fs.promises.mkdir(tempPath(), { recursive: true }));
 });
 
-module.exports.resetOptionsForUnitTesting = function () {
+/**
+ *
+ */
+export function resetOptionsForUnitTesting() {
     options.resetToDefault();
     options.withFileSummary = false;
     options.headless = true;
-};
-
-module.exports.resetOptionsForUnitTesting();
+}

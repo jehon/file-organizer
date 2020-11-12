@@ -1,15 +1,14 @@
 
-const { basename } = require('path');
-const path = require('path');
+import { t } from '../test-helper.js';
+import path from 'path';
 
-const { tempPath, createFileGeneric, dataPath } = require('./helpers.js');
-const fileUtils = require('../../file-organizer/file-utils.js');
-const FileGeneric = require('../../file-organizer/file-generic.js');
-const helpers = require('./helpers.js');
+import { tempPath, createFileGeneric, dataPath, fileExists } from './help-functions.mjs';
+import fileUtils from '../../file-organizer/file-utils.js';
+import FileGeneric from '../../file-organizer/file-generic.js';
 
-const { tsFromString } = require('../../file-organizer/timestamp.js');
+import { tsFromString } from '../../file-organizer/timestamp.js';
 
-describe(basename(__filename), () => {
+describe(t(import.meta), function () {
     describe('attributes', () => {
         it('should get attributes', async () => {
             const fpath = path.join(dataPath(), 'test.txt');
@@ -49,9 +48,9 @@ describe(basename(__filename), () => {
 
             let filename = new1.getPath();
 
-            expect(await helpers.fileExists(filename)).toBeTruthy();
+            expect(await fileExists(filename)).toBeTruthy();
             await new1.remove();
-            expect(await helpers.fileExists(filename)).toBeFalsy();
+            expect(await fileExists(filename)).toBeFalsy();
         });
     });
 

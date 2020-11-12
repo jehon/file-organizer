@@ -1,21 +1,20 @@
 
-const { basename } = require('path');
+import { t, __filename } from '../test-helper.js';
 
-const { createFileGeneric } = require('./helpers.js');
-const fileUtils = require('../../file-organizer/file-utils.js');
-const helpers = require('./helpers.js');
+import { createFileGeneric, fileExists } from './help-functions.mjs';
+import fileUtils from '../../file-organizer/file-utils.js';
 
-describe(basename(__filename), function () {
+describe(t(import.meta), function () {
     it('should findIndexedFilename', async function () {
-        expect(await helpers.fileExists(__filename)).toBeTruthy();
-        expect(await helpers.fileExists(__filename + '.brol')).toBeFalsy();
+        expect(await fileExists(__filename(import.meta))).toBeTruthy();
+        expect(await fileExists(__filename(import.meta) + '.brol')).toBeFalsy();
 
         // Ask to move to new file, but without telling him it is itself -> should be incremented
         const new1 = await createFileGeneric('jh-patch-file-patch.txt');
-        expect(await helpers.fileExists(new1.getPath())).toBeTruthy();
+        expect(await fileExists(new1.getPath())).toBeTruthy();
 
         await fileUtils.fileDelete(new1.getPath());
-        expect(await helpers.fileExists(new1.getPath())).toBeFalsy();
+        expect(await fileExists(new1.getPath())).toBeFalsy();
     });
 
     it('should launch subprocesses', async function () {
