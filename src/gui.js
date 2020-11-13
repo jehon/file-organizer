@@ -1,5 +1,4 @@
 
-import path from 'path';
 import { CHANNEL_MAIN } from './common/constants.js';
 
 import { createRequire } from 'module';
