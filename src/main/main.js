@@ -14,16 +14,10 @@ import messages from '../../file-organizer/messages.js';
 // TODO: Fix problem in version < 4.1 coming from jsonfile 4.0.0 in fs-extra 8.1.0
 import 'graceful-fs';
 
-import fs from 'fs';
-import path from 'path';
-import { rootDir } from '../common/constants.js';
+import importDirectory from './importDirectory.js';
 
-fs.promises.readdir(path.join(rootDir, 'src', 'main', 'commands'))
-    .then(list => list.filter(v => v.endsWith('.js')))
-    .then((list) => Promise.all(
-        list.map(f => import(path.join(rootDir, 'src', 'main', 'commands', f)))
-    ))
-    .then(cmd => {
+importDirectory('src/main/commands')
+    .then(cmds => {
         let yparser = yargs(process.argv.slice(2))
             .options({
                 'dryRun': {
@@ -92,7 +86,7 @@ fs.promises.readdir(path.join(rootDir, 'src', 'main', 'commands'))
                 }
             });
 
-        for (const c of cmd) {
+        for (const c of cmds) {
             yparser = yparser.command(c.command,
                 c.describe,
                 c.builder ?? {},
