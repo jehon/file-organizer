@@ -1,14 +1,14 @@
 
-const options = require('../../../file-organizer/options.js');
-const fileUtils = require('../../../file-organizer/file-utils.js');
-const FileUnsupported = require('../../../file-organizer/main/file-unsupported.js');
-const messages = require('../../../file-organizer/messages.js');
+import options from '../../../file-organizer/options.js';
+import fileUtils from '../../../file-organizer/file-utils.js';
+import FileUnsupported from '../../../file-organizer/main/file-unsupported.js';
+import messages from '../../../file-organizer/messages.js';
 
-exports.command = 'dump [files..]';
+export const command = 'dump [files..]';
 
-exports.describe = 'Get some info about the files';
+export const describe = 'Get some info about the files';
 
-exports.builder = {
+export const builder = {
     all: {
         type: 'boolean',
         default: false
@@ -43,7 +43,10 @@ function r(str, ll) {
     return str.padEnd(ll);
 }
 
-exports.handler = async function (noptions) {
+/**
+ * @param noptions
+ */
+export async function handler(noptions) {
     Object.assign(options, noptions, {
         headless: true,
         dryRun: true,
@@ -101,4 +104,4 @@ exports.handler = async function (noptions) {
             console.info('\n\n');
             FileUnsupported.dumpDiscoveredExtension();
         });
-};
+}

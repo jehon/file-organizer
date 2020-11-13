@@ -1,13 +1,13 @@
 
-const options = require('../../../file-organizer/options.js');
-const fileUtils = require('../../../file-organizer/file-utils.js');
-const FileUnsupported = require('../../../file-organizer/main/file-unsupported.js');
+import options from '../../../file-organizer/options.js';
+import fileUtils from '../../../file-organizer/file-utils.js';
+import FileUnsupported from '../../../file-organizer/main/file-unsupported.js';
 
-exports.command = 'unsupported';
+export const command = 'unsupported';
 
-exports.describe = 'Get some info about the files';
+export const describe = 'Get some info about the files';
 
-exports.handler = function (noptions) {
+export const handler = function (noptions) {
     Object.assign(options, noptions, {
         showHidden: true
     });

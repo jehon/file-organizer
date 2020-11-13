@@ -1,13 +1,13 @@
 
-const options = require('../../../file-organizer/options.js');
-const FileUnsupported = require('../../../file-organizer/main/file-unsupported.js');
-const FileMovie = require('../../../file-organizer/file-movie.js');
+import options from '../../../file-organizer/options.js';
+import FileUnsupported from '../../../file-organizer/main/file-unsupported.js';
+import FileMovie from '../../../file-organizer/file-movie.js';
 
-exports.command = 'legacy';
+export const command = 'legacy';
 
-exports.describe = 'Get some info about the files';
+export const describe = 'Get some info about the files';
 
-exports.handler = function (noptions) {
+export const handler = function (noptions) {
     Object.assign(options, noptions, {
     });
 

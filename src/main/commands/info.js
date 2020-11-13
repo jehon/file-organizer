@@ -1,13 +1,14 @@
 
-const options = require('../../../file-organizer/options.js');
-const fileFactory = require('../file-factory.js');
-const { Timestamp } = require('../../../file-organizer/timestamp.js');
+import options from '../../../file-organizer/options.js';
+import fileFactory from '../../../file-organizer/file-factory.js';
+import timestampAPI from '../../../file-organizer/timestamp.js';
+const { Timestamp } = timestampAPI;
 
-exports.command = 'info <file>';
+export const command = 'info <file>';
 
-exports.describe = 'Get some info about the file';
+export const describe = 'Get some info about the file';
 
-exports.builder = {
+export const builder = {
     key: {
         alias: ['k'],
         default: ''
@@ -25,7 +26,7 @@ const presentIt = (k, v) => {
     return v;
 };
 
-exports.handler = async function (noptions) {
+export const handler = async function (noptions) {
     Object.assign(options, noptions, {
         headless: true,
         dryRun: true,

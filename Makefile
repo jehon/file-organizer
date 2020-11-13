@@ -75,7 +75,12 @@ clean:
 # start: build
 # 	electron .
 
-start-test:
+start-test-headless:
+	mkdir -p tmp/gui
+	cd tmp/gui && ../../reset.sh
+	cd tmp/gui && ../../file-organizer.sh dump
+
+start-test-gui:
 	mkdir -p tmp/gui
 	cd tmp/gui && ../../reset.sh
 	cd tmp/gui && ../../file-organizer.sh regularize -n

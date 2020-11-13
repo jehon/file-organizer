@@ -1,13 +1,13 @@
 
-// const FileGeneric = require('../file-generic.js');
-const FileUnsupported = require('../../../file-organizer/main/file-unsupported.js');
-const options = require('../../../file-organizer/options.js');
+// import FileGeneric from '../file-generic.js';
+import FileUnsupported from '../../../file-organizer/main/file-unsupported.js';
+import options from '../../../file-organizer/options.js';
 
-exports.command = ['$0 [files..]', 'regularize [files..]'];
+export const command = ['$0 [files..]', 'regularize [files..]'];
 
-exports.describe = 'Regularize the files';
+export const describe = 'Regularize the files';
 
-exports.handler = function (noptions) {
+export const handler = function (noptions) {
     Object.assign(options, noptions);
 
     if (!options.headless) {

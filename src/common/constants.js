@@ -1,4 +1,6 @@
 
+import { dirname } from 'path';
+
 export const CHANNEL_MAIN = 'main';
 
 export const TYPE_FOLDER = 'type_folder';
@@ -19,3 +21,5 @@ export const TYPE_TASK = 'type_task';
 /* ++ . T     └──┐     */ export const STATUS_ACTING = 'status_acting';
 /* ++ I T        ├──x  */ export const STATUS_ACTED_SUCCESS = 'status_acted_success';
 /* ++ I T        └──x  */ export const STATUS_ACTED_FAILURE = 'status_acted_failure';
+
+export const rootDir = dirname(dirname(dirname(new URL(import.meta.url).pathname)));
