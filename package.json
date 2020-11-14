@@ -17,7 +17,7 @@
         "is-interactive": "1.0.0",
         "minimatch": "3.0.4",
         "moment": "2.29.1",
-        "moment-timezone": "0.5.31",
+        "moment-timezone": "0.5.32",
         "p-limit": "3.0.2",
         "p-queue": "6.6.2",
         "shell-exec": "1.0.2",
