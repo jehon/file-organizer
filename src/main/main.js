@@ -7,7 +7,6 @@
 import yargs from 'yargs';
 
 import fileFactory from '../../file-organizer/file-factory.js';
-// TODO: this is not shared between the two !!!
 import options from '../../file-organizer/options.js';
 import messages from '../../file-organizer/messages.js';
 
