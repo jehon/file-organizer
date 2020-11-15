@@ -23,7 +23,7 @@
         "shell-exec": "1.0.2",
         "tz-lookup": "6.1.25",
         "watch": "1.0.2",
-        "yargs": "16.1.0"
+        "yargs": "16.1.1"
     },
     "devDependencies": {
         "@types/jasmine": "3.6.1",
