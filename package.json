@@ -22,7 +22,6 @@
         "p-queue": "6.6.2",
         "shell-exec": "1.0.2",
         "tz-lookup": "6.1.25",
-        "watch": "1.0.2",
         "yargs": "16.1.0"
     },
     "devDependencies": {
@@ -33,7 +32,8 @@
         "eslint": "7.13.0",
         "eslint-plugin-jsdoc": "30.7.7",
         "jasmine": "3.6.3",
-        "nyc": "15.1.0"
+        "nyc": "15.1.0",
+        "watch": "1.0.2"
     },
     "scripts": {
         "demo": "electron ./demo.cjs",
@@ -43,9 +43,14 @@
     "main": "src/main.cjs",
     "type": "module",
     "nyc": {
+        "all": true,
         "reporter": [
             "lcov",
             "text-summary"
+        ],
+        "include": [
+            "file-organizer/**",
+            "src/**"
         ],
         "temp-dir": "./tmp/coverage",
         "report-dir": "./tmp/unit-coverage"

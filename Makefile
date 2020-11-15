@@ -106,6 +106,10 @@ test: test-unit test-system
 test-unit: build
 	nyc jasmine --config=test/unit/jasmine.json
 
+.PHONY: test-unit-continuously
+test-unit-continuously: build
+	watch "make test-unit" src file-organizer test/unit
+
 .PHONY: test-system
 test-system: build
 	xvfb-run jasmine --config=test/system/jasmine.json
