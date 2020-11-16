@@ -4,10 +4,14 @@ import { tempPath } from './help-functions.mjs';
 
 import options from '../../file-organizer/options.js';
 
+import { loadFileTypes } from '../../src/main/register-file-types.js';
+
 // Clean up the temp folder !
 beforeAll(async () => {
-    return fs.promises.rmdir(tempPath(), { recursive: true })
-        .then(() => fs.promises.mkdir(tempPath(), { recursive: true }));
+    await fs.promises.rmdir(tempPath(), { recursive: true });
+    await fs.promises.mkdir(tempPath(), { recursive: true });
+
+    await loadFileTypes();
 });
 
 /**

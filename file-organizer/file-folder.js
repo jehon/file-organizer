@@ -2,6 +2,9 @@
 const fs = require('fs');
 const path = require('path');
 
+// import { registerFolder } from '../src/main/register-file-types.js';
+let buildFileFn;
+
 const FileTimestamped = require('./file-timestamped.js');
 
 class FileFolder extends FileTimestamped {
@@ -15,12 +18,10 @@ class FileFolder extends FileTimestamped {
     }
 
     async getList() {
-        const fileFactory = require('./file-factory.js');
-
         return fs.promises.readdir(this.getPath())
             .then(list => list.filter(f => f != '.' && f != '..'))
             .then(list => Promise.all(
-                list.map(async f => await fileFactory(path.join(this.getPath(), f), this))
+                list.map(async f => await buildFileFn(path.join(this.getPath(), f), this))
             ))
             // Remove "FileHidden" files if required
             .then(list => { list.sort(); return list; });
@@ -40,3 +41,10 @@ class FileFolder extends FileTimestamped {
 }
 
 module.exports = FileFolder;
+
+FileFolder.init = async function () {
+    await import('../src/main/register-file-types.js').then(({ registerFolder, buildFile }) => {
+        registerFolder(FileFolder);
+        buildFileFn = buildFile;
+    });
+};

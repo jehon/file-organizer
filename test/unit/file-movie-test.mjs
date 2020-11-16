@@ -3,8 +3,8 @@ import { t } from '../test-helper.js';
 
 import { dataPath, createFileGeneric } from './help-functions.mjs';
 import FileMovie from '../../file-organizer/file-movie.js';
-import fileFactory from '../../file-organizer/file-factory.js';
 import { tsFromString } from '../../file-organizer/timestamp.js';
+import { buildFile } from '../../src/main/register-file-types.js';
 
 /**
  * @param dPath
@@ -51,7 +51,7 @@ describe(t(import.meta), function () {
         expect(new1.exif_timestamp.exif()).toBe('2016:02:04 01:02:03');
         expect(new1.exif_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
 
-        const new2 = await fileFactory(new1.getPath());
+        const new2 = await buildFile(new1.getPath());
         await new2.loadData();
         expect(new2.exif_calculated_timezone).toBe('');
         expect(new2.exif_timestamp.exif()).toBe('2016:02:04 01:02:03');
@@ -70,7 +70,7 @@ describe(t(import.meta), function () {
         expect(new1.exif_timestamp.exif()).toBe('2016:02:04 00:02:03');
         expect(new1.exif_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
 
-        const new2 = await fileFactory(new1.getPath());
+        const new2 = await buildFile(new1.getPath());
         await new2.loadData();
         expect(new2.exif_calculated_timezone).toBe('Europe/Brussels');
         expect(new2.exif_timestamp_raw).toBe('2016:02:04 00:02:03');
@@ -80,7 +80,6 @@ describe(t(import.meta), function () {
         new1.remove();
     });
 
-
     it('should write titles correctly', async () => {
         const newTitle = 'test';
         const new1 = await createFileGeneric(canonMOV);
@@ -89,7 +88,7 @@ describe(t(import.meta), function () {
         await new1.exifWriteTitle(newTitle);
         expect(new1.exif_title).toBe(newTitle);
 
-        const new2 = await fileFactory(new1.getPath());
+        const new2 = await buildFile(new1.getPath());
         await new2.loadData();
         expect(new2.exif_title).toBe(newTitle);
 

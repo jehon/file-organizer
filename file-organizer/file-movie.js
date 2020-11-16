@@ -2,7 +2,7 @@
 const FileExif = require('./file-exif.js');
 const { tsFromExif, tzFromGPS } = require('./timestamp.js');
 
-module.exports = class FileMovie extends FileExif {
+class FileMovie extends FileExif {
     get constExifTS() { return 'CreateDate'; }
 
     async exifReadAll(file) {
@@ -18,7 +18,7 @@ module.exports = class FileMovie extends FileExif {
     async exifReload() {
         return super.exifReload().then(exifData => {
             this.exif_calculated_timezone = exifData.calculatedTimezone;
-            this.exif_timestamp           = tsFromExif(exifData[this.constExifTS], this.exif_calculated_timezone);
+            this.exif_timestamp = tsFromExif(exifData[this.constExifTS], this.exif_calculated_timezone);
             return exifData;
         });
     }
@@ -39,4 +39,14 @@ module.exports = class FileMovie extends FileExif {
         }
         return super.exifWriteTimestamp(ts);
     }
+}
+
+module.exports = FileMovie;
+
+FileMovie.init = async function () {
+    await import('../src/main/register-file-types.js').then(({ registerGlob }) => {
+        registerGlob([
+            '*.mov', '*.mp4'
+        ], FileMovie);
+    });
 };

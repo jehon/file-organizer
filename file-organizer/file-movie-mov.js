@@ -18,3 +18,11 @@ module.exports = class FileMovieMov extends FileMovie {
         return super.check();
     }
 };
+
+
+// case '.avi':  // 17  // TODO (extensions): unsupported
+// case '.mpg':  // 29  // TODO (extensions): unsupported
+// case '.mpeg': // ?   // TODO (extensions): unsupported
+// case '.wmv':  // ?   // TODO (extensions): unsupported
+// case '.mod':  // ?   // TODO (extensions): unsupported
+// return new FileMovieMov(filepath, parent);

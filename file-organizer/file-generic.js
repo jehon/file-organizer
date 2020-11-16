@@ -66,15 +66,29 @@ class FileGeneric {
     }
 
     /**
-	 * @param description(string): free text
-	 *
-	 * @param newInfo(null/string): the new information (display only)
-	 *
-	 * @param icon(null/true/function):
-	 *    null: action errors (impossible)
-	 *    true: info message of success
-	 *    fn: fix function
-	 */
+     * @param description(string): free text
+     * @param newInfo(null/string): the new information (display only)
+     * @param icon(null/true/function):
+     * null: action errors (impossible)
+     * true: info message of success
+     * fn: fix function
+     * @param code
+     * @param description
+     * @param newInfo
+     * @param icon
+     * @param code
+     * @param description
+     * @param newInfo
+     * @param icon
+     * @param code
+     * @param description
+     * @param newInfo
+     * @param icon
+     * @param code
+     * @param description
+     * @param newInfo
+     * @param icon
+     */
     addMessage(code, description, newInfo = null, icon = null) {
         this.messages.set(code, icon
             + (description ? ' ' + chalk.yellow((description).padEnd(40, ' ')) : '')
@@ -166,15 +180,15 @@ class FileGeneric {
     }
 
     /**
-	 * Without extension
-	 */
+     * Without extension
+     */
     getFilename() {
         return fileUtils.getFilename(this.getPath());
     }
 
     /**
-	 * Format: .blabla
-	 */
+     * Format: .blabla
+     */
     getExtension() {
         return fileUtils.getExtension(this.getPath());
     }
@@ -246,3 +260,12 @@ class FileGeneric {
 module.exports = FileGeneric;
 FileGeneric.convertedSuffix = '_converted';
 FileGeneric.pendings = activeFilesList;
+
+FileGeneric.init = async function () {
+    await import('../src/main/register-file-types.js').then(({ registerGlob }) => {
+        registerGlob([
+            '*.pdf',
+            '*.txt'
+        ], FileGeneric);
+    });
+};

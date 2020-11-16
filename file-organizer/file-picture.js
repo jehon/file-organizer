@@ -2,7 +2,7 @@
 const FileExif = require('./file-exif.js');
 const fileUtils = require('./file-utils.js');
 
-module.exports = class FilePicture extends FileExif {
+class FilePicture extends FileExif {
     async exifRotatePicture() {
         // _angle is not used because exiftran calculate that for us...
 
@@ -15,8 +15,8 @@ module.exports = class FilePicture extends FileExif {
         const orig = this.getPath();
         const temp = this.getPath() + '.rotated';
 
-        return fileUtils.fileExec('exiftran', [ '-a', '-p', '-g', orig, '-o', temp ])
-            .then(() => fileUtils.fileExec('touch', [ '-r', orig, temp ]))
+        return fileUtils.fileExec('exiftran', ['-a', '-p', '-g', orig, '-o', temp])
+            .then(() => fileUtils.fileExec('touch', ['-r', orig, temp]))
             .then(() => fileUtils.fileDelete(orig))
             .then(() => fileUtils.fileRename(temp, orig))
             .then(() => this.exif_orientation = 0)
@@ -38,4 +38,19 @@ module.exports = class FilePicture extends FileExif {
         }
         return res;
     }
+}
+
+module.exports = FilePicture;
+
+FilePicture.init = async function () {
+    await import('../src/main/register-file-types.js').then(({ registerGlob }) => {
+        registerGlob([
+            '*.jpg',
+            '*.jpeg'
+        ], FilePicture);
+    });
+
+    // case '.mts':  // ?   // TODO (extensions): unsupported
+    // case '.png':  // ?   // TODO (extensions): unsupported
+    // case '.dng':  // ?   // TODO (extensions): unsupported
 };

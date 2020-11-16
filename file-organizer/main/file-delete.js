@@ -4,9 +4,20 @@ const {
     TaskFileDelete
 } = require('./tasks-fs.js');
 
-module.exports = class FileDelete extends File {
+class FileDelete extends File {
     async analyse() {
         this.enqueueAct(new TaskFileDelete());
         await super.analyse();
     }
+}
+
+module.exports = FileDelete;
+
+FileDelete.init = async function () {
+    await import('../../src/main/register-file-types.js').then(({ registerGlob }) => {
+        registerGlob([
+            'Thumbs.db',
+            '.picasa.ini'
+        ], FileDelete);
+    });
 };

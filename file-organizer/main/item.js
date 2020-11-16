@@ -34,8 +34,8 @@ module.exports = class Item {
         return this;
     }
 
-    notify(status = false) {
-        if (status !== false) {
+    notify(status = '') {
+        if (status !== '') {
             this.status = status;
         }
         let data = {};

@@ -5,10 +5,20 @@ const {
 } = require('../constants.js');
 const InfoProblem = require('./info-problem.js');
 
-module.exports = class FileManual extends File {
+class FileManual extends File {
     async analyse() {
         return super.analyse()
             .then(() => this.createInfo(InfoProblem, 'Manual operation needed'))
             .then(() => this.notify(STATUS_FAILURE));
     }
+}
+
+module.exports = FileManual;
+
+FileManual.init = async function () {
+    await import('../../src/main/register-file-types.js').then(({ registerGlob }) => {
+        registerGlob([
+            '*.doc*'
+        ], FileManual);
+    });
 };

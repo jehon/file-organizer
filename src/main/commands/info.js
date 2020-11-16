@@ -1,6 +1,6 @@
 
 import options from '../../../file-organizer/options.js';
-import fileFactory from '../../../file-organizer/file-factory.js';
+import { buildFile } from '../../../src/main/register-file-types.js';
 import timestampAPI from '../../../file-organizer/timestamp.js';
 const { Timestamp } = timestampAPI;
 
@@ -33,7 +33,7 @@ export const handler = async function (noptions) {
         withFileSummary: false
     });
 
-    return fileFactory(options.file)
+    return buildFile(options.file)
         .then(f => f.loadData())
         .then(f => {
             if (options.key) {

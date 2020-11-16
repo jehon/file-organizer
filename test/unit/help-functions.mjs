@@ -6,6 +6,7 @@ import File from '../../file-organizer/main/file.js';
 import Item from '../../file-organizer/main/item.js';
 
 import { __dirname } from '../test-helper.js';
+import { buildFile } from '../../src/main/register-file-types.js';
 
 const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname(import.meta)))), ...args);
 
@@ -13,11 +14,9 @@ const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname(imp
 export const dataPath = (...args) => rootPath('test', 'data', ...args);
 export const tempPath = (...args) => rootPath('tmp', 'unit', ...args);
 
-import fileFactory from '../../file-organizer/file-factory.js';
-
-// FileGeneric: copy to
 /**
- * @param subPath
+ * @param {string} subPath of the file
+ * @returns {File} - a copy ready for the test
  */
 export async function createFileGeneric(subPath) {
     const fullSource = dataPath(subPath);
@@ -27,7 +26,8 @@ export async function createFileGeneric(subPath) {
         fullSource,
         path.join(tempPath(), newName)
     );
-    return fileFactory(path.join(tempPath(), newName))
+
+    return buildFile(path.join(tempPath(), newName))
         .then(f => f.loadData());
 }
 

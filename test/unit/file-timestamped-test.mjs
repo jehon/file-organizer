@@ -2,11 +2,11 @@
 import { t } from '../test-helper.js';
 
 import { tempPath, createFileGeneric } from './help-functions.mjs';
-import fileFactory from '../../file-organizer/file-factory.js';
 import FileTimestamped from '../../file-organizer/file-timestamped.js';
 import FileFolder from '../../file-organizer/file-folder.js';
 import { tsFromString } from '../../file-organizer/timestamp.js';
 import { fileDelete } from '../../file-organizer/file-utils.js';
+import { buildFile } from '../../src/main/register-file-types.js';
 
 describe(t(import.meta), function () {
     it('should get the timestamp', function () {
@@ -96,7 +96,7 @@ describe(t(import.meta), function () {
                 await new1.exifWriteTitle('');
 
                 // new2 is a virtual alias of new1 with fields initialized
-                const new2 = await fileFactory(new1.getPath());
+                const new2 = await buildFile(new1.getPath());
                 await new2.loadData();
                 expect(new2.exif_title).toBe('');
                 expect(new2.filenameTS.title).toBe('exifok01');
@@ -115,7 +115,7 @@ describe(t(import.meta), function () {
                 await new1.changeFilename('1998-12-31 12-10-11');
 
                 // new2 is a virtual alias of new1 with fields initialized
-                const new2 = await fileFactory(new1.getPath());
+                const new2 = await buildFile(new1.getPath());
                 await new2.loadData();
                 expect(new2.exif_title).toBe('');
                 expect(new2.filenameTS.title).toBe('');
@@ -142,7 +142,7 @@ describe(t(import.meta), function () {
                 await new1.exifWriteTitle('x test');
 
                 // new2 is a virtual alias of new1 with fields initialized
-                const new2 = await fileFactory(new1.getPath());
+                const new2 = await buildFile(new1.getPath());
                 await new2.loadData();
                 expect(new2.exif_title).toBe('x test');
 

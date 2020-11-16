@@ -6,7 +6,6 @@
 
 import yargs from 'yargs';
 
-import fileFactory from '../../file-organizer/file-factory.js';
 import options from '../../file-organizer/options.js';
 import messages from '../../file-organizer/messages.js';
 
@@ -14,8 +13,10 @@ import messages from '../../file-organizer/messages.js';
 import 'graceful-fs';
 
 import importDirectory from './importDirectory.js';
+import { buildFile, loadFileTypes } from './register-file-types.js';
 
-importDirectory('src/main/commands')
+loadFileTypes()
+    .then(() => importDirectory('src/main/commands'))
     .then(cmds => {
         let yparser = yargs(process.argv.slice(2))
             .options({
@@ -75,7 +76,7 @@ importDirectory('src/main/commands')
                 }
                 messages.statsAddFileToTotal(argv.files.length);
                 return Promise.all(argv.files.map(
-                    f => fileFactory('' + f)))
+                    f => buildFile('' + f)))
                     .then(nlist => argv.files = nlist)
                     .then(() => argv);
             })

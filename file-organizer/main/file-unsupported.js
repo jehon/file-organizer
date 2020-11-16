@@ -34,3 +34,9 @@ FileUnsupported.dumpDiscoveredExtension = function () {
 FileUnsupported._map = map;
 
 module.exports = FileUnsupported;
+
+FileUnsupported.init = async function () {
+    await import('../../src/main/register-file-types.js').then(({ registerFallback }) => {
+        registerFallback(FileUnsupported);
+    });
+};

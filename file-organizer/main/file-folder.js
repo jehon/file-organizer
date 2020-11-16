@@ -7,14 +7,15 @@ const FileHidden = require('./file-hidden.js');
 const Task = require('./task.js');
 const options = require('../options.js');
 
+let buildFileFn;
+
 class TaskFolderListing extends Task {
     constructor() {
-        const fileFactory = require('../file-factory.js');
         super('Get the folder list', () =>
             fs.promises.readdir(this.parent.path)
                 .then(list => list.filter(f => f != '.' && f != '..'))
                 .then(list => Promise.all(
-                    list.map(async f => await fileFactory(path.join(this.getPath(), f), this))
+                    list.map(async f => await buildFileFn(path.join(this.getPath(), f), this))
                 ))
                 // Remove "FileHidden" files if required
                 .then(list => list.filter(f => options.showHidden || (!(f instanceof FileHidden))))
@@ -46,3 +47,9 @@ class FileFolder extends File {
 }
 
 module.exports = FileFolder;
+
+FileFolder.init = async function () {
+    await import('../../src/main/register-file-types.js').then(({ buildFile }) => {
+        buildFileFn = buildFile;
+    });
+};
