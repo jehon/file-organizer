@@ -1,7 +1,7 @@
 
 import options from '../../../file-organizer/options.js';
 import fileUtils from '../../../file-organizer/file-utils.js';
-import FileUnsupported from '../../../file-organizer/main/file-unsupported.js';
+import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
 import messages from '../../../file-organizer/messages.js';
 
 export const command = 'dump [files..]';
@@ -102,6 +102,6 @@ export async function handler(noptions) {
     ))
         .then(() => {
             console.info('\n\n');
-            FileUnsupported.dumpDiscoveredExtension();
+            dumpDiscoveredExtension();
         });
 }

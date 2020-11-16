@@ -1,13 +1,14 @@
 
-const File = require('./file.js');
-const {
+import File from '../../../file-organizer/main/file.js';
+import {
     STATUS_FAILURE
-} = require('../constants.js');
-const InfoProblem = require('./info-problem.js');
+} from '../../common/constants.js';
+import InfoProblem from '../../../file-organizer/main/info-problem.js';
+import { registerFallback } from '../register-file-types.js';
 
 const map = new Map();
 
-class FileUnsupported extends File {
+export default class FileUnsupported extends File {
     constructor(filePath, parent = null) {
         super(filePath, parent);
         const i = map.has(this.extension.toLowerCase()) ? map.get(this.extension.toLowerCase()) : 0;
@@ -21,7 +22,10 @@ class FileUnsupported extends File {
     }
 }
 
-FileUnsupported.dumpDiscoveredExtension = function () {
+/**
+ * @returns {Map<string, number>} of the unsupported file extensions
+ */
+export function dumpDiscoveredExtension() {
     if (map.size > 0) {
         console.info('Found unsupported file extensions: ');
         for (const [key, value] of map) {
@@ -29,14 +33,8 @@ FileUnsupported.dumpDiscoveredExtension = function () {
         }
     }
     return map;
-};
+}
 
-FileUnsupported._map = map;
+export const _map = map;
 
-module.exports = FileUnsupported;
-
-FileUnsupported.init = async function () {
-    await import('../../src/main/register-file-types.js').then(({ registerFallback }) => {
-        registerFallback(FileUnsupported);
-    });
-};
+registerFallback(FileUnsupported);

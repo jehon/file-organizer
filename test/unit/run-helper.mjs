@@ -4,7 +4,7 @@ import { tempPath } from './help-functions.mjs';
 
 import options from '../../file-organizer/options.js';
 
-import { loadFileTypes } from '../../src/main/register-file-types.js';
+import loadFileTypes from '../../src/main/loadFileTypes.js';
 
 // Clean up the temp folder !
 beforeAll(async () => {

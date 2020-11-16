@@ -1,6 +1,6 @@
 
 import options from '../../../file-organizer/options.js';
-import FileUnsupported from '../../../file-organizer/main/file-unsupported.js';
+import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
 import FileMovie from '../../../file-organizer/file-movie.js';
 
 export const command = 'legacy';
@@ -23,6 +23,6 @@ export const handler = function (noptions) {
     ))
         .then(() => {
             console.info('\n\nDone');
-            FileUnsupported.dumpDiscoveredExtension();
+            dumpDiscoveredExtension();
         });
 };

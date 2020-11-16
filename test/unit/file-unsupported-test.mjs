@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 
-import FileUnsupported from '../../file-organizer/main/file-unsupported.js';
+import FileUnsupported, { dumpDiscoveredExtension, _map } from '../../src/main/file-types/file-unsupported.js';
 import Item from '../../file-organizer/main/item.js';
 import {
     STATUS_CREATED,
@@ -18,9 +18,9 @@ describe(t(import.meta), function () {
     });
 
     it('should be always good', async function () {
-        FileUnsupported._map.clear();
+        _map.clear();
 
-        expect(() => FileUnsupported.dumpDiscoveredExtension()).not.toThrow();
+        expect(() => dumpDiscoveredExtension()).not.toThrow();
         expect(console.info).not.toHaveBeenCalled();
 
         {
@@ -36,10 +36,10 @@ describe(t(import.meta), function () {
         }
 
         console.info.calls.reset();
-        expect(() => FileUnsupported.dumpDiscoveredExtension()).not.toThrow();
+        expect(() => dumpDiscoveredExtension()).not.toThrow();
         expect(console.info).toHaveBeenCalled();
 
-        expect(FileUnsupported._map.size).toBe(1);
-        expect(FileUnsupported._map.get('.txt')).toBe(2);
+        expect(_map.size).toBe(1);
+        expect(_map.get('.txt')).toBe(2);
     });
 });

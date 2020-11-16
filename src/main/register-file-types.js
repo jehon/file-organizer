@@ -4,8 +4,6 @@ import fileUtils from '../../file-organizer/file-utils.js';
 import FileGeneric from '../../file-organizer/file-generic.js';
 import File from '../../file-organizer/main/file.js';
 
-import importDirectory from './importDirectory.js';
-
 // TODO: object should be "class constructor"
 /**
  * @type {Map<RegExp, object>} to store all mapping
@@ -113,36 +111,6 @@ export async function buildFile(filepath, parent = null) {
         }
     }
     throw `No match found for ${filepath}`;
-}
-
-/**
- * Load the map with files in the folder
- *
- * @returns {Promise<void>}
- */
-export async function loadFileTypes() {
-    _reset();
-
-    const loadCJS = (f) => import(f).then(ft => ft.default.init());
-
-    await Promise.all(
-        [
-            loadCJS('../../file-organizer/file-generic.js'),
-            loadCJS('../../file-organizer/file-folder.js'),
-
-            loadCJS('../../file-organizer/main/file-delete.js'),
-            loadCJS('../../file-organizer/main/file-hidden.js'),
-            loadCJS('../../file-organizer/main/file-manual.js'),
-            loadCJS('../../file-organizer/file-movie.js'),
-            loadCJS('../../file-organizer/file-picture.js'),
-            loadCJS('../../file-organizer/main/file-convert-source.js'),
-
-            loadCJS('../../file-organizer/main/file-unsupported.js'),
-
-            // used to initialize the buildFile
-            loadCJS('../../file-organizer/main/file-folder.js')
-        ]);
-    await importDirectory('src/main/file-types');
 }
 
 /**

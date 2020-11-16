@@ -1,7 +1,7 @@
 
 import options from '../../../file-organizer/options.js';
 import fileUtils from '../../../file-organizer/file-utils.js';
-import FileUnsupported from '../../../file-organizer/main/file-unsupported.js';
+import FileUnsupported, { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
 
 export const command = 'unsupported';
 
@@ -22,6 +22,6 @@ export const handler = function (noptions) {
     ))
         .then(() => {
             console.info('\n\n');
-            FileUnsupported.dumpDiscoveredExtension();
+            dumpDiscoveredExtension();
         });
 };

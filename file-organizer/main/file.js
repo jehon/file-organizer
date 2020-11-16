@@ -42,7 +42,7 @@ module.exports = class File extends Item {
     iterate() { }
 
     /**
-     * Without extension
+     * @returns {string} filename without extension
      */
     get filename() {
         return fileUtils.getFilename(this.path);
@@ -50,6 +50,8 @@ module.exports = class File extends Item {
 
     /**
      * Format: .blabla
+     *
+     * @returns {string} the extension (with a dot: .blabla)
      */
     get extension() {
         return fileUtils.getExtension(this.path);

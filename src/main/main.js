@@ -13,7 +13,8 @@ import messages from '../../file-organizer/messages.js';
 import 'graceful-fs';
 
 import importDirectory from './importDirectory.js';
-import { buildFile, loadFileTypes } from './register-file-types.js';
+import loadFileTypes from './loadFileTypes.js';
+import { buildFile } from './register-file-types.js';
 
 loadFileTypes()
     .then(() => importDirectory('src/main/commands'))

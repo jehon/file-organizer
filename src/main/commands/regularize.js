@@ -1,6 +1,6 @@
 
 // import FileGeneric from '../file-generic.js';
-import FileUnsupported from '../../../file-organizer/main/file-unsupported.js';
+import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
 import options from '../../../file-organizer/options.js';
 
 export const command = ['$0 [files..]', 'regularize [files..]'];
@@ -22,7 +22,7 @@ export const handler = function (noptions) {
     )
         .then(() => {
             console.info('\n\nDone');
-            FileUnsupported.dumpDiscoveredExtension();
+            dumpDiscoveredExtension();
             // console.info(FileGeneric.pendings);
         });
 };
