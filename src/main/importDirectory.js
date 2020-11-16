@@ -12,6 +12,7 @@ export default function (folder) {
     if (folder[0] != '/') {
         folder = path.join(rootDir, folder);
     }
+
     return fs.promises.readdir(folder)
         .then(list => list.filter(v => v.endsWith('.js')))
         .then((list) => Promise.all(

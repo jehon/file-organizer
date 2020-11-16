@@ -16,83 +16,87 @@ import importDirectory from './importDirectory.js';
 import loadFileTypes from './loadFileTypes.js';
 import { buildFile } from './register-file-types.js';
 
-loadFileTypes()
-    .then(() => importDirectory('src/main/commands'))
-    .then(cmds => {
-        let yparser = yargs(process.argv.slice(2))
-            .options({
-                'dryRun': {
-                    alias: ['dry-run', 'n'],
-                    type: 'boolean',
-                    coerce: (val) => {
-                        if (val) {
-                            console.info('Using dry run mode');
+Promise.resolve()
+    .then(() => loadFileTypes())
+    .then(() =>
+        importDirectory('src/main/commands')
+            .then(cmds => {
+                let yparser = yargs(process.argv.slice(2))
+                    .options({
+                        'dryRun': {
+                            alias: ['dry-run', 'n'],
+                            type: 'boolean',
+                            coerce: (val) => {
+                                if (val) {
+                                    console.info('Using dry run mode');
+                                }
+                                return val;
+                            }
+                        },
+                        'headless': {
+                            type: 'boolean',
+                            default: false
+                        },
+                        'debug': {
+                            alias: ['d'],
+                            type: 'boolean',
+                            default: false
+                        },
+                        'files': {
+                            alias: ['f'],
+                            type: 'array',
+                            default: [],
+                        },
+                        'setTitle': {
+                            alias: ['set-title', 'c'],
+                            type: 'string',
+                            default: ''
+                        },
+                        'forceTitleFromFilename': {
+                            alias: ['force-title-from-filename', 'ftfn'],
+                            type: 'boolean',
+                            default: false
+                        },
+                        'forceTitleFromFolder': {
+                            alias: ['force-title-from-folder', 'ftff'],
+                            type: 'boolean',
+                            default: false
+                        },
+                        'forceTimestampFromFilename': {
+                            alias: ['force-timestamp-from-filename', 'ftsfn'],
+                            type: 'boolean',
+                            default: false
                         }
-                        return val;
-                    }
-                },
-                'headless': {
-                    type: 'boolean',
-                    default: false
-                },
-                'debug': {
-                    alias: ['d'],
-                    type: 'boolean',
-                    default: false
-                },
-                'files': {
-                    alias: ['f'],
-                    type: 'array',
-                    default: [],
-                },
-                'setTitle': {
-                    alias: ['set-title', 'c'],
-                    type: 'string',
-                    default: ''
-                },
-                'forceTitleFromFilename': {
-                    alias: ['force-title-from-filename', 'ftfn'],
-                    type: 'boolean',
-                    default: false
-                },
-                'forceTitleFromFolder': {
-                    alias: ['force-title-from-folder', 'ftff'],
-                    type: 'boolean',
-                    default: false
-                },
-                'forceTimestampFromFilename': {
-                    alias: ['force-timestamp-from-filename', 'ftsfn'],
-                    type: 'boolean',
-                    default: false
-                }
-            })
-            // .commandDir('./main/commands')
-            .recommendCommands()
-            .strict()
-            .help()
-            .middleware(async (argv) => {
-                // Put a default value in files if the list is empty
-                if (argv.files.length == 0) {
-                    argv.files.push('.');
-                }
-                messages.statsAddFileToTotal(argv.files.length);
-                return Promise.all(argv.files.map(
-                    f => buildFile('' + f)))
-                    .then(nlist => argv.files = nlist)
-                    .then(() => argv);
-            })
-            .onFinishCommand(() => {
-                if (options.headless) {
-                    process.exit(0);
-                }
-            });
+                    })
+                    // .commandDir('./main/commands')
+                    .recommendCommands()
+                    .strict()
+                    .help()
+                    .middleware(async (argv) => {
+                        // Put a default value in files if the list is empty
+                        if (argv.files.length == 0) {
+                            argv.files.push('.');
+                        }
+                        messages.statsAddFileToTotal(argv.files.length);
+                        return Promise.all(argv.files.map(
+                            f => buildFile('' + f)))
+                            .then(nlist => argv.files = nlist)
+                            .then(() => argv);
+                    })
+                    .onFinishCommand(() => {
+                        if (options.headless) {
+                            process.exit(0);
+                        }
+                    });
 
-        for (const c of cmds) {
-            yparser = yparser.command(c.command,
-                c.describe,
-                c.builder ?? {},
-                c.handler ?? '');
-        }
+                for (const c of cmds) {
+                    yparser = yparser.command(c.command,
+                        c.describe,
+                        c.builder ?? {},
+                        c.handler ?? '');
+                }
 
-        Object.assign(options, yparser.argv);
-    });
+                Object.assign(options, yparser.argv);
+            })
+    )
+    .catch(e => console.error(e));
