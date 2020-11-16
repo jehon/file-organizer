@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 
-import FileDelete from '../../file-organizer/main/file-delete.js';
+import FileDelete from '../../src/main/file-types/file-delete.js';
 import Item from '../../file-organizer/main/item.js';
 import {
     STATUS_CREATED,

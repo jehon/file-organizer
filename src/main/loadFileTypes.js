@@ -19,13 +19,13 @@ export default async function loadFileTypes() {
             loadCJS('../../file-organizer/file-movie.js'),
             loadCJS('../../file-organizer/file-picture.js'),
 
-            loadCJS('../../file-organizer/main/file-delete.js'),
             loadCJS('../../file-organizer/main/file-hidden.js'),
             loadCJS('../../file-organizer/main/file-manual.js'),
             loadCJS('../../file-organizer/main/file-convert-source.js'),
 
             // used to initialize the buildFile
-            loadCJS('../../file-organizer/main/file-folder.js')
+            loadCJS('../../file-organizer/main/file-folder.js'),
         ]);
+
     await importDirectory('src/main/file-types');
 }

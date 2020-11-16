@@ -15,7 +15,11 @@ export default function (folder) {
 
     return fs.promises.readdir(folder)
         .then(list => list.filter(v => v.endsWith('.js')))
+        .then(list => list.map(v => path.join(folder, v)))
+        // .then(list => { console.log(list); return list; })
         .then((list) => Promise.all(
-            list.map(f => import(path.join(folder, f)))
+            list.map(f => import(f).catch(e => {
+                console.error(`Error loading: ${f}:`, e);
+            }))
         ));
 }
