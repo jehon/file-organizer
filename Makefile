@@ -75,17 +75,17 @@ clean:
 # start: build
 # 	electron .
 
-start-test-headless:
+start-test-headless: build
 	mkdir -p tmp/gui
 	cd tmp/gui && ../../reset.sh
 	cd tmp/gui && ../../file-organizer.sh dump
 
-start-test-gui:
+start-test-gui: build
 	mkdir -p tmp/gui
 	cd tmp/gui && ../../reset.sh
 	cd tmp/gui && ../../file-organizer.sh regularize -n
 
-start-demo:
+start-demo: build
 	electron demo.cjs
 
 .PHONY: build
