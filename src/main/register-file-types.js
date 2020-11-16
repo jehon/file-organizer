@@ -1,60 +1,114 @@
 
-import minimatch from 'minimatch';
 import fs from 'fs';
+import fileUtils from '../../file-organizer/file-utils.js';
+import FileGeneric from '../../file-organizer/file-generic.js';
+import File from '../../file-organizer/main/file.js';
 
-const globMap = new Map();
+import importDirectory from './importDirectory.js';
+
+// TODO: object should be "class constructor"
+/**
+ * @type {Map<RegExp, object>} to store all mapping
+ */
+const regExpMap = new Map();
+let folderClass = null;
 
 /**
- * @param {string} glob - extension to match (*.xxx)
+ * @param {string|Array<string>} glob - extension to match (*.xxx)
  * @param {object} classConstructor - that match it
  */
 export function registerGlob(glob, classConstructor) {
-    if (globMap.has(glob)) {
-        throw new Error(`Registering impossible for ${classConstructor.name}: ${glob} is already mapped to ${classConstructor.name}`);
+    if (Array.isArray(glob)) {
+        for (const g of glob) {
+            registerGlob(g, classConstructor);
+        }
+        return;
     }
-    globMap.set(glob, classConstructor);
+
+    const oneGlob = /** @type {string} */(glob);
+
+    const regExp = new RegExp('^'
+        + oneGlob
+            .split('.').join('[.]')
+            .split('*').join('[^/]*')
+            .split('?').join('[^/]')
+        + '$', 'i');
+
+    registerRegex(regExp, classConstructor);
+}
+
+/**
+ * @param {RegExp|Array<RegExp>} regExp - extension to match (*.xxx)
+ * @param {object} classConstructor - that match it
+ */
+export function registerRegex(regExp, classConstructor) {
+    if (Array.isArray(regExp)) {
+        for (const r of regExp) {
+            registerRegex(r, classConstructor);
+        }
+        return;
+    }
+
+    const oneRegExp = /** @type {RegExp} */(regExp);
+
+    // if (regExpMatch.has(oneRegExp)) {
+    //     throw new Error(`Registering impossible for ${classConstructor.name}: (${oneRegExp}) is already mapped to ${regExpMatch.get(oneRegExp).name}`);
+    // }
+    regExpMap.set(oneRegExp, classConstructor);
 }
 
 /**
  * @param {object} classConstructor - that match it
  */
 export function registerFolder(classConstructor) {
-    registerGlob('/', classConstructor);
+    if (folderClass) {
+        throw new Error(`Registering impossible for ${classConstructor.name}: folder is already mapped to ${folderClass.name}`);
+    }
+    folderClass = classConstructor;
 }
 
 /**
  * @param {object} classConstructor - that match it
  */
 export function registerFallback(classConstructor) {
-    registerGlob('*', classConstructor);
+    registerRegex(/.*/, classConstructor);
 }
 
 /**
- * @param {string} filepath to be build
+ * @param {string|FileGeneric|File} filepath to be build
  * @param {module:file-organizer/main/FileFolder} parent of the file
  * @returns {module:common/File} the File object
  */
 export async function buildFile(filepath, parent = null) {
-    if (globMap.has('/')) {
+    // TODO: Legacy
+    if (filepath instanceof FileGeneric) {
+        return filepath;
+    }
+
+    // TODO: Legacy
+    if (filepath instanceof File) {
+        return filepath;
+    }
+
+    if (folderClass) {
         try {
             // Is it real? Let's go further
-            const stat = await fs.promises.stat(filepath);
+            const stat = fs.statSync(filepath);
             if (stat.isDirectory()) {
-                return new (globMap.get('/'))(filepath, parent);
+                return new (folderClass)(filepath, parent);
             }
         } catch {
             // ok
         }
     }
 
-    const globs = Array.from(globMap.keys());
-    globs.sort((a, b) => (b.length - a.length));
-    for (const key of globs) {
-        const classConstructor = globMap.get(key);
-        if (minimatch(filepath, key, {
-            nocomment: true,
-            nocase: true
-        })) {
+    const fname = fileUtils.getFullFilename(filepath);
+
+    const regExps = Array.from(regExpMap.keys());
+    regExps.sort((a, b) => (b.toString().length - a.toString().length));
+    for (const key of regExps) {
+        const classConstructor = regExpMap.get(key);
+        if (key.test(fname)) {
             return new classConstructor(filepath, parent);
         }
     }
@@ -62,16 +116,61 @@ export async function buildFile(filepath, parent = null) {
 }
 
 /**
- * Reset map (used in testing only)
+ * Load the map with files in the folder
+ *
+ * @returns {Promise<void>}
  */
-export function _reset() {
-    globMap.clear();
+export async function loadFileTypes() {
+    _reset();
+
+    const loadCJS = (f) => import(f).then(ft => ft.default.init());
+
+    await Promise.all(
+        [
+            loadCJS('../../file-organizer/file-generic.js'),
+            loadCJS('../../file-organizer/file-folder.js'),
+
+            loadCJS('../../file-organizer/main/file-delete.js'),
+            loadCJS('../../file-organizer/main/file-hidden.js'),
+            loadCJS('../../file-organizer/main/file-manual.js'),
+            loadCJS('../../file-organizer/file-movie.js'),
+            loadCJS('../../file-organizer/file-picture.js'),
+            loadCJS('../../file-organizer/main/file-convert-source.js'),
+
+            loadCJS('../../file-organizer/main/file-unsupported.js'),
+
+            // used to initialize the buildFile
+            loadCJS('../../file-organizer/main/file-folder.js')
+        ]);
+    await importDirectory('src/main/file-types');
 }
 
 /**
- * Load the map with files in the folder
- *
- * @param {string} _folder - relative folder where to find the file types
+ * Reset map (used in testing only)
  */
-export async function loadFolder(_folder) {
+export function _reset() {
+    regExpMap.clear();
+    folderClass = null;
+}
+
+/**
+ * Backup the data (used in testing only)
+ *
+ * @returns {function(void): void} to restore the config
+ */
+export function _backup() {
+    /**
+     * @type {Map<RegExp, object>} to store all mapping
+     */
+    const b_regExpMap = new Map(regExpMap);
+    const b_folderClass = folderClass;
+    _reset();
+
+    return function restore() {
+        _reset();
+        folderClass = b_folderClass;
+        for (const [k, v] of b_regExpMap) {
+            regExpMap.set(k, v);
+        }
+    };
 }
