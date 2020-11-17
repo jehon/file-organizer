@@ -114,6 +114,15 @@ export async function buildFile(filepath, parent = null) {
 }
 
 /**
+ * @param {string|FileGeneric|File} filepath to be build
+ * @param {module:file-organizer/main/FileFolder} parent of the file
+ * @returns {module:common/FileFolder} the FileFolder object
+ */
+export function buildFolder(filepath, parent) {
+    return new folderClass(filepath, parent);
+}
+
+/**
  * Reset map (used in testing only)
  */
 export function _reset() {
