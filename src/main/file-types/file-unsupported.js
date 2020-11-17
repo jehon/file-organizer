@@ -18,7 +18,8 @@ export default class FileUnsupported extends File {
     async analyse() {
         return super.analyse()
             .then(() => this.createInfo(InfoProblem, 'File type is unsupported'))
-            .then(() => this.notify(STATUS_FAILURE));
+            .then(() => this.notify(STATUS_FAILURE))
+            .then(() => { });
     }
 }
 

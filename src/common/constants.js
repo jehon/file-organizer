@@ -23,3 +23,5 @@ export const TYPE_TASK = 'type_task';
 /* ++ I T        └──x  */ export const STATUS_ACTED_FAILURE = 'status_acted_failure';
 
 export const rootDir = dirname(dirname(dirname(new URL(import.meta.url).pathname)));
+
+export const convertedSuffix = '_converted';

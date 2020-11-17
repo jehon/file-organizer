@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 
-import FileConvertSource from '../../file-organizer/main/file-convert-source.js';
+import FileConvertSource from '../../src/main/file-types/file-convert-source.js';
 import Item from '../../file-organizer/main/item.js';
 import {
     STATUS_CREATED,
