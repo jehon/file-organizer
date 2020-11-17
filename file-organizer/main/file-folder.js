@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const File = require('./file.js');
-const FileHidden = require('./file-hidden.js');
+// const FileHidden = require('./file-hidden.js');
 const Task = require('./task.js');
-const options = require('../options.js');
+// const options = require('../options.js');
 
 let buildFileFn;
 
@@ -17,8 +17,8 @@ class TaskFolderListing extends Task {
                 .then(list => Promise.all(
                     list.map(async f => await buildFileFn(path.join(this.parent.path, f), this))
                 ))
-                // Remove "FileHidden" files if required
-                .then(list => list.filter(f => options.showHidden || (!(f instanceof FileHidden))))
+                // // Remove "FileHidden" files if required
+                // .then(list => list.filter(f => options.showHidden || (!(f instanceof FileHidden))))
                 .then(list => { list.sort(); return list; }),
             parent
         );
@@ -28,7 +28,7 @@ class TaskFolderListing extends Task {
 class FileFolder extends File {
     async analyse() {
         return super.analyse()
-            .then(() => this.createAndRun(TaskFolderListing, this))
+            .then(() => this.addAnalysisTask(TaskFolderListing, this))
             .then(list => {
                 this._list = list;
                 Promise.all(list.map(

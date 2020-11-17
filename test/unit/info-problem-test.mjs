@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 
-import InfoProblem from '../../file-organizer/main/info-problem.js';
+import InfoProblem from '../../src/main/info-problem.js';
 import Item from '../../file-organizer/main/item.js';
 
 import {

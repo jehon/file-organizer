@@ -3,7 +3,7 @@ import File from '../../../file-organizer/main/file.js';
 import {
     STATUS_FAILURE
 } from '../../common/constants.js';
-import InfoProblem from '../../../file-organizer/main/info-problem.js';
+import InfoProblem from '../info-problem.js';
 import { registerFallback } from '../register-file-types.js';
 
 const map = new Map();
@@ -17,7 +17,7 @@ export default class FileUnsupported extends File {
 
     async analyse() {
         return super.analyse()
-            .then(() => this.createInfo(InfoProblem, 'File type is unsupported'))
+            .then(() => this.addInfo(InfoProblem, 'File type is unsupported'))
             .then(() => this.notify(STATUS_FAILURE))
             .then(() => { });
     }

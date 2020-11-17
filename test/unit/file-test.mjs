@@ -64,7 +64,7 @@ describe(t(import.meta), function () {
 
         it('should allow creating info', () => {
             const f = new File('test');
-            expect(f.createInfo(Info, []).parent.id).toBe(f.id);
+            expect(f.addInfo(Info, []).parent.id).toBe(f.id);
         });
     });
 
@@ -103,7 +103,7 @@ describe(t(import.meta), function () {
         });
 
         it('should analyse a file by tasks', async function () {
-            f.withAnalyse(() => { f.createAndRun(Task, 'test', () => true); });
+            f.withAnalyse(() => { f.addAnalysisTask(Task, 'test', () => true); });
 
             await expectAsync(f.runAnalyse())
                 .toBeResolved();
@@ -117,7 +117,7 @@ describe(t(import.meta), function () {
             let t;
 
             beforeEach(() => {
-                f.withAnalyse(() => f.enqueueAct(t));
+                f.withAnalyse(() => f.addFixAct(t));
             });
 
             it('with successfull task', async function () {

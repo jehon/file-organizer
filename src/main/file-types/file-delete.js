@@ -10,8 +10,9 @@ const { TaskFileDelete } = TasksFSApi;
 
 export default class FileDelete extends File {
     async analyse() {
-        this.enqueueAct(new TaskFileDelete());
-        await super.analyse();
+        return super.analyse()
+            .then(() => this.addFixAct(new TaskFileDelete()))
+            .then(() => { });
     }
 }
 

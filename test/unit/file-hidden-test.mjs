@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 
-import FileHidden from '../../file-organizer/main/file-hidden.js';
+import FileHidden from '../../src/main/file-types/file-hidden.js';
 import Item from '../../file-organizer/main/item.js';
 import {
     STATUS_CREATED,

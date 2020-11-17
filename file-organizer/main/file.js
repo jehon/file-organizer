@@ -17,7 +17,17 @@ const path = require('path');
 const parentsMap = new Map();
 
 let buildFolderFn;
-
+/**
+ * How does this work?
+ *
+ * - new File()
+ * - analyse()
+ *      will make the full "readonly" analysis
+ *      will build up info (and info-problems)
+ *      will enqueue Tasks
+ *
+ * if necessary, it will "doAct"
+ */
 class File extends Item {
     static getNotifyProperties() {
         return super.getNotifyProperties().concat(['path']);
@@ -35,13 +45,10 @@ class File extends Item {
             this.actChainAbort = reject;
         });
         if (this.parent === undefined) {
-            this.calculateParent();
+            this._calculateParent();
             this.notify();
         }
     }
-
-    // Mock during transition
-    iterate() { }
 
     /**
      * @returns {string} filename without extension
@@ -59,7 +66,79 @@ class File extends Item {
         return fileUtils.getExtension(this.path);
     }
 
-    calculateParent() {
+    // ------------------------------------------------
+    //
+    // TO BE USED BY SPECIALIZED FILES
+    //
+    // ------------------------------------------------
+
+    /**
+     * [Tool for specialized classes]
+     *
+     * Run the analysis on this element and generate tasks
+     *   - task to analysis (createAnalysisTaskAndRunIt)
+     *   - task to fix (enqueueAct)
+     *
+     * This is a mock, and should be implemented by childrends
+     *
+     * @returns {Promise<void>}
+     */
+    /* abstract */ async analyse() {
+        // TODO: success & failure ?
+        return Promise.resolve();
+    }
+
+    /**
+     * [Tool for specialized classes]
+     *
+     * Add a task to fix a problem
+     *
+     * @param {module:file-organizer/main/Task} t to be enqueued
+     * @returns {File} this for chaining
+     */
+    addFixAct(t) {
+        this.notify(STATUS_NEED_ACTION);
+        t.withParent(this);
+        this.actChain = this.actChain.then(() => t.run());
+        return this;
+    }
+
+
+    /**
+     * [Tool for specialized classes]
+     *
+     * Add an info to the file
+     *
+     * @param {module:file-organizer/main/Info} infoClass to be added (see info-* files)
+     * @param  {...any} args to be passed to the constructor of the info
+     * @returns {module:file-organizer/main/Info} the constructed info
+     */
+    addInfo(infoClass, ...args) {
+        return new infoClass(...args, this);
+    }
+
+    /**
+     * [Tool for specialized classes]
+     *
+     * Add a task to the file
+     * This task is an analasys task
+     *
+     * @param {module:file-organizer/main/Task} taskClass to be added (see task-* files)
+     * @param {...any} args to be passed to the constructor of the info
+     * @returns {module:file-organizer/main/Task} the constructed info
+     */
+    async addAnalysisTask(taskClass, ...args) {
+        return (new taskClass(...args, this)).run();
+    }
+
+
+    // ------------------------------------------------
+    //
+    // TO BE USED ON FILE ONLY
+    //
+    // ------------------------------------------------
+
+    _calculateParent() {
         let parentDir = path.dirname(this.path);
         if (parentDir == '/') {
             this.parent = false;
@@ -78,15 +157,12 @@ class File extends Item {
         return this.parent;
     }
 
-    createInfo(infoClass, ...args) {
-        return new infoClass(...args, this);
-    }
-
-    async createAndRun(taskClass, ...args) {
-        return (new taskClass(...args, this)).run();
-    }
-
-    async runAnalyse() {
+    /**
+     * Run the analysis on this files, and all related one's (ex: FileFolder)
+     *
+     * @returns {Promise<void>} when completed
+     */
+    /* final */ async runAnalyse() {
         this.notify(STATUS_ANALYSING);
         return this.analyse().then(
             (d) => {
@@ -103,19 +179,12 @@ class File extends Item {
         );
     }
 
-    async analyse() {
-        // TODO: success & failure ?
-        return Promise.resolve();
-    }
-
-    enqueueAct(t) {
-        this.notify(STATUS_NEED_ACTION);
-        t.withParent(this);
-        this.actChain = this.actChain.then(() => t.run());
-        return this;
-    }
-
-    async act() {
+    /**
+     * Do the act on all enqueued acts
+     *
+     * @returns {Promise<boolean>} when finished (true if success)
+     */
+    /* final */ async act() {
         if (this.status != STATUS_NEED_ACTION) {
             if (this.status == STATUS_SUCCESS) {
                 return true;
@@ -130,8 +199,25 @@ class File extends Item {
         );
     }
 
+    // ------------------------------------------------
+    //
+    // TODO: LEGACY BRIDGE
+    //
+    // ------------------------------------------------
+
+    /**
+     * TODO: Mock of previous version
+     */
+    iterate() { }
+
+    /**
+     * TODO: Mock of previous version
+     */
     async loadData() { return this.runAnalyse(); }
 
+    /**
+     * TODO: Mock of previous version
+     */
     async check() {
         return Promise.resolve()
             .then(() => options.dryRun ? true : this.act())
