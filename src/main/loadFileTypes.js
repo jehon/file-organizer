@@ -23,6 +23,7 @@ export default async function loadFileTypes() {
 
             // used to initialize the buildFile
             loadCJS('../../file-organizer/main/file-folder.js'),
+            loadCJS('../../file-organizer/main/file.js'),
         ]);
 
     await importDirectory('src/main/file-types');

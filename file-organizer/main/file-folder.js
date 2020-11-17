@@ -10,16 +10,17 @@ const options = require('../options.js');
 let buildFileFn;
 
 class TaskFolderListing extends Task {
-    constructor() {
+    constructor(parent) {
         super('Get the folder list', () =>
             fs.promises.readdir(this.parent.path)
                 .then(list => list.filter(f => f != '.' && f != '..'))
                 .then(list => Promise.all(
-                    list.map(async f => await buildFileFn(path.join(this.getPath(), f), this))
+                    list.map(async f => await buildFileFn(path.join(this.parent.path, f), this))
                 ))
                 // Remove "FileHidden" files if required
                 .then(list => list.filter(f => options.showHidden || (!(f instanceof FileHidden))))
-                .then(list => { list.sort(); return list; })
+                .then(list => { list.sort(); return list; }),
+            parent
         );
     }
 }
@@ -27,13 +28,14 @@ class TaskFolderListing extends Task {
 class FileFolder extends File {
     async analyse() {
         return super.analyse()
-            .then(() => this.createAndRun(TaskFolderListing))
-            .then(list =>
+            .then(() => this.createAndRun(TaskFolderListing, this))
+            .then(list => {
+                this._list = list;
                 Promise.all(list.map(
                     // Iterate on each child
                     f => f.analyse()
-                ))
-            );
+                ));
+            });
     }
 
     // async check() {
@@ -49,7 +51,8 @@ class FileFolder extends File {
 module.exports = FileFolder;
 
 FileFolder.init = async function () {
-    await import('../../src/main/register-file-types.js').then(({ buildFile }) => {
+    await import('../../src/main/register-file-types.js').then(({ registerFolder, buildFile }) => {
+        // registerFolder(FileFolder);
         buildFileFn = buildFile;
     });
 };

@@ -50,10 +50,12 @@ describe(t(import.meta), function () {
         });
 
         it('should give a parent', () => {
-            expect((new File('test/brol/a.txt')).parent.path).toBe('test/brol');
-            expect((new File('test/a.txt')).parent.path).toBe('test');
-            expect((new File('test/a.txt')).parent.parent.path).toBe(process.cwd());
-            expect((new File('a.txt')).parent.path).toBe(process.cwd());
+            // We need real files here, since "buildFile" will check for folder existence
+
+            expect((new File('test/data/canon.JPG')).parent.path).toBe('test/data');
+            expect((new File('test/test.txt')).parent.path).toBe('test');
+            expect((new File('test/test.txt')).parent.parent.path).toBe(process.cwd());
+            expect((new File('test.txt')).parent.path).toBe(process.cwd());
         });
 
         it('should be constructed with a parent', () => {

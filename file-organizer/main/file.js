@@ -16,7 +16,9 @@ const path = require('path');
 
 const parentsMap = new Map();
 
-module.exports = class File extends Item {
+let buildFolderFn;
+
+class File extends Item {
     static getNotifyProperties() {
         return super.getNotifyProperties().concat(['path']);
     }
@@ -68,6 +70,7 @@ module.exports = class File extends Item {
 
             if (!parentsMap.has(parentDir)) {
                 parentsMap.set(parentDir,
+                    // buildFolderFn(parentDir));
                     new (require('./file-folder.js'))(parentDir));
             }
             this.parent = parentsMap.get(parentDir);
@@ -134,4 +137,12 @@ module.exports = class File extends Item {
             .then(() => options.dryRun ? true : this.act())
             .then(() => true);
     }
+}
+
+module.exports = File;
+
+File.init = async function () {
+    await import('../../src/main/register-file-types.js').then(({ buildFolder }) => {
+        buildFolderFn = buildFolder;
+    });
 };
