@@ -9,7 +9,7 @@ import {
     STATUS_CREATED
 } from '../../src/common/constants.js';
 
-import { getStatusHistoryForItem } from './help-functions.mjs';
+import { getStatusChangesForItem } from './help-functions.mjs';
 
 describe(t(import.meta), function () {
     beforeEach(() => {
@@ -21,6 +21,8 @@ describe(t(import.meta), function () {
 
         expect(i.type).toBe(TYPE_INFO);
 
-        expect(getStatusHistoryForItem(i)).toEqual([STATUS_CREATED, STATUS_CREATED]);
+        expect(getStatusChangesForItem(i)).toEqual([
+            STATUS_CREATED
+        ]);
     });
 });

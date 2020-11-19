@@ -18,7 +18,7 @@ beforeAll(async () => {
  *
  */
 export function resetOptionsForUnitTesting() {
-    options.resetToDefault();
+    options._resetToDefault();
     options.withFileSummary = false;
     options.headless = true;
 }

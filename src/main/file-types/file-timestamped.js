@@ -1,11 +1,12 @@
 
 import path from 'path';
 
-import fileUtils from '../../../file-organizer/file-utils.js';
-
 import File from './file.js';
-import { tsFromString } from '../../../file-organizer/timestamp.js';
 import options from '../../../file-organizer/options.js';
+
+import fileUtils from '../../../file-organizer/file-utils.js';
+import timestampAPI from '../../../file-organizer/timestamp.js';
+const { tsFromString } = timestampAPI;
 
 import pLimit from 'p-limit'; // https://www.npmjs.com/package/p-limit
 const indexedFilenameLimiter = pLimit(1);
@@ -14,94 +15,22 @@ export default class FileTimestamped extends File {
     async analyse() {
         await super.analyse();
 
-        this.filenameTS = tsFromString(this.getFilename());
+        this.filenameTS = tsFromString(this.filename);
         const title = this.filenameTS.title;
 
         // Parse the original filename to see if we can get some data
         if (this.filenameTS.original) {
             const ts2 = tsFromString(this.filenameTS.original);
-            if (ts2.isTimestamped() > 0) {
+            if (ts2.isTimestamped()) {
                 this.filenameTS = ts2;
             }
         }
         this.filenameTS.title = title;
         this.calculatedTS = this.filenameTS.clone();
-    }
 
-    setCalculatedTitle(newC) {
-        this.calculatedTS.title = newC;
-        return true;
-    }
-
-    setCalculatedTS(newTS) {
-        if (typeof newTS == 'string') {
-            newTS = tsFromString(newTS);
-        }
-
-        if (newTS.isTimestamped()) {
-            this.calculatedTS.moment = newTS.moment.clone();
-        } else {
-            this.calculatedTS.moment = null;
-        }
-
-        return true;
-    }
-
-    getCanonicalFilename() {
-        let proposedFilename = '';
-        if (this.calculatedTS.humanReadable() > '') {
-            proposedFilename += this.calculatedTS.humanReadable();
-        }
-        if (this.calculatedTS.title > '') {
-            proposedFilename += ' ' + this.calculatedTS.title;
-        }
-        if (this.calculatedTS.original + '' > '') {
-            proposedFilename += ' [' + this.calculatedTS.original + ']';
-        }
-        return proposedFilename.trim();
-    }
-
-    // TODO (indexed): remember names to // rename
-    // @Limited(1)
-    async getIndexedFilename() {
-        const o = this.calculatedTS.original;
-        if (/^\d+$/.test(o)) {
-            // Remove previous index (numerical)
-            this.calculatedTS.original = '';
-        }
-
-        if (this.getCanonicalFilename() == this.getFilename()) {
-            return this.getCanonicalFilename();
-        }
-
-        const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.getExtension());
-
-        return indexedFilenameLimiter(async () => {
-            try {
-                await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getPath());
-                return this.getCanonicalFilename();
-            } catch (_e) {
-                // expected
-            }
-
-            this.calculatedTS.original = 1;
-            while (this.calculatedTS.original != o) {
-                try {
-                    await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getPath());
-                    return this.getCanonicalFilename();
-                } catch (_e) {
-                    //expected
-                }
-                this.calculatedTS.original++;
-            }
-        });
-    }
-
-    async check() {
         if (this.calculatedTS.type == 'invalid') {
             return this.addMessageImpossible('TS_FILENAME_INVALID', 'filename is not parsable');
         }
-
         let res = true;
         if (this.calculatedTS.title && this.calculatedTS.title == this.calculatedTS.original) {
             this.addMessageInfo('TS_DUP_TITLE', 'remove duplicate title/original',
@@ -184,7 +113,7 @@ export default class FileTimestamped extends File {
             // Rename to the canonical filename
             // const proposedFilename = await this.getIndexedFilename();
             const proposedFilename = this.getCanonicalFilename();
-            if (proposedFilename != this.getFilename()) {
+            if (proposedFilename != this.filename) {
                 res = res && await this.addMessageCommit('TS_CANONIZE', 'canonize filename',
                     proposedFilename,
                     () => this.changeFilename(proposedFilename)
@@ -193,5 +122,74 @@ export default class FileTimestamped extends File {
         }
 
         return res;
+    }
+
+    setCalculatedTitle(newC) {
+        this.calculatedTS.title = newC;
+        return true;
+    }
+
+    setCalculatedTS(newTS) {
+        if (typeof newTS == 'string') {
+            newTS = tsFromString(newTS);
+        }
+
+        if (newTS.isTimestamped()) {
+            this.calculatedTS.moment = newTS.moment.clone();
+        } else {
+            this.calculatedTS.moment = null;
+        }
+
+        return true;
+    }
+
+    getCanonicalFilename() {
+        let proposedFilename = '';
+        if (this.calculatedTS.humanReadable() > '') {
+            proposedFilename += this.calculatedTS.humanReadable();
+        }
+        if (this.calculatedTS.title > '') {
+            proposedFilename += ' ' + this.calculatedTS.title;
+        }
+        if (this.calculatedTS.original + '' > '') {
+            proposedFilename += ' [' + this.calculatedTS.original + ']';
+        }
+        return proposedFilename.trim();
+    }
+
+    // TODO (indexed): remember names to // rename
+    // @Limited(1)
+    async getIndexedFilename() {
+        const o = this.calculatedTS.original;
+        if (/^\d+$/.test(o)) {
+            // Remove previous index (numerical)
+            this.calculatedTS.original = '';
+        }
+
+        if (this.getCanonicalFilename() == this.filename) {
+            return this.getCanonicalFilename();
+        }
+
+        const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.extension);
+
+        return indexedFilenameLimiter(async () => {
+            try {
+                await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.path);
+                return this.getCanonicalFilename();
+            } catch (_e) {
+                // expected
+            }
+
+            this.calculatedTS.original = 1;
+            while (this.calculatedTS.original != o) {
+                try {
+                    await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.path);
+                    return this.getCanonicalFilename();
+                } catch (_e) {
+                    //expected
+                }
+                this.calculatedTS.original++;
+            }
+        });
     }
 }

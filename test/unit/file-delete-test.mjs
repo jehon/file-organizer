@@ -12,7 +12,7 @@ import {
 } from '../../src/common/constants.js';
 
 import { createFileFrom, fileExists } from './help-functions.mjs';
-import { getStatusHistoryForItem } from './help-functions.mjs';
+import { getStatusChangesForItem } from './help-functions.mjs';
 
 describe(t(import.meta), function () {
     beforeEach(() => {
@@ -27,6 +27,12 @@ describe(t(import.meta), function () {
 
         expect(await fileExists(f.path)).toBeFalsy();
 
-        expect(getStatusHistoryForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_NEED_ACTION, STATUS_ACTING, STATUS_ACTED_SUCCESS]);
+        expect(getStatusChangesForItem(f)).toEqual([
+            STATUS_CREATED,
+            STATUS_ANALYSING,
+            STATUS_NEED_ACTION,
+            STATUS_ACTING,
+            STATUS_ACTED_SUCCESS
+        ]);
     });
 });

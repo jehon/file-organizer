@@ -10,10 +10,22 @@ export default class Info extends Item {
         return TYPE_INFO;
     }
 
-    constructor(title, value) {
-        super(title);
-        this.value = value;
-        this.initialValue = value;
+    /** type {*} */
+    _initialValue
+
+    constructor(key, value) {
+        super(key);
+        this._initialValue = value;
         this.notify(STATUS_CREATED);
+
+        // ------------------------------------------
+        //
+        // Public properties
+        //
+        // ------------------------------------------
+    }
+
+    get initialValue() {
+        return this._initialValue;
     }
 }

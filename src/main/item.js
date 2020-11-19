@@ -8,19 +8,34 @@ import {
 } from '../common/constants.js';
 
 export default class Item {
-    static getNotifyProperties() {
-        return ['id', 'type', 'subType', 'status', 'title'];
+    /** @type {number} */
+    _id
+
+    /** @type {string} */
+    _title
+
+    /** @type {File} */
+    #parent
+
+    /** @type {string} */
+    _status
+
+    constructor(title) {
+        this._id = getEntityId();
+        this._title = title;
+        this.notify(STATUS_CREATED);
+
     }
+
+
+    // ------------------------------------------
+    //
+    // Public properties
+    //
+    // ------------------------------------------
 
     static getType() {
         return 'Item';
-    }
-
-    constructor(title = '', parent) {
-        this.id = getEntityId();
-        this.title = title;
-        this.parent = parent;
-        this.notify(STATUS_CREATED);
     }
 
     get type() {
@@ -31,21 +46,61 @@ export default class Item {
         return this.constructor.name;
     }
 
+    get id() {
+        return this._id;
+    }
+
+    get title() {
+        return this._title;
+    }
+
+    get parent() {
+        return this.#parent;
+    }
+
+    set parent(parent) {
+        if (parent?.id == this.#parent?.id) {
+            return;
+        }
+        this.#parent = parent;
+        this.notify();
+    }
+
     setParent(parent) {
         this.parent = parent;
-        this.notify();
         return this;
     }
 
+    get status() {
+        return this._status;
+    }
+
+    // ------------------------------------------
+    //
+    // Public methods
+    //
+    // ------------------------------------------
+
+    static getNotifyProperties() {
+        return ['id', 'type', 'subType', 'status', 'title'];
+    }
+
+    /**
+     * Notify of a status change
+     *
+     * @param {string} status to be set and notified
+     * @returns {Item} for chaining
+     */
     notify(status = '') {
         if (status !== '') {
-            this.status = status;
+            this._status = status;
         }
         let data = {};
         if (this.parent) {
             data.parent = this.parent.id;
         }
         for (let i of this.constructor.getNotifyProperties()) {
+            // data[i] = this[(i[0] == '#' ? i.substr(1) : i)];
             data[i] = this[i];
         }
         notify(data);
@@ -53,11 +108,11 @@ export default class Item {
     }
 
     doesNeedAction() {
-        return this.status == STATUS_NEED_ACTION;
+        return this._status == STATUS_NEED_ACTION;
     }
 
     isSuccessFull() {
-        return this.status == STATUS_SUCCESS
-            || this.status == STATUS_ACTED_SUCCESS;
+        return this._status == STATUS_SUCCESS
+            || this._status == STATUS_ACTED_SUCCESS;
     }
 }

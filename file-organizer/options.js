@@ -11,12 +11,15 @@ const defaultOptions = {
 
 const options = {};
 
-function resetToDefault() {
+/**
+ *
+ */
+function _resetToDefault() {
     for (var member in options) delete options[member];
     Object.assign(options, defaultOptions);
-    options.resetToDefault = resetToDefault;
+    options._resetToDefault = _resetToDefault;
 }
 
-resetToDefault();
+_resetToDefault();
 
 module.exports = options;

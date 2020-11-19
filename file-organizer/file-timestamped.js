@@ -56,7 +56,7 @@ class FileTimestamped extends FileGeneric {
             proposedFilename += ' ' + this.calculatedTS.title;
         }
         if (this.calculatedTS.original + '' > '') {
-            proposedFilename +=  ' [' + this.calculatedTS.original + ']';
+            proposedFilename += ' [' + this.calculatedTS.original + ']';
         }
         return proposedFilename.trim();
     }
@@ -85,11 +85,11 @@ class FileTimestamped extends FileGeneric {
             }
 
             this.calculatedTS.original = 1;
-            while(this.calculatedTS.original != o) {
+            while (this.calculatedTS.original != o) {
                 try {
                     await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getPath());
                     return this.getCanonicalFilename();
-                } catch(_e) {
+                } catch (_e) {
                     //expected
                 }
                 this.calculatedTS.original++;
@@ -111,7 +111,7 @@ class FileTimestamped extends FileGeneric {
         }
 
         {
-            if (options.setTitle  && this.calculatedTS.title != options.setTitle) {
+            if (options.setTitle && this.calculatedTS.title != options.setTitle) {
                 this.addMessageInfo('TS_TITLE_OPTION_SET', 'force the title as requested on command line',
                     options.setTitle
                 );

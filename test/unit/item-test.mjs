@@ -6,7 +6,7 @@ import {
     STATUS_CREATED
 } from '../../src/common/constants.js';
 
-import { getStatusHistoryForItem } from './help-functions.mjs';
+import { getStatusChangesForItem } from './help-functions.mjs';
 
 describe(t(import.meta), function () {
     describe('with properties', function () {
@@ -21,12 +21,13 @@ describe(t(import.meta), function () {
 
 
             const t2 = new Item();
-            expect(t2.title).toBe('');
+            expect(t2.title).toBeUndefined();
         });
 
         it('should be built with parent', function () {
             const i2 = new Item('2');
-            const i = new Item('2', i2);
+            const i = new Item('2');
+            i.setParent(i2);
             expect(i.parent.id).toBe(i2.id);
         });
 
@@ -40,7 +41,9 @@ describe(t(import.meta), function () {
         it('should be always good', async function () {
             const t = new Item('my title');
 
-            expect(getStatusHistoryForItem(t)).toEqual([STATUS_CREATED]);
+            expect(getStatusChangesForItem(t)).toEqual([
+                STATUS_CREATED
+            ]);
         });
     });
 });

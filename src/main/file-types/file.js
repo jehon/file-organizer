@@ -32,32 +32,51 @@ const parentsMap = new Map();
  * if necessary, it will "doAct"
  */
 export default class File extends Item {
-    static getNotifyProperties() {
-        return super.getNotifyProperties().concat(['path']);
-    }
-
     static getType() {
         return TYPE_FILE;
     }
 
+    /** @type {string} */
+    _path
+
+    /** @type {Promise<void>} */
+    _actChain
+
+    /**
+     * The actChain will fill in progressively, but should fire only
+     * when starting the "act"
+     *
+     * @type {function(void): void}
+     */
+    _actChainStart
+
     constructor(filePath, parent) {
-        super(filePath, parent);
-        this.path = filePath;
-        this.actChain = new Promise((resolve, reject) => {
-            this.actChainStart = resolve;
-            this.actChainAbort = reject;
+        /* filepath is the title */
+        super(filePath);
+        this._path = filePath;
+        this._actChain = new Promise(resolve => {
+            // We will trigger the actChain only on the "doAct" part
+            this._actChainStart = resolve;
         });
+        if (parent) {
+            this.parent = parent;
+        }
         if (this.parent === undefined) {
-            this._calculateParent();
-            this.notify();
+            this.parent = this._calculateParent();
         }
     }
+
+    // ------------------------------------------
+    //
+    // Public properties
+    //
+    // ------------------------------------------
 
     /**
      * @returns {string} filename without extension
      */
     get filename() {
-        return fileUtils.getFilename(this.path);
+        return fileUtils.getFilename(this._path);
     }
 
     /**
@@ -66,14 +85,24 @@ export default class File extends Item {
      * @returns {string} the extension (with a dot: .blabla)
      */
     get extension() {
-        return fileUtils.getExtension(this.path);
+        return fileUtils.getExtension(this._path);
     }
 
-    // ------------------------------------------------
+    get path() {
+        return this._path;
+    }
+
+    // ------------------------------------------
+    //
+    // Protected methods
     //
     // TO BE USED BY SPECIALIZED FILES
     //
     // ------------------------------------------------
+
+    static getNotifyProperties() {
+        return super.getNotifyProperties().concat(['path']);
+    }
 
     /**
      * [Tool for specialized classes]
@@ -99,17 +128,17 @@ export default class File extends Item {
      * @param {module:file-organizer/main/Task} t to be enqueued
      * @returns {File} this for chaining
      */
-    addFixAct(t) {
+    /* protected */ addFixAct(t) {
         this.notify(STATUS_NEED_ACTION);
         t.setParent(this);
-        this.actChain = this.actChain.then(() => t.run());
+        this._actChain = this._actChain.then(() => t.run());
         return this;
     }
 
     /**
      * @type {Map<string,string>} with all the infos
      */
-    infosMap = new Map()
+    #infosMap = new Map()
 
     /**
      * [Tool for specialized classes]
@@ -120,11 +149,11 @@ export default class File extends Item {
      * @param  {...any} args to be passed to the constructor of the info
      * @returns {module:file-organizer/main/Info} the constructed info
      */
-    addInfo(infoClass, ...args) {
+    /* protected */ addInfo(infoClass, ...args) {
         // TODO: how to link this to the file ???
         const i = new infoClass(...args);
         i.setParent(this);
-        this.infosMap.set(i.title, i);
+        this.#infosMap.set(i.title, i);
         return i;
     }
 
@@ -138,36 +167,38 @@ export default class File extends Item {
      * @param {...any} args to be passed to the constructor of the info
      * @returns {module:file-organizer/main/Task} the constructed info
      */
-    async addAnalysisTask(taskClass, ...args) {
+    /* protected */ async addAnalysisTask(taskClass, ...args) {
         return (new taskClass(...args, this)).run();
     }
 
 
-    // ------------------------------------------------
+    // ------------------------------------------
     //
-    // TO BE USED ON FILE ONLY
+    // Private methods
     //
-    // ------------------------------------------------
+    // ------------------------------------------
 
+    /**
+     * @returns {File} the potential parent
+     */
     _calculateParent() {
-        let parentDir = path.dirname(this.path);
+        let parentDir = path.dirname(this._path);
         if (parentDir == '/') {
-            this.parent = false;
-        } else {
-            if (parentDir == '.') {
-                parentDir = process.cwd();
-            }
-
-            if (!parentsMap.has(parentDir)) {
-                parentsMap.set(parentDir,
-                    // buildFolderFn(parentDir)
-                    // TODO: remove this horrible hack  (file-folder)
-                    new (regExpMap.get('//'))(parentDir)
-                );
-            }
-            this.parent = parentsMap.get(parentDir);
+            return null;
         }
-        return this.parent;
+
+        if (parentDir == '.') {
+            parentDir = process.cwd();
+        }
+
+        if (!parentsMap.has(parentDir)) {
+            parentsMap.set(parentDir,
+                // buildFolderFn(parentDir)
+                // TODO: remove this horrible hack  (file-folder)
+                new (regExpMap.get('//'))(parentDir)
+            );
+        }
+        return parentsMap.get(parentDir);
     }
 
     /**
@@ -195,19 +226,19 @@ export default class File extends Item {
     /**
      * Do the act on all enqueued acts
      *
-     * @returns {Promise<boolean>} when finished (true if success)
+     * @returns {Promise<void>} when finished
      */
     /* final */ async act() {
         if (this.status != STATUS_NEED_ACTION) {
             if (this.status == STATUS_SUCCESS) {
-                return true;
+                return;
             }
-            return false;
+            throw 'In invalid state: ' + this.status;
         }
         this.notify(STATUS_ACTING);
-        this.actChainStart();
-        return this.actChain.then(
-            (data) => { this.notify(STATUS_ACTED_SUCCESS); return data; },
+        this._actChainStart();
+        return this._actChain.then(
+            () => { this.notify(STATUS_ACTED_SUCCESS); },
             (e) => { this.notify(STATUS_ACTED_FAILURE); throw e; }
         );
     }

@@ -2,7 +2,7 @@
 import { t } from '../test-helper.js';
 
 import Task, { _TaskSuccessFactory, _TaskFailureFactory } from '../../src/main/task.js';
-import { listenForItemNotify, getStatusHistoryForItem } from './help-functions.mjs';
+import { listenForItemNotify, getStatusChangesForItem } from './help-functions.mjs';
 
 import {
     TYPE_TASK,
@@ -28,7 +28,7 @@ describe(t(import.meta), function () {
         await expectAsync(t.run())
             .toBeResolvedTo(true);
 
-        expect(getStatusHistoryForItem(t)).toEqual([
+        expect(getStatusChangesForItem(t)).toEqual([
             STATUS_CREATED,
             STATUS_NEED_ACTION,
             STATUS_ACTING,
@@ -43,7 +43,7 @@ describe(t(import.meta), function () {
         await expectAsync(t.run())
             .toBeResolvedTo(true);
 
-        expect(getStatusHistoryForItem(t)).toEqual([
+        expect(getStatusChangesForItem(t)).toEqual([
             STATUS_CREATED,
             STATUS_NEED_ACTION,
             STATUS_ACTING,
@@ -57,7 +57,7 @@ describe(t(import.meta), function () {
         await expectAsync(t.run()).toBeRejected();
 
         // Should be rejected
-        expect(getStatusHistoryForItem(t)).toEqual([
+        expect(getStatusChangesForItem(t)).toEqual([
             STATUS_CREATED,
             STATUS_NEED_ACTION,
             STATUS_ACTING,
@@ -69,7 +69,7 @@ describe(t(import.meta), function () {
         const t = new Task('task test', () => 'euh');
         await expectAsync(t.run()).toBeResolvedTo('euh');
 
-        expect(getStatusHistoryForItem(t)).toEqual([
+        expect(getStatusChangesForItem(t)).toEqual([
             STATUS_CREATED,
             STATUS_NEED_ACTION,
             STATUS_ACTING,

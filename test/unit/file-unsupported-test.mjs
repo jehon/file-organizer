@@ -9,7 +9,7 @@ import {
     STATUS_FAILURE
 } from '../../src/common/constants.js';
 
-import { getStatusHistoryForItem } from './help-functions.mjs';
+import { getStatusChangesForItem } from './help-functions.mjs';
 
 describe(t(import.meta), function () {
     beforeEach(() => {
@@ -26,13 +26,17 @@ describe(t(import.meta), function () {
         {
             const f = new FileUnsupported('failure.txt');
             await expectAsync(f.runAnalyse()).toBeResolved();
-            await expectAsync(f.act()).toBeResolved();
-            expect(getStatusHistoryForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
+            await expectAsync(f.act()).toBeRejected();
+            expect(getStatusChangesForItem(f)).toEqual([
+                STATUS_CREATED,
+                STATUS_ANALYSING,
+                STATUS_FAILURE
+            ]);
         }
         {
             const f = new FileUnsupported('failure2.txt');
             await expectAsync(f.runAnalyse()).toBeResolved();
-            await expectAsync(f.act()).toBeResolved();
+            await expectAsync(f.act()).toBeRejected();
         }
 
         console.info.calls.reset();

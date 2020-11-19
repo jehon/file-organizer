@@ -5,7 +5,7 @@ import File from '../../src/main/file-types/file.js';
 
 import Task, { _TaskSuccessFactory } from '../../src/main/task.js';
 import Info from '../../src/main/info.js';
-import { listenForItemNotify, getStatusHistoryForItem, getNotifyCallsForItem } from './help-functions.mjs';
+import { listenForItemNotify, getStatusChangesForItem } from './help-functions.mjs';
 
 import {
     STATUS_CREATED,
@@ -80,14 +80,14 @@ describe(t(import.meta), function () {
         it('should analyse a file already ok', async function () {
             f.withAnalyse(() => true);
 
-            expect(getNotifyCallsForItem(f, 0)[0]).toBe(STATUS_CREATED);
+            expect(getStatusChangesForItem(f)[0]).toBe(STATUS_CREATED);
 
             await expectAsync(f.runAnalyse())
                 .toBeResolvedTo(true);
 
-            expect(getStatusHistoryForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
+            expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
 
-            await expectAsync(f.act()).toBeResolvedTo(true);
+            await expectAsync(f.act()).toBeResolved();
         });
 
         it('should analyse a file impossible', async function () {
@@ -96,9 +96,9 @@ describe(t(import.meta), function () {
             await expectAsync(f.runAnalyse())
                 .toBeRejectedWith('impossible');
 
-            expect(getStatusHistoryForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
+            expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
 
-            await expectAsync(f.act()).toBeResolvedTo(false);
+            await expectAsync(f.act()).toBeRejected();
         });
 
         it('should analyse a file by tasks', async function () {
@@ -107,9 +107,9 @@ describe(t(import.meta), function () {
             await expectAsync(f.runAnalyse())
                 .toBeResolved();
 
-            expect(getStatusHistoryForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
+            expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
 
-            await expectAsync(f.act()).toBeResolvedTo(true);
+            await expectAsync(f.act()).toBeResolved();
         });
 
         describe('with tasks', function () {
@@ -123,34 +123,32 @@ describe(t(import.meta), function () {
                 let i = 0;
                 t = new Task('test task', () => true);
 
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_CREATED);
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(undefined);
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
                 await expectAsync(f.runAnalyse()).toBeResolved();
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ANALYSING);
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_NEED_ACTION);
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
-                await expectAsync(f.act()).toBeResolvedTo(true);
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTING);
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTED_SUCCESS);
+                await expectAsync(f.act()).toBeResolved();
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_SUCCESS);
 
-                expect(getNotifyCallsForItem(f).length).toBe(i);
+                expect(getStatusChangesForItem(f).length).toBe(i);
             });
 
             it('with failing task', async function () {
                 let i = 0;
                 t = new Task('test task', () => { throw 'impossible'; });
 
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_CREATED);
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(undefined);
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
                 await expectAsync(f.runAnalyse()).toBeResolved();
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ANALYSING);
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_NEED_ACTION);
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
                 await expectAsync(f.act()).toBeRejectedWith('impossible');
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTING);
-                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTED_FAILURE);
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
+                expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_FAILURE);
 
-                expect(getNotifyCallsForItem(f).length).toBe(i);
+                expect(getStatusChangesForItem(f).length).toBe(i);
             });
 
 
@@ -161,17 +159,16 @@ describe(t(import.meta), function () {
                     let i = 0;
                     t = _TaskSuccessFactory();
 
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_CREATED);
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(undefined);
+                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
                     await expectAsync(f.loadData()).toBeResolved();
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ANALYSING);
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_NEED_ACTION);
+                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
+                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
                     await expectAsync(f.check()).toBeResolvedTo(true);
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTING);
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTED_SUCCESS);
+                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
+                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_SUCCESS);
 
-                    expect(getNotifyCallsForItem(f).length).toBe(i);
+                    expect(getStatusChangesForItem(f).length).toBe(i);
                     resetOptionsForUnitTesting();
                 });
 
@@ -180,15 +177,14 @@ describe(t(import.meta), function () {
                     let i = 0;
                     t = _TaskSuccessFactory();
 
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_CREATED);
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(undefined);
+                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
                     await expectAsync(f.loadData()).toBeResolved();
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ANALYSING);
-                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_NEED_ACTION);
+                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
+                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
                     await expectAsync(f.check()).toBeResolvedTo(true);
 
-                    expect(getNotifyCallsForItem(f).length).toBe(i);
+                    expect(getStatusChangesForItem(f).length).toBe(i);
                     resetOptionsForUnitTesting();
                 });
             });

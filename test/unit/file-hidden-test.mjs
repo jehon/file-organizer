@@ -9,7 +9,7 @@ import {
     STATUS_SUCCESS
 } from '../../src/common/constants.js';
 
-import { getStatusHistoryForItem } from './help-functions.mjs';
+import { getStatusChangesForItem } from './help-functions.mjs';
 
 describe(t(import.meta), function () {
     beforeEach(() => {
@@ -21,6 +21,10 @@ describe(t(import.meta), function () {
         await expectAsync(f.runAnalyse()).toBeResolved();
         await expectAsync(f.act()).toBeResolved();
 
-        expect(getStatusHistoryForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
+        expect(getStatusChangesForItem(f)).toEqual([
+            STATUS_CREATED,
+            STATUS_ANALYSING,
+            STATUS_SUCCESS
+        ]);
     });
 });

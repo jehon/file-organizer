@@ -59,27 +59,30 @@ export function listenForItemNotify() {
 }
 
 /**
- * @param f
- * @param i
+ * Caution: this records call to the notify function
+ *          and the status sent are not the status notified
+ *          but the statuses requested
+ *
+ * @param {module:src/main/Item} item to listen to
+ * @returns {Array<string>} all the statuses calls
  */
-export function getNotifyCallsForItem(f, i = false) {
+export function _getNotifyCallsForItem(item) {
     // When creating a file, it notifies the creation of the parent's
     // we does need to filter on this
     const list = Item.prototype.notify.calls.all()
-        .filter(data => data.object.id == f.id)
-        .map(data => data.args);
-    if (i === false) {
-        return list;
-    }
-    return list[i];
+        .filter(data => data.object.id == item.id)
+        .map(data => data.args[0]);
+    return list;
 }
 
-
 /**
- * @param i
+ * @param {module:src/main/Item} item to listen to
+ * @returns {Array<string>} all the status' changes
  */
-export function getStatusHistoryForItem(i) {
-    return getNotifyCallsForItem(i)
-        .map(args => args[0])
-        .filter(a => a);
+export function getStatusChangesForItem(item) {
+    return _getNotifyCallsForItem(item)
+        .filter(a => a)
+        // We can also notify explicitely with the same value
+        // so we need to filter consecutively same status
+        .filter((val, i, arr) => ((i == 0) || (arr[i - 1] != val)));
 }

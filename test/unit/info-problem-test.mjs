@@ -11,7 +11,7 @@ import {
     STATUS_NEED_ACTION
 } from '../../src/common/constants.js';
 
-import { getStatusHistoryForItem } from './help-functions.mjs';
+import { getStatusChangesForItem } from './help-functions.mjs';
 import { STATUS_ANALYSING } from '../../file-organizer/constants.js';
 
 describe(t(import.meta), function () {
@@ -20,10 +20,15 @@ describe(t(import.meta), function () {
     });
 
     it('should have a correct state machine', async function () {
-        const i = new InfoProblem('test', 'val_initial', 'val_expected');
+        const info = new InfoProblem('test', 'val_initial', 'val_expected');
 
-        expect(i.type).toBe(TYPE_INFO);
+        expect(info.type).toBe(TYPE_INFO);
 
-        expect(getStatusHistoryForItem(i)).toEqual([STATUS_CREATED, STATUS_CREATED, STATUS_ANALYSING, STATUS_NEED_ACTION, STATUS_FAILURE]);
+        expect(getStatusChangesForItem(info)).toEqual([
+            STATUS_CREATED,
+            STATUS_ANALYSING,
+            STATUS_NEED_ACTION,
+            STATUS_FAILURE
+        ]);
     });
 });
