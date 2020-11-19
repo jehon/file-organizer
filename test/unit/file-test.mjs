@@ -1,12 +1,11 @@
 
 import { t } from '../test-helper.js';
 
-import File from '../../file-organizer/main/file.js';
-import Item from '../../file-organizer/main/item.js';
+import File from '../../src/main/file-types/file.js';
 
-import Task from '../../file-organizer/main/task.js';
-import Info from '../../file-organizer/main/info.js';
-import messenger from '../../file-organizer/main/messenger.js';
+import Task, { _TaskSuccessFactory } from '../../src/main/task.js';
+import Info from '../../src/main/info.js';
+import { listenForItemNotify, getStatusHistoryForItem, getNotifyCallsForItem } from './help-functions.mjs';
 
 import {
     STATUS_CREATED,
@@ -19,7 +18,6 @@ import {
     STATUS_ACTED_FAILURE
 } from '../../src/common/constants.js';
 
-import { getNotifyCallsForFile, getStatusHistoryForItem } from './help-functions.mjs';
 import options from '../../file-organizer/options.js';
 import { resetOptionsForUnitTesting } from './run-helper.mjs';
 
@@ -64,7 +62,7 @@ describe(t(import.meta), function () {
 
         it('should allow creating info', () => {
             const f = new File('test');
-            expect(f.addInfo(Info, []).parent.id).toBe(f.id);
+            expect(f.addInfo(Info, 'value').parent.id).toBe(f.id);
         });
     });
 
@@ -72,8 +70,9 @@ describe(t(import.meta), function () {
         let f;
 
         beforeEach(() => {
-            spyOn(messenger, 'notify').and.returnValue(true);
-            spyOn(Item.prototype, 'notify').and.callThrough();
+            // spyOn(messenger, 'notify').and.returnValue(true);
+            // spyOn(Item.prototype, 'notify').and.callThrough();
+            listenForItemNotify();
 
             f = new DemoFile('file-test');
         });
@@ -81,7 +80,7 @@ describe(t(import.meta), function () {
         it('should analyse a file already ok', async function () {
             f.withAnalyse(() => true);
 
-            expect(getNotifyCallsForFile(f, 0)[0]).toBe(STATUS_CREATED);
+            expect(getNotifyCallsForItem(f, 0)[0]).toBe(STATUS_CREATED);
 
             await expectAsync(f.runAnalyse())
                 .toBeResolvedTo(true);
@@ -124,34 +123,34 @@ describe(t(import.meta), function () {
                 let i = 0;
                 t = new Task('test task', () => true);
 
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(undefined);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_CREATED);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(undefined);
                 await expectAsync(f.runAnalyse()).toBeResolved();
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ANALYSING);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_NEED_ACTION);
 
                 await expectAsync(f.act()).toBeResolvedTo(true);
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTING);
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTED_SUCCESS);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTING);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTED_SUCCESS);
 
-                expect(getNotifyCallsForFile(f).length).toBe(i);
+                expect(getNotifyCallsForItem(f).length).toBe(i);
             });
 
             it('with failing task', async function () {
                 let i = 0;
                 t = new Task('test task', () => { throw 'impossible'; });
 
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(undefined);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_CREATED);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(undefined);
                 await expectAsync(f.runAnalyse()).toBeResolved();
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ANALYSING);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_NEED_ACTION);
 
                 await expectAsync(f.act()).toBeRejectedWith('impossible');
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTING);
-                expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTED_FAILURE);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTING);
+                expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTED_FAILURE);
 
-                expect(getNotifyCallsForFile(f).length).toBe(i);
+                expect(getNotifyCallsForItem(f).length).toBe(i);
             });
 
 
@@ -160,36 +159,36 @@ describe(t(import.meta), function () {
                 it('with legacy workflow', async function () {
                     options.dryRun = false;
                     let i = 0;
-                    t = Task.TaskSuccessFactory();
+                    t = _TaskSuccessFactory();
 
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(undefined);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_CREATED);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(undefined);
                     await expectAsync(f.loadData()).toBeResolved();
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ANALYSING);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_NEED_ACTION);
 
                     await expectAsync(f.check()).toBeResolvedTo(true);
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTING);
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ACTED_SUCCESS);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTING);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ACTED_SUCCESS);
 
-                    expect(getNotifyCallsForFile(f).length).toBe(i);
+                    expect(getNotifyCallsForItem(f).length).toBe(i);
                     resetOptionsForUnitTesting();
                 });
 
                 it('with legacy workflow', async function () {
                     options.dryRun = true;
                     let i = 0;
-                    t = Task.TaskSuccessFactory();
+                    t = _TaskSuccessFactory();
 
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_CREATED);
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(undefined);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_CREATED);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(undefined);
                     await expectAsync(f.loadData()).toBeResolved();
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_ANALYSING);
-                    expect(getNotifyCallsForFile(f, i++)[0]).toBe(STATUS_NEED_ACTION);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_ANALYSING);
+                    expect(getNotifyCallsForItem(f, i++)[0]).toBe(STATUS_NEED_ACTION);
 
                     await expectAsync(f.check()).toBeResolvedTo(true);
 
-                    expect(getNotifyCallsForFile(f).length).toBe(i);
+                    expect(getNotifyCallsForItem(f).length).toBe(i);
                     resetOptionsForUnitTesting();
                 });
             });

@@ -66,28 +66,13 @@ class FileGeneric {
     }
 
     /**
-     * @param description(string): free text
-     * @param newInfo(null/string): the new information (display only)
-     * @param icon(null/true/function):
+     * @param {string} code
+     * @param {string} description free text
+     * @param {string} newInfo the new information (display only)
+     * @param {null | boolean | Function} icon
      * null: action errors (impossible)
      * true: info message of success
      * fn: fix function
-     * @param code
-     * @param description
-     * @param newInfo
-     * @param icon
-     * @param code
-     * @param description
-     * @param newInfo
-     * @param icon
-     * @param code
-     * @param description
-     * @param newInfo
-     * @param icon
-     * @param code
-     * @param description
-     * @param newInfo
-     * @param icon
      */
     addMessage(code, description, newInfo = null, icon = null) {
         this.messages.set(code, icon

@@ -1,10 +1,11 @@
 
-const childProcess = require('child_process');
-const Task = require('./task.js');
+import childProcess from 'child_process';
+import Task from './task.js';
 
-const debug = require('debug')('shell-task');
+import mainDebug from './debug.js';
+const debug = mainDebug.extend('TaskShell');
 
-module.exports = class ShellTask extends Task {
+export default class TaskShell extends Task {
     constructor(title, params) {
         super(title, () => this.runInShell(params));
     }
@@ -37,4 +38,4 @@ module.exports = class ShellTask extends Task {
             });
         });
     }
-};
+}

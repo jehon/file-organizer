@@ -2,19 +2,20 @@
 import fs from 'fs';
 import path from 'path';
 
-import { rootDir } from '../common/constants.js';
+import { rootDir } from './main-constants.js';
 
 /**
  * @param {string} folder where to search (absolute or relative to project root)
+ * @param regExpMask
  * @returns {Promise<Array<object>>} what the modules does export
  */
-export default function (folder) {
+export default function (folder, regExpMask = /[.]js/) {
     if (folder[0] != '/') {
         folder = path.join(rootDir, folder);
     }
 
     return fs.promises.readdir(folder)
-        .then(list => list.filter(v => v.endsWith('.js')))
+        .then(list => list.filter(v => regExpMask.test(v)))
         .then(list => list.map(v => path.join(folder, v)))
         .then((list) => Promise.all(
             list.map(f => import(f).catch(e => {

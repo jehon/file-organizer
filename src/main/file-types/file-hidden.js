@@ -1,5 +1,5 @@
 
-import File from '../../../file-organizer/main/file.js';
+import File from './file.js';
 import { registerGlob, registerRegex } from '../register-file-types.js';
 
 export default class FileHidden extends File {

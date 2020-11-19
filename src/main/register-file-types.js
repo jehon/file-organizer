@@ -2,13 +2,13 @@
 import fs from 'fs';
 import fileUtils from '../../file-organizer/file-utils.js';
 import FileGeneric from '../../file-organizer/file-generic.js';
-import File from '../../file-organizer/main/file.js';
+import File from './file-types/file.js';
 
 // TODO: object should be "class constructor"
 /**
  * @type {Map<RegExp, object>} to store all mapping
  */
-const regExpMap = new Map();
+export const regExpMap = new Map();
 let folderClass = null;
 
 /**
@@ -106,7 +106,8 @@ export async function buildFile(filepath, parent = null) {
     regExps.sort((a, b) => (b.toString().length - a.toString().length));
     for (const key of regExps) {
         const classConstructor = regExpMap.get(key);
-        if (key.test(fname)) {
+        // TODO: remove this horrible hack (file-folder)
+        if (key.test && key.test(fname)) {
             return new classConstructor(filepath, parent);
         }
     }

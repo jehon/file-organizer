@@ -2,7 +2,7 @@
 import { t } from '../test-helper.js';
 
 import FileConvertSource from '../../src/main/file-types/file-convert-source.js';
-import Item from '../../file-organizer/main/item.js';
+import Item from '../../src/main/item.js';
 import {
     STATUS_CREATED,
     STATUS_ANALYSING,

@@ -2,7 +2,7 @@
 import { t } from '../test-helper.js';
 import {
     TaskFileDelete
-} from '../../file-organizer/main/tasks-fs.js';
+} from '../../src/main/tasks-fs.js';
 
 import { createFileFrom, fileExists } from './help-functions.mjs';
 
@@ -11,7 +11,7 @@ describe(t(import.meta), function () {
         const f = await createFileFrom('jh-patch-file-patch.txt');
 
         await (new TaskFileDelete())
-            .withParent(f)
+            .setParent(f)
             .run();
 
         expect(await fileExists(f.path)).toBeFalsy();

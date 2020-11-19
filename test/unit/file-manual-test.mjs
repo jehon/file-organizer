@@ -2,7 +2,7 @@
 import { t } from '../test-helper.js';
 
 import FileManual from '../../src/main/file-types/file-manual.js';
-import Item from '../../file-organizer/main/item.js';
+import Item from '../../src/main/item.js';
 import {
     STATUS_CREATED,
     STATUS_ANALYSING,

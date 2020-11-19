@@ -1,7 +1,8 @@
 
-const Item = require('./item.js');
-const options = require('../options.js');
-const { TYPE_FILE,
+import Item from '../item.js';
+import options from '../../../file-organizer/options.js';
+import {
+    TYPE_FILE,
     STATUS_ANALYSING,
     STATUS_FAILURE,
     STATUS_SUCCESS,
@@ -9,14 +10,16 @@ const { TYPE_FILE,
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
-} = require('../constants.js');
-const fileUtils = require('../file-utils.js');
+} from '../../common/constants.js';
 
-const path = require('path');
+import fileUtils from '../../../file-organizer/file-utils.js';
+import { regExpMap } from '../register-file-types.js';
+// import { buildFolder } from '../main/loadFileTypes.js';
+
+import path from 'path';
 
 const parentsMap = new Map();
 
-let buildFolderFn;
 /**
  * How does this work?
  *
@@ -28,7 +31,7 @@ let buildFolderFn;
  *
  * if necessary, it will "doAct"
  */
-class File extends Item {
+export default class File extends Item {
     static getNotifyProperties() {
         return super.getNotifyProperties().concat(['path']);
     }
@@ -98,11 +101,15 @@ class File extends Item {
      */
     addFixAct(t) {
         this.notify(STATUS_NEED_ACTION);
-        t.withParent(this);
+        t.setParent(this);
         this.actChain = this.actChain.then(() => t.run());
         return this;
     }
 
+    /**
+     * @type {Map<string,string>} with all the infos
+     */
+    infosMap = new Map()
 
     /**
      * [Tool for specialized classes]
@@ -114,7 +121,11 @@ class File extends Item {
      * @returns {module:file-organizer/main/Info} the constructed info
      */
     addInfo(infoClass, ...args) {
-        return new infoClass(...args, this);
+        // TODO: how to link this to the file ???
+        const i = new infoClass(...args);
+        i.setParent(this);
+        this.infosMap.set(i.title, i);
+        return i;
     }
 
     /**
@@ -149,8 +160,10 @@ class File extends Item {
 
             if (!parentsMap.has(parentDir)) {
                 parentsMap.set(parentDir,
-                    // buildFolderFn(parentDir));
-                    new (require('./file-folder.js'))(parentDir));
+                    // buildFolderFn(parentDir)
+                    // TODO: remove this horrible hack  (file-folder)
+                    new (regExpMap.get('//'))(parentDir)
+                );
             }
             this.parent = parentsMap.get(parentDir);
         }
@@ -224,11 +237,3 @@ class File extends Item {
             .then(() => true);
     }
 }
-
-module.exports = File;
-
-File.init = async function () {
-    await import('../../src/main/register-file-types.js').then(({ buildFolder }) => {
-        buildFolderFn = buildFolder;
-    });
-};

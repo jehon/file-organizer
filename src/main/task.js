@@ -1,13 +1,14 @@
 
-const Item = require('./item.js');
-const { TYPE_TASK,
+import Item from './item.js';
+import {
+    TYPE_TASK,
     STATUS_NEED_ACTION,
     STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
-} = require('../constants.js');
+} from '../common/constants.js';
 
-class Task extends Item {
+export default class Task extends Item {
     static getNotifyProperties() {
         return super.getNotifyProperties().concat(['messages']);
     }
@@ -16,8 +17,8 @@ class Task extends Item {
         return TYPE_TASK;
     }
 
-    constructor(title, action, parent) {
-        super(title, parent);
+    constructor(title, action) {
+        super(title);
         this.action = action;
         this.messages = '';
         this.notify(STATUS_NEED_ACTION);
@@ -39,6 +40,16 @@ class Task extends Item {
     }
 }
 
-module.exports = Task;
-module.exports.TaskSuccessFactory = (msg) => new Task(`success task ${msg}`, () => msg);
-module.exports.TaskFailureFactory = (msg) => new Task(`failing task ${msg}`, () => { throw new Error(msg); });
+/**
+ * @param {string} title of the task
+ * @returns {Task} created
+ */
+export function _TaskSuccessFactory(title) {
+    return new Task(`Success task ${title}`, () => title);
+}
+
+/**
+ * @param {string} title of the task
+ * @returns {Task} created
+ */
+export function _TaskFailureFactory(title) { return new Task(`Failing task ${title}`, () => { throw new Error(title); }); }

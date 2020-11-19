@@ -4,11 +4,17 @@ let guiCallback = (_data) => { };
 
 let id = 1;
 
-module.exports.getEntityId = function () {
+/**
+ * @returns {number} of the entity (unique id)
+ */
+export function getEntityId() {
     return id++;
-};
+}
 
-module.exports.notify = function (data) {
+/**
+ * @param {object} data to notify
+ */
+export function notify(data) {
     if (!data.id || !data.type) {
         throw `Invalid data: no id or no data: ${JSON.stringify(data)}`;
     }
@@ -17,11 +23,14 @@ module.exports.notify = function (data) {
     console.info('> ', JSON.stringify(data));
 
     guiCallback(data);
-};
+}
 
-module.exports.register = function (cb) {
+/**
+ * @param {function(object): void} cb to receive updates
+ */
+export function register(cb) {
     guiCallback = cb;
     for (const data of list) {
         cb(data);
     }
-};
+}

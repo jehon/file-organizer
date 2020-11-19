@@ -2,7 +2,7 @@
 import { t } from '../test-helper.js';
 
 import FileUnsupported, { dumpDiscoveredExtension, _map } from '../../src/main/file-types/file-unsupported.js';
-import Item from '../../file-organizer/main/item.js';
+import Item from '../../src/main/item.js';
 import {
     STATUS_CREATED,
     STATUS_ANALYSING,

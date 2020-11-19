@@ -18,11 +18,7 @@ export default async function loadFileTypes() {
             loadCJS('../../file-organizer/file-folder.js'),
             loadCJS('../../file-organizer/file-movie.js'),
             loadCJS('../../file-organizer/file-picture.js'),
-
-            // used to initialize the buildFile
-            loadCJS('../../file-organizer/main/file-folder.js'),
-            loadCJS('../../file-organizer/main/file.js'),
         ]);
 
-    await importDirectory('src/main/file-types');
+    await importDirectory('src/main/file-types', /file-.+[.]js/);
 }

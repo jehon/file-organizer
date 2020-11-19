@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 
-import Item from '../../file-organizer/main/item.js';
+import Item from '../../src/main/item.js';
 import {
     STATUS_CREATED
 } from '../../src/common/constants.js';
@@ -16,7 +16,7 @@ describe(t(import.meta), function () {
             expect(i.type).toBe('Item');
             expect(i.subType).toBe('Item');
             const i2 = new Item('2');
-            i.withParent(i2);
+            i.setParent(i2);
             expect(i.parent.id).toBe(i2.id);
 
 

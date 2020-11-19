@@ -2,8 +2,8 @@
 import path from 'path';
 import fs from 'fs';
 
-import File from '../../file-organizer/main/file.js';
-import Item from '../../file-organizer/main/item.js';
+import File from '../../src/main/file-types/file.js';
+import Item from '../../src/main/item.js';
 
 import { __dirname } from '../test-helper.js';
 import { buildFile } from '../../src/main/register-file-types.js';
@@ -52,19 +52,10 @@ export async function fileExists(filePath) {
 }
 
 /**
- * @param f
- * @param i
+ *
  */
-export function getNotifyCallsForFile(f, i = false) {
-    // When creating a file, it notifies the creation of the parent's
-    // we does need to filter on this
-    const list = File.prototype.notify.calls.all()
-        .filter(data => data.object.id == f.id)
-        .map(data => data.args);
-    if (i === false) {
-        return list;
-    }
-    return list[i];
+export function listenForItemNotify() {
+    spyOn(Item.prototype, 'notify').and.callThrough();
 }
 
 /**

@@ -1,15 +1,10 @@
 
 import { t } from '../test-helper.js';
 
-import ShellTask from '../../file-organizer/main/shell-task.js';
-import messenger from '../../file-organizer/main/messenger.js';
+import ShellTask from '../../src/main/task-shell.js';
+import { } from '../../src/main/messenger.js';
 
 describe(t(import.meta), function () {
-    beforeEach(() => {
-        spyOn(messenger, 'notify').and.returnValue(true);
-        spyOn(ShellTask.prototype, 'notify').and.callThrough();
-    });
-
     it('should run a simple task', async function () {
         const t = new ShellTask('task test',
             ['ls', '/']

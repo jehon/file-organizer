@@ -1,4 +1,6 @@
 
+import path from 'path';
+
 import { CHANNEL_MAIN } from './common/constants.js';
 
 import { createRequire } from 'module';
@@ -11,9 +13,10 @@ const { app, BrowserWindow, screen } = require('electron');
 // Remove warning: https://github.com/electron/electron/issues/18397
 app.allowRendererProcessReuse = true;
 
-import messengerApi from '../file-organizer/main/messenger.js';
-const { register } = messengerApi;
+import { register } from './main/messenger.js';
 import options from '../file-organizer/options.js';
+
+import { rootDir } from './main/main-constants.js';
 
 export default new Promise((resolve, _reject) => {
     if (app) {
@@ -36,7 +39,7 @@ export default new Promise((resolve, _reject) => {
                 }
 
                 console.info('waiting for dom ready');
-                mainWindow.loadFile('src/renderer/index.html')
+                mainWindow.loadFile(path.join(rootDir, 'src/renderer/index.html'))
                     .then(() => {
                         register((data) => {
                             BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));

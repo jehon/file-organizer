@@ -1,8 +1,8 @@
 
 import { t } from '../test-helper.js';
 
-import Info from '../../file-organizer/main/info.js';
-import Item from '../../file-organizer/main/item.js';
+import Info from '../../src/main/info.js';
+import Item from '../../src/main/item.js';
 
 import {
     TYPE_INFO,
@@ -17,10 +17,10 @@ describe(t(import.meta), function () {
     });
 
     it('should have a correct state machine', async function () {
-        const i = new Info('test');
+        const i = new Info('test', 'truc', null);
 
         expect(i.type).toBe(TYPE_INFO);
 
-        expect(getStatusHistoryForItem(i)).toEqual([STATUS_CREATED]);
+        expect(getStatusHistoryForItem(i)).toEqual([STATUS_CREATED, STATUS_CREATED]);
     });
 });

@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 import { buildFile, registerFallback, registerFolder, registerGlob, _reset, _backup } from '../../src/main/register-file-types.js';
-import File from '../../file-organizer/main/file.js';
+import File from '../../src/main/file-types/file.js';
 
 class A extends File { }
 class B extends File { }

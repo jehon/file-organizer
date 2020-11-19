@@ -1,5 +1,5 @@
 
-import File from '../../../file-organizer/main/file.js';
+import File from './file.js';
 import {
     STATUS_FAILURE,
     convertedSuffix

@@ -1,16 +1,16 @@
 
-const path = require('path');
+import path from 'path';
 
-const fileUtils = require('./file-utils');
+import fileUtils from '../../../file-organizer/file-utils.js';
 
-const File = require('./file.js');
-const { tsFromString } = require('./timestamp.js');
-const options = require('./options.js');
+import File from './file.js';
+import { tsFromString } from '../../../file-organizer/timestamp.js';
+import options from '../../../file-organizer/options.js';
 
-const pLimit = require('p-limit'); // https://www.npmjs.com/package/p-limit
+import pLimit from 'p-limit'; // https://www.npmjs.com/package/p-limit
 const indexedFilenameLimiter = pLimit(1);
 
-class FileTimestamped extends File {
+export default class FileTimestamped extends File {
     async analyse() {
         await super.analyse();
 
@@ -195,5 +195,3 @@ class FileTimestamped extends File {
         return res;
     }
 }
-
-module.exports = FileTimestamped;

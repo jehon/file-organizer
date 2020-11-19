@@ -1,9 +1,8 @@
 
 import { t } from '../test-helper.js';
 
-import Task from '../../file-organizer/main/task.js';
-const { TaskSuccessFactory, TaskFailureFactory } = Task;
-import messenger from '../../file-organizer/main/messenger.js';
+import Task, { _TaskSuccessFactory, _TaskFailureFactory } from '../../src/main/task.js';
+import { listenForItemNotify, getStatusHistoryForItem } from './help-functions.mjs';
 
 import {
     TYPE_TASK,
@@ -16,8 +15,7 @@ import {
 
 describe(t(import.meta), function () {
     beforeEach(() => {
-        spyOn(messenger, 'notify').and.returnValue(true);
-        spyOn(Task.prototype, 'notify').and.callThrough();
+        listenForItemNotify();
     });
 
     it('should have the correct type', function () {
@@ -30,12 +28,12 @@ describe(t(import.meta), function () {
         await expectAsync(t.run())
             .toBeResolvedTo(true);
 
-        let i = 0;
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_NEED_ACTION);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_SUCCESS);
-        expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
+        expect(getStatusHistoryForItem(t)).toEqual([
+            STATUS_CREATED,
+            STATUS_NEED_ACTION,
+            STATUS_ACTING,
+            STATUS_ACTED_SUCCESS
+        ]);
     });
 
     it('should run a simple task with true', async function () {
@@ -45,12 +43,12 @@ describe(t(import.meta), function () {
         await expectAsync(t.run())
             .toBeResolvedTo(true);
 
-        let i = 0;
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_NEED_ACTION);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_SUCCESS);
-        expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
+        expect(getStatusHistoryForItem(t)).toEqual([
+            STATUS_CREATED,
+            STATUS_NEED_ACTION,
+            STATUS_ACTING,
+            STATUS_ACTED_SUCCESS
+        ]);
     });
 
     it('should run a simple task with error', async function () {
@@ -59,35 +57,35 @@ describe(t(import.meta), function () {
         await expectAsync(t.run()).toBeRejected();
 
         // Should be rejected
-        let i = 0;
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_NEED_ACTION);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_FAILURE);
-        expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
+        expect(getStatusHistoryForItem(t)).toEqual([
+            STATUS_CREATED,
+            STATUS_NEED_ACTION,
+            STATUS_ACTING,
+            STATUS_ACTED_FAILURE
+        ]);
     });
 
     it('should run a simple task with message', async function () {
         const t = new Task('task test', () => 'euh');
         await expectAsync(t.run()).toBeResolvedTo('euh');
 
-        let i = 0;
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_CREATED);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_NEED_ACTION);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTING);
-        expect(Task.prototype.notify.calls.argsFor(i++)[0]).toBe(STATUS_ACTED_SUCCESS);
-        expect(Task.prototype.notify).toHaveBeenCalledTimes(i);
+        expect(getStatusHistoryForItem(t)).toEqual([
+            STATUS_CREATED,
+            STATUS_NEED_ACTION,
+            STATUS_ACTING,
+            STATUS_ACTED_SUCCESS
+        ]);
     });
 
     it('should work with subs', async function () {
-        await expectAsync(TaskSuccessFactory('').run())
+        await expectAsync(_TaskSuccessFactory('').run())
             .toBeResolvedTo('');
-        await expectAsync(TaskSuccessFactory('euh').run())
+        await expectAsync(_TaskSuccessFactory('euh').run())
             .toBeResolvedTo('euh');
 
-        await expectAsync(TaskFailureFactory('').run())
+        await expectAsync(_TaskFailureFactory('').run())
             .toBeRejectedWithError();
-        await expectAsync(TaskFailureFactory('euh').run())
+        await expectAsync(_TaskFailureFactory('euh').run())
             .toBeRejectedWithError('euh');
     });
 });

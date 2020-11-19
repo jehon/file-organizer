@@ -86,7 +86,7 @@ start-test-gui: build
 	cd tmp/gui && ../../file-organizer.sh regularize -n
 
 start-demo: build
-	electron demo.cjs
+	electron src/demo.cjs
 
 .PHONY: build
 build: dependencies

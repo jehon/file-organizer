@@ -1,31 +1,32 @@
 
-const fs = require('fs');
-const path = require('path');
+// TODO: use this !!!
 
-const File = require('./file.js');
-// const FileHidden = require('./file-hidden.js');
-const Task = require('./task.js');
-// const options = require('../options.js');
+import fs from 'fs';
+import path from 'path';
 
-let buildFileFn;
+import File from './file.js';
+import Task from '../task.js';
+// import FileHidden from './file-hidden.js';
+// import options from '../options.js';
+
+import { regExpMap, buildFile /*, registerFolder*/ } from '../register-file-types.js';
 
 class TaskFolderListing extends Task {
-    constructor(parent) {
+    constructor() {
         super('Get the folder list', () =>
             fs.promises.readdir(this.parent.path)
                 .then(list => list.filter(f => f != '.' && f != '..'))
                 .then(list => Promise.all(
-                    list.map(async f => await buildFileFn(path.join(this.parent.path, f), this))
+                    list.map(async f => await buildFile(path.join(this.parent.path, f), this))
                 ))
                 // // Remove "FileHidden" files if required
                 // .then(list => list.filter(f => options.showHidden || (!(f instanceof FileHidden))))
-                .then(list => { list.sort(); return list; }),
-            parent
+                .then(list => { list.sort(); return list; })
         );
     }
 }
 
-class FileFolder extends File {
+export default class FileFolder extends File {
     async analyse() {
         return super.analyse()
             .then(() => this.addAnalysisTask(TaskFolderListing, this))
@@ -48,11 +49,6 @@ class FileFolder extends File {
     // }
 }
 
-module.exports = FileFolder;
-
-FileFolder.init = async function () {
-    await import('../../src/main/register-file-types.js').then(({ registerFolder, buildFile }) => {
-        // registerFolder(FileFolder);
-        buildFileFn = buildFile;
-    });
-};
+// TODO: remove this horrible hack  (file-folder)
+regExpMap.set('//', FileFolder);
+// registerFolder(FileFolder);

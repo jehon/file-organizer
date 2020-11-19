@@ -1,10 +1,13 @@
 
-const messenger = require('./messenger.js');
-const {
+import { getEntityId, notify } from './messenger.js';
+import {
     STATUS_CREATED,
-} = require('../constants.js');
+    STATUS_SUCCESS,
+    STATUS_NEED_ACTION,
+    STATUS_ACTED_SUCCESS
+} from '../common/constants.js';
 
-module.exports = class Item {
+export default class Item {
     static getNotifyProperties() {
         return ['id', 'type', 'subType', 'status', 'title'];
     }
@@ -14,7 +17,7 @@ module.exports = class Item {
     }
 
     constructor(title = '', parent) {
-        this.id = messenger.getEntityId();
+        this.id = getEntityId();
         this.title = title;
         this.parent = parent;
         this.notify(STATUS_CREATED);
@@ -28,7 +31,7 @@ module.exports = class Item {
         return this.constructor.name;
     }
 
-    withParent(parent) {
+    setParent(parent) {
         this.parent = parent;
         this.notify();
         return this;
@@ -45,8 +48,16 @@ module.exports = class Item {
         for (let i of this.constructor.getNotifyProperties()) {
             data[i] = this[i];
         }
-        messenger.notify(data);
+        notify(data);
         return this;
     }
 
-};
+    doesNeedAction() {
+        return this.status == STATUS_NEED_ACTION;
+    }
+
+    isSuccessFull() {
+        return this.status == STATUS_SUCCESS
+            || this.status == STATUS_ACTED_SUCCESS;
+    }
+}
