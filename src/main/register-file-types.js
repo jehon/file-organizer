@@ -15,22 +15,22 @@ export const _regExpMapForFolders = new Map();
 
 export const FallBackRegExp = /.*/;
 
-/**
- * Because regexp are object, == does not work
- * so we search for the initial object
- *
- * @param {Map} map to search in
- * @param {RegExp} regexp to search for
- * @returns {RegExp} found in the map
- */
-function getRegExpInMap(map, regexp) {
-    for (const key of map.keys()) {
-        if (key.toString() == regexp.toString()) {
-            return key;
-        }
-    }
-    return null;
-}
+// /**
+//  * Because regexp are object, == does not work
+//  * so we search for the initial object
+//  *
+//  * @param {Map} map to search in
+//  * @param {RegExp} regexp to search for
+//  * @returns {RegExp} found in the map
+//  */
+// function getRegExpInMap(map, regexp) {
+//     for (const key of map.keys()) {
+//         if (key.toString() == regexp.toString()) {
+//             return key;
+//         }
+//     }
+//     return null;
+// }
 
 /**
  * @param {string} glob a glob (*?)
