@@ -62,7 +62,7 @@ describe(t(import.meta), function () {
 
         it('should allow creating info', () => {
             const f = new File('test');
-            expect(f.addInfo(Info, 'value').parent.id).toBe(f.id);
+            expect(f.analysisAddInfo(Info, 'value').parent.id).toBe(f.id);
         });
     });
 
@@ -102,7 +102,7 @@ describe(t(import.meta), function () {
         });
 
         it('should analyse a file by tasks', async function () {
-            f.withAnalyse(() => { f.addAnalysisTask(Task, 'test', () => true); });
+            f.withAnalyse(() => { f.analysisAddAnalysisTask(Task, 'test', () => true); });
 
             await expectAsync(f.runAnalyse())
                 .toBeResolved();
@@ -116,7 +116,7 @@ describe(t(import.meta), function () {
             let t;
 
             beforeEach(() => {
-                f.withAnalyse(() => f.addFixAct(t));
+                f.withAnalyse(() => f.analysisAddFixAct(t));
             });
 
             it('with successfull task', async function () {
@@ -164,7 +164,7 @@ describe(t(import.meta), function () {
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
-                    await expectAsync(f.check()).toBeResolvedTo(true);
+                    await expectAsync(f.check()).toBeResolved();
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_SUCCESS);
 
@@ -182,7 +182,7 @@ describe(t(import.meta), function () {
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
-                    await expectAsync(f.check()).toBeResolvedTo(true);
+                    await expectAsync(f.check()).toBeResolved();
 
                     expect(getStatusChangesForItem(f).length).toBe(i);
                     resetOptionsForUnitTesting();

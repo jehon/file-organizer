@@ -1,17 +1,18 @@
 
 import File from './file.js';
-import { registerGlob, registerRegex } from '../register-file-types.js';
+import { registerRegExp, glob2regExp } from '../register-file-types.js';
 
 export default class FileHidden extends File {
     async analyse() {
+        // Nothing to be analysed on an Hidden File
         return;
     }
 }
 
-registerGlob([
-    '#recycle',
-    '@eaDir',
-    '.*',
+registerRegExp([
+    glob2regExp('#recycle'),
+    glob2regExp('@eaDir'),
+    glob2regExp('.*'),
 ], FileHidden);
 
-registerRegex(/^[^.]+$/i, FileHidden);
+registerRegExp(/^[^.]+$/i, FileHidden, { forFiles: true, forFolders: false });

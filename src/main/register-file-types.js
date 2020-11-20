@@ -1,134 +1,126 @@
 
 import fs from 'fs';
 import fileUtils from '../../file-organizer/file-utils.js';
-import FileGeneric from '../../file-organizer/file-generic.js';
-import File from './file-types/file.js';
 
-// TODO: object should be "class constructor"
+// TODO(style): object should be "class constructor"
 /**
- * @type {Map<RegExp, object>} to store all mapping
+ * @type {Map<RegExp, object>} to store all mapping for files
  */
-export const regExpMap = new Map();
-let folderClass = null;
+export const _regExpMapForFiles = new Map();
 
 /**
- * @param {string|Array<string>} glob - extension to match (*.xxx)
- * @param {object} classConstructor - that match it
+ * @type {Map<RegExp, object>} to store all mapping for folders
  */
-export function registerGlob(glob, classConstructor) {
-    if (Array.isArray(glob)) {
-        for (const g of glob) {
-            registerGlob(g, classConstructor);
+export const _regExpMapForFolders = new Map();
+
+export const FallBackRegExp = /.*/;
+
+/**
+ * Because regexp are object, == does not work
+ * so we search for the initial object
+ *
+ * @param {Map} map to search in
+ * @param {RegExp} regexp to search for
+ * @returns {RegExp} found in the map
+ */
+function getRegExpInMap(map, regexp) {
+    for (const key of map.keys()) {
+        if (key.toString() == regexp.toString()) {
+            return key;
         }
-        return;
     }
+    return null;
+}
 
-    const oneGlob = /** @type {string} */(glob);
-
-    const regExp = new RegExp('^'
-        + oneGlob
+/**
+ * @param {string} glob a glob (*?)
+ * @returns { RegExp} matching the glob
+ */
+export function glob2regExp(glob) {
+    return new RegExp('^'
+        + glob
             .split('.').join('[.]')
             .split('*').join('[^/]*')
             .split('?').join('[^/]')
         + '$', 'i');
 
-    registerRegex(regExp, classConstructor);
 }
 
 /**
  * @param {RegExp|Array<RegExp>} regExp - extension to match (*.xxx)
  * @param {object} classConstructor - that match it
+ * @param {object} options - options
+ * @property {boolean} forFiles if it applies to files
+ * @property {boolean} forFolders if it applies to folders
  */
-export function registerRegex(regExp, classConstructor) {
+export function registerRegExp(regExp, classConstructor, options = {}) {
     if (Array.isArray(regExp)) {
         for (const r of regExp) {
-            registerRegex(r, classConstructor);
+            registerRegExp(r, classConstructor, options);
         }
         return;
     }
 
     const oneRegExp = /** @type {RegExp} */(regExp);
 
+    // TODO: handle duplicates
     // if (regExpMatch.has(oneRegExp)) {
     //     throw new Error(`Registering impossible for ${classConstructor.name}: (${oneRegExp}) is already mapped to ${regExpMatch.get(oneRegExp).name}`);
     // }
-    regExpMap.set(oneRegExp, classConstructor);
-}
 
-/**
- * @param {object} classConstructor - that match it
- */
-export function registerFolder(classConstructor) {
-    if (folderClass) {
-        throw new Error(`Registering impossible for ${classConstructor.name}: folder is already mapped to ${folderClass.name}`);
+    if (options.forFiles) {
+        _regExpMapForFiles.set(oneRegExp, classConstructor);
     }
-    folderClass = classConstructor;
+    if (options.forFolders) {
+        _regExpMapForFolders.set(oneRegExp, classConstructor);
+    }
 }
 
 /**
- * @param {object} classConstructor - that match it
- */
-export function registerFallback(classConstructor) {
-    registerRegex(/.*/, classConstructor);
-}
-
-/**
- * @param {string|FileGeneric|File} filepath to be build
+ * @param {Map<RegExp,object>} regExpMap where to search
+ * @param {string} filepath of the file
  * @param {module:file-organizer/main/FileFolder} parent of the file
  * @returns {module:common/File} the File object
  */
-export async function buildFile(filepath, parent = null) {
-    // TODO: Legacy
-    if (filepath instanceof FileGeneric) {
-        return filepath;
-    }
-
-    // TODO: Legacy
-    if (filepath instanceof File) {
-        return filepath;
-    }
-
-    if (folderClass) {
-        try {
-            // Is it real? Let's go further
-            const stat = fs.statSync(filepath);
-            if (stat.isDirectory()) {
-                return new (folderClass)(filepath, parent);
-            }
-        } catch {
-            // ok
-        }
-    }
-
+function _getClassFromMap(regExpMap, filepath, parent) {
     const fname = fileUtils.getFullFilename(filepath);
 
     const regExps = Array.from(regExpMap.keys());
     regExps.sort((a, b) => (b.toString().length - a.toString().length));
     for (const key of regExps) {
         const classConstructor = regExpMap.get(key);
-        // TODO: remove this horrible hack (file-folder)
+
+        // TODO(file-folder): remove this horrible hack
         if (key.test && key.test(fname)) {
             return new classConstructor(filepath, parent);
         }
     }
+
     throw `No match found for ${filepath}`;
 }
 
 /**
- * @param {string|FileGeneric|File} filepath to be build
+ * @param {string|object} filepath to be build
  * @param {module:file-organizer/main/FileFolder} parent of the file
- * @returns {module:common/FileFolder} the FileFolder object
+ * @returns {module:common/File} the File object
  */
-export function buildFolder(filepath, parent) {
-    return new folderClass(filepath, parent);
-}
+export async function buildFile(filepath, parent = null) {
+    // TODO(migration): accept File and FileGeneric as it
+    if (typeof filepath == 'object') {
+        return filepath;
+    }
 
-/**
- * Reset map (used in testing only)
- */
-export function _reset() {
-    regExpMap.clear();
-    folderClass = null;
+    try {
+        // Is it real? Let's go further
+        const stat = fs.statSync(filepath);
+        if (stat.isDirectory()) {
+            return _getClassFromMap(_regExpMapForFolders, filepath, parent);
+        }
+    } catch {
+        // ok
+    }
+
+    return _getClassFromMap(_regExpMapForFiles, filepath, parent);
 }
 
 /**
@@ -137,18 +129,22 @@ export function _reset() {
  * @returns {function(void): void} to restore the config
  */
 export function _backup() {
-    /**
-     * @type {Map<RegExp, object>} to store all mapping
-     */
-    const b_regExpMap = new Map(regExpMap);
-    const b_folderClass = folderClass;
-    _reset();
+    //
+    // We can not make a reset because we need some of the files in there
+    //
+
+    const b_regExpMapForFiles = new Map(_regExpMapForFiles);
+    const b_regExpMapForFolders = new Map(_regExpMapForFolders);
 
     return function restore() {
-        _reset();
-        folderClass = b_folderClass;
-        for (const [k, v] of b_regExpMap) {
-            regExpMap.set(k, v);
+        _regExpMapForFiles.clear();
+        _regExpMapForFolders.clear();
+
+        for (const [k, v] of b_regExpMapForFiles) {
+            _regExpMapForFiles.set(k, v);
+        }
+        for (const [k, v] of b_regExpMapForFolders) {
+            _regExpMapForFolders.set(k, v);
         }
     };
 }

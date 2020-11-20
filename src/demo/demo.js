@@ -58,30 +58,30 @@ loadFileTypes()
 
             await Promise.all([
                 f2
-                    .withAnalyse(() => f2.addAnalysisTask(Task, 'analyse 2.1', () => w(2))
-                        .then(() => f2.addAnalysisTask(Task, 'analyse 2.2', () => { throw 'euh'; }))
+                    .withAnalyse(() => f2.analysisAddAnalysisTask(Task, 'analyse 2.1', () => w(2))
+                        .then(() => f2.analysisAddAnalysisTask(Task, 'analyse 2.2', () => { throw 'euh'; }))
                     )
                     .runAnalyse()
                     .catch(() => { }),
 
                 f3
-                    .withAnalyse(() => f3.addAnalysisTask(Task, 'analyse 3.1', () => w(2))
-                        .then(() => f3.addAnalysisTask(Task, 'analyse 3.2', () => w(2)))
+                    .withAnalyse(() => f3.analysisAddAnalysisTask(Task, 'analyse 3.1', () => w(2))
+                        .then(() => f3.analysisAddAnalysisTask(Task, 'analyse 3.2', () => w(2)))
                     )
                     .runAnalyse(),
                 f4
-                    .withAnalyse(() => f4.addFixAct(new Task('F4 task', true)))
+                    .withAnalyse(() => f4.analysisAddFixAct(new Task('F4 task', true)))
                     .runAnalyse(),
 
                 f5
-                    .withAnalyse(() => f5.addFixAct(new Task('F5 task never end', () => new Promise(() => { }))))
+                    .withAnalyse(() => f5.analysisAddFixAct(new Task('F5 task never end', () => new Promise(() => { }))))
                     .runAnalyse(),
 
                 f6
-                    .withAnalyse(() => f6.addFixAct(new Task('F6 task ok', () => w(1))))
+                    .withAnalyse(() => f6.analysisAddFixAct(new Task('F6 task ok', () => w(1))))
                     .runAnalyse(),
                 f7
-                    .withAnalyse(() => f7.addFixAct(new Task('F7 task error', () => { throw 'euh'; })))
+                    .withAnalyse(() => f7.analysisAddFixAct(new Task('F7 task error', () => { throw 'euh'; })))
                     .runAnalyse(),
             ]);
             console.info('Analysing done');

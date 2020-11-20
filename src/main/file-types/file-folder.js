@@ -1,5 +1,5 @@
 
-// TODO: use this !!!
+// TODO(migration): use the file-folder !!!
 
 import fs from 'fs';
 import path from 'path';
@@ -9,7 +9,11 @@ import Task from '../task.js';
 // import FileHidden from './file-hidden.js';
 // import options from '../options.js';
 
-import { regExpMap, buildFile /*, registerFolder*/ } from '../register-file-types.js';
+import {
+    buildFile,
+    _regExpMapForFolders,
+    // FallbackRegExp
+} from '../register-file-types.js';
 
 class TaskFolderListing extends Task {
     constructor() {
@@ -27,28 +31,32 @@ class TaskFolderListing extends Task {
 }
 
 export default class FileFolder extends File {
+    /** @type {Array<string>} of filepath in the current folder */
+    _list
+
     async analyse() {
+        /**
+         * TODO: folder inherit from FileTimestamped
+         * We inherit from FileTimestamped, to have the timestamp
+         * but we don't want to have their check, neither the check
+         * of file-generic...
+         */
+
         return super.analyse()
-            .then(() => this.addAnalysisTask(TaskFolderListing, this))
+            .then(() => this.analysisAddAnalysisTask(TaskFolderListing))
             .then(list => {
                 this._list = list;
-                Promise.all(list.map(
-                    // Iterate on each child
-                    f => f.analyse()
-                ));
+                Promise.all(
+                    list.map(
+                        // Iterate on each child
+                        f => f.analyse()
+                    )
+                );
             });
     }
 
-    // async check() {
-    //     /**
-    //      * We inherit from FileTimestamped, to have the timestamp
-    //      * but we don't want to have their check, neither the check
-    //      * of file-generic...
-    //      */
-    //     return true;
-    // }
 }
 
-// TODO: remove this horrible hack  (file-folder)
-regExpMap.set('//', FileFolder);
-// registerFolder(FileFolder);
+// TODO(file-folder): remove this horrible hack
+_regExpMapForFolders.set('//', FileFolder);
+// registerFallback(FallbackRegExp, FileFolder, {forFiles: false, forFolders: true});

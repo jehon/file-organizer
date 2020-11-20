@@ -5,16 +5,17 @@ import {
 } from '../../common/constants.js';
 
 import InfoProblem from '../info-problem.js';
-import { registerGlob } from '../register-file-types.js';
+import { registerRegExp, glob2regExp } from '../register-file-types.js';
 
 export default class FileManual extends File {
     async analyse() {
-        this.addInfo(InfoProblem, 'Manual operation needed');
-        await this.notify(STATUS_FAILURE);
-        return;
+        return super.analyse()
+            .then(() => this.analysisAddInfo(InfoProblem, 'Manual operation needed'))
+            .then(() => this.notify(STATUS_FAILURE))
+            .then(() => { });
     }
 }
 
-registerGlob([
-    '*.doc*'
-], FileManual);
+registerRegExp([
+    glob2regExp('*.doc*')
+], FileManual, { forFiles: true, forFolders: true });

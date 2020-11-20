@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// import { registerFolder } from '../src/main/register-file-types.js';
+// import { FallBackRegExp, registerRegExp, buildFile } from '../src/main/register-file-types.js';
 let buildFileFn;
 
 const FileTimestamped = require('./file-timestamped.js');
@@ -43,8 +43,8 @@ class FileFolder extends FileTimestamped {
 module.exports = FileFolder;
 
 FileFolder.init = async function () {
-    await import('../src/main/register-file-types.js').then(({ registerFolder, buildFile }) => {
-        registerFolder(FileFolder);
+    await import('../src/main/register-file-types.js').then(({ FallBackRegExp: FallBackRegExp, registerRegExp, buildFile }) => {
+        registerRegExp(FallBackRegExp, FileFolder, { forFiles: false, forFolders: true });
         buildFileFn = buildFile;
     });
 };

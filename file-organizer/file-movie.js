@@ -44,9 +44,10 @@ class FileMovie extends FileExif {
 module.exports = FileMovie;
 
 FileMovie.init = async function () {
-    await import('../src/main/register-file-types.js').then(({ registerGlob }) => {
-        registerGlob([
-            '*.mov', '*.mp4'
-        ], FileMovie);
+    await import('../src/main/register-file-types.js').then(({ registerRegExp, glob2regExp }) => {
+        registerRegExp([
+            glob2regExp('*.mov'),
+            glob2regExp('*.mp4')
+        ], FileMovie, { forFiles: true });
     });
 };

@@ -1,17 +1,17 @@
 
 import File from './file.js';
 import { TaskFileDelete } from '../tasks-fs.js';
-import { registerGlob } from '../register-file-types.js';
+import { registerRegExp, glob2regExp } from '../register-file-types.js';
 
 export default class FileDelete extends File {
     async analyse() {
         return super.analyse()
-            .then(() => this.addFixAct(new TaskFileDelete()))
+            .then(() => this.analysisAddFixAct(new TaskFileDelete()))
             .then(() => { });
     }
 }
 
-registerGlob([
-    'Thumbs.db',
-    '.picasa.ini'
-], FileDelete);
+registerRegExp([
+    glob2regExp('Thumbs.db'),
+    glob2regExp('.picasa.ini')
+], FileDelete, { forFiles: true, forFolders: true });

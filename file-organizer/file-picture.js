@@ -43,11 +43,11 @@ class FilePicture extends FileExif {
 module.exports = FilePicture;
 
 FilePicture.init = async function () {
-    await import('../src/main/register-file-types.js').then(({ registerGlob }) => {
-        registerGlob([
-            '*.jpg',
-            '*.jpeg'
-        ], FilePicture);
+    await import('../src/main/register-file-types.js').then(({ registerRegExp, glob2regExp }) => {
+        registerRegExp([
+            glob2regExp('*.jpg'),
+            glob2regExp('*.jpeg')
+        ], FilePicture, { forFiles: true });
     });
 
     // case '.mts':  // ?   // TODO (extensions): unsupported

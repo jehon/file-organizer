@@ -247,10 +247,10 @@ FileGeneric.convertedSuffix = '_converted';
 FileGeneric.pendings = activeFilesList;
 
 FileGeneric.init = async function () {
-    await import('../src/main/register-file-types.js').then(({ registerGlob }) => {
-        registerGlob([
-            '*.pdf',
-            '*.txt'
-        ], FileGeneric);
+    await import('../src/main/register-file-types.js').then(({ registerRegExp, glob2regExp }) => {
+        registerRegExp([
+            glob2regExp('*.pdf'),
+            glob2regExp('*.txt')
+        ], FileGeneric, { forFiles: true });
     });
 };

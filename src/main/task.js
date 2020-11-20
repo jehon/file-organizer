@@ -25,7 +25,7 @@ export default class Task extends Item {
     constructor(title, action) {
         super(title);
         this._action = action;
-        this.messages = ''; // TODO: setter to auto notify?
+        this.messages = ''; // TODO(question): setter to auto notify?
         this.notify(STATUS_NEED_ACTION);
 
         // ------------------------------------------

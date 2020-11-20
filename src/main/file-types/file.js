@@ -13,10 +13,10 @@ import {
 } from '../../common/constants.js';
 
 import fileUtils from '../../../file-organizer/file-utils.js';
-import { regExpMap } from '../register-file-types.js';
 // import { buildFolder } from '../main/loadFileTypes.js';
 
 import path from 'path';
+import { _regExpMapForFolders } from '../register-file-types.js';
 
 const parentsMap = new Map();
 
@@ -108,7 +108,16 @@ export default class File extends Item {
      * [Tool for specialized classes]
      *
      * Run the analysis on this element and generate tasks
-     *   - task to analysis (createAnalysisTaskAndRunIt)
+     *
+     * Flow:
+     *   - call super.analyse() => initialize the above layers
+     *   - analisysAddInfo with the information from the layer
+     *   - set the expected values from the layer and the above layers
+     *   - analisysAddInfo(InfoProblems)
+     *   - enqueueAct() with non-info related fixes (should be on top elements)
+     *
+     *   - add an info (addInfo)
+     *   - task to analysis (analysisAddAnalysisTask)
      *   - task to fix (enqueueAct)
      *
      * This is a mock, and should be implemented by childrends
@@ -116,7 +125,6 @@ export default class File extends Item {
      * @returns {Promise<void>}
      */
     /* abstract */ async analyse() {
-        // TODO: success & failure ?
         return Promise.resolve();
     }
 
@@ -128,7 +136,7 @@ export default class File extends Item {
      * @param {module:file-organizer/main/Task} t to be enqueued
      * @returns {File} this for chaining
      */
-    /* protected */ addFixAct(t) {
+    /* protected */ analysisAddFixAct(t) {
         this.notify(STATUS_NEED_ACTION);
         t.setParent(this);
         this._actChain = this._actChain.then(() => t.run());
@@ -149,8 +157,7 @@ export default class File extends Item {
      * @param  {...any} args to be passed to the constructor of the info
      * @returns {module:file-organizer/main/Info} the constructed info
      */
-    /* protected */ addInfo(infoClass, ...args) {
-        // TODO: how to link this to the file ???
+    /* protected */ analysisAddInfo(infoClass, ...args) {
         const i = new infoClass(...args);
         i.setParent(this);
         this.#infosMap.set(i.title, i);
@@ -167,7 +174,7 @@ export default class File extends Item {
      * @param {...any} args to be passed to the constructor of the info
      * @returns {module:file-organizer/main/Task} the constructed info
      */
-    /* protected */ async addAnalysisTask(taskClass, ...args) {
+    /* protected */ async analysisAddAnalysisTask(taskClass, ...args) {
         return (new taskClass(...args, this)).run();
     }
 
@@ -194,8 +201,8 @@ export default class File extends Item {
         if (!parentsMap.has(parentDir)) {
             parentsMap.set(parentDir,
                 // buildFolderFn(parentDir)
-                // TODO: remove this horrible hack  (file-folder)
-                new (regExpMap.get('//'))(parentDir)
+                // TODO(file-folder): remove this horrible hack
+                new (_regExpMapForFolders.get('//'))(parentDir)
             );
         }
         return parentsMap.get(parentDir);
@@ -245,7 +252,7 @@ export default class File extends Item {
 
     // ------------------------------------------------
     //
-    // TODO: LEGACY BRIDGE
+    // TODO(migration): LEGACY BRIDGE
     //
     // ------------------------------------------------
 
@@ -263,8 +270,9 @@ export default class File extends Item {
      * TODO: Mock of previous version
      */
     async check() {
-        return Promise.resolve()
-            .then(() => options.dryRun ? true : this.act())
-            .then(() => true);
+        if (options.dryRun) {
+            return;
+        }
+        return this.act();
     }
 }

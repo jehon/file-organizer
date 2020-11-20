@@ -1,6 +1,5 @@
 
 import importDirectory from './importDirectory.js';
-import { _reset } from './register-file-types.js';
 
 /**
  * Load the map with files in the folder
@@ -8,7 +7,10 @@ import { _reset } from './register-file-types.js';
  * @returns {Promise<void>}
  */
 export default async function loadFileTypes() {
-    _reset();
+    //
+    // We could not reset, because in esm modules, the init
+    // is done on first load
+    //
 
     const loadCJS = (f) => import(f).then(ft => ft.default.init());
 
