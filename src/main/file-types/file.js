@@ -177,26 +177,6 @@ export default class File extends Item {
         this.notify();
     }
 
-    /**
-     * [Tool for specialized classes]
-     *
-     * @deprecated TODO: obsolete
-     *
-     * Add a task to the file
-     * This task is an analasys task
-     *
-     * @param {module:file-organizer/main/Task} taskClass to be added (see task-* files)
-     * @param {...any} args to be passed to the constructor of the info
-     * @returns {module:file-organizer/main/Task} the constructed info
-     */
-    /* protected */ async analysisAddAnalysisTask(taskClass, ...args) {
-        // We don't set the parent, since we don't want it to be tracked
-        // as a fix action
-        // But these will still notify: is it a problem?
-        return (new taskClass(...args, this)).run();
-    }
-
-
     // ------------------------------------------
     //
     // Private methods

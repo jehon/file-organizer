@@ -101,17 +101,6 @@ describe(t(import.meta), function () {
             await expectAsync(f.act()).toBeRejected();
         });
 
-        it('should analyse a file by tasks', async function () {
-            f.withAnalyse(() => { f.analysisAddAnalysisTask(Task, 'test', () => true); });
-
-            await expectAsync(f.runAnalyse())
-                .toBeResolved();
-
-            expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
-
-            await expectAsync(f.act()).toBeResolved();
-        });
-
         describe('with tasks', function () {
             let t;
 
