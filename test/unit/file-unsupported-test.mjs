@@ -17,7 +17,7 @@ describe(t(import.meta), function () {
         console.info.calls.reset();
     });
 
-    it('should be always good', async function () {
+    it('should always be rejected', async function () {
         _map.clear();
 
         expect(() => dumpDiscoveredExtension()).not.toThrow();
@@ -25,7 +25,7 @@ describe(t(import.meta), function () {
 
         {
             const f = new FileUnsupported('failure.txt');
-            await expectAsync(f.runAnalyse()).toBeResolved();
+            await expectAsync(f.runAnalyse()).toBePending();
             await expectAsync(f.act()).toBeRejected();
             expect(getStatusChangesForItem(f)).toEqual([
                 STATUS_CREATED,
@@ -35,7 +35,7 @@ describe(t(import.meta), function () {
         }
         {
             const f = new FileUnsupported('failure2.txt');
-            await expectAsync(f.runAnalyse()).toBeResolved();
+            await expectAsync(f.runAnalyse()).toBeRejected();
             await expectAsync(f.act()).toBeRejected();
         }
 

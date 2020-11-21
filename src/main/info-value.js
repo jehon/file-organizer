@@ -10,7 +10,7 @@ import {
 
 export default class InfoValue extends Info {
     static getNotifyProperties() {
-        return super.getNotifyProperties().concat(['value', 'initialValue', 'expectedValue']);
+        return [...super.getNotifyProperties(), 'value', 'initialValue', 'expectedValue'];
     }
 
     constructor(title, value) {

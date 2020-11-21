@@ -101,7 +101,7 @@ export default class File extends Item {
     // ------------------------------------------------
 
     static getNotifyProperties() {
-        return super.getNotifyProperties().concat(['path']);
+        return [...super.getNotifyProperties(), 'path', 'problemsList'];
     }
 
     /**
@@ -117,7 +117,6 @@ export default class File extends Item {
      *   - enqueueAct() with non-info related fixes (should be on top elements)
      *
      *   - add an info (addInfo)
-     *   - task to analysis (analysisAddAnalysisTask)
      *   - task to fix (enqueueAct)
      *
      * This is a mock, and should be implemented by childrends
@@ -146,7 +145,7 @@ export default class File extends Item {
     /**
      * @type {Map<string,string>} with all the infos
      */
-    #infosMap = new Map()
+    _infosMap = new Map()
 
     /**
      * [Tool for specialized classes]
@@ -160,12 +159,28 @@ export default class File extends Item {
     /* protected */ analysisAddInfo(infoClass, ...args) {
         const i = new infoClass(...args);
         i.setParent(this);
-        this.#infosMap.set(i.title, i);
+        this._infosMap.set(i.title, i);
         return i;
+    }
+
+    problemsList = []
+
+    /**
+     * [Tool for specialized classes]
+     *
+     * Add a problem to the file
+     *
+     */
+    /* protected */ analysisAddProblem(title) {
+        this.problemsList.push(title);
+        this.status = STATUS_FAILURE;
+        this.notify();
     }
 
     /**
      * [Tool for specialized classes]
+     *
+     * @deprecated TODO: obsolete
      *
      * Add a task to the file
      * This task is an analasys task
@@ -175,6 +190,9 @@ export default class File extends Item {
      * @returns {module:file-organizer/main/Task} the constructed info
      */
     /* protected */ async analysisAddAnalysisTask(taskClass, ...args) {
+        // We don't set the parent, since we don't want it to be tracked
+        // as a fix action
+        // But these will still notify: is it a problem?
         return (new taskClass(...args, this)).run();
     }
 

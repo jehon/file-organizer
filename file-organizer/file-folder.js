@@ -43,7 +43,7 @@ class FileFolder extends FileTimestamped {
 module.exports = FileFolder;
 
 FileFolder.init = async function () {
-    await import('../src/main/register-file-types.js').then(({ FallBackRegExp: FallBackRegExp, registerRegExp, buildFile }) => {
+    await import('../src/main/register-file-types.js').then(({ FallBackRegExp, registerRegExp, buildFile }) => {
         registerRegExp(FallBackRegExp, FileFolder, { forFiles: false, forFolders: true });
         buildFileFn = buildFile;
     });
