@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 import File from './file.js';
-import Task from '../task.js';
+// import Task from '../task.js';
 // import FileHidden from './file-hidden.js';
 // import options from '../options.js';
 
