@@ -101,6 +101,9 @@ node_modules/.dependencies: package.json package-lock.json
 
 .PHONY: test
 test: test-unit test-system
+	@echo ""
+	@echo -e "\033[01;32m✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓\033[0m"
+	@echo ""
 
 .PHONY: test-unit
 test-unit: build
