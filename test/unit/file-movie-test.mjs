@@ -7,7 +7,8 @@ import { tsFromString } from '../../file-organizer/timestamp.js';
 import { buildFile } from '../../src/main/register-file-types.js';
 
 /**
- * @param dPath
+ * @param {string} dPath of data
+ * @returns {FileMovie} of dpath
  */
 async function getMov(dPath) {
     return new FileMovie(dataPath(dPath)).loadData();

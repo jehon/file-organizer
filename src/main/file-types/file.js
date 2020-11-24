@@ -100,8 +100,11 @@ export default class File extends Item {
     //
     // ------------------------------------------------
 
+    /**
+     * @returns {Array<string>} the properties that will go to the browser
+     */
     static getNotifyProperties() {
-        return [...super.getNotifyProperties(), 'path', 'problemsList'];
+        return [...super.getNotifyProperties(), 'path', 'problemsList', 'infos'];
     }
 
     /**
@@ -121,9 +124,11 @@ export default class File extends Item {
      *
      * This is a mock, and should be implemented by childrends
      *
+     * @abstract
+     *
      * @returns {Promise<void>}
      */
-    /* abstract */ async analyse() {
+    async analyse() {
         return Promise.resolve();
     }
 
@@ -132,10 +137,12 @@ export default class File extends Item {
      *
      * Add a task to fix a problem
      *
+     * @protected
+     *
      * @param {module:file-organizer/main/Task} t to be enqueued
      * @returns {File} this for chaining
      */
-    /* protected */ analysisAddFixAct(t) {
+    analysisAddFixAct(t) {
         this.notify(STATUS_NEED_ACTION);
         t.setParent(this);
         this._actChain = this._actChain.then(() => t.run());
@@ -145,21 +152,23 @@ export default class File extends Item {
     /**
      * @type {Map<string,string>} with all the infos
      */
-    _infosMap = new Map()
+    infos = new Map()
 
     /**
      * [Tool for specialized classes]
      *
      * Add an info to the file
      *
+     * @protected
+     *
      * @param {module:file-organizer/main/Info} infoClass to be added (see info-* files)
      * @param  {...any} args to be passed to the constructor of the info
      * @returns {module:file-organizer/main/Info} the constructed info
      */
-    /* protected */ analysisAddInfo(infoClass, ...args) {
+    analysisAddInfo(infoClass, ...args) {
         const i = new infoClass(...args);
         i.setParent(this);
-        this._infosMap.set(i.title, i);
+        this.infos.set(i.title, i);
         return i;
     }
 
@@ -170,9 +179,12 @@ export default class File extends Item {
      *
      * Add a problem to the file
      *
+     * @param {string} description of the problem
+     *
+     * @protected
      */
-    /* protected */ analysisAddProblem(title) {
-        this.problemsList.push(title);
+    analysisAddProblem(description) {
+        this.problemsList.push(description);
         this.status = STATUS_FAILURE;
         this.notify();
     }
@@ -184,6 +196,8 @@ export default class File extends Item {
     // ------------------------------------------
 
     /**
+     * @private
+     *
      * @returns {File} the potential parent
      */
     _calculateParent() {
@@ -209,9 +223,11 @@ export default class File extends Item {
     /**
      * Run the analysis on this files, and all related one's (ex: FileFolder)
      *
+     * @private
+     *
      * @returns {Promise<void>} when completed
      */
-    /* final */ async runAnalyse() {
+    async runAnalyse() {
         this.notify(STATUS_ANALYSING);
         return this.analyse().then(
             (d) => {
@@ -230,6 +246,8 @@ export default class File extends Item {
 
     /**
      * Do the act on all enqueued acts
+     *
+     * @private
      *
      * @returns {Promise<void>} when finished
      */
@@ -255,17 +273,17 @@ export default class File extends Item {
     // ------------------------------------------------
 
     /**
-     * TODO: Mock of previous version
+     * @deprecated TODO: Mock of previous version
      */
     iterate() { }
 
     /**
-     * TODO: Mock of previous version
+     * @deprecated TODO: Mock of previous version
      */
     async loadData() { return this.runAnalyse(); }
 
     /**
-     * TODO: Mock of previous version
+     * @deprecated TODO: Mock of previous version
      */
     async check() {
         if (options.dryRun) {

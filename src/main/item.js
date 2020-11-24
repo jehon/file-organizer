@@ -14,8 +14,8 @@ export default class Item {
     /** @type {string} */
     _title
 
-    /** @type {File} */
-    #parent
+    /** @type {Item} */
+    _parent
 
     /** @type {string} */
     _status
@@ -55,14 +55,14 @@ export default class Item {
     }
 
     get parent() {
-        return this.#parent;
+        return this._parent;
     }
 
     set parent(parent) {
-        if (parent?.id == this.#parent?.id) {
+        if (parent?.id == this._parent?.id) {
             return;
         }
-        this.#parent = parent;
+        this._parent = parent;
         this.notify();
     }
 
