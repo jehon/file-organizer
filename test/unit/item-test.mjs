@@ -7,6 +7,7 @@ import {
 } from '../../src/common/constants.js';
 
 import { getStatusChangesForItem } from './help-functions.mjs';
+import Value from '../../src/main/value.js';
 
 describe(t(import.meta), function () {
     describe('with properties', function () {
@@ -31,6 +32,17 @@ describe(t(import.meta), function () {
             expect(i.parent.id).toBe(i2.id);
         });
 
+        it('should allow creating info', () => {
+            const i = new Item('test');
+            i.set('key', new Value('value'));
+            expect(i.get('key').initial).toBe('value');
+        });
+
+        it('should allow adding problems', () => {
+            const i = new Item('test');
+            i.addProblem('test');
+            expect(i.problemsList.length).toBe(1);
+        });
     });
 
     describe('on notify', function () {

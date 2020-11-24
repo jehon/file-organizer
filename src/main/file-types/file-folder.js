@@ -18,10 +18,10 @@ import {
 } from '../register-file-types.js';
 
 const folderListing = (file) =>
-    fs.promises.readdir(file.path)
+    fs.promises.readdir(file.currentFilePath)
         .then(list => list.filter(f => f != '.' && f != '..'))
         .then(list => Promise.all(
-            list.map(async f => await buildFile(path.join(file.path, f), this))
+            list.map(async f => await buildFile(path.join(file.currentFilePath, f), this))
         ))
         // // Remove "FileHidden" files if required
         // .then(list => list.filter(f => options.showHidden || (!(f instanceof FileHidden))))

@@ -1,10 +1,10 @@
 
 import { t } from '../test-helper.js';
+import path from 'path';
 
 import File from '../../src/main/file-types/file.js';
 
 import Task, { _TaskSuccessFactory } from '../../src/main/task.js';
-import Info from '../../src/main/info.js';
 import { listenForItemNotify, getStatusChangesForItem } from './help-functions.mjs';
 
 import {
@@ -19,7 +19,7 @@ import {
 } from '../../src/common/constants.js';
 
 import options from '../../file-organizer/options.js';
-import { resetOptionsForUnitTesting } from './run-helper.mjs';
+import { resetOptionsForUnitTesting, r } from './run-helper.mjs';
 
 class DemoFile extends File {
     withAnalyse(fn) {
@@ -36,33 +36,42 @@ class DemoFile extends File {
 describe(t(import.meta), function () {
     describe('attributes', () => {
         it('should parse extension', () => {
-            expect((new File('a.txt')).extension).toBe('.txt');
-            expect((new File('a')).extension).toBe('');
+            expect((new File('a.txt')).get(File.I_EXTENSION).initial).toBe('.txt');
+            expect((new File('a')).get(File.I_EXTENSION).initial).toBe('');
         });
 
         it('should parse filename', () => {
-            expect((new File('a.txt')).filename).toBe('a');
-            expect((new File('a')).filename).toBe('a');
-            expect((new File('test/a.txt')).filename).toBe('a');
-            expect((new File('test/a')).filename).toBe('a');
+            expect((new File('a.txt')).get(File.I_FILENAME).initial).toBe('a');
+            expect((new File('a')).get(File.I_FILENAME).initial).toBe('a');
+            expect((new File('test/a.txt')).get(File.I_FILENAME).initial).toBe('a');
+            expect((new File('test/a')).get(File.I_FILENAME).initial).toBe('a');
         });
 
         it('should give a parent', () => {
             // We need real files here, since "buildFile" will check for folder existence
 
-            expect((new File('test/data/canon.JPG')).parent.path).toBe('test/data');
-            expect((new File('test/test.txt')).parent.path).toBe('test');
-            expect((new File('test/test.txt')).parent.parent.path).toBe(process.cwd());
-            expect((new File('test.txt')).parent.path).toBe(process.cwd());
+            expect((new File('test/data/canon.JPG')).parent.currentFilePath).toBe(path.join(process.cwd(), 'test/data'));
+            expect((new File('test/test.txt')).parent.currentFilePath).toBe(path.join(process.cwd(), 'test'));
+            expect((new File('test/test.txt').parent.parent.currentFilePath)).toBe(process.cwd());
+            expect((new File('test.txt').parent.currentFilePath)).toBe(process.cwd());
         });
 
         it('should be constructed with a parent', () => {
-            expect((new File('test/brol/a.txt', new File('/machin'))).parent.path).toBe('/machin');
+            expect((new File('test/brol/a.txt', new File('/machin'))).parent.currentFilePath).toBe('/machin');
         });
 
-        it('should allow creating info', () => {
-            const f = new File('test');
-            expect(f.analysisAddInfo(Info, 'value').parent.id).toBe(f.id);
+        it('should always have the current path', () => {
+            const f = new File('test/brol/a.txt');
+            expect(r(f.currentFilePath)).toBe('test/brol/a.txt');
+
+            f.get(File.I_FILENAME).current = 'b';
+            expect(r(f.currentFilePath)).toBe('test/brol/b.txt');
+
+            f.get(File.I_EXTENSION).current = '.jpg';
+            expect(r(f.currentFilePath)).toBe('test/brol/b.jpg');
+
+            f.parent.get(File.I_FILENAME).current = 'machin';
+            expect(r(f.currentFilePath)).toBe('test/machin/b.jpg');
         });
     });
 
@@ -142,7 +151,6 @@ describe(t(import.meta), function () {
 
 
             describe('with legacy workflow', function () {
-
                 it('with legacy workflow', async function () {
                     options.dryRun = false;
                     let i = 0;

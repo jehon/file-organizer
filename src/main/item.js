@@ -6,6 +6,7 @@ import {
     STATUS_NEED_ACTION,
     STATUS_ACTED_SUCCESS
 } from '../common/constants.js';
+import Value from './value.js';
 
 export default class Item {
     /** @type {number} */
@@ -73,6 +74,45 @@ export default class Item {
 
     get status() {
         return this._status;
+    }
+
+    /**
+     * @type {Map<string,Value>} with all the infos
+     */
+    values = new Map()
+
+    /**
+     * Add a value
+     *
+     * @protected
+     * @param {string} key of the value
+     * @param {module:file-organizer/main/Value} value to be added (see info-* files)
+     * @returns {Item} the constructed info
+     */
+    set(key, value) {
+        this.values.set(key, value);
+        return this;
+    }
+
+    get(key) {
+        return this.values.get(key);
+    }
+
+    problemsList = []
+
+    /**
+     * [Tool for specialized classes]
+     *
+     * Add a problem to the file
+     *
+     * @protected
+     *
+     * @param {string} description of the problem
+     * @returns {Item} for chaining
+     */
+    addProblem(description) {
+        this.problemsList.push(description);
+        return this;
     }
 
     // ------------------------------------------

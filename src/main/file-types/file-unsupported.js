@@ -10,15 +10,14 @@ export const _map = new Map();
 export default class FileUnsupported extends File {
     constructor(filePath, parent = null) {
         super(filePath, parent);
-        const i = _map.has(this.extension.toLowerCase()) ? _map.get(this.extension.toLowerCase()) : 0;
-        _map.set(this.extension.toLowerCase(), i + 1);
+        const ext = this.get('extension').current.toLowerCase();
+        const i = _map.has(ext) ? _map.get(ext) : 0;
+        _map.set(ext, i + 1);
     }
 
     async analyse() {
         return super.analyse()
-            .then(() => this.analysisAddProblem('File type is unsupported'))
-            .then(() => this.notify(STATUS_FAILURE))
-            .then(() => { });
+            .then(() => this.addProblem('File type is unsupported'));
     }
 }
 

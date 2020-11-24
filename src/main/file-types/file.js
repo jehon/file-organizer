@@ -17,6 +17,7 @@ import fileUtils from '../../../file-organizer/file-utils.js';
 
 import path from 'path';
 import { _regExpMapForFolders } from '../register-file-types.js';
+import Value from '../value.js';
 
 const parentsMap = new Map();
 
@@ -26,7 +27,7 @@ const parentsMap = new Map();
  * - new File()
  * - analyse()
  *      will make the full "readonly" analysis
- *      will build up info (and info-problems)
+ *      will build up info (and values-problems)
  *      will enqueue Tasks
  *
  * if necessary, it will "doAct"
@@ -64,6 +65,9 @@ export default class File extends Item {
         if (this.parent === undefined) {
             this.parent = this._calculateParent();
         }
+
+        this.values.set(File.I_FILENAME, new Value(fileUtils.getFilename(this._path)));
+        this.values.set(File.I_EXTENSION, new Value(fileUtils.getExtension(this._path)));
     }
 
     // ------------------------------------------
@@ -71,25 +75,28 @@ export default class File extends Item {
     // Public properties
     //
     // ------------------------------------------
-
     /**
-     * @returns {string} filename without extension
+     * Without extension
      */
-    get filename() {
-        return fileUtils.getFilename(this._path);
-    }
+    static I_FILENAME = 'filename'
 
     /**
      * Format: .blabla
-     *
-     * @returns {string} the extension (with a dot: .blabla)
      */
-    get extension() {
-        return fileUtils.getExtension(this._path);
-    }
+    static I_EXTENSION = 'extension'
 
-    get path() {
-        return this._path;
+    /**
+     * Get the current path from the file
+     * based on "current" values
+     *
+     * @returns {string} absolute path
+     */
+    get currentFilePath() {
+        let v = path.join(
+            this.parent?.currentFilePath ?? '/',
+            this.get(File.I_FILENAME).current + this.get(File.I_EXTENSION).current
+        );
+        return v;
     }
 
     // ------------------------------------------
@@ -126,9 +133,18 @@ export default class File extends Item {
      *
      * @abstract
      *
-     * @returns {Promise<void>}
+     * @returns {Promise<*>}
      */
     async analyse() {
+        // // Lowercase extension
+        // if (this.getExtension().toLowerCase() != this.getExtension()) {
+        //     let proposedFN = this.getFilename() + this.getExtension().toLowerCase();
+        //     res = res && await this.addMessageCommit('FILE_EXT_UPPERCASE', 'uppercase extension',
+        //         proposedFN,
+        //         () => this.rename(proposedFN)
+        //     );
+        // }
+
         return Promise.resolve();
     }
 
@@ -143,50 +159,9 @@ export default class File extends Item {
      * @returns {File} this for chaining
      */
     analysisAddFixAct(t) {
-        this.notify(STATUS_NEED_ACTION);
         t.setParent(this);
         this._actChain = this._actChain.then(() => t.run());
         return this;
-    }
-
-    /**
-     * @type {Map<string,string>} with all the infos
-     */
-    infos = new Map()
-
-    /**
-     * [Tool for specialized classes]
-     *
-     * Add an info to the file
-     *
-     * @protected
-     *
-     * @param {module:file-organizer/main/Info} infoClass to be added (see info-* files)
-     * @param  {...any} args to be passed to the constructor of the info
-     * @returns {module:file-organizer/main/Info} the constructed info
-     */
-    analysisAddInfo(infoClass, ...args) {
-        const i = new infoClass(...args);
-        i.setParent(this);
-        this.infos.set(i.title, i);
-        return i;
-    }
-
-    problemsList = []
-
-    /**
-     * [Tool for specialized classes]
-     *
-     * Add a problem to the file
-     *
-     * @param {string} description of the problem
-     *
-     * @protected
-     */
-    analysisAddProblem(description) {
-        this.problemsList.push(description);
-        this.status = STATUS_FAILURE;
-        this.notify();
     }
 
     // ------------------------------------------
@@ -229,19 +204,27 @@ export default class File extends Item {
      */
     async runAnalyse() {
         this.notify(STATUS_ANALYSING);
-        return this.analyse().then(
-            (d) => {
-                if (this.status == STATUS_ANALYSING) {
-                    // We did not enqueue any action
-                    this.notify(STATUS_SUCCESS);
+        return this.analyse()
+            .then(
+                () => {
+                    // Look for problems
+                    if (this.problemsList.length > 0) {
+                        this.notify(STATUS_FAILURE);
+                        throw this.problemsList.length + ' problem(s) found';
+                    }
+                    if (this.status == STATUS_ANALYSING) {
+                        // We did not enqueue any action
+                        this.notify(STATUS_SUCCESS);
+                    }
+
+                    // Look for expected infos
+                    // TODO current
+                },
+                (e) => {
+                    this.notify(STATUS_FAILURE);
+                    throw e;
                 }
-                return d;
-            },
-            (e) => {
-                this.notify(STATUS_FAILURE);
-                throw e;
-            }
-        );
+            );
     }
 
     /**

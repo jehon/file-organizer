@@ -14,6 +14,6 @@ describe(t(import.meta), function () {
             .setParent(f)
             .run();
 
-        expect(await fileExists(f.path)).toBeFalsy();
+        expect(await fileExists(f.currentFilePath)).toBeFalsy();
     });
 });

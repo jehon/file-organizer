@@ -29,6 +29,15 @@ class FilePicture extends FileExif {
             return false;
         }
 
+        {
+            if (this.getExtension() == '.jpeg') {
+                res = res && await this.addMessageCommit('FILE_EXT_NORMALIZE', 'align extension to 3 char',
+                    'jpg',
+                    () => this.rename(this.getFilename() + '.jpg')
+                );
+            }
+        }
+
         // Rotate according to exif tag
         if (this.exif_orientation != 0) {
             await this.addMessageCommit('PICT_ROTATE', 'rotate picture',

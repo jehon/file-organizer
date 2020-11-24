@@ -15,7 +15,7 @@ export default class FileTimestamped extends File {
     async analyse() {
         await super.analyse();
 
-        this.filenameTS = tsFromString(this.filename);
+        this.filenameTS = tsFromString(this.get('filename').initial);
         const title = this.filenameTS.title;
 
         // Parse the original filename to see if we can get some data
@@ -113,7 +113,7 @@ export default class FileTimestamped extends File {
             // Rename to the canonical filename
             // const proposedFilename = await this.getIndexedFilename();
             const proposedFilename = this.getCanonicalFilename();
-            if (proposedFilename != this.filename) {
+            if (proposedFilename != this.get('filename').initial) {
                 res = res && await this.addMessageCommit('TS_CANONIZE', 'canonize filename',
                     proposedFilename,
                     () => this.changeFilename(proposedFilename)
@@ -166,15 +166,15 @@ export default class FileTimestamped extends File {
             this.calculatedTS.original = '';
         }
 
-        if (this.getCanonicalFilename() == this.filename) {
+        if (this.getCanonicalFilename() == this.get('filename').initial) {
             return this.getCanonicalFilename();
         }
 
-        const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.extension);
+        const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.get('extension').initial);
 
         return indexedFilenameLimiter(async () => {
             try {
-                await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.path);
+                await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
                 return this.getCanonicalFilename();
             } catch (_e) {
                 // expected
@@ -183,7 +183,7 @@ export default class FileTimestamped extends File {
             this.calculatedTS.original = 1;
             while (this.calculatedTS.original != o) {
                 try {
-                    await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.path);
+                    await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
                     return this.getCanonicalFilename();
                 } catch (_e) {
                     //expected

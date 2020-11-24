@@ -229,15 +229,6 @@ class FileGeneric {
             }
         }
 
-        {
-            if (this.getExtension() == '.jpeg') {
-                res = res && await this.addMessageCommit('FILE_EXT_NORMALIZE', 'align extension to 3 char',
-                    'jpg',
-                    () => this.rename(this.getFilename() + '.jpg')
-                );
-            }
-        }
-
         return res;
     }
 }

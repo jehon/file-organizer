@@ -6,8 +6,7 @@ import { registerRegExp, glob2regExp } from '../register-file-types.js';
 export default class FileDelete extends File {
     async analyse() {
         return super.analyse()
-            .then(() => this.analysisAddFixAct(new TaskFileDelete()))
-            .then(() => { });
+            .then(() => this.analysisAddFixAct(new TaskFileDelete()));
     }
 }
 

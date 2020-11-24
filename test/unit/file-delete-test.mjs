@@ -21,11 +21,11 @@ describe(t(import.meta), function () {
 
     it('should delete a file', async function () {
         const fo = await createFileFrom('jh-patch-file-patch.txt');
-        const f = new FileDelete(fo.path);
+        const f = new FileDelete(fo.currentFilePath);
         await f.runAnalyse();
         await f.act();
 
-        expect(await fileExists(f.path)).toBeFalsy();
+        expect(await fileExists(f.currentFilePath)).toBeFalsy();
 
         expect(getStatusChangesForItem(f)).toEqual([
             STATUS_CREATED,

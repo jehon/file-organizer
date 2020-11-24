@@ -29,6 +29,17 @@ describe(t(import.meta), function () {
         expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exif_timestamp.humanReadable()).toBe('2019-09-03 12-47-21');
     });
 
+    it('should normalize extensions when necessary', async () => {
+        const new1 = await createFileGeneric('rotated-bottom-left.jpg');
+        await new1.rename('test.jpeg');
+        new1.exif_timestamp = tsFromString('2018-01-02');
+        new1.exif_title = 'title';
+        await FilePicture.prototype.check.call(new1); // new1.check();
+        expect(Array.from(new1.messages.keys())).toContain('FILE_EXT_NORMALIZE');
+        expect(new1.getExtension()).toBe('.jpg');
+        new1.remove();
+    });
+
     it('should get exif rotation from files', async () => {
         expect((await getPict('rotated.jpg')).exif_orientation).toBe(270);
         expect((await getPict('rotated-ok.jpg')).exif_orientation).toBe(0);

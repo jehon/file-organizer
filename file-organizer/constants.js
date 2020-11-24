@@ -1,9 +1,7 @@
 
 module.exports.CHANNEL_MAIN = 'main';
 
-module.exports.TYPE_FOLDER = 'type_folder';
 module.exports.TYPE_FILE = 'type_file';
-module.exports.TYPE_INFO = 'type_info';
 module.exports.TYPE_TASK = 'type_task';
 
 /*

@@ -7,7 +7,7 @@ import Task from './task.js';
 export class TaskFileDelete extends Task {
     constructor() {
         super('Delete file', () =>
-            fs.promises.unlink(this.parent.path)
+            fs.promises.unlink(this.parent.currentFilePath)
         );
     }
 }
