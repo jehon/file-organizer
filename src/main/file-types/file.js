@@ -1,4 +1,3 @@
-
 import Item from '../item.js';
 import options from '../../../file-organizer/options.js';
 import {
@@ -161,6 +160,7 @@ export default class File extends Item {
     analysisAddFixAct(t) {
         t.setParent(this);
         this._actChain = this._actChain.then(() => t.run());
+        this.notify(STATUS_NEED_ACTION);
         return this;
     }
 
@@ -217,8 +217,7 @@ export default class File extends Item {
                         this.notify(STATUS_SUCCESS);
                     }
 
-                    // Look for expected infos
-                    // TODO current
+                    // TODO: Look for "notDone" infos ?
                 },
                 (e) => {
                     this.notify(STATUS_FAILURE);

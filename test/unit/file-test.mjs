@@ -92,7 +92,7 @@ describe(t(import.meta), function () {
             expect(getStatusChangesForItem(f)[0]).toBe(STATUS_CREATED);
 
             await expectAsync(f.runAnalyse())
-                .toBeResolvedTo(true);
+                .toBeResolved();
 
             expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
 

@@ -14,9 +14,6 @@ export default class Value {
         return ['currentValue', 'initialValue', 'expectedValue'];
     }
 
-    /** @type {string} */
-    #status
-
     /** @type {*} */
     #initial
 

@@ -1,8 +1,5 @@
 
 import File from './file.js';
-import {
-    STATUS_FAILURE
-} from '../../common/constants.js';
 import { FallBackRegExp, registerRegExp } from '../register-file-types.js';
 
 export const _map = new Map();
