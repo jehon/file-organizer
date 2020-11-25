@@ -23,7 +23,7 @@ describe(t(import.meta), function () {
         const fo = await createFileFrom('jh-patch-file-patch.txt');
         const f = new FileDelete(fo.currentFilePath);
         await f.runAnalyse();
-        await f.act();
+        await f.runActing();
 
         expect(await fileExists(f.currentFilePath)).toBeFalsy();
 

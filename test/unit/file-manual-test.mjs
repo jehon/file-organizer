@@ -19,7 +19,7 @@ describe(t(import.meta), function () {
     it('should be always good', async function () {
         const f = new FileManual('failure.txt');
         await expectAsync(f.runAnalyse()).toBeRejected();
-        await expectAsync(f.act()).toBeRejected();
+        await expectAsync(f.runActing()).toBeRejected();
 
         expect(getStatusChangesForItem(f)).toEqual([
             STATUS_CREATED,

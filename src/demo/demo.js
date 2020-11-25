@@ -96,11 +96,11 @@ loadFileTypes()
 
             console.info('Acting...');
             await Promise.all([
-                f2.act(), // do nothing
-                f3.act(), // do nothing
-                f5.act(),
-                f6.act(),
-                f7.act().catch(() => { })
+                f2.runActing(), // do nothing
+                f3.runActing(), // do nothing
+                f5.runActing(),
+                f6.runActing(),
+                f7.runActing().catch(() => { })
             ]);
             console.info('Acting done');
         })();

@@ -79,8 +79,6 @@ describe(t(import.meta), function () {
         let f;
 
         beforeEach(() => {
-            // spyOn(messenger, 'notify').and.returnValue(true);
-            // spyOn(Item.prototype, 'notify').and.callThrough();
             listenForItemNotify();
 
             f = new DemoFile('file-test');
@@ -96,7 +94,7 @@ describe(t(import.meta), function () {
 
             expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
 
-            await expectAsync(f.act()).toBeResolved();
+            await expectAsync(f.runActing()).toBeResolved();
         });
 
         it('should analyse a file impossible', async function () {
@@ -107,7 +105,7 @@ describe(t(import.meta), function () {
 
             expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
 
-            await expectAsync(f.act()).toBeRejected();
+            await expectAsync(f.runActing()).toBeRejected();
         });
 
         describe('with tasks', function () {
@@ -126,7 +124,7 @@ describe(t(import.meta), function () {
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
-                await expectAsync(f.act()).toBeResolved();
+                await expectAsync(f.runActing()).toBeResolved();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_SUCCESS);
 
@@ -142,7 +140,7 @@ describe(t(import.meta), function () {
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
-                await expectAsync(f.act()).toBeRejectedWith('impossible');
+                await expectAsync(f.runActing()).toBeRejectedWith('impossible');
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_FAILURE);
 

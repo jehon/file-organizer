@@ -19,7 +19,7 @@ describe(t(import.meta), function () {
     it('should be always good', async function () {
         const f = new FileHidden('.');
         await expectAsync(f.runAnalyse()).toBeResolved();
-        await expectAsync(f.act()).toBeResolved();
+        await expectAsync(f.runActing()).toBeResolved();
 
         expect(getStatusChangesForItem(f)).toEqual([
             STATUS_CREATED,

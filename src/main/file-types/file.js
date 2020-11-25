@@ -76,11 +76,15 @@ export default class File extends Item {
     // ------------------------------------------
     /**
      * Without extension
+     *
+     * null mean the file has been deleted
      */
     static I_FILENAME = 'filename'
 
     /**
-     * Format: .blabla
+     * Format: .blabla (always have a dot)
+     *
+     * null mean the file has been deleted
      */
     static I_EXTENSION = 'extension'
 
@@ -91,6 +95,9 @@ export default class File extends Item {
      * @returns {string} absolute path
      */
     get currentFilePath() {
+        if ((this.get(File.I_FILENAME).current == null) && (this.get(File.I_EXTENSION).current == null)) {
+            return null;
+        }
         let v = path.join(
             this.parent?.currentFilePath ?? '/',
             this.get(File.I_FILENAME).current + this.get(File.I_EXTENSION).current
@@ -132,19 +139,17 @@ export default class File extends Item {
      *
      * @abstract
      *
-     * @returns {Promise<*>}
+     * @returns {Promise<*>} resolved as analysis is done
      */
     async analyse() {
-        // // Lowercase extension
-        // if (this.getExtension().toLowerCase() != this.getExtension()) {
-        //     let proposedFN = this.getFilename() + this.getExtension().toLowerCase();
-        //     res = res && await this.addMessageCommit('FILE_EXT_UPPERCASE', 'uppercase extension',
-        //         proposedFN,
-        //         () => this.rename(proposedFN)
-        //     );
-        // }
 
-        return Promise.resolve();
+        return Promise.resolve()
+            .then(() => {
+                // // Lowercase extension
+                // if (this.getExtension().toLowerCase() != this.getExtension()) {
+                //     let proposedFN = this.getFilename() + this.getExtension().toLowerCase();
+                // }
+            });
     }
 
     /**
@@ -153,6 +158,7 @@ export default class File extends Item {
      * Add a task to fix a problem
      *
      * @protected
+     * @deprecated
      *
      * @param {module:file-organizer/main/Task} t to be enqueued
      * @returns {File} this for chaining
@@ -162,6 +168,22 @@ export default class File extends Item {
         this._actChain = this._actChain.then(() => t.run());
         this.notify(STATUS_NEED_ACTION);
         return this;
+    }
+
+    /**
+     * Do the act based on .values
+     *
+     * If implemented by sub parts, call this parent at the latest
+     *
+     * @protected
+     *
+     * @returns {Promise<void>} when finished
+     */
+    async act() {
+        return Promise.resolve()
+            .then(() => {
+                // return this.rename(proposedFN)
+            });
     }
 
     // ------------------------------------------
@@ -212,12 +234,20 @@ export default class File extends Item {
                         this.notify(STATUS_FAILURE);
                         throw this.problemsList.length + ' problem(s) found';
                     }
+
+                    // Look at all values, and if some are note ok
+                    // it means we have stuff to do
+                    for (const v of this.values.values()) {
+                        if (!v.isDone()) {
+                            this.notify(STATUS_NEED_ACTION);
+                        }
+                    }
+
+                    // TODO: clean up this status
                     if (this.status == STATUS_ANALYSING) {
                         // We did not enqueue any action
                         this.notify(STATUS_SUCCESS);
                     }
-
-                    // TODO: Look for "notDone" infos ?
                 },
                 (e) => {
                     this.notify(STATUS_FAILURE);
@@ -227,25 +257,34 @@ export default class File extends Item {
     }
 
     /**
-     * Do the act on all enqueued acts
-     *
-     * @private
+     * Do the real transformation
      *
      * @returns {Promise<void>} when finished
      */
-    /* final */ async act() {
+    async runActing() {
+        if (this.status == STATUS_SUCCESS) {
+            return;
+        }
         if (this.status != STATUS_NEED_ACTION) {
-            if (this.status == STATUS_SUCCESS) {
-                return;
-            }
             throw 'In invalid state: ' + this.status;
         }
         this.notify(STATUS_ACTING);
-        this._actChainStart();
-        return this._actChain.then(
-            () => { this.notify(STATUS_ACTED_SUCCESS); },
-            (e) => { this.notify(STATUS_ACTED_FAILURE); throw e; }
-        );
+
+        return this.act().then(() => {
+            // TODO: remove: Do the act on all enqueued acts
+            this._actChainStart();
+            return this._actChain;
+        })
+            .then(
+                () => {
+                    this.notify(STATUS_ACTED_SUCCESS);
+                },
+                (e) => {
+                    // TODO: handle error
+                    this.error = e;
+                    this.notify(STATUS_ACTED_FAILURE);
+                    throw e;
+                });
     }
 
     // ------------------------------------------------
@@ -271,6 +310,6 @@ export default class File extends Item {
         if (options.dryRun) {
             return;
         }
-        return this.act();
+        return this.runActing();
     }
 }
