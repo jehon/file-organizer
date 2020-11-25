@@ -17,7 +17,7 @@
         "is-interactive": "1.0.0",
         "moment": "2.29.1",
         "moment-timezone": "0.5.32",
-        "p-limit": "3.0.2",
+        "p-limit": "3.1.0",
         "p-queue": "6.6.2",
         "shell-exec": "1.0.2",
         "tz-lookup": "6.1.25",
