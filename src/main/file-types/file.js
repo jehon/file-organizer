@@ -276,6 +276,13 @@ export default class File extends Item {
             //     this._actChainStart();
             //     return this._actChain;
             // })
+            .then(() => {
+                for (const k in this.values) {
+                    if (!this.values[k].isDone()) {
+                        throw 'Information not solved: ' + k;
+                    }
+                }
+            })
             .then(
                 () => {
                     this.notify(STATUS_ACTED_SUCCESS);
