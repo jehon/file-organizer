@@ -50,11 +50,33 @@ export default class Value {
         this.#current = cur;
     }
 
+    /**
+     * Test if someone did modify the (current) value
+     *
+     * @returns {boolean} true if something has been done
+     */
     isModified() {
         return this.#current != this.#initial;
     }
 
+    /**
+     * Test if some action need to be done
+     *
+     * @returns {boolean} true if nothing to be done
+     */
     isDone() {
         return this.#expected == this.#current;
+    }
+
+    /**
+     * Fix the value by setting the current value to the expected value
+     * isDone is true
+     *
+     * @param {*} v the value to wich it resolve, expected otherwise
+     * @returns {Value} this for chaining
+     */
+    fix(v = this.expected) {
+        this.#current = this.#expected = v;
+        return this;
     }
 }

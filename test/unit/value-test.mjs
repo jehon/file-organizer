@@ -10,5 +10,15 @@ describe(t(import.meta), function () {
         expect(i.initial).toBe('test');
         expect(i.current).toBe('test');
         expect(i.expected).toBe('test');
+
+        i.expected = 'new';
+
+        expect(i.isDone()).toBeFalse();
+        expect(i.isModified()).toBeFalse();
+
+        i.fix();
+
+        expect(i.isDone()).toBeTrue();
+        expect(i.isModified()).toBeTrue();
     });
 });
