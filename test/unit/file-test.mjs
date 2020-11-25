@@ -4,7 +4,6 @@ import path from 'path';
 
 import File from '../../src/main/file-types/file.js';
 
-import Task, { _TaskSuccessFactory } from '../../src/main/task.js';
 import { listenForItemNotify, getStatusChangesForItem } from './help-functions.mjs';
 
 import {
@@ -22,6 +21,9 @@ import options from '../../file-organizer/options.js';
 import { resetOptionsForUnitTesting, r } from './run-helper.mjs';
 
 class DemoFile extends File {
+    fnAct = () => { }
+    fnAnalyse = () => { }
+
     withAnalyse(fn) {
         this.fnAnalyse = fn;
         return this;
@@ -30,6 +32,17 @@ class DemoFile extends File {
     async analyse() {
         return super.analyse()
             .then(this.fnAnalyse);
+    }
+
+    withAct(fn) {
+        this.fnAct = () => fn();
+    }
+
+    async act() {
+        return Promise.resolve()
+            .then(() => this.fnAct ? this.fnAct() : true)
+            .then(() => super.act());
+
     }
 }
 
@@ -108,16 +121,14 @@ describe(t(import.meta), function () {
             await expectAsync(f.runActing()).toBeRejected();
         });
 
-        describe('with tasks', function () {
-            let t;
-
+        describe('with act', function () {
             beforeEach(() => {
-                f.withAnalyse(() => f.analysisAddFixAct(t));
+                f.withAnalyse(() => { f.notify(STATUS_NEED_ACTION); });
             });
 
             it('with successfull task', async function () {
                 let i = 0;
-                t = new Task('test task', () => true);
+                f.withAct(() => true);
 
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
                 await expectAsync(f.runAnalyse()).toBeResolved();
@@ -133,7 +144,7 @@ describe(t(import.meta), function () {
 
             it('with failing task', async function () {
                 let i = 0;
-                t = new Task('test task', () => { throw 'impossible'; });
+                f.withAct(() => { throw 'impossible'; });
 
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
                 await expectAsync(f.runAnalyse()).toBeResolved();
@@ -152,7 +163,7 @@ describe(t(import.meta), function () {
                 it('with legacy workflow', async function () {
                     options.dryRun = false;
                     let i = 0;
-                    t = _TaskSuccessFactory();
+                    f.withAct(() => true);
 
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
                     await expectAsync(f.loadData()).toBeResolved();
@@ -170,7 +181,7 @@ describe(t(import.meta), function () {
                 it('with legacy workflow', async function () {
                     options.dryRun = true;
                     let i = 0;
-                    t = _TaskSuccessFactory();
+                    f.withAct(() => true);
 
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
                     await expectAsync(f.loadData()).toBeResolved();

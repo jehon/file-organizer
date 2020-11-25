@@ -42,22 +42,22 @@ export default class File extends Item {
     /** @type {Promise<void>} */
     _actChain
 
-    /**
-     * The actChain will fill in progressively, but should fire only
-     * when starting the "act"
-     *
-     * @type {function(void): void}
-     */
-    _actChainStart
+    // /**
+    //  * The actChain will fill in progressively, but should fire only
+    //  * when starting the "act"
+    //  *
+    //  * @type {function(void): void}
+    //  */
+    // _actChainStart
 
     constructor(filePath, parent) {
         /* filepath is the title */
         super(filePath);
         this._path = filePath;
-        this._actChain = new Promise(resolve => {
-            // We will trigger the actChain only on the "doAct" part
-            this._actChainStart = resolve;
-        });
+        // this._actChain = new Promise(resolve => {
+        //     // We will trigger the actChain only on the "doAct" part
+        //     this._actChainStart = resolve;
+        // });
         if (parent) {
             this.parent = parent;
         }
@@ -152,23 +152,23 @@ export default class File extends Item {
             });
     }
 
-    /**
-     * [Tool for specialized classes]
-     *
-     * Add a task to fix a problem
-     *
-     * @protected
-     * @deprecated
-     *
-     * @param {module:file-organizer/main/Task} t to be enqueued
-     * @returns {File} this for chaining
-     */
-    analysisAddFixAct(t) {
-        t.setParent(this);
-        this._actChain = this._actChain.then(() => t.run());
-        this.notify(STATUS_NEED_ACTION);
-        return this;
-    }
+    // /**
+    //  * [Tool for specialized classes]
+    //  *
+    //  * Add a task to fix a problem
+    //  *
+    //  * @protected
+    //  * @deprecated
+    //  *
+    //  * @param {module:file-organizer/main/Task} t to be enqueued
+    //  * @returns {File} this for chaining
+    //  */
+    // analysisAddFixAct(t) {
+    //     t.setParent(this);
+    //     this._actChain = this._actChain.then(() => t.run());
+    //     this.notify(STATUS_NEED_ACTION);
+    //     return this;
+    // }
 
     /**
      * Do the act based on .values
@@ -270,11 +270,12 @@ export default class File extends Item {
         }
         this.notify(STATUS_ACTING);
 
-        return this.act().then(() => {
-            // TODO: remove: Do the act on all enqueued acts
-            this._actChainStart();
-            return this._actChain;
-        })
+        return this.act()
+            // .then(() => {
+            //     // TODO: remove: Do the act on all enqueued acts
+            //     this._actChainStart();
+            //     return this._actChain;
+            // })
             .then(
                 () => {
                     this.notify(STATUS_ACTED_SUCCESS);
