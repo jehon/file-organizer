@@ -1,26 +1,24 @@
 os: linux
 dist: focal
 
-# services:
-#     - xvfb
-
 language: node_js
 node_js:
-    - "14"
+  - "14"
+
 addons:
-    apt:
-        packages:
-            - make
-            - exiftran
-            - libimage-exiftool-perl
-            - coreutils
+  apt:
+    packages:
+      - make
+      - exiftran
+      - libimage-exiftool-perl
+      - coreutils
 
 install:
-    - make build
+  - make build
 
 before-script:
-    - xvfb-run ./file-organizer.sh dump test/data
+  - xvfb-run ./file-organizer.sh dump test/data
 
 script:
-    - make test
-    - make lint
+  - make test
+  - make lint
