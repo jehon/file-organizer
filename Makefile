@@ -88,6 +88,9 @@ start-test-gui: build
 start-demo: build
 	electron src/demo.cjs
 
+start-test-info: build
+	./src/main.cjs info --headless "test/data/1998-12-31 12-10-11 exifok01.jpg"
+
 .PHONY: build
 build: dependencies
 	chmod +x ./file-organizer.sh
