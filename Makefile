@@ -119,15 +119,15 @@ test-unit-continuously: build
 
 .PHONY: test-system
 test-system: build
-	xvfb-run jasmine --config=test/system/jasmine.json
+	xvfb-run --auto-servernum jasmine --config=test/system/jasmine.json
 
 .PHONY: test-system-01
 test-system-01: build
-	xvfb-run jasmine --config=test/system/jasmine.json test/system/01-lib-test.mjs
+	xvfb-run --auto-servernum jasmine --config=test/system/jasmine.json test/system/01-lib-test.mjs
 
 .PHONY: test-app
 test-app: build
-	xvfb-run ./spectron.cjs
+	xvfb-run --auto-servernum ./spectron.cjs
 
 .PHONY: eslint
 lint: eslint
