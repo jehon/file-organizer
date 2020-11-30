@@ -16,8 +16,10 @@ addons:
 install:
   - make build
 
-before-script:
+before_script:
   - xvfb-run ./file-organizer.sh dump test/data
+  - xvfb-run ./src/main/main.js info test/data/canon.JPG
+  - xvfb-run ./src/main/main.js info -k exif_timestamp test/data/canon.JPG
 
 script:
   - make test
