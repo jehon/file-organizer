@@ -11,8 +11,7 @@ import {
     STATUS_ACTED_SUCCESS
 } from '../../src/common/constants.js';
 
-import { createFileFrom, fileExists } from './help-functions.mjs';
-import { getStatusChangesForItem } from './help-functions.mjs';
+import { createFileFrom, fileExists, getStatusChangesForItem } from './help-functions.mjs';
 
 describe(t(import.meta), function () {
     beforeEach(() => {

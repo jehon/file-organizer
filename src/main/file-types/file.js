@@ -1,3 +1,5 @@
+import path from 'path';
+
 import Item from '../item.js';
 import options from '../../../file-organizer/options.js';
 import {
@@ -14,9 +16,11 @@ import {
 import fileUtils from '../../../file-organizer/file-utils.js';
 // import { buildFolder } from '../main/loadFileTypes.js';
 
-import path from 'path';
 import { _regExpMapForFolders } from '../register-file-types.js';
+
 import Value from '../value.js';
+
+import { fileDelete, fileRename } from '../tasks-fs.js';
 
 const parentsMap = new Map();
 
@@ -142,13 +146,13 @@ export default class File extends Item {
      * @returns {Promise<*>} resolved as analysis is done
      */
     async analyse() {
-
         return Promise.resolve()
             .then(() => {
-                // // Lowercase extension
-                // if (this.getExtension().toLowerCase() != this.getExtension()) {
-                //     let proposedFN = this.getFilename() + this.getExtension().toLowerCase();
-                // }
+                // Lowercase extension
+                const currentExtension = this.get(File.I_EXTENSION).current;
+                if (currentExtension.toLowerCase() != currentExtension) {
+                    this.get(File.I_EXTENSION).expect(currentExtension.toLowerCase());
+                }
             });
     }
 
@@ -182,7 +186,11 @@ export default class File extends Item {
     async act() {
         return Promise.resolve()
             .then(() => {
-                // return this.rename(proposedFN)
+                if (this.get(File.I_FILENAME).expected == null || this.get(File.I_EXTENSION).expected == null) {
+                    return fileDelete(this);
+                } else {
+                    return fileRename(this);
+                }
             });
     }
 

@@ -26,8 +26,8 @@ export default class Value {
     constructor(value) {
         // super(() => this.current);
         this.#initial = value;
-        this.current = value;
-        this.expected = value;
+        this.#current = value;
+        this.#expected = value;
     }
 
     get initial() {
@@ -36,10 +36,6 @@ export default class Value {
 
     get expected() {
         return this.#expected;
-    }
-
-    set expected(exp) {
-        this.#expected = exp;
     }
 
     get current() {
@@ -51,12 +47,30 @@ export default class Value {
     }
 
     /**
+     * Set the current value
+     *
+     * @param {*} cur expected
+     */
+    currently(cur) {
+        this.#current = cur;
+    }
+
+    /**
+     * Set the expected value
+     *
+     * @param {*} expect expected
+     */
+    expect(expect) {
+        this.#expected = expect;
+    }
+
+    /**
      * Test if someone did modify the (current) value
      *
      * @returns {boolean} true if something has been done
      */
     isModified() {
-        return this.#current != this.#initial;
+        return !this.equals(this.#current, this.#initial);
     }
 
     /**
@@ -65,7 +79,16 @@ export default class Value {
      * @returns {boolean} true if nothing to be done
      */
     isDone() {
-        return this.#expected == this.#current;
+        return this.equals(this.#expected, this.#current);
+    }
+
+    /**
+     * @param {*} a as the first element
+     * @param {*} b as the second element
+     * @returns {boolean} true if equals
+     */
+    equals(a, b) {
+        return a == b;
     }
 
     /**
@@ -78,5 +101,17 @@ export default class Value {
     fix(v = this.expected) {
         this.#current = this.#expected = v;
         return this;
+    }
+
+    toJSON() {
+        return {
+            className: this.constructor.name,
+            initial: this.initial,
+            current: this.current,
+            expected: this.expected,
+            // TODO: not definitive
+            isModified: this.isModified(),
+            isDone: this.isDone()
+        };
     }
 }

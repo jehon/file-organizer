@@ -3,9 +3,7 @@ import { t } from '../test-helper.js';
 import path from 'path';
 
 import File from '../../src/main/file-types/file.js';
-
-import { listenForItemNotify, getStatusChangesForItem } from './help-functions.mjs';
-
+import options from '../../file-organizer/options.js';
 import {
     STATUS_CREATED,
     STATUS_ANALYSING,
@@ -16,8 +14,15 @@ import {
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
 } from '../../src/common/constants.js';
+import { fileRename } from '../../src/main/tasks-fs.js';
 
-import options from '../../file-organizer/options.js';
+import {
+    listenForItemNotify,
+    getStatusChangesForItem,
+    createFileFrom,
+    fileExists
+} from './help-functions.mjs';
+
 import { resetOptionsForUnitTesting, r } from './run-helper.mjs';
 
 class DemoFile extends File {
@@ -194,6 +199,29 @@ describe(t(import.meta), function () {
                     resetOptionsForUnitTesting();
                 });
             });
+        });
+    });
+
+    describe('early fixes', function () {
+        it('should lowercase extensions', async function () {
+            options.dryRun = true;
+
+            const f1 = await createFileFrom('jh-patch-file-patch.txt');
+
+            f1.get(File.I_EXTENSION).expect('.TX2');
+            await fileRename(f1);
+
+            await expectAsync(fileExists(f1.currentFilePath)).toBeResolvedTo(true);
+            expect(f1.currentFilePath.endsWith('.TX2')).toBeTrue();
+
+            const f2 = new File(f1.currentFilePath);
+            await f2.runAnalyse();
+            expect(f2.get(File.I_EXTENSION).expected).toBe('.tx2');
+            await f2.runActing();
+
+            expect(f2.currentFilePath.endsWith('.tx2')).toBeTrue();
+            await expectAsync(fileExists(f2.currentFilePath)).toBeResolvedTo(true);
+
         });
     });
 });
