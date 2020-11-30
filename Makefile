@@ -69,7 +69,8 @@ setup:
 
 .PHONY: clean
 clean:
-	rm -fr tmp node_modules
+	rm -fr node_modules
+	rm -fr tmp
 
 # .PHONY: start
 # start: build
@@ -120,6 +121,9 @@ test-unit-continuously: build
 test-system: build
 	xvfb-run jasmine --config=test/system/jasmine.json
 
+.PHONY: test-app
+test-app: build
+	xvfb-run ./spectron.cjs
 
 .PHONY: eslint
 lint: eslint
