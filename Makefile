@@ -90,7 +90,7 @@ start-demo: build
 	electron src/demo.cjs
 
 start-test-info: build
-	./file-organizer-headless.sh "info" "test/data/1998-12-31 12-10-11 exifok01.jpg"
+	./file-organizer-headless.sh "info" "test/data/DSC_2506.MOV"
 
 .PHONY: build
 build: dependencies
