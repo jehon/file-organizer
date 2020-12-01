@@ -80,7 +80,7 @@ function dbg(...msg) {
         + '\n';
 
     fs.appendFileSync(logFile, fmsg);
-    console.log(fmsg); /* eslint-disable-line */
+    // console.log(fmsg); /* eslint-disable-line */
 }
 
 module.exports = dbg;

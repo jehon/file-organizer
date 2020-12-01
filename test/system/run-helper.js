@@ -83,7 +83,7 @@ export class FORun {
      * @param {Context} ctx of the test
      */
     constructor(ctx) {
-        this.ctx = ctx;
+        this.ctx = { ...ctx };
         this.cwd = ctx.tempPath();
     }
 
