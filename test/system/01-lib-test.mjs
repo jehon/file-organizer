@@ -1,7 +1,12 @@
 
-import { describeAndSetup, itRun, assert } from './run-helper.js';
+import { describeAndSetup, itRun, assert, getFileExifField } from './run-helper.js';
 
 describeAndSetup(import.meta.url, (ctx) => {
+    it('get exif infos', async () => {
+        const exif = await getFileExifField(ctx, 'exif_timestamp', 'basic/DSC_2506.MOV');
+        expect(exif).toBe('2019-09-19 07-48-25');
+    });
+
     itRun(ctx, ['dump'], async (foRun) => {
         foRun.assertSuccess();
 
