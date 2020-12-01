@@ -127,10 +127,6 @@ test-cmd: build
 test-system: build
 	xvfb-run --auto-servernum jasmine --config=test/system/jasmine.json
 
-.PHONY: test-system-01
-test-system-01: build
-	xvfb-run --auto-servernum jasmine --config=test/system/jasmine.json test/system/01-lib-test.mjs
-
 .PHONY: test-app
 test-app: build
 	xvfb-run --auto-servernum ./spectron.cjs
