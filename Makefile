@@ -79,7 +79,7 @@ clean:
 start-test-headless: build
 	mkdir -p tmp/gui
 	cd tmp/gui && ../../reset.sh
-	cd tmp/gui && ../../file-organizer.sh dump
+	cd tmp/gui && ../../file-organizer-headless.sh dump
 
 start-test-gui: build
 	mkdir -p tmp/gui
@@ -90,11 +90,11 @@ start-demo: build
 	electron src/demo.cjs
 
 start-test-info: build
-	./src/main.cjs info --headless "test/data/1998-12-31 12-10-11 exifok01.jpg"
+	./file-organizer-headless.sh "info" "test/data/1998-12-31 12-10-11 exifok01.jpg"
 
 .PHONY: build
 build: dependencies
-	chmod +x ./file-organizer.sh
+	chmod +x ./*.sh
 
 .PHONY: dependencies
 dependencies: node_modules/.dependencies
@@ -104,7 +104,7 @@ node_modules/.dependencies: package.json package-lock.json
 	touch node_modules/.dependencies
 
 .PHONY: test
-test: test-unit test-system
+test: test-unit test-cmd test-system
 	@echo ""
 	@echo -e "\033[01;32m✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓\033[0m"
 	@echo ""
@@ -116,6 +116,12 @@ test-unit: build
 .PHONY: test-unit-continuously
 test-unit-continuously: build
 	watch "make test-unit" src file-organizer test/unit
+
+.PHONY: test-cmd
+test-cmd: build
+	xvfb-run --auto-servernum ./file-organizer.sh dump test/data
+	./file-organizer-headless.sh info test/data/canon.JPG
+	./file-organizer-headless.sh info -k exif_timestamp test/data/canon.JPG
 
 .PHONY: test-system
 test-system: build
