@@ -3,6 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
 import shellExec from 'shell-exec';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 
 import { t } from '../test-helper.js';
 
@@ -60,6 +62,7 @@ export async function describeAndSetup(url, fn) {
         return fn({
             testName,
             tempPath: tPath,
+            // TODO: remove shellExec in favor of builtin child_process.fileExec
             listAll: async () => shellExec(`find ${tPath()} -type f`).then(res => console.info('Listing: \n', res.stdout))
         });
     });
@@ -95,6 +98,7 @@ export class FORun {
 
         this.cmdLine = rootPath('/file-organizer.sh') + ' --headless "' + this.args.join('" "') + '"';
         // { stdout: '', stderr: '', cmd: '', code: x }
+        // TODO: remove shellExec in favor of builtin child_process.fileExec
         this.result = await shellExec(this.cmdLine, { cwd: this.cwd });
 
         await Promise.all([
@@ -150,11 +154,17 @@ export class FORun {
  * @param {string} f - pathname of the file
  * @returns {Promise<string>} with the exiv field
  */
-async function getFileExifField(ctx, field, f) {
-    const foRun = new FORun(ctx);
-    await foRun.run('info', '-k', field, f);
-    foRun.assertSuccess();
-    return foRun.result.stdout.trim();
+export async function getFileExifField(ctx, field, f) {
+    // https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
+    const result = await promisify(execFile)(
+        rootPath('file-organizer-headless.sh'),
+        ['info', '-k', field, ctx.tempPath(f)]
+    )
+        .catch(e => {
+            throw `Could not read exiv data: ${e.stdout} -err- ${e.stderr}`;
+        });
+
+    return result.stdout.trim();
 }
 
 export const assert = {
