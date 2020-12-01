@@ -13,6 +13,11 @@
  *
  */
 
+/**
+ * Exif executable
+ */
+const EXIFTOOL = 'exiftool';
+
 const FileTimestamped = require('./file-timestamped.js');
 const { tsFromExif, tzFromGPS } = require('./timestamp.js');
 const options = require('./options.js');
@@ -26,24 +31,30 @@ const exifExecLimiter = new PQueue({ concurrency: 5 });
 
 var commandExistsSync = require('command-exists').sync;
 // returns true/false; doesn't throw
-if (!commandExistsSync('exiftool')) {
+if (!commandExistsSync(EXIFTOOL)) {
     console.error('Command exiftool not found in path');
+    // TODO: this is not easy to debug:
     process.exit(1);
 }
 
 // @Limited(x)
+/**
+ * @param {number} priority to which it is run in the queue
+ * @param {Array<string>} params to be passed to EXIFTOOL
+ * @returns {Promise<string>} the result of the command
+ */
 async function runExif(priority, params) {
     return exifExecLimiter.add(() =>
-        fileUtils.fileExec('exiftool', [ ...params])
+        fileUtils.fileExec(EXIFTOOL, [...params])
             .then(log => { debugExif('runExif result: ', log); return log; })
             .catch(processResult => {
                 console.error(processResult);
                 debugExif('runExif result:', processResult.code);
                 debugExifOutput('runExif output:', processResult.stdout, processResult.stderr);
-                switch(processResult.code) {
+                switch (processResult.code) {
                     case 0:   // ok, continue
                         break;
-                        // case 1:   // The file contains data of an unknown image type
+                    // case 1:   // The file contains data of an unknown image type
                     case 253: // No exif data found in file
                         return '';
                     case 255: // File does not exists
@@ -52,7 +63,7 @@ async function runExif(priority, params) {
                         console.error(`
 *********
 *** runExif process: ${processResult.code}
-*** exiftool '${params.join(' , ')}'
+*** ${EXIFTOOL} '${params.join(' , ')}'
 *** ${processResult.stderr.toString()}
 *********
 `);
@@ -61,10 +72,15 @@ async function runExif(priority, params) {
 
                 throw processResult;
             })
-            .then(log => log ? log :''),
-    { priority });
+            .then(log => log ? log : ''),
+        { priority });
 }
 
+/**
+ * @param file
+ * @param tag
+ * @param value
+ */
 async function exifWrite(file, tag, value) {
     debugExif('exifWrite:', file.getPath(), tag, value);
     return runExif(10,
@@ -76,8 +92,11 @@ async function exifWrite(file, tag, value) {
     );
 }
 
+/**
+ * @param rotation
+ */
 function translateRotation(rotation) {
-    switch(rotation) {
+    switch (rotation) {
         // What is the top-left corner?
         case 'Rotate 270 CW':
         case 'left, bottom':
@@ -124,8 +143,8 @@ module.exports = class FileExif extends FileTimestamped {
 
         if (this.exif_title) {
             this.calculatedTS.title = this.exif_title
-            // 	.replace(/( |-|[0-9]{2,10})+$/, '')
-            ;
+                // 	.replace(/( |-|[0-9]{2,10})+$/, '')
+                ;
         }
 
         return this;
@@ -159,10 +178,10 @@ module.exports = class FileExif extends FileTimestamped {
 
     async exifReload() {
         return this.exifReadAll().then(exifData => {
-            this.exif_timestamp_raw       = exifData[this.constExifTS];
-            this.exif_timestamp           = tsFromExif(exifData[this.constExifTS], this.exif_calculated_timezone);
-            this.exif_title             = exifData[this.constExifTitle];
-            this.exif_orientation         = translateRotation(exifData['Orientation']);
+            this.exif_timestamp_raw = exifData[this.constExifTS];
+            this.exif_timestamp = tsFromExif(exifData[this.constExifTS], this.exif_calculated_timezone);
+            this.exif_title = exifData[this.constExifTitle];
+            this.exif_orientation = translateRotation(exifData['Orientation']);
             return exifData;
         });
     }
@@ -172,7 +191,7 @@ module.exports = class FileExif extends FileTimestamped {
         return exifWrite(this, this.constExifTS, ts.exif())
             .then(() => {
                 this.exif_timestamp_raw = ts.exif();
-                this.exif_timestamp     = tsFromExif(this.exif_timestamp_raw, this.exif_calculated_timezone);
+                this.exif_timestamp = tsFromExif(this.exif_timestamp_raw, this.exif_calculated_timezone);
                 this.setCalculatedTS(ts);
                 return this;
             });
