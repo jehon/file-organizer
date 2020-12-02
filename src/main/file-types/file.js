@@ -93,6 +93,13 @@ export default class File extends Item {
     static I_EXTENSION = 'extension'
 
     /**
+     * true if it is a folder
+     *
+     * this will be set by the build file factory (in register-file-types)
+     */
+    static I_IS_FOLDER = 'is_folder';
+
+    /**
      * Get the current path from the file
      * based on "current" values
      *
