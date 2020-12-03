@@ -115,6 +115,22 @@ export default class Item {
         return this;
     }
 
+    /**
+     * Resolve a problem (remove from list)
+     *
+     * @protected
+     *
+     * @param {string} description of the problem
+     * @returns {Item} for chaining
+     */
+    resolveProblem(description) {
+        const index = this.problemsList.indexOf(description);
+        if (index > -1) {
+            this.problemsList.splice(index, 1);
+        }
+        return this;
+    }
+
     // ------------------------------------------
     //
     // Public methods
