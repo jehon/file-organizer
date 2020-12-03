@@ -1,0 +1,77 @@
+
+// /**
+//  * Thanks to https://stackoverflow.com/a/36871498/1954789
+//  */
+// class ExtensibleFunction extends Function {
+//     constructor(f) {
+//         super();
+//         return Object.setPrototypeOf(f, new.target.prototype);
+//     }
+// }
+
+import ValueConstant from './value-constant.js';
+
+export default class ValueCalculated extends ValueConstant {
+    static getNotifyProperties() {
+        return ['currentValue', 'initialValue', 'expectedValue'];
+    }
+
+    /** @type {*} */
+    #calculatedExpected
+
+    /** @type {module:/src/main/Value} */
+    #basis
+
+    /** @type {function(any):any} */
+    #formula
+
+    /**
+     * @param {module:/src/main/Value} value on which the formula is based
+     * @param {function(any):any} formula to calculate the value
+     */
+    constructor(value, formula) {
+        super(value.initial);
+        this.#basis = value;
+        this.#formula = formula;
+        this.#calculatedExpected = this.expected;
+    }
+
+    get initial() {
+        return this.#formula(this.#basis.initial);
+    }
+
+    get current() {
+        return this.#formula(this.#basis.current);
+    }
+
+    get expected() {
+        return this.#formula(this.#basis.expected);
+    }
+
+    get calculatedExpected() {
+        return this.#calculatedExpected;
+    }
+
+    set calculatedExpected(val) {
+        this.#calculatedExpected = val;
+    }
+
+    /**
+     * Test if someone did modify the (current) value
+     *
+     * @returns {boolean} true if something has been done
+     */
+    isModified() {
+        return this.#basis.isModified();
+    }
+
+    /**
+     * Test if some action need to be done
+     *
+     * @returns {boolean} true if nothing to be done
+     */
+    isDone() {
+        return this.#basis.isDone()
+            && this.equals(this.current, this.#calculatedExpected);
+    }
+}

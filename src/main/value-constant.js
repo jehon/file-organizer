@@ -20,7 +20,11 @@ export default class ValueConstant extends Value {
         super(value);
     }
 
-    currently(_val) {
+    /**
+     * @override
+     * @param {any} _val unused
+     */
+    fix(_val) {
         throw new Error('Constant value');
     }
 

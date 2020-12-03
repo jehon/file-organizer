@@ -324,7 +324,13 @@ export default class File extends Item {
     /**
      * @deprecated TODO: Mock of previous version
      */
-    async loadData() { return this.runAnalyse(); }
+    async loadData() {
+        try {
+            return this.runAnalyse();
+        } catch (e) {
+            return false;
+        }
+    }
 
     /**
      * @deprecated TODO: Mock of previous version

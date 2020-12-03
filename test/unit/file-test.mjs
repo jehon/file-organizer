@@ -80,15 +80,16 @@ describe(t(import.meta), function () {
 
         it('should always have the current path', () => {
             const f = new File('test/brol/a.txt');
+
             expect(r(f.currentFilePath)).toBe('test/brol/a.txt');
 
-            f.get(File.I_FILENAME).current = 'b';
+            f.get(File.I_FILENAME).expect('b').fix();
             expect(r(f.currentFilePath)).toBe('test/brol/b.txt');
 
-            f.get(File.I_EXTENSION).current = '.jpg';
+            f.get(File.I_EXTENSION).expect('.jpg').fix();
             expect(r(f.currentFilePath)).toBe('test/brol/b.jpg');
 
-            f.parent.get(File.I_FILENAME).current = 'machin';
+            f.parent.get(File.I_FILENAME).expect('machin').fix();
             expect(r(f.currentFilePath)).toBe('test/machin/b.jpg');
         });
     });

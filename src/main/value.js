@@ -9,7 +9,9 @@
 //     }
 // }
 
-export default class Value {
+import EventEmitter from '../../node_modules/eventemitter3/index.js';
+
+export default class Value extends EventEmitter {
     static getNotifyProperties() {
         return ['currentValue', 'initialValue', 'expectedValue'];
     }
@@ -24,6 +26,7 @@ export default class Value {
     #expected
 
     constructor(value) {
+        super();
         // super(() => this.current);
         this.#initial = value;
         this.#current = value;
@@ -42,26 +45,36 @@ export default class Value {
         return this.#current;
     }
 
-    set current(cur) {
-        this.#current = cur;
-    }
+    // set current(cur) {
+    //     this.#current = cur;
+    // }
 
-    /**
-     * Set the current value
-     *
-     * @param {*} cur expected
-     */
-    currently(cur) {
-        this.#current = cur;
-    }
+    // /**
+    //  * Set the current value
+    //  *
+    //  * @param {*} cur expected
+    //  */
+    // currently(cur) {
+    //     if (this.equals(this.#current, cur)) {
+    //         return;
+    //     }
+    //     this.#current = cur;
+    //     this.emit('currentChanged', cur);
+    // }
 
     /**
      * Set the expected value
      *
      * @param {*} expect expected
+     * @returns {Value} to be chained
      */
     expect(expect) {
+        if (this.equals(this.#expected, expect)) {
+            return;
+        }
         this.#expected = expect;
+        this.emit('expectedChanged', expect);
+        return this;
     }
 
     /**
@@ -100,6 +113,7 @@ export default class Value {
      */
     fix(v = this.expected) {
         this.#current = this.#expected = v;
+        this.emit('currentChanged', this.#current);
         return this;
     }
 
@@ -113,5 +127,10 @@ export default class Value {
             isModified: this.isModified(),
             isDone: this.isDone()
         };
+    }
+
+    onExpectedChanged(cb) {
+        this.on('expectedChanged', cb);
+        return this;
     }
 }
