@@ -10,19 +10,28 @@ export const describe = 'Regularize the files';
 export const handler = function (noptions) {
     Object.assign(options, noptions);
 
+    let p = Promise.resolve();
+
     if (!options.headless) {
-        import('../../gui.js');
+        p = p.then(() => import('../../gui.js'));
     }
 
-    return Promise.all(options.files.map(
-        fi => fi.iterate(
-            f => f.loadData()
-                .then(f => f.check())
-        ))
-    )
-        .then(() => {
-            console.info('\n\nDone');
-            dumpDiscoveredExtension();
-            // console.info(FileGeneric.pendings);
-        });
+    return p.then(() =>
+        Promise.all(
+            options.files.map(
+                fi => fi.iterate(
+                    f => f.loadData()
+                        .then(f => f.check())
+                        .catch(e => {
+                            console.error(e);
+                            throw e;
+                        })
+                )
+            ))
+            .then(() => {
+                console.info('\n\nDone');
+                dumpDiscoveredExtension();
+                // console.info(FileGeneric.pendings);
+            })
+    );
 };
