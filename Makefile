@@ -105,7 +105,7 @@ node_modules/.dependencies: package.json package-lock.json
 	touch node_modules/.dependencies
 
 .PHONY: test
-test: test-unit test-cmd test-system
+test: test-unit test-cmd test-system test-e2e
 	@echo ""
 	@echo -e "\033[01;32m✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓\033[0m"
 	@echo ""
@@ -129,8 +129,8 @@ test-system: build
 	xvfb-run --auto-servernum jasmine --config=test/system/jasmine.json
 
 .PHONY: test-app
-test-app: build
-	xvfb-run --auto-servernum ./spectron.cjs
+test-e2e: build
+	xvfb-run --auto-servernum electron test/e2e/launch.cjs
 
 .PHONY: eslint
 lint: eslint
