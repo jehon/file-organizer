@@ -101,6 +101,7 @@ dependencies: node_modules/.dependencies
 node_modules/.dependencies: package.json package-lock.json
 	npm install
 	touch package-lock.json
+	@#Also done in package.json
 	touch node_modules/.dependencies
 
 .PHONY: test
