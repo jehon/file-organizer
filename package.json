@@ -21,7 +21,7 @@
         "p-queue": "6.6.2",
         "shell-exec": "1.0.2",
         "tz-lookup": "6.1.25",
-        "yargs": "16.1.1"
+        "yargs": "16.2.0"
     },
     "devDependencies": {
         "@types/jasmine": "3.6.2",
