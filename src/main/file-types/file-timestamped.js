@@ -8,120 +8,154 @@ import fileUtils from '../../../file-organizer/file-utils.js';
 import timestampAPI from '../../../file-organizer/timestamp.js';
 const { tsFromString } = timestampAPI;
 
+import ValueCalculated from '../value-calculated.js';
+
 import pLimit from 'p-limit'; // https://www.npmjs.com/package/p-limit
 const indexedFilenameLimiter = pLimit(1);
 
 export default class FileTimestamped extends File {
+    static I_FTS_TITLE = 'filename_ts_title';
+    static I_FTS_ORIGINAL = 'filename_ts_original';
+    static I_FTS_TIME = 'filename_ts_time';
+
+    static P_TS_NOT_PARSABLE = 'Filename is not parsable'
+
     async analyse() {
         await super.analyse();
 
-        this.filenameTS = tsFromString(this.get('filename').initial);
-        const title = this.filenameTS.title;
+        /* Build up all informations and link them to I_FILENAME */
+
+        const vFn = this.get(File.I_FILENAME);
+        const parsedTS = tsFromString(vFn);
+
+        /* auto update filename  */
+        const updateFn = () => this.get(File.I_FILENAME).expected(this.getCanonicalFilename());
+
+        this.set(FileTimestamped.I_FTS_ORIGINAL,
+            new ValueCalculated(vFn, fn => tsFromString(fn).original)
+                .onExpectedChanged(updateFn)
+        );
+
+        this.set(FileTimestamped.I_FTS_TITLE,
+            new ValueCalculated(vFn, fn => tsFromString(fn).title)
+                .onExpectedChanged(updateFn)
+        );
+
+        // TODO: this should be a date...
+        this.set(FileTimestamped.I_FTS_TIME,
+            new ValueCalculated(vFn, fn => tsFromString(fn))
+                .onExpectedChanged(updateFn)
+        );
+
+
+        /*
+         * Let's go with calculations
+         */
 
         // Parse the original filename to see if we can get some data
-        if (this.filenameTS.original) {
-            const ts2 = tsFromString(this.filenameTS.original);
+        if (this.get(FileTimestamped.I_FTS_ORIGINAL).current) {
+            const ts2 = tsFromString(this.get(FileTimestamped.I_FTS_ORIGINAL).current);
             if (ts2.isTimestamped()) {
-                this.filenameTS = ts2;
-            }
-        }
-        this.filenameTS.title = title;
-        this.calculatedTS = this.filenameTS.clone();
-
-        if (this.calculatedTS.type == 'invalid') {
-            return this.addMessageImpossible('TS_FILENAME_INVALID', 'filename is not parsable');
-        }
-        let res = true;
-        if (this.calculatedTS.title && this.calculatedTS.title == this.calculatedTS.original) {
-            this.addMessageInfo('TS_DUP_TITLE', 'remove duplicate title/original',
-                'remove original filename'
-            );
-            this.calculatedTS.original = '';
-        }
-
-        {
-            if (options.setTitle && this.calculatedTS.title != options.setTitle) {
-                this.addMessageInfo('TS_TITLE_OPTION_SET', 'force the title as requested on command line',
-                    options.setTitle
-                );
-                this.setCalculatedTitle(options.setTitle);
-            }
-            if (options.forceTitleFromFilename && this.calculatedTS.title != this.filenameTS.title) {
-                this.addMessageInfo('TS_TITLE_OPTION_FILENAME', 'force the title from the filename',
-                    this.filenameTS.title
-                );
-                this.setCalculatedTitle(this.filenameTS.title);
-            }
-            if (options.forceTitleFromFolder && this.calculatedTS.title != this.parent.filenameTS.title) {
-                this.addMessageInfo('TS_TITLE_OPTION_FOLDER', 'force the title from the parent folder',
-                    this.parent.filenameTS.title
-                );
-                this.setCalculatedTitle(this.parent.filenameTS.title);
-            }
-
-            if (!this.calculatedTS.title && this.filenameTS.title && this.calculatedTS.title != this.filenameTS.title) {
-                this.addMessageInfo('TS_TITLE_FILENAME', 'set the title from the filename',
-                    this.filenameTS.title
-                );
-                this.setCalculatedTitle(this.filenameTS.title);
-            }
-            if (!this.calculatedTS.title && this.parent.filenameTS.title && this.calculatedTS.title != this.parent.filenameTS.title) {
-                this.addMessageInfo('TS_TITLE_FOLDER', 'set the title from the parent folder',
-                    this.parent.filenameTS.title
-                );
-                this.setCalculatedTitle(this.parent.filenameTS.title);
+                this.get(FileTimestamped.I_FTS_TIME).expect(ts2);
             }
         }
 
-        {
-            if (options.forceTimestampFromFilename && this.calculatedTS.humanReadable() != this.filenameTS.humanReadable()) {
-                this.addMessageInfo('TS_TIMESTAMP_FORCE', 'Updating timestamp',
-                    this.filenameTS.humanReadable()
-                );
-                this.setCalculatedTS(this.filenameTS);
-            }
-        }
+        // if (this.calculatedTS.type == 'invalid') {
+        //     this.addProblem(FileTimestamped.P_TS_NOT_PARSABLE);
+        //     return;
+        // }
 
-        if (!this.calculatedTS.title) {
-            res = res && this.addMessageImpossible('TS_NO_TITLE', 'No title found');
-        }
+        // let res = true;
+        // if (this.calculatedTS.title && this.calculatedTS.title == this.calculatedTS.original) {
+        //     this.addMessageInfo('TS_DUP_TITLE', 'remove duplicate title/original',
+        //         'remove original filename'
+        //     );
+        //     this.calculatedTS.original = '';
+        // }
 
-        if (!this.calculatedTS.isTimestamped()) {
-            res = res && this.addMessageImpossible('TS_NO_TIMESTAMP', 'No timestamp found');
-        } else {
-            // Check filename according to parent folder TS
-            if (this.parent.calculatedTS.isTimestamped()) {
-                if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
-                    res = res && this.addMessageImpossible('TS_PARENT_INCOHERENT',
-                        `calculated timestamp incoherent to parent folder (${this.calculatedTS.humanReadable()} / ${this.parent.calculatedTS.humanReadable()})`
-                    );
-                }
-            }
-        }
+        // {
+        //     if (options.setTitle && this.calculatedTS.title != options.setTitle) {
+        //         this.addMessageInfo('TS_TITLE_OPTION_SET', 'force the title as requested on command line',
+        //             options.setTitle
+        //         );
+        //         this.setCalculatedTitle(options.setTitle);
+        //     }
+        //     if (options.forceTitleFromFilename && this.calculatedTS.title != this.get(FileTimestamped.I_TS_FILENAME.title) {
+        //         this.addMessageInfo('TS_TITLE_OPTION_FILENAME', 'force the title from the filename',
+        //             this.get(FileTimestamped.I_TS_FILENAME.title
+        //             );
+        //         this.setCalculatedTitle(this.get(FileTimestamped.I_TS_FILENAME.title);
+        //     }
+        //     if (options.forceTitleFromFolder && this.calculatedTS.title != this.parent.filenameTS.title) {
+        //         this.addMessageInfo('TS_TITLE_OPTION_FOLDER', 'force the title from the parent folder',
+        //             this.parent.filenameTS.title
+        //         );
+        //         this.setCalculatedTitle(this.parent.filenameTS.title);
+        //     }
 
-        if (!res) {
-            return res;
-        }
+        //     if (!this.calculatedTS.title && this.get(FileTimestamped.I_TS_FILENAME.title && this.calculatedTS.title != this.get(FileTimestamped.I_TS_FILENAME.title) {
+        //         this.addMessageInfo('TS_TITLE_FILENAME', 'set the title from the filename',
+        //             this.get(FileTimestamped.I_TS_FILENAME.title
+        //             );
+        //         this.setCalculatedTitle(this.get(FileTimestamped.I_TS_FILENAME.title);
+        //     }
+        //     if (!this.calculatedTS.title && this.parent.filenameTS.title && this.calculatedTS.title != this.parent.filenameTS.title) {
+        //             this.addMessageInfo('TS_TITLE_FOLDER', 'set the title from the parent folder',
+        //                 this.parent.filenameTS.title
+        //             );
+        //             this.setCalculatedTitle(this.parent.filenameTS.title);
+        //         }
+        // }
 
-        if (!await super.check()) {
-            return false;
-        }
+        // {
+        //     if (options.forceTimestampFromFilename && this.calculatedTS.humanReadable() != this.get(FileTimestamped.I_TS_FILENAME.humanReadable()) {
+        //         this.addMessageInfo('TS_TIMESTAMP_FORCE', 'Updating timestamp',
+        //             this.get(FileTimestamped.I_TS_FILENAME.humanReadable()
+        //             );
+        //         this.setCalculatedTS(this.get(FileTimestamped.I_TS_FILENAME);
+        //     }
+        // }
 
-        {
-            // TODO(indexed): did not work???
+        // if (!this.calculatedTS.title) {
+        //     res = res && this.addMessageImpossible('TS_NO_TITLE', 'No title found');
+        // }
 
-            // Rename to the canonical filename
-            // const proposedFilename = await this.getIndexedFilename();
-            const proposedFilename = this.getCanonicalFilename();
-            if (proposedFilename != this.get('filename').initial) {
-                res = res && await this.addMessageCommit('TS_CANONIZE', 'canonize filename',
-                    proposedFilename,
-                    () => this.changeFilename(proposedFilename)
-                );
-            }
-        }
+        // if (!this.calculatedTS.isTimestamped()) {
+        //     res = res && this.addMessageImpossible('TS_NO_TIMESTAMP', 'No timestamp found');
+        // } else {
+        //     // Check filename according to parent folder TS
+        //     if (this.parent.calculatedTS.isTimestamped()) {
+        //         if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
+        //             res = res && this.addMessageImpossible('TS_PARENT_INCOHERENT',
+        //                 `calculated timestamp incoherent to parent folder (${this.calculatedTS.humanReadable()} / ${this.parent.calculatedTS.humanReadable()})`
+        //             );
+        //         }
+        //     }
+        // }
 
-        return res;
+        // if (!res) {
+        //     return res;
+        // }
+
+        // if (!await super.check()) {
+        //     return false;
+        // }
+
+        // {
+        //     // TODO(indexed): did not work???
+
+        //     // Rename to the canonical filename
+        //     // const proposedFilename = await this.getIndexedFilename();
+        //     const proposedFilename = this.getCanonicalFilename();
+        //     if (proposedFilename != this.get('filename').initial) {
+        //         res = res && await this.addMessageCommit('TS_CANONIZE', 'canonize filename',
+        //             proposedFilename,
+        //             () => this.changeFilename(proposedFilename)
+        //         );
+        //     }
+        // }
+
+        // return res;
     }
 
     setCalculatedTitle(newC) {
@@ -145,51 +179,51 @@ export default class FileTimestamped extends File {
 
     getCanonicalFilename() {
         let proposedFilename = '';
-        if (this.calculatedTS.humanReadable() > '') {
-            proposedFilename += this.calculatedTS.humanReadable();
+        if (this.get(FileTimestamped.I_FTS_TIME).expected.humanReadable() > '') {
+            proposedFilename += this.get(FileTimestamped.I_FTS_TIME).expected.humanReadable();
         }
-        if (this.calculatedTS.title > '') {
-            proposedFilename += ' ' + this.calculatedTS.title;
+        if (this.get(FileTimestamped.I_FTS_TITLE).expected > '') {
+            proposedFilename += ' ' + this.get(FileTimestamped.I_FTS_TITLE).expected;
         }
-        if (this.calculatedTS.original + '' > '') {
-            proposedFilename += ' [' + this.calculatedTS.original + ']';
+        if (this.get(FileTimestamped.I_FTS_ORIGINAL).current + '' > '') {
+            proposedFilename += ' [' + this.get(FileTimestamped.I_FTS_ORIGINAL).current + ']';
         }
         return proposedFilename.trim();
     }
 
-    // TODO (indexed): remember names to // rename
-    // @Limited(1)
-    async getIndexedFilename() {
-        const o = this.calculatedTS.original;
-        if (/^\d+$/.test(o)) {
-            // Remove previous index (numerical)
-            this.calculatedTS.original = '';
-        }
+    // // TODO (indexed): remember names to // rename
+    // // @Limited(1)
+    // async getIndexedFilename() {
+    //     const o = this.calculatedTS.original;
+    //     if (/^\d+$/.test(o)) {
+    //         // Remove previous index (numerical)
+    //         this.calculatedTS.original = '';
+    //     }
 
-        if (this.getCanonicalFilename() == this.get('filename').initial) {
-            return this.getCanonicalFilename();
-        }
+    //     if (this.getCanonicalFilename() == this.get('filename').initial) {
+    //         return this.getCanonicalFilename();
+    //     }
 
-        const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.get('extension').initial);
+    //     const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.get('extension').initial);
 
-        return indexedFilenameLimiter(async () => {
-            try {
-                await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
-                return this.getCanonicalFilename();
-            } catch (_e) {
-                // expected
-            }
+    //     return indexedFilenameLimiter(async () => {
+    //         try {
+    //             await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
+    //             return this.getCanonicalFilename();
+    //         } catch (_e) {
+    //             // expected
+    //         }
 
-            this.calculatedTS.original = 1;
-            while (this.calculatedTS.original != o) {
-                try {
-                    await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
-                    return this.getCanonicalFilename();
-                } catch (_e) {
-                    //expected
-                }
-                this.calculatedTS.original++;
-            }
-        });
-    }
+    //         this.calculatedTS.original = 1;
+    //         while (this.calculatedTS.original != o) {
+    //             try {
+    //                 await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
+    //                 return this.getCanonicalFilename();
+    //             } catch (_e) {
+    //                 //expected
+    //             }
+    //             this.calculatedTS.original++;
+    //         }
+    //     });
+    // }
 }
