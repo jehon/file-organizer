@@ -237,7 +237,7 @@ export default class File extends Item {
      *
      * @private
      *
-     * @returns {Promise<void>} when completed
+     * @returns {Promise<File>} when completed
      */
     async runAnalyse() {
         this.notify(STATUS_ANALYSING);
@@ -263,6 +263,7 @@ export default class File extends Item {
                         // We did not enqueue any action
                         this.notify(STATUS_SUCCESS);
                     }
+                    return this;
                 },
                 (e) => {
                     this.notify(STATUS_FAILURE);

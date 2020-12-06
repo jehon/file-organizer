@@ -33,7 +33,7 @@ export default class ValueCalculated extends ValueConstant {
         super(value.initial);
         this.#basis = value;
         this.#formula = formula;
-        this.#calculatedExpected = this.expected;
+        this.#calculatedExpected = this.#formula(this.#basis.expected);
     }
 
     get initial() {
@@ -45,15 +45,12 @@ export default class ValueCalculated extends ValueConstant {
     }
 
     get expected() {
-        return this.#formula(this.#basis.expected);
-    }
-
-    get calculatedExpected() {
         return this.#calculatedExpected;
     }
 
-    set calculatedExpected(val) {
+    expect(val) {
         this.#calculatedExpected = val;
+        return this;
     }
 
     /**

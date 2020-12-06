@@ -12,13 +12,11 @@ describe(t(import.meta), function () {
         expect(v.initial).toBe('test_calc');
         expect(v.current).toBe('test_calc');
         expect(v.expected).toBe('test_calc');
-        expect(v.calculatedExpected).toBe('test_calc');
 
         expect(v.isDone()).toBeTrue();
         expect(v.isModified()).toBeFalse();
 
         expect(() => v.fix()).toThrow();
-        expect(() => v.expect('123')).toThrow();
 
         //
         // We change the basis
@@ -27,9 +25,8 @@ describe(t(import.meta), function () {
 
         vb.expect('new');
 
-        expect(v.expected).toBe('new_calc');
-        expect(v.calculatedExpected).toBe('test_calc');
         expect(vb.isDone()).toBeFalse();
+        expect(v.expected).toBe('test_calc');
         expect(v.isDone()).toBeFalse();
         expect(v.isModified()).toBeFalse();
 
@@ -40,10 +37,9 @@ describe(t(import.meta), function () {
 
         vb.fix();
         expect(vb.current).toBe('new');
-        expect(v.current).toBe('new_calc');
-        expect(v.expected).toBe('new_calc');
-        expect(v.calculatedExpected).toBe('test_calc');
 
+        expect(v.current).toBe('new_calc');
+        expect(v.expected).toBe('test_calc');
         expect(v.isDone()).toBeFalse();
         expect(v.isModified()).toBeTrue();
 
@@ -52,15 +48,14 @@ describe(t(import.meta), function () {
         // We set the correct value in the basis and in expected
         // Now everything is ok
         //
-        v.calculatedExpected = 'something_calc';
+        v.expect('something_calc');
         vb.expect('something');
         vb.fix();
 
         expect(vb.current).toBe('something');
+
         expect(v.current).toBe('something_calc');
         expect(v.expected).toBe('something_calc');
-        expect(v.calculatedExpected).toBe('something_calc');
-
         expect(v.isDone()).toBeTrue();
         expect(v.isModified()).toBeTrue();
 
