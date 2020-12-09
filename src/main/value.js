@@ -101,6 +101,12 @@ export default class Value extends EventEmitter {
      * @returns {boolean} true if equals
      */
     equals(a, b) {
+        if (typeof (a) == 'object' && typeof (b) == 'object'
+            && a && b // avoid null
+            && typeof (a.equals) == 'function') {
+            return a.equals(b);
+        }
+
         return a == b;
     }
 

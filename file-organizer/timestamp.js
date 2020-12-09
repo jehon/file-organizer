@@ -159,6 +159,16 @@ class Timestamp {
         });
     }
 
+    /**
+     *
+     * @param {Timestamp} b to be compared to
+     * @returns {boolean} if equals
+     */
+    equals(b) {
+        return this.type == b.type
+            && this.humanReadable() == b.humanReadable();
+    }
+
     yearMonthOnly() {
         this.moment.date(2); // day of month
         this.moment.hour(2);
