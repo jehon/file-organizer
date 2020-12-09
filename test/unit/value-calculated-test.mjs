@@ -16,7 +16,7 @@ describe(t(import.meta), function () {
         expect(v.isDone()).toBeTrue();
         expect(v.isModified()).toBeFalse();
 
-        expect(() => v.fix()).toThrow();
+        // expect(() => v.fix()).toThrow();
 
         //
         // We change the basis

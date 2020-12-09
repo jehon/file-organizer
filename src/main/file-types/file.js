@@ -69,8 +69,8 @@ export default class File extends Item {
             this.parent = this._calculateParent();
         }
 
-        this.values.set(File.I_FILENAME, new Value(fileUtils.getFilename(this._path)));
-        this.values.set(File.I_EXTENSION, new Value(fileUtils.getExtension(this._path)));
+        this.set(File.I_FILENAME, new Value(fileUtils.getFilename(this._path)));
+        this.set(File.I_EXTENSION, new Value(fileUtils.getExtension(this._path)));
     }
 
     // ------------------------------------------
@@ -252,7 +252,7 @@ export default class File extends Item {
 
                     // Look at all values, and if some are note ok
                     // it means we have stuff to do
-                    for (const v of this.values.values()) {
+                    for (const v of Object.values(this.values)) {
                         if (!v.isDone()) {
                             this.notify(STATUS_NEED_ACTION);
                         }
