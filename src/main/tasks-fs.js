@@ -27,7 +27,6 @@ export async function fileDelete(file) {
     return fs.promises.unlink(file.currentFilePath)
         .then(() => {
             file.get(File.I_FILENAME).fix(null);
-            file.get(File.I_EXTENSION).fix(null);
         });
 }
 

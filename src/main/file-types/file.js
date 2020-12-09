@@ -244,6 +244,11 @@ export default class File extends Item {
         return this.analyse()
             .then(
                 () => {
+                    if (this.get(File.I_FILENAME) == null) {
+                        // The file will be deleted anyway
+                        return;
+                    }
+
                     // Look for problems
                     if (this.problemsList.length > 0) {
                         this.notify(STATUS_FAILURE);
@@ -293,6 +298,11 @@ export default class File extends Item {
             //     return this._actChain;
             // })
             .then(() => {
+                if (this.get(File.I_FILENAME) == null) {
+                    // The file will be deleted anyway
+                    return;
+                }
+
                 for (const k in this.values) {
                     if (!this.values[k].isDone()) {
                         throw 'Information not solved: ' + k;

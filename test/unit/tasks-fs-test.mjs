@@ -26,9 +26,6 @@ describe(t(import.meta), function () {
 
         expect(await fileExists(fp)).toBeFalsy();
 
-        expect(f.get(File.I_EXTENSION).current).toBeFalsy();
-        expect(f.get(File.I_EXTENSION).isDone()).toBeTrue();
-
         expect(f.get(File.I_FILENAME).current).toBeFalsy();
         expect(f.get(File.I_FILENAME).isDone()).toBeTrue();
     });

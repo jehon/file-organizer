@@ -9,7 +9,6 @@ export default class FileDelete extends File {
                 // By setting any one of these to null
                 // the file will be deleted
                 this.get(File.I_FILENAME).expect(null);
-                this.get(File.I_EXTENSION).expect(null);
             });
     }
 }
