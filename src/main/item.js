@@ -6,7 +6,6 @@ import {
     STATUS_NEED_ACTION,
     STATUS_ACTED_SUCCESS
 } from '../common/constants.js';
-import Value from './value.js';
 
 export default class Item {
     /** @type {number} */
@@ -77,9 +76,9 @@ export default class Item {
     }
 
     /**
-     * @type {Map<string,Value>} with all the infos
+     * @type {object} with all the infos
      */
-    values = new Map()
+    values = {};
 
     /**
      * Add a value
@@ -177,5 +176,14 @@ export default class Item {
     isSuccessFull() {
         return this._status == STATUS_SUCCESS
             || this._status == STATUS_ACTED_SUCCESS;
+    }
+
+    toJSON() {
+        return {
+            id: this.id,
+            _status: this._status,
+            values: this.values,
+            problemsList: this.problemsList
+        };
     }
 }
