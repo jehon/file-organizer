@@ -22,6 +22,12 @@ import Value from '../value.js';
 
 import { fileDelete, fileRename } from '../tasks-fs.js';
 
+import timestampAPI from '../../../file-organizer/timestamp.js';
+const { tsFromString } = timestampAPI;
+
+import ValueCalculated from '../value-calculated.js';
+
+
 const parentsMap = new Map();
 
 /**
@@ -69,8 +75,29 @@ export default class File extends Item {
             this.parent = this._calculateParent();
         }
 
-        this.set(File.I_FILENAME, new Value(fileUtils.getFilename(this._path)));
+        const vFn = new Value(fileUtils.getFilename(this._path));
+        this.set(File.I_FILENAME, vFn);
         this.set(File.I_EXTENSION, new Value(fileUtils.getExtension(this._path)));
+
+        /* Build up all informations and link them to I_FILENAME */
+
+        /* auto update filename  */
+        const updateFn = () => this.get(File.I_FILENAME).expected(this.getCanonicalFilename());
+
+        this.set(File.I_FN_ORIGINAL,
+            new ValueCalculated(vFn, fn => tsFromString(fn).original)
+                .onExpectedChanged(updateFn)
+        );
+
+        this.set(File.I_FN_TITLE,
+            new ValueCalculated(vFn, fn => tsFromString(fn).title)
+                .onExpectedChanged(updateFn)
+        );
+
+        this.set(File.I_FN_TIME,
+            new ValueCalculated(vFn, fn => tsFromString(fn))
+                .onExpectedChanged(updateFn)
+        );
     }
 
     // ------------------------------------------
@@ -100,6 +127,21 @@ export default class File extends Item {
     static I_IS_FOLDER = 'is_folder';
 
     /**
+     * In the filename, the title part
+     */
+    static I_FN_TITLE = 'filename_ts_title';
+
+    /**
+     * In the filename, the original filename part
+     */
+    static I_FN_ORIGINAL = 'filename_ts_original';
+
+    /**
+     * In the filename, the timestamp part
+     */
+    static I_FN_TIME = 'filename_ts_time';
+
+    /**
      * Get the current path from the file
      * based on "current" values
      *
@@ -115,6 +157,21 @@ export default class File extends Item {
         );
         return v;
     }
+
+    getCanonicalFilename() {
+        let proposedFilename = '';
+        if (this.get(File.I_FN_TIME).expected.humanReadable() > '') {
+            proposedFilename += this.get(File.I_FN_TIME).expected.humanReadable();
+        }
+        if (this.get(File.I_FN_TITLE).expected > '') {
+            proposedFilename += ' ' + this.get(File.I_FN_TITLE).expected;
+        }
+        if (this.get(File.I_FN_ORIGINAL).current + '' > '') {
+            proposedFilename += ' [' + this.get(File.I_FN_ORIGINAL).current + ']';
+        }
+        return proposedFilename.trim();
+    }
+
 
     // ------------------------------------------
     //
@@ -244,8 +301,9 @@ export default class File extends Item {
         return this.analyse()
             .then(
                 () => {
-                    if (this.get(File.I_FILENAME) == null) {
+                    if (this.get(File.I_FILENAME).expected == null) {
                         // The file will be deleted anyway
+                        this.notify(STATUS_NEED_ACTION);
                         return;
                     }
 
@@ -298,7 +356,7 @@ export default class File extends Item {
             //     return this._actChain;
             // })
             .then(() => {
-                if (this.get(File.I_FILENAME) == null) {
+                if (this.get(File.I_FILENAME).current == null) {
                     // The file will be deleted anyway
                     return;
                 }

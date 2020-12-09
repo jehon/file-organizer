@@ -65,6 +65,39 @@ describe(t(import.meta), function () {
             expect((new File('test/a')).get(File.I_FILENAME).initial).toBe('a');
         });
 
+        it('parse filename', async () => {
+            const f = new File('20150306_153340 Cable internet dans la rue.jpg');
+            await f.runAnalyse();
+            expect(f.get(File.I_FN_ORIGINAL).initial).toBe('20150306_153340');
+            expect(f.get(File.I_FN_TITLE).initial).toBe('Cable internet dans la rue');
+            expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('2015-03-06 15-33-40');
+        });
+
+        it('parse invalid filename', async () => {
+            const f = new File('1913-14-75 Cable internet dans la rue.jpg');
+            try {
+                await f.runAnalyse();
+                throw 'Should have thrown';
+            } catch (e) {
+                expect(f.get(File.I_FN_ORIGINAL).initial).toBe('1913-14-75 Cable internet dans la rue');
+                expect(f.get(File.I_FN_TITLE).initial).toBe('1913-14-75 Cable internet dans la rue');
+                expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('');
+            }
+        });
+
+        it('should parse filename original', async () => {
+            const f = new File('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
+            await f.runAnalyse();
+            expect(f.get(File.I_FN_TIME).expected.moment.year()).toBe(2012);
+            expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
+        });
+
+        it('should calculate a canonicalFilename', async () => {
+            expect((await new File('2018-02-04').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04');
+            expect((await new File('2018-02-04 13-17-50 canon').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
+            expect((await new File('2020-01-19 01-24-02 petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
+        });
+
         it('should give a parent', () => {
             // We need real files here, since "buildFile" will check for folder existence
 

@@ -8,70 +8,35 @@ import File from './file.js';
 import timestampAPI from '../../../file-organizer/timestamp.js';
 const { tsFromString } = timestampAPI;
 
-import ValueCalculated from '../value-calculated.js';
-
 // import pLimit from 'p-limit'; // https://www.npmjs.com/package/p-limit
 // const indexedFilenameLimiter = pLimit(1);
 
 export default class FileTimestamped extends File {
-    static I_FTS_TITLE = 'filename_ts_title';
-    static I_FTS_ORIGINAL = 'filename_ts_original';
-    static I_FTS_TIME = 'filename_ts_time';
-
     static P_TS_NOT_PARSABLE = 'Filename is not parsable'
+    static P_NO_TIMESTAMP = 'No timestamp found'
+    static P_NO_TITLE = 'No title found'
+    static P_TS_INCOHERENT = 'Incoherent with parent folder'
 
     async analyse() {
         await super.analyse();
-
-        /* Build up all informations and link them to I_FILENAME */
-
-        const vFn = this.get(File.I_FILENAME);
-        // const parsedTS = tsFromString(vFn);
-
-        /* auto update filename  */
-        const updateFn = () => this.get(File.I_FILENAME).expected(this.getCanonicalFilename());
-
-        this.set(FileTimestamped.I_FTS_ORIGINAL,
-            new ValueCalculated(vFn, fn => tsFromString(fn).original)
-                .onExpectedChanged(updateFn)
-        );
-
-        this.set(FileTimestamped.I_FTS_TITLE,
-            new ValueCalculated(vFn, fn => tsFromString(fn).title)
-                .onExpectedChanged(updateFn)
-        );
-
-        // TODO: this should be a date...
-        this.set(FileTimestamped.I_FTS_TIME,
-            new ValueCalculated(vFn, fn => tsFromString(fn))
-                .onExpectedChanged(updateFn)
-        );
-
 
         /*
          * Let's go with calculations
          */
 
-        // Parse the original filename to see if we can get some data
-        if (this.get(FileTimestamped.I_FTS_ORIGINAL).current) {
-            const ts2 = tsFromString(this.get(FileTimestamped.I_FTS_ORIGINAL).current);
-            if (ts2.isTimestamped()) {
-                this.get(FileTimestamped.I_FTS_TIME).expect(ts2);
-            }
+        if (this.get(File.I_FN_TIME).current.type == 'invalid') {
+            this.addProblem(FileTimestamped.P_TS_NOT_PARSABLE);
+            return;
         }
 
-        // if (this.calculatedTS.type == 'invalid') {
-        //     this.addProblem(FileTimestamped.P_TS_NOT_PARSABLE);
-        //     return;
-        // }
+        if (this.get(File.I_FN_TITLE).expected && this.get(File.I_FN_TITLE).expected == this.get(File.I_FN_ORIGINAL).expected) {
+            // 'remove duplicate title/original'
+            this.get(File.I_FN_ORIGINAL).expect('');
+        }
 
-        // let res = true;
-        // if (this.calculatedTS.title && this.calculatedTS.title == this.calculatedTS.original) {
-        //     this.addMessageInfo('TS_DUP_TITLE', 'remove duplicate title/original',
-        //         'remove original filename'
-        //     );
-        //     this.calculatedTS.original = '';
-        // }
+        //
+        // Adapt to options !
+        //
 
         // {
         //     if (options.setTitle && this.calculatedTS.title != options.setTitle) {
@@ -179,14 +144,14 @@ export default class FileTimestamped extends File {
 
     getCanonicalFilename() {
         let proposedFilename = '';
-        if (this.get(FileTimestamped.I_FTS_TIME).expected.humanReadable() > '') {
-            proposedFilename += this.get(FileTimestamped.I_FTS_TIME).expected.humanReadable();
+        if (this.get(File.I_FN_TIME).expected.humanReadable() > '') {
+            proposedFilename += this.get(File.I_FN_TIME).expected.humanReadable();
         }
-        if (this.get(FileTimestamped.I_FTS_TITLE).expected > '') {
-            proposedFilename += ' ' + this.get(FileTimestamped.I_FTS_TITLE).expected;
+        if (this.get(File.I_FN_TITLE).expected > '') {
+            proposedFilename += ' ' + this.get(File.I_FN_TITLE).expected;
         }
-        if (this.get(FileTimestamped.I_FTS_ORIGINAL).current + '' > '') {
-            proposedFilename += ' [' + this.get(FileTimestamped.I_FTS_ORIGINAL).current + ']';
+        if (this.get(File.I_FN_ORIGINAL).current + '' > '') {
+            proposedFilename += ' [' + this.get(File.I_FN_ORIGINAL).current + ']';
         }
         return proposedFilename.trim();
     }
