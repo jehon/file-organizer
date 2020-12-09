@@ -21,8 +21,9 @@ const padTimestamp = 22;
 const padTitle = 50;
 
 /**
- * @param str
- * @param ll
+ * @param {string} str to be formatted
+ * @param {number} ll the padding
+ * @returns {string} formatted left
  */
 function l(str, ll) {
     str = '' + str;
@@ -33,8 +34,9 @@ function l(str, ll) {
 }
 
 /**
- * @param str
- * @param ll
+ * @param {string} str to be formatted
+ * @param {number} ll the padding
+ * @returns {string} formatted right
  */
 function r(str, ll) {
     if (str.length > ll) {
@@ -44,7 +46,8 @@ function r(str, ll) {
 }
 
 /**
- * @param noptions
+ * @param {object} noptions the current options
+ * @returns {Promise<void>} when finished
  */
 export async function handler(noptions) {
     Object.assign(options, noptions, {

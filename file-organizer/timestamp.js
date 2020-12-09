@@ -6,7 +6,7 @@ const moment = require('moment');
 require('moment-timezone');
 
 /**
- * @param {object} object
+ * @param {object} object where to look for the key
  * @param {string} key is a key
  * @param {*} _default when k is not in object
  * @returns {*} on object[key] or default
@@ -25,7 +25,7 @@ function parseInfo(object, key, _default) {
 /**
  * Remove the names from a regexp
  *
- * @param {RegExp} regExp
+ * @param {RegExp} regExp to be handled
  * @returns {string} the regexp but without group names
  */
 function removeNames(regExp) {

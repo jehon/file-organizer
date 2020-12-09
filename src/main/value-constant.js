@@ -22,12 +22,14 @@ export default class ValueConstant extends Value {
 
     /**
      * @override
-     * @param {any} _val unused
      */
     fix(_val) {
         throw new Error('Constant value');
     }
 
+    /**
+     * @override
+     */
     expect(_val) {
         throw new Error('Constant value');
     }

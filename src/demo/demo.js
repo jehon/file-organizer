@@ -6,26 +6,19 @@ import Task from '../main/task.js';
 import gui from '../gui.js';
 import loadFileTypes from '../main/loadFileTypes.js';
 
-/**
- * @param secs
- */
-async function wait(secs) {
-    return new Promise((resolve) => setTimeout(() => resolve(), secs * 1000));
-}
-
 options.headless = false;
 options.debug = true;
 
 loadFileTypes()
     .then(() => gui)
     .then(() => {
-        const t = 0.1;
-
         /**
-         * @param secs
+         * @param {number} secs to wait
+         * @param {number} timeFactor the time factor
+         * @returns {Promise<void>} that resolve avter secs
          */
-        async function w(secs) {
-            return new Promise(resolve => setTimeout(() => resolve(1), secs * t * 1000));
+        async function w(secs, timeFactor = 0.1) {
+            return new Promise(resolve => setTimeout(() => resolve(), secs * timeFactor * 1000));
         }
 
         class DemoFile extends File {
@@ -49,7 +42,7 @@ loadFileTypes()
             const f6 = new DemoFile('test6 (act success)');
             const f7 = new DemoFile('test7 (act ko)');
 
-            await wait(2);
+            await w(2, 1);
             console.info('Analysing...');
 
             f1
@@ -92,7 +85,7 @@ loadFileTypes()
             ]);
             console.info('Analysing done');
 
-            await wait(2);
+            await w(2, 1);
 
             console.info('Acting...');
             await Promise.all([

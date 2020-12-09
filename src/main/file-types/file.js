@@ -324,10 +324,12 @@ export default class File extends Item {
 
     /**
      * @deprecated TODO: Mock of previous version
+     * @returns {Promise<boolean>} when data is loaded
      */
     async loadData() {
         try {
-            return this.runAnalyse();
+            return this.runAnalyse()
+                .then(() => true);
         } catch (e) {
             return false;
         }
@@ -335,6 +337,7 @@ export default class File extends Item {
 
     /**
      * @deprecated TODO: Mock of previous version
+     * @returns {Promise<void>} when data is loaded
      */
     async check() {
         if (options.dryRun) {

@@ -15,19 +15,23 @@ export const dataPath = (...args) => rootPath('test', 'data', ...args);
 export const tempPath = (...args) => rootPath('tmp', 'unit', ...args);
 
 /**
- * @param {string} subPath of the file
+ * @param {string} subPath source of the file
+ * @param {string} inFolder of the file
  * @returns {File} - a copy ready for the test
  */
-export async function createFileGeneric(subPath) {
+export async function createFileGeneric(subPath, inFolder = '') {
     const fullSource = dataPath(subPath);
     const newName = path.parse(fullSource).base;
+    const where = path.join(tempPath(inFolder));
+
+    fs.mkdirSync(where, { recursive: true });
 
     fs.copyFileSync(
         fullSource,
-        path.join(tempPath(), newName)
+        path.join(where, newName)
     );
 
-    return buildFile(path.join(tempPath(), newName))
+    return buildFile(path.join(where, newName))
         .then(f => f.loadData());
 }
 

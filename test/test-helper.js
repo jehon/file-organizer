@@ -11,7 +11,8 @@ export function t(meta) {
 }
 
 /**
- * @param meta
+ * @param {*} meta the meta object from import.meta
+ * @returns {string} the pathname
  */
 export function __filename(meta) {
     const url = (typeof (meta) == 'object' && 'url' in meta) ? meta.url : meta;
@@ -19,7 +20,8 @@ export function __filename(meta) {
 }
 
 /**
- * @param meta
+ * @param {*} meta the meta object from import.meta
+ * @returns {string} the dirname
  */
 export function __dirname(meta) {
     const url = (typeof (meta) == 'object' && 'url' in meta) ? meta.url : meta;

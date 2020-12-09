@@ -1,17 +1,17 @@
 
-import path from 'path';
+// import path from 'path';
 
 import File from './file.js';
-import options from '../../../file-organizer/options.js';
+// import options from '../../../file-organizer/options.js';
 
-import fileUtils from '../../../file-organizer/file-utils.js';
+// import fileUtils from '../../../file-organizer/file-utils.js';
 import timestampAPI from '../../../file-organizer/timestamp.js';
 const { tsFromString } = timestampAPI;
 
 import ValueCalculated from '../value-calculated.js';
 
-import pLimit from 'p-limit'; // https://www.npmjs.com/package/p-limit
-const indexedFilenameLimiter = pLimit(1);
+// import pLimit from 'p-limit'; // https://www.npmjs.com/package/p-limit
+// const indexedFilenameLimiter = pLimit(1);
 
 export default class FileTimestamped extends File {
     static I_FTS_TITLE = 'filename_ts_title';
@@ -26,7 +26,7 @@ export default class FileTimestamped extends File {
         /* Build up all informations and link them to I_FILENAME */
 
         const vFn = this.get(File.I_FILENAME);
-        const parsedTS = tsFromString(vFn);
+        // const parsedTS = tsFromString(vFn);
 
         /* auto update filename  */
         const updateFn = () => this.get(File.I_FILENAME).expected(this.getCanonicalFilename());
@@ -158,24 +158,24 @@ export default class FileTimestamped extends File {
         // return res;
     }
 
-    setCalculatedTitle(newC) {
-        this.calculatedTS.title = newC;
-        return true;
-    }
+    // setCalculatedTitle(newC) {
+    //     this.calculatedTS.title = newC;
+    //     return true;
+    // }
 
-    setCalculatedTS(newTS) {
-        if (typeof newTS == 'string') {
-            newTS = tsFromString(newTS);
-        }
+    // setCalculatedTS(newTS) {
+    //     if (typeof newTS == 'string') {
+    //         newTS = tsFromString(newTS);
+    //     }
 
-        if (newTS.isTimestamped()) {
-            this.calculatedTS.moment = newTS.moment.clone();
-        } else {
-            this.calculatedTS.moment = null;
-        }
+    //     if (newTS.isTimestamped()) {
+    //         this.calculatedTS.moment = newTS.moment.clone();
+    //     } else {
+    //         this.calculatedTS.moment = null;
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     getCanonicalFilename() {
         let proposedFilename = '';

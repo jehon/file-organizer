@@ -6,7 +6,7 @@ import { rootDir } from './main-constants.js';
 
 /**
  * @param {string} folder where to search (absolute or relative to project root)
- * @param regExpMask
+ * @param {RegExp} regExpMask to select files
  * @returns {Promise<Array<object>>} what the modules does export
  */
 export default function (folder, regExpMask = /[.]js/) {
