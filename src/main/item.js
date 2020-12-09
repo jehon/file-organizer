@@ -90,12 +90,12 @@ export default class Item {
      * @returns {Item} the constructed info
      */
     set(key, value) {
-        this.values.set(key, value);
+        this.values[key] = value;
         return this;
     }
 
     get(key) {
-        return this.values.get(key);
+        return this.values[key];
     }
 
     problemsList = []
@@ -129,6 +129,13 @@ export default class Item {
             this.problemsList.splice(index, 1);
         }
         return this;
+    }
+    /**
+     * @param {string} id of the problem
+     * @returns {boolean} if it is present
+     */
+    hasProblem(id) {
+        return this.problemsList.indexOf(id) > -1;
     }
 
     // ------------------------------------------

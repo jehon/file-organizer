@@ -39,9 +39,16 @@ describe(t(import.meta), function () {
         });
 
         it('should allow adding problems', () => {
+            const p = 'test';
+
             const i = new Item('test');
-            i.addProblem('test');
-            expect(i.problemsList.length).toBe(1);
+            expect(i.hasProblem(p)).toBeFalse();
+
+            i.addProblem(p);
+            expect(i.hasProblem(p)).toBeTrue();
+
+            i.resolveProblem(p);
+            expect(i.hasProblem(p)).toBeFalse();
         });
     });
 
