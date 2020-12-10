@@ -27,6 +27,10 @@ PATH := $(shell npm bin):$(PATH)
 #
 ROOT   ?= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 
+.PHONY: clear
+clear:
+	clear
+
 .PHONY: dump
 dump:
 	$(info ROOT:      $(ROOT))
