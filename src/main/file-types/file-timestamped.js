@@ -5,8 +5,8 @@ import File from './file.js';
 // import options from '../../../file-organizer/options.js';
 
 // import fileUtils from '../../../file-organizer/file-utils.js';
-import timestampAPI from '../../../file-organizer/timestamp.js';
-const { tsFromString } = timestampAPI;
+// import timestampAPI from '../../../file-organizer/timestamp.js';
+// const { tsFromString } = timestampAPI;
 
 // import pLimit from 'p-limit'; // https://www.npmjs.com/package/p-limit
 // const indexedFilenameLimiter = pLimit(1);
@@ -81,22 +81,30 @@ export default class FileTimestamped extends File {
         //     }
         // }
 
-        // if (!this.calculatedTS.title) {
-        //     res = res && this.addMessageImpossible('TS_NO_TITLE', 'No title found');
-        // }
+        //
+        // Coherence test
+        //
 
-        // if (!this.calculatedTS.isTimestamped()) {
-        //     res = res && this.addMessageImpossible('TS_NO_TIMESTAMP', 'No timestamp found');
-        // } else {
-        //     // Check filename according to parent folder TS
-        //     if (this.parent.calculatedTS.isTimestamped()) {
-        //         if (!this.calculatedTS.matchLithe(this.parent.calculatedTS)) {
-        //             res = res && this.addMessageImpossible('TS_PARENT_INCOHERENT',
-        //                 `calculated timestamp incoherent to parent folder (${this.calculatedTS.humanReadable()} / ${this.parent.calculatedTS.humanReadable()})`
-        //             );
-        //         }
-        //     }
-        // }
+        if (!this.get(File.I_FN_TIME).expected) {
+            this.addProblem(FileTimestamped.P_NO_TITLE);
+        }
+
+        if (!this.get(File.I_FN_TIME).expected.isTimestamped()) {
+            this.addProblem(FileTimestamped.P_NO_TIMESTAMP);
+        } else {
+            // Check filename according to parent folder TS
+
+            // TODO(legacy): wait for folder to be migrated
+
+            if (this.parent && this.parent.get(File.I_FN_TIME)) {
+                if (this.parent.get(File.I_FN_TIME).expected.isTimestamped()
+                    || this.parent.get(File.I_FN_TIME).expected.isRange()) {
+                    if (!this.get(File.I_FN_TIME).expected.matchLithe(this.parent.get(File.I_FN_TIME).expected)) {
+                        this.addProblem(FileTimestamped.P_TS_INCOHERENT);
+                    }
+                }
+            }
+        }
 
         // if (!res) {
         //     return res;
@@ -119,8 +127,6 @@ export default class FileTimestamped extends File {
         //         );
         //     }
         // }
-
-        // return res;
     }
 
     // setCalculatedTitle(newC) {
