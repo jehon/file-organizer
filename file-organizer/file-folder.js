@@ -23,8 +23,8 @@ class FileFolder extends FileTimestamped {
             .then(list => Promise.all(
                 list.map(async f => await buildFileFn(path.join(this.getPath(), f), this))
             ))
-            // Remove "FileHidden" files if required
             .then(list => { list.sort(); return list; });
+        // Remove "FileHidden" files if required
         // .then(list => list.filter(f => options.showHidden || (! (f instanceof FileHidden))));
     }
 

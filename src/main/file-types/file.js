@@ -30,6 +30,9 @@ import ValueCalculated from '../value-calculated.js';
 
 const parentsMap = new Map();
 
+export class FOError extends Error { }
+
+
 /**
  * How does this work?
  *
@@ -217,6 +220,16 @@ export default class File extends Item {
                 if (currentExtension.toLowerCase() != currentExtension) {
                     this.get(File.I_EXTENSION).expect(currentExtension.toLowerCase());
                 }
+
+                // Parse the original filename to see if it is a timestamp too
+                // and take it as the source of thruth if applicable
+                // TODO: this should dissapear ?
+                if (this.get(File.I_FN_ORIGINAL).current) {
+                    const ts2 = tsFromString(this.get(File.I_FN_ORIGINAL).current);
+                    if (ts2.isTimestamped()) {
+                        this.get(File.I_FN_TIME).expect(ts2);
+                    }
+                }
             });
     }
 
@@ -310,7 +323,7 @@ export default class File extends Item {
                     // Look for problems
                     if (this.problemsList.length > 0) {
                         this.notify(STATUS_FAILURE);
-                        throw this.problemsList.length + ' problem(s) found';
+                        throw new FOError(this.problemsList.length + ' problem(s) found');
                     }
 
                     // Look at all values, and if some are note ok
@@ -363,7 +376,7 @@ export default class File extends Item {
 
                 for (const k in this.values) {
                     if (!this.values[k].isDone()) {
-                        throw 'Information not solved: ' + k;
+                        throw new FOError('Information not solved: ' + k);
                     }
                 }
             })
