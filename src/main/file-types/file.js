@@ -426,4 +426,40 @@ export default class File extends Item {
         }
         return this.runActing();
     }
+
+    // // TODO (indexed): remember names to // rename
+    // // @Limited(1)
+    // async getIndexedFilename() {
+    //     const o = this.calculatedTS.original;
+    //     if (/^\d+$/.test(o)) {
+    //         // Remove previous index (numerical)
+    //         this.calculatedTS.original = '';
+    //     }
+
+    //     if (this.getCanonicalFilename() == this.get('filename').initial) {
+    //         return this.getCanonicalFilename();
+    //     }
+
+    //     const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.get('extension').initial);
+
+    //     return indexedFilenameLimiter(async () => {
+    //         try {
+    //             await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
+    //             return this.getCanonicalFilename();
+    //         } catch (_e) {
+    //             // expected
+    //         }
+
+    //         this.calculatedTS.original = 1;
+    //         while (this.calculatedTS.original != o) {
+    //             try {
+    //                 await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
+    //                 return this.getCanonicalFilename();
+    //             } catch (_e) {
+    //                 //expected
+    //             }
+    //             this.calculatedTS.original++;
+    //         }
+    //     });
+    // }
 }

@@ -125,6 +125,25 @@ describe(t(import.meta), function () {
             f.parent.get(File.I_FILENAME).expect('machin').fix();
             expect(r(f.currentFilePath)).toBe('test/machin/b.jpg');
         });
+
+        xit('should find an indexed filename', async function () {
+            //         const n1 = await createFileGeneric('canon.JPG');
+            //         await n1.check();
+            //         expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
+            //         const n2 = new FileTimestamped(n1.getPath());
+
+            //         await n1.changeFilename('2018-02-04 13-17-50 canon [test]');
+
+            //         // Index when file already exists
+            //         n2.calculatedTS.original = 'test';
+            //         expect(await n2.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon [1]');
+
+            //         // Skip numerical 'original' which should be indexes
+            //         n1.calculatedTS.original = '123';
+            //         expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
+
+            //         await fileDelete(n1.getPath());
+        });
     });
 
     describe('state machine', () => {

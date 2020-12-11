@@ -26,25 +26,6 @@ function mkParentFolder(file) {
 }
 
 describe(t(import.meta), function () {
-    xit('should find an indexed filename', async function () {
-        //         const n1 = await createFileGeneric('canon.JPG');
-        //         await n1.check();
-        //         expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
-        //         const n2 = new FileTimestamped(n1.getPath());
-
-        //         await n1.changeFilename('2018-02-04 13-17-50 canon [test]');
-
-        //         // Index when file already exists
-        //         n2.calculatedTS.original = 'test';
-        //         expect(await n2.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon [1]');
-
-        //         // Skip numerical 'original' which should be indexes
-        //         n1.calculatedTS.original = '123';
-        //         expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
-
-        //         await fileDelete(n1.getPath());
-    });
-
     describe('should check coherence with parent folder', () => {
         it('should be ok when file date and folder date are coherent', async () => {
             const f = new FileTimestamped(tempPath('1998-12-31 virtual', '1998-12-31 12-13-24 test.jpg'));
@@ -78,7 +59,7 @@ describe(t(import.meta), function () {
         });
     });
 
-    describe('should guess title', () => {
+    describe('should adapt to options', () => {
         xit('should take the new title from file', async () => {
             //                 const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
             //                 await new1.exifWriteTitle('');

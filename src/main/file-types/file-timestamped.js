@@ -82,7 +82,7 @@ export default class FileTimestamped extends File {
         // }
 
         //
-        // Coherence test
+        // Coherence tests
         //
 
         if (!this.get(File.I_FN_TIME).expected) {
@@ -95,7 +95,6 @@ export default class FileTimestamped extends File {
             // Check filename according to parent folder TS
 
             // TODO(legacy): wait for folder to be migrated
-
             if (this.parent && this.parent.get(File.I_FN_TIME)) {
                 if (this.parent.get(File.I_FN_TIME).expected.isTimestamped()
                     || this.parent.get(File.I_FN_TIME).expected.isRange()) {
@@ -105,48 +104,7 @@ export default class FileTimestamped extends File {
                 }
             }
         }
-
-        // if (!res) {
-        //     return res;
-        // }
-
-        // if (!await super.check()) {
-        //     return false;
-        // }
-
-        // {
-        //     // TODO(indexed): did not work???
-
-        //     // Rename to the canonical filename
-        //     // const proposedFilename = await this.getIndexedFilename();
-        //     const proposedFilename = this.getCanonicalFilename();
-        //     if (proposedFilename != this.get('filename').initial) {
-        //         res = res && await this.addMessageCommit('TS_CANONIZE', 'canonize filename',
-        //             proposedFilename,
-        //             () => this.changeFilename(proposedFilename)
-        //         );
-        //     }
-        // }
     }
-
-    // setCalculatedTitle(newC) {
-    //     this.calculatedTS.title = newC;
-    //     return true;
-    // }
-
-    // setCalculatedTS(newTS) {
-    //     if (typeof newTS == 'string') {
-    //         newTS = tsFromString(newTS);
-    //     }
-
-    //     if (newTS.isTimestamped()) {
-    //         this.calculatedTS.moment = newTS.moment.clone();
-    //     } else {
-    //         this.calculatedTS.moment = null;
-    //     }
-
-    //     return true;
-    // }
 
     getCanonicalFilename() {
         let proposedFilename = '';
@@ -161,40 +119,4 @@ export default class FileTimestamped extends File {
         }
         return proposedFilename.trim();
     }
-
-    // // TODO (indexed): remember names to // rename
-    // // @Limited(1)
-    // async getIndexedFilename() {
-    //     const o = this.calculatedTS.original;
-    //     if (/^\d+$/.test(o)) {
-    //         // Remove previous index (numerical)
-    //         this.calculatedTS.original = '';
-    //     }
-
-    //     if (this.getCanonicalFilename() == this.get('filename').initial) {
-    //         return this.getCanonicalFilename();
-    //     }
-
-    //     const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.get('extension').initial);
-
-    //     return indexedFilenameLimiter(async () => {
-    //         try {
-    //             await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
-    //             return this.getCanonicalFilename();
-    //         } catch (_e) {
-    //             // expected
-    //         }
-
-    //         this.calculatedTS.original = 1;
-    //         while (this.calculatedTS.original != o) {
-    //             try {
-    //                 await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
-    //                 return this.getCanonicalFilename();
-    //             } catch (_e) {
-    //                 //expected
-    //             }
-    //             this.calculatedTS.original++;
-    //         }
-    //     });
-    // }
 }
