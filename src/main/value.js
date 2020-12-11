@@ -25,6 +25,11 @@ export default class Value extends EventEmitter {
     /** @type {*} */
     #expected
 
+    /**
+     * List of associated messages
+     */
+    messages = []
+
     constructor(value) {
         super();
         // super(() => this.current);
@@ -66,11 +71,15 @@ export default class Value extends EventEmitter {
      * Set the expected value
      *
      * @param {*} expect expected
+     * @param {string} message associated with the action (for info only)
      * @returns {Value} to be chained
      */
-    expect(expect) {
+    expect(expect, message = null) {
         if (this.equals(this.#expected, expect)) {
             return;
+        }
+        if (message) {
+            this.messages.push(message);
         }
         this.#expected = expect;
         this.emit('expectedChanged', expect);
@@ -131,7 +140,8 @@ export default class Value extends EventEmitter {
             expected: this.expected,
             // TODO: not definitive
             isModified: this.isModified(),
-            isDone: this.isDone()
+            isDone: this.isDone(),
+            messages: this.messages
         };
     }
 

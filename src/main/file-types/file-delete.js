@@ -8,7 +8,7 @@ export default class FileDelete extends File {
             .then(() => {
                 // By setting any one of these to null
                 // the file will be deleted
-                this.get(File.I_FILENAME).expect(null);
+                this.get(File.I_FILENAME).expect(null, 'file is deleted');
             });
     }
 }

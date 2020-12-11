@@ -16,6 +16,13 @@ describe(t(import.meta), function () {
 
         expect(v.isDone()).toBeFalse();
         expect(v.isModified()).toBeFalse();
+        expect(v.messages.length).toBe(0);
+
+        v.expect('new', 'because');
+        expect(v.messages.length).toBe(0);
+
+        v.expect('new2', 'because');
+        expect(v.messages.length).toBe(1);
 
         v.fix();
 

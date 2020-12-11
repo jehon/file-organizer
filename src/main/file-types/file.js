@@ -218,16 +218,16 @@ export default class File extends Item {
                 // Lowercase extension
                 const currentExtension = this.get(File.I_EXTENSION).current;
                 if (currentExtension.toLowerCase() != currentExtension) {
-                    this.get(File.I_EXTENSION).expect(currentExtension.toLowerCase());
+                    this.get(File.I_EXTENSION).expect(currentExtension.toLowerCase(), 'to lower case');
                 }
 
                 // Parse the original filename to see if it is a timestamp too
                 // and take it as the source of thruth if applicable
-                // TODO: this should dissapear ?
+                // TODO: this should move into timestamp ?
                 if (this.get(File.I_FN_ORIGINAL).current) {
                     const ts2 = tsFromString(this.get(File.I_FN_ORIGINAL).current);
                     if (ts2.isTimestamped()) {
-                        this.get(File.I_FN_TIME).expect(ts2);
+                        this.get(File.I_FN_TIME).expect(ts2, 'parse the original instead of the timestamp');
                     }
                 }
             });
