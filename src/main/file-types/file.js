@@ -244,11 +244,8 @@ export default class File extends Item {
      * Check if all informationas are consistent
      *
      * @protected
-     *
-     * @returns {boolean} true if consistent
      */
     checkConsistency() {
-        return true;
     }
 
     /**
@@ -396,7 +393,7 @@ export default class File extends Item {
             return;
         }
         if (this.status != STATUS_NEED_ACTION) {
-            throw 'In invalid state: ' + this.status;
+            throw new FOError('In invalid state: ' + this.status);
         }
         this.notify(STATUS_ACTING);
 

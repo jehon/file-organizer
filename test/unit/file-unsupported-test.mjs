@@ -27,7 +27,7 @@ describe(t(import.meta), function () {
         {
             const f = new FileUnsupported('failure.txt');
             await expectAsync(f.runAnalyse()).toBePending();
-            await expectAsync(f.runActing()).toBeRejectedWith(FOError);
+            await expectAsync(f.runActing()).toBeRejectedWithError(FOError);
             expect(getStatusChangesForItem(f)).toEqual([
                 STATUS_CREATED,
                 STATUS_ANALYSING,
@@ -36,8 +36,8 @@ describe(t(import.meta), function () {
         }
         {
             const f = new FileUnsupported('failure2.txt');
-            await expectAsync(f.runAnalyse()).toBeRejectedWith(FOError);
-            await expectAsync(f.runActing()).toBeRejectedWith(FOError);
+            await expectAsync(f.runAnalyse()).toBeRejectedWithError(FOError);
+            await expectAsync(f.runActing()).toBeRejectedWithError(FOError);
         }
 
         console.info.calls.reset();
