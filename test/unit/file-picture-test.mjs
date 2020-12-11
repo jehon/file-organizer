@@ -15,7 +15,7 @@ async function getPict(dPath) {
     return new FilePicture(dataPath(dPath)).loadData();
 }
 
-describe(t(import.meta), function () {
+xdescribe(t(import.meta), function () {
     it('should get exif from files', async () => {
         // No exif at all
         expect((await getPict('no_exif.jpg')).exif_timestamp.humanReadable()).toBe('');
