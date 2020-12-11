@@ -10,6 +10,7 @@ import {
 } from '../../file-organizer/constants.js';
 
 import { getStatusChangesForItem } from './help-functions.mjs';
+import { FOError } from '../../src/main/file-types/file.js';
 
 describe(t(import.meta), function () {
     beforeEach(() => {
@@ -18,8 +19,8 @@ describe(t(import.meta), function () {
 
     it('should be always good', async function () {
         const f = new FileManual('failure.txt');
-        await expectAsync(f.runAnalyse()).toBeRejected();
-        await expectAsync(f.runActing()).toBeRejected();
+        await expectAsync(f.runAnalyse()).toBeRejectedWith(FOError);
+        await expectAsync(f.runActing()).toBeRejectedWithError(FOError);
 
         expect(getStatusChangesForItem(f)).toEqual([
             STATUS_CREATED,

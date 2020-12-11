@@ -42,6 +42,12 @@ export class FOError extends Error { }
  *      will build up info (and values-problems)
  *      - initial (=current) and expected
  *
+ * - checkConsistency()
+ *      started by runAnalisys
+ *      could not change anything
+ *      check only "expected" values
+ *      create problems
+ *
  * - act()
  *      is only based on values
  *      the only "write" part of the process
@@ -234,6 +240,16 @@ export default class File extends Item {
             });
     }
 
+    /**
+     * Check if all informationas are consistent
+     *
+     * @protected
+     *
+     * @returns {boolean} true if consistent
+     */
+    checkConsistency() {
+        return true;
+    }
 
     /**
      * Do the act based on .values
@@ -339,6 +355,8 @@ export default class File extends Item {
                         this.notify(STATUS_NEED_ACTION);
                         return;
                     }
+
+                    this.checkConsistency();
 
                     // Look for problems
                     if (this.problemsList.length > 0) {
