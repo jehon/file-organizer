@@ -31,7 +31,7 @@ export default class FileTimestamped extends File {
 
         if (this.get(File.I_FN_TITLE).expected && this.get(File.I_FN_TITLE).expected == this.get(File.I_FN_ORIGINAL).expected) {
             // 'remove duplicate title/original'
-            this.get(File.I_FN_ORIGINAL).expect('');
+            this.get(File.I_FN_ORIGINAL).expect('', 'Original is a duplicate of the title');
         }
 
         //

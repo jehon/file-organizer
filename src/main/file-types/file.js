@@ -40,67 +40,17 @@ export class FOError extends Error { }
  * - analyse()
  *      will make the full "readonly" analysis
  *      will build up info (and values-problems)
- *      will enqueue Tasks
+ *      - initial (=current) and expected
  *
- * if necessary, it will "doAct"
+ * - act()
+ *      is only based on values
+ *      the only "write" part of the process
+ *      values{}.fix() (expected -> current)
+ *
  */
 export default class File extends Item {
     static getType() {
         return TYPE_FILE;
-    }
-
-    /** @type {string} */
-    _path
-
-    /** @type {Promise<void>} */
-    _actChain
-
-    // /**
-    //  * The actChain will fill in progressively, but should fire only
-    //  * when starting the "act"
-    //  *
-    //  * @type {function(void): void}
-    //  */
-    // _actChainStart
-
-    constructor(filePath, parent) {
-        /* filepath is the title */
-        super(filePath);
-        this._path = filePath;
-        // this._actChain = new Promise(resolve => {
-        //     // We will trigger the actChain only on the "doAct" part
-        //     this._actChainStart = resolve;
-        // });
-        if (parent) {
-            this.parent = parent;
-        }
-        if (this.parent === undefined) {
-            this.parent = this._calculateParent();
-        }
-
-        const vFn = new Value(fileUtils.getFilename(this._path));
-        this.set(File.I_FILENAME, vFn);
-        this.set(File.I_EXTENSION, new Value(fileUtils.getExtension(this._path)));
-
-        /* Build up all informations and link them to I_FILENAME */
-
-        /* auto update filename  */
-        const updateFn = () => this.get(File.I_FILENAME).expected(this.getCanonicalFilename());
-
-        this.set(File.I_FN_ORIGINAL,
-            new ValueCalculated(vFn, fn => tsFromString(fn).original)
-                .onExpectedChanged(updateFn)
-        );
-
-        this.set(File.I_FN_TITLE,
-            new ValueCalculated(vFn, fn => tsFromString(fn).title)
-                .onExpectedChanged(updateFn)
-        );
-
-        this.set(File.I_FN_TIME,
-            new ValueCalculated(vFn, fn => tsFromString(fn))
-                .onExpectedChanged(updateFn)
-        );
     }
 
     // ------------------------------------------
@@ -143,6 +93,57 @@ export default class File extends Item {
      * In the filename, the timestamp part
      */
     static I_FN_TIME = 'filename_ts_time';
+
+    /** @type {string} */
+    _path
+
+    // /**
+    //  * The actChain will fill in progressively, but should fire only
+    //  * when starting the "act"
+    //  *
+    //  * @type {function(void): void}
+    //  */
+    // _actChainStart
+
+    constructor(filePath, parent) {
+        /* filepath is the title */
+        super(filePath);
+        this._path = filePath;
+
+        if (parent) {
+            this.parent = parent;
+        }
+        if (this.parent === undefined) {
+            this.parent = this._calculateParent();
+        }
+
+        const vFn = new Value(fileUtils.getFilename(this._path));
+        this.set(File.I_FILENAME, vFn);
+
+        this.set(File.I_EXTENSION,
+            new Value(fileUtils.getExtension(this._path))
+        );
+
+        /* Build up all informations and link them to I_FILENAME */
+
+        /* auto update filename  */
+        const updateFn = () => this.get(File.I_FILENAME).expected(this.getCanonicalFilename());
+
+        this.set(File.I_FN_ORIGINAL,
+            new ValueCalculated(vFn, fn => tsFromString(fn).original)
+                .onExpectedChanged(updateFn)
+        );
+
+        this.set(File.I_FN_TITLE,
+            new ValueCalculated(vFn, fn => tsFromString(fn).title)
+                .onExpectedChanged(updateFn)
+        );
+
+        this.set(File.I_FN_TIME,
+            new ValueCalculated(vFn, fn => tsFromString(fn))
+                .onExpectedChanged(updateFn)
+        );
+    }
 
     /**
      * Get the current path from the file
@@ -194,7 +195,7 @@ export default class File extends Item {
     /**
      * [Tool for specialized classes]
      *
-     * Run the analysis on this element and generate tasks
+     * Run the analysis on this element and generate infos
      *
      * Flow:
      *   - call super.analyse() => initialize the above layers
@@ -233,23 +234,6 @@ export default class File extends Item {
             });
     }
 
-    // /**
-    //  * [Tool for specialized classes]
-    //  *
-    //  * Add a task to fix a problem
-    //  *
-    //  * @protected
-    //  * @deprecated
-    //  *
-    //  * @param {module:file-organizer/main/Task} t to be enqueued
-    //  * @returns {File} this for chaining
-    //  */
-    // analysisAddFixAct(t) {
-    //     t.setParent(this);
-    //     this._actChain = this._actChain.then(() => t.run());
-    //     this.notify(STATUS_NEED_ACTION);
-    //     return this;
-    // }
 
     /**
      * Do the act based on .values
@@ -301,6 +285,42 @@ export default class File extends Item {
         }
         return parentsMap.get(parentDir);
     }
+
+    // // TODO (indexed): remember names to // rename
+    // // @Limited(1)
+    // async getIndexedFilename() {
+    //     const o = this.calculatedTS.original;
+    //     if (/^\d+$/.test(o)) {
+    //         // Remove previous index (numerical)
+    //         this.calculatedTS.original = '';
+    //     }
+
+    //     if (this.getCanonicalFilename() == this.get('filename').initial) {
+    //         return this.getCanonicalFilename();
+    //     }
+
+    //     const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.get('extension').initial);
+
+    //     return indexedFilenameLimiter(async () => {
+    //         try {
+    //             await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
+    //             return this.getCanonicalFilename();
+    //         } catch (_e) {
+    //             // expected
+    //         }
+
+    //         this.calculatedTS.original = 1;
+    //         while (this.calculatedTS.original != o) {
+    //             try {
+    //                 await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
+    //                 return this.getCanonicalFilename();
+    //             } catch (_e) {
+    //                 //expected
+    //             }
+    //             this.calculatedTS.original++;
+    //         }
+    //     });
+    // }
 
     /**
      * Run the analysis on this files, and all related one's (ex: FileFolder)
@@ -426,40 +446,4 @@ export default class File extends Item {
         }
         return this.runActing();
     }
-
-    // // TODO (indexed): remember names to // rename
-    // // @Limited(1)
-    // async getIndexedFilename() {
-    //     const o = this.calculatedTS.original;
-    //     if (/^\d+$/.test(o)) {
-    //         // Remove previous index (numerical)
-    //         this.calculatedTS.original = '';
-    //     }
-
-    //     if (this.getCanonicalFilename() == this.get('filename').initial) {
-    //         return this.getCanonicalFilename();
-    //     }
-
-    //     const p = (proposedFilename) => path.join(this.parent.getPath(), proposedFilename + this.get('extension').initial);
-
-    //     return indexedFilenameLimiter(async () => {
-    //         try {
-    //             await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
-    //             return this.getCanonicalFilename();
-    //         } catch (_e) {
-    //             // expected
-    //         }
-
-    //         this.calculatedTS.original = 1;
-    //         while (this.calculatedTS.original != o) {
-    //             try {
-    //                 await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
-    //                 return this.getCanonicalFilename();
-    //             } catch (_e) {
-    //                 //expected
-    //             }
-    //             this.calculatedTS.original++;
-    //         }
-    //     });
-    // }
 }
