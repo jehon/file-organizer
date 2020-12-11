@@ -81,7 +81,7 @@ describe(t(import.meta), function () {
             expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('');
         });
 
-        xit('should parse filename original', async () => {
+        it('should parse filename original', async () => {
             const f = new File('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
             await f.runAnalyse();
             expect(f.get(File.I_FN_TIME).expected.moment.year()).toBe(2012);
