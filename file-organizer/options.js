@@ -12,7 +12,7 @@ const defaultOptions = {
 const options = {};
 
 /**
- *
+ * For testing purpose
  */
 function _resetToDefault() {
     for (var member in options) delete options[member];
@@ -23,3 +23,6 @@ function _resetToDefault() {
 _resetToDefault();
 
 module.exports = options;
+
+// For testing purpose
+options._resetToDefault = _resetToDefault;
