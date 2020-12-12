@@ -133,22 +133,19 @@ export default class File extends Item {
         /* Build up all informations and link them to I_FILENAME */
 
         /* auto update filename  */
-        const updateFn = () => this.get(File.I_FILENAME).expected(this.getCanonicalFilename());
+        const updateFn = () => this.get(File.I_FILENAME).expect(this.getCanonicalFilename());
 
         this.set(File.I_FN_ORIGINAL,
             new ValueCalculated(vFn, fn => tsFromString(fn).original)
-                .onExpectedChanged(updateFn)
-        );
+        ).onExpectedChanged(updateFn);
 
         this.set(File.I_FN_TITLE,
             new ValueCalculated(vFn, fn => tsFromString(fn).title)
-                .onExpectedChanged(updateFn)
-        );
+        ).onExpectedChanged(updateFn);
 
         this.set(File.I_FN_TIME,
             new ValueCalculated(vFn, fn => tsFromString(fn))
-                .onExpectedChanged(updateFn)
-        );
+        ).onExpectedChanged(updateFn);
     }
 
     /**
