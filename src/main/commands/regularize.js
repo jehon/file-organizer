@@ -13,7 +13,9 @@ export const handler = function (noptions) {
     let p = Promise.resolve();
 
     if (!options.headless) {
-        p = p.then(() => import('../../gui.js'));
+        p = p
+            .then(() => import('../../gui.js'))
+            .then(() => { });
     }
 
     return p.then(() =>
