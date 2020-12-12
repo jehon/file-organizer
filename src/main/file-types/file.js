@@ -358,7 +358,7 @@ export default class File extends Item {
                     // Look for problems
                     if (this.problemsList.length > 0) {
                         this.notify(STATUS_FAILURE);
-                        throw new FOError(this.problemsList.length + ' problem(s) found');
+                        throw new FOError(this.problemsList.length + ' problem(s) found: ' + this.problemsList.join(' / '));
                     }
 
                     // Look at all values, and if some are note ok
