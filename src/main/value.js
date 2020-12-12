@@ -146,7 +146,7 @@ export default class Value extends EventEmitter {
     }
 
     onExpectedChanged(cb) {
-        this.on('expectedChanged', cb);
+        this.on('expectedChanged', () => cb(this));
         return this;
     }
 }

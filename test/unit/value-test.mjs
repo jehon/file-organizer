@@ -33,7 +33,8 @@ describe(t(import.meta), function () {
     it('should fire events', function (done) {
         const v = new Value('test');
 
-        v.onExpectedChanged(() => {
+        v.onExpectedChanged((v2) => {
+            expect(v2).toBe(v);
             expect(v.expected).toBe(123);
             done();
         });
