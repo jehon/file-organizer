@@ -2,7 +2,7 @@
 // import path from 'path';
 
 import File from './file.js';
-// import options from '../../../file-organizer/options.js';
+import Value from '../value.js';
 
 // import fileUtils from '../../../file-organizer/file-utils.js';
 // import timestampAPI from '../../../file-organizer/timestamp.js';
@@ -12,13 +12,35 @@ import File from './file.js';
 // const indexedFilenameLimiter = pLimit(1);
 
 export default class FileTimestamped extends File {
+    static I_ITS_TIME = 'internal timestamp'
+    static I_ITS_TITLE = 'internal title'
+
     static P_TS_NOT_PARSABLE = 'Filename is not parsable'
     static P_NO_TIMESTAMP = 'No timestamp found'
     static P_NO_TITLE = 'No title found'
     static P_TS_INCOHERENT = 'Incoherent with parent folder'
 
+    /**
+     * Read the internal data
+     *
+     * @returns {Promise<object>} with the data
+     * @property {module:file-organizer/Timestamp} ts is the timestamp
+     * @property {string} title the title
+     */
+    async readInternalData() {
+        return {
+            ts: this.get(File.I_FN_TIME).expected,
+            title: this.get(File.I_FN_TITLE).expected
+        };
+    }
+
     async analyse() {
         await super.analyse();
+
+        const d = await this.readInternalData();
+
+        this.set(FileTimestamped.I_ITS_TIME, new Value(d.ts));
+        this.set(FileTimestamped.I_ITS_TITLE, new Value(d.title));
 
         /*
          * Let's go with calculations
