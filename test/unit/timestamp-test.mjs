@@ -52,21 +52,21 @@ describe(t(import.meta), function () {
             isA('2018-09-08 13-14-15 [file]',
                 'final', '2018:09:08 13:14:15', '2018-09-08 13-14-15',
                 {
-                    original: 'file',
+                    qualif: 'file',
                     title: ''
                 });
 
             isA('2018-09-08 13-14-15 test [file]',
                 'final', '2018:09:08 13:14:15', '2018-09-08 13-14-15',
                 {
-                    original: 'file',
+                    qualif: 'file',
                     title: 'test'
                 });
 
             isA('2018-09-08 test [file]',
                 'final', '2018:09:08 00:00:00', '2018-09-08',
                 {
-                    original: 'file',
+                    qualif: 'file',
                     title: 'test'
                 });
 
@@ -74,7 +74,7 @@ describe(t(import.meta), function () {
             isA('2018 test [file]',
                 'final', '2018:01:01 01:01:01', '2018',
                 {
-                    original: 'file',
+                    qualif: 'file',
                     title: 'test'
                 });
 
@@ -82,14 +82,14 @@ describe(t(import.meta), function () {
             isA('2018 test',
                 'final', '2018:01:01 01:01:01', '2018',
                 {
-                    original: '',
+                    qualif: '',
                     title: 'test'
                 });
 
             isA('2015-12-11 02-03-55 Bangladesh - A la mer',
                 'final', '2015:12:11 02:03:55', '2015-12-11 02-03-55',
                 {
-                    original: '',
+                    qualif: '',
                     title: 'Bangladesh - A la mer'
                 });
 
@@ -100,7 +100,7 @@ describe(t(import.meta), function () {
             isA('2018 bonjour 2019',
                 'final', '2018:01:01 01:01:01', '2018',
                 {
-                    original: '',
+                    qualif: '',
                     title: 'bonjour 2019'
                 });
 
@@ -108,7 +108,7 @@ describe(t(import.meta), function () {
             isA('2018-01 bonjour 2019',
                 'final', '2018:01:02 02:02:02', '2018-01',
                 {
-                    original: '',
+                    qualif: '',
                     title: 'bonjour 2019'
                 });
 
@@ -116,7 +116,7 @@ describe(t(import.meta), function () {
             isA('2018-01-15 bonjour 2019',
                 'final', '2018:01:15 00:00:00', '2018-01-15',
                 {
-                    original: '',
+                    qualif: '',
                     title: 'bonjour 2019'
                 });
         });
@@ -146,7 +146,7 @@ describe(t(import.meta), function () {
             isA('DSC_1234',
                 'raw8_3', '0000:00:00 00:00:00', '',
                 {
-                    original: 'DSC_1234',
+                    qualif: 'DSC_1234',
                     title: ''
                 });
         });
@@ -155,21 +155,21 @@ describe(t(import.meta), function () {
             isA('VID_20180102_030405',
                 'android', '2018:01:02 03:04:05', '2018-01-02 03-04-05',
                 {
-                    original: 'VID_20180102_030405',
+                    qualif: 'VID_20180102_030405',
                     title: ''
                 });
 
             isA('IMG_20180102_030405',
                 'android', '2018:01:02 03:04:05', '2018-01-02 03-04-05',
                 {
-                    original: 'IMG_20180102_030405',
+                    qualif: 'IMG_20180102_030405',
                     title: ''
                 });
 
             isA('IMG-20180915-WA0001',
                 'whatsapp', '2018:09:15 00:00:00', '2018-09-15',
                 {
-                    original: 'IMG-20180915-WA0001'
+                    qualif: 'IMG-20180915-WA0001'
                 });
 
             expect(regexps.android.test('IMG_20180304_050607')).toBeTruthy();
@@ -180,14 +180,14 @@ describe(t(import.meta), function () {
             isA('20150306_153340',
                 'screen', '2015:03:06 15:33:40', '2015-03-06 15-33-40',
                 {
-                    original: '20150306_153340',
+                    qualif: '20150306_153340',
                     title: '',
                 });
 
             isA('20150306_153340 Cable internet dans la rue',
                 'screen', '2015:03:06 15:33:40', '2015-03-06 15-33-40',
                 {
-                    original: '20150306_153340',
+                    qualif: '20150306_153340',
                     title: 'Cable internet dans la rue',
                 });
         });
@@ -223,15 +223,21 @@ describe(t(import.meta), function () {
         it('should detect invalid formats', function () {
             isA('2018-01-02-03',
                 'invalid', '0000:00:00 00:00:00', '',
-                { original: '2018-01-02-03' });
+                {
+                    title: '2018-01-02-03'
+                });
 
             isA('brol - machin',
                 'invalid', '0000:00:00 00:00:00', '',
-                { original: 'brol - machin' });
+                {
+                    title: 'brol - machin'
+                });
 
             isA('brol 2018-01-02 machin',
                 'invalid', '0000:00:00 00:00:00', '',
-                { original: 'brol 2018-01-02 machin' });
+                {
+                    title: 'brol 2018-01-02 machin'
+                });
 
         });
     });

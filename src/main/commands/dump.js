@@ -85,7 +85,7 @@ export async function handler(noptions) {
                         + sep
                         + (fi.exif_timestamp
                             ? l(fi.exif_timestamp.humanReadable(), padTimestamp)
-                            : messages.IconFailure + ' ' + l(fi.filenameTS.original, padTimestamp - 2).red
+                            : messages.IconFailure + ' ' + l(fi.filenameTS.qualif, padTimestamp - 2).red
                         )
                         + sep
                         + (fi.exif_title

@@ -68,7 +68,7 @@ describe(t(import.meta), function () {
         it('parse filename', async () => {
             const f = new File('20150306_153340 Cable internet dans la rue.jpg');
             await f.runAnalyse();
-            expect(f.get(File.I_FN_ORIGINAL).initial).toBe('20150306_153340');
+            expect(f.get(File.I_FN_QUALIF).initial).toBe('20150306_153340');
             expect(f.get(File.I_FN_TITLE).initial).toBe('Cable internet dans la rue');
             expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('2015-03-06 15-33-40');
         });
@@ -76,7 +76,7 @@ describe(t(import.meta), function () {
         it('parse invalid filename', async () => {
             const f = new File('1913-14-75 Cable internet dans la rue.jpg');
             // await expectAsync(f.runAnalyse()).toBeRejectedWithError(FOError);
-            expect(f.get(File.I_FN_ORIGINAL).initial).toBe('1913-14-75 Cable internet dans la rue');
+            expect(f.get(File.I_FN_QUALIF).initial).toBe('');
             expect(f.get(File.I_FN_TITLE).initial).toBe('1913-14-75 Cable internet dans la rue');
             expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('');
         });
@@ -92,6 +92,8 @@ describe(t(import.meta), function () {
             expect((await new File('2018-02-04').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04');
             expect((await new File('2018-02-04 13-17-50 canon').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
             expect((await new File('2020-01-19 01-24-02 petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
+
+            expect((await new File('petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('petitAppPhoto');
         });
 
         it('should give a parent', () => {
@@ -131,11 +133,11 @@ describe(t(import.meta), function () {
             //         await n1.changeFilename('2018-02-04 13-17-50 canon [test]');
 
             //         // Index when file already exists
-            //         n2.calculatedTS.original = 'test';
+            //         n2.calculatedTS.qualif = 'test';
             //         expect(await n2.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon [1]');
 
-            //         // Skip numerical 'original' which should be indexes
-            //         n1.calculatedTS.original = '123';
+            //         // Skip numerical 'qualif' which should be indexes
+            //         n1.calculatedTS.qualif = '123';
             //         expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
 
             //         await fileDelete(n1.getPath());

@@ -29,9 +29,9 @@ export default class FileTimestamped extends File {
             return;
         }
 
-        if (this.get(File.I_FN_TITLE).expected && this.get(File.I_FN_TITLE).expected == this.get(File.I_FN_ORIGINAL).expected) {
+        if (this.get(File.I_FN_TITLE).expected && this.get(File.I_FN_TITLE).expected == this.get(File.I_FN_QUALIF).expected) {
             // 'remove duplicate title/original'
-            this.get(File.I_FN_ORIGINAL).expect('', 'Original is a duplicate of the title');
+            this.get(File.I_FN_QUALIF).expect('', 'Original is a duplicate of the title');
         }
 
         //
@@ -114,8 +114,8 @@ export default class FileTimestamped extends File {
         if (this.get(File.I_FN_TITLE).expected > '') {
             proposedFilename += ' ' + this.get(File.I_FN_TITLE).expected;
         }
-        if (this.get(File.I_FN_ORIGINAL).current + '' > '') {
-            proposedFilename += ' [' + this.get(File.I_FN_ORIGINAL).current + ']';
+        if (this.get(File.I_FN_QUALIF).current + '' > '') {
+            proposedFilename += ' [' + this.get(File.I_FN_QUALIF).current + ']';
         }
         return proposedFilename.trim();
     }

@@ -91,9 +91,9 @@ export default class File extends Item {
     static I_FN_TITLE = 'filename_ts_title';
 
     /**
-     * In the filename, the original filename part
+     * In the filename, the qualif filename part
      */
-    static I_FN_ORIGINAL = 'filename_ts_original';
+    static I_FN_QUALIF = 'filename_ts_qualif';
 
     /**
      * In the filename, the timestamp part
@@ -135,17 +135,14 @@ export default class File extends Item {
         /* auto update filename  */
         const updateFn = () => this.get(File.I_FILENAME).expect(this.getCanonicalFilename());
 
-        this.set(File.I_FN_ORIGINAL,
-            new ValueCalculated(vFn, fn => tsFromString(fn).original)
-        ).onExpectedChanged(updateFn);
+        this.set(File.I_FN_QUALIF, new ValueCalculated(vFn, fn => tsFromString(fn).qualif))
+            .onExpectedChanged(updateFn);
 
-        this.set(File.I_FN_TITLE,
-            new ValueCalculated(vFn, fn => tsFromString(fn).title)
-        ).onExpectedChanged(updateFn);
+        this.set(File.I_FN_TITLE, new ValueCalculated(vFn, fn => tsFromString(fn).title))
+            .onExpectedChanged(updateFn);
 
-        this.set(File.I_FN_TIME,
-            new ValueCalculated(vFn, fn => tsFromString(fn))
-        ).onExpectedChanged(updateFn);
+        this.set(File.I_FN_TIME, new ValueCalculated(vFn, fn => tsFromString(fn)))
+            .onExpectedChanged(updateFn);
     }
 
     /**
@@ -166,15 +163,22 @@ export default class File extends Item {
     }
 
     getCanonicalFilename() {
+        if (this.get(File.I_FILENAME).expected == null) {
+            return null;
+        }
+
         let proposedFilename = '';
-        if (this.get(File.I_FN_TIME).expected.humanReadable() > '') {
+        if (this.get(File.I_FN_TIME)?.expected.humanReadable()) {
             proposedFilename += this.get(File.I_FN_TIME).expected.humanReadable();
         }
-        if (this.get(File.I_FN_TITLE).expected > '') {
+        if (this.get(File.I_FN_TITLE)?.expected) {
             proposedFilename += ' ' + this.get(File.I_FN_TITLE).expected;
         }
-        if (this.get(File.I_FN_ORIGINAL).current + '' > '') {
-            proposedFilename += ' [' + this.get(File.I_FN_ORIGINAL).current + ']';
+        if (this.get(File.I_FN_QUALIF)?.current) {
+            proposedFilename += ' [' + this.get(File.I_FN_QUALIF).current + ']';
+        }
+        if (!proposedFilename) {
+            return this.get(File.I_FILENAME).expected.trim();
         }
         return proposedFilename.trim();
     }
@@ -225,13 +229,13 @@ export default class File extends Item {
                     this.get(File.I_EXTENSION).expect(currentExtension.toLowerCase(), 'to lower case');
                 }
 
-                // Parse the original filename to see if it is a timestamp too
+                // Parse the qualif filename to see if it is a timestamp too
                 // and take it as the source of thruth if applicable
                 // TODO: this should move into timestamp ?
-                if (this.get(File.I_FN_ORIGINAL).current) {
-                    const ts2 = tsFromString(this.get(File.I_FN_ORIGINAL).current);
+                if (this.get(File.I_FN_QUALIF).current) {
+                    const ts2 = tsFromString(this.get(File.I_FN_QUALIF).current);
                     if (ts2.isTimestamped()) {
-                        this.get(File.I_FN_TIME).expect(ts2, 'parse the original instead of the timestamp');
+                        this.get(File.I_FN_TIME).expect(ts2, 'parse the qualif instead of the timestamp');
                     }
                 }
             });
@@ -299,10 +303,10 @@ export default class File extends Item {
     // // TODO (indexed): remember names to // rename
     // // @Limited(1)
     // async getIndexedFilename() {
-    //     const o = this.calculatedTS.original;
+    //     const o = this.calculatedTS.qualif;
     //     if (/^\d+$/.test(o)) {
     //         // Remove previous index (numerical)
-    //         this.calculatedTS.original = '';
+    //         this.calculatedTS.qualif = '';
     //     }
 
     //     if (this.getCanonicalFilename() == this.get('filename').initial) {
@@ -319,15 +323,15 @@ export default class File extends Item {
     //             // expected
     //         }
 
-    //         this.calculatedTS.original = 1;
-    //         while (this.calculatedTS.original != o) {
+    //         this.calculatedTS.qualif = 1;
+    //         while (this.calculatedTS.qualif != o) {
     //             try {
     //                 await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.currentFilePath);
     //                 return this.getCanonicalFilename();
     //             } catch (_e) {
     //                 //expected
     //             }
-    //             this.calculatedTS.original++;
+    //             this.calculatedTS.qualif++;
     //         }
     //     });
     // }

@@ -18,8 +18,8 @@ class FileTimestamped extends FileGeneric {
         const title = this.filenameTS.title;
 
         // Parse the original filename to see if we can get some data
-        if (this.filenameTS.original) {
-            const ts2 = tsFromString(this.filenameTS.original);
+        if (this.filenameTS.qualif) {
+            const ts2 = tsFromString(this.filenameTS.qualif);
             if (ts2.isTimestamped() > 0) {
                 this.filenameTS = ts2;
             }
@@ -55,8 +55,8 @@ class FileTimestamped extends FileGeneric {
         if (this.calculatedTS.title > '') {
             proposedFilename += ' ' + this.calculatedTS.title;
         }
-        if (this.calculatedTS.original + '' > '') {
-            proposedFilename += ' [' + this.calculatedTS.original + ']';
+        if (this.calculatedTS.qualif + '' > '') {
+            proposedFilename += ' [' + this.calculatedTS.qualif + ']';
         }
         return proposedFilename.trim();
     }
@@ -64,10 +64,10 @@ class FileTimestamped extends FileGeneric {
     // TODO (indexed): remember names to // rename
     // @Limited(1)
     async getIndexedFilename() {
-        const o = this.calculatedTS.original;
+        const o = this.calculatedTS.qualif;
         if (/^\d+$/.test(o)) {
             // Remove previous index (numerical)
-            this.calculatedTS.original = '';
+            this.calculatedTS.qualif = '';
         }
 
         if (this.getCanonicalFilename() == this.getFilename()) {
@@ -84,15 +84,15 @@ class FileTimestamped extends FileGeneric {
                 // expected
             }
 
-            this.calculatedTS.original = 1;
-            while (this.calculatedTS.original != o) {
+            this.calculatedTS.qualif = 1;
+            while (this.calculatedTS.qualif != o) {
                 try {
                     await fileUtils.checkAndReserveName(p(this.getCanonicalFilename()), this.getPath());
                     return this.getCanonicalFilename();
                 } catch (_e) {
                     //expected
                 }
-                this.calculatedTS.original++;
+                this.calculatedTS.qualif++;
             }
         });
     }
@@ -103,11 +103,11 @@ class FileTimestamped extends FileGeneric {
         }
 
         let res = true;
-        if (this.calculatedTS.title && this.calculatedTS.title == this.calculatedTS.original) {
+        if (this.calculatedTS.title && this.calculatedTS.title == this.calculatedTS.qualif) {
             this.addMessageInfo('TS_DUP_TITLE', 'remove duplicate title/original',
                 'remove original filename'
             );
-            this.calculatedTS.original = '';
+            this.calculatedTS.qualif = '';
         }
 
         {
