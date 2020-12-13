@@ -35,6 +35,10 @@ describe(t(import.meta), function () {
 
         v.onExpectedChanged((v2) => {
             expect(v2).toBe(v);
+            if (v.expected == 'test') {
+                // initial call
+                return;
+            }
             expect(v.expected).toBe(123);
             done();
         });

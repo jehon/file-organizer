@@ -13,11 +13,7 @@ import Value from './value.js';
 
 export default class ValueConstant extends Value {
     static getNotifyProperties() {
-        return ['currentValue', 'initialValue'];
-    }
-
-    constructor(value) {
-        super(value);
+        return ['initialValue'];
     }
 
     /**

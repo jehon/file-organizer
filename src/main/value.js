@@ -50,42 +50,6 @@ export default class Value extends EventEmitter {
         return this.#current;
     }
 
-    // set current(cur) {
-    //     this.#current = cur;
-    // }
-
-    // /**
-    //  * Set the current value
-    //  *
-    //  * @param {*} cur expected
-    //  */
-    // currently(cur) {
-    //     if (this.equals(this.#current, cur)) {
-    //         return;
-    //     }
-    //     this.#current = cur;
-    //     this.emit('currentChanged', cur);
-    // }
-
-    /**
-     * Set the expected value
-     *
-     * @param {*} expect expected
-     * @param {string} message associated with the action (for info only)
-     * @returns {Value} to be chained
-     */
-    expect(expect, message = null) {
-        if (this.equals(this.#expected, expect)) {
-            return;
-        }
-        if (message) {
-            this.messages.push(message);
-        }
-        this.#expected = expect;
-        this.emit('expectedChanged', expect);
-        return this;
-    }
-
     /**
      * Test if someone did modify the (current) value
      *
@@ -132,6 +96,31 @@ export default class Value extends EventEmitter {
         return this;
     }
 
+    /**
+     * Set the expected value
+     *
+     * @param {*} expect expected
+     * @param {string} message associated with the action (for info only)
+     * @returns {Value} to be chained
+     */
+    expect(expect, message = null) {
+        if (this.equals(this.#expected, expect)) {
+            return;
+        }
+        if (message) {
+            this.messages.push(message);
+        }
+        this.#expected = expect;
+        this.emit('expectedChanged', expect);
+        return this;
+    }
+
+    onExpectedChanged(cb) {
+        this.on('expectedChanged', () => cb(this));
+        cb(this);
+        return this;
+    }
+
     toJSON() {
         return {
             className: this.constructor.name,
@@ -143,10 +132,5 @@ export default class Value extends EventEmitter {
             isDone: this.isDone(),
             messages: this.messages
         };
-    }
-
-    onExpectedChanged(cb) {
-        this.on('expectedChanged', () => cb(this));
-        return this;
     }
 }

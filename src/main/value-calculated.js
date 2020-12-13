@@ -33,6 +33,12 @@ export default class ValueCalculated extends ValueConstant {
         super(value.initial);
         this.#basis = value;
         this.#formula = formula;
+        /*
+         * TODO: here is a great question
+         *
+         *   should we instantiate on "initial" or on "expected" ?
+         *   expected is more up-to-date, but may be not calculated yet
+         */
         this.#calculatedExpected = this.#formula(this.#basis.expected);
     }
 

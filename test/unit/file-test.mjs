@@ -92,7 +92,6 @@ describe(t(import.meta), function () {
             expect((await new File('2018-02-04').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04');
             expect((await new File('2018-02-04 13-17-50 canon').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
             expect((await new File('2020-01-19 01-24-02 petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
-
             expect((await new File('petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('petitAppPhoto');
         });
 

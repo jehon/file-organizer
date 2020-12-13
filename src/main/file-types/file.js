@@ -135,14 +135,17 @@ export default class File extends Item {
         /* auto update filename  */
         const updateFn = () => this.get(File.I_FILENAME).expect(this.getCanonicalFilename());
 
-        this.set(File.I_FN_QUALIF, new ValueCalculated(vFn, fn => tsFromString(fn).qualif))
-            .onExpectedChanged(updateFn);
+        // Handle initialization
 
-        this.set(File.I_FN_TITLE, new ValueCalculated(vFn, fn => tsFromString(fn).title))
-            .onExpectedChanged(updateFn);
+        this.set(File.I_FN_QUALIF, new ValueCalculated(vFn, fn => tsFromString(fn).qualif));
+        this.set(File.I_FN_TITLE, new ValueCalculated(vFn, fn => tsFromString(fn).title));
+        this.set(File.I_FN_TIME, new ValueCalculated(vFn, fn => tsFromString(fn)));
 
-        this.set(File.I_FN_TIME, new ValueCalculated(vFn, fn => tsFromString(fn)))
-            .onExpectedChanged(updateFn);
+        // Now that everything is intialized, let's handle change
+
+        this.get(File.I_FN_QUALIF).onExpectedChanged(updateFn);
+        this.get(File.I_FN_TITLE).onExpectedChanged(updateFn);
+        this.get(File.I_FN_TIME).onExpectedChanged(updateFn);
     }
 
     /**
@@ -178,7 +181,7 @@ export default class File extends Item {
             proposedFilename += ' [' + this.get(File.I_FN_QUALIF).current + ']';
         }
         if (!proposedFilename) {
-            return this.get(File.I_FILENAME).expected.trim();
+            proposedFilename = this.get(File.I_FILENAME).expected;
         }
         return proposedFilename.trim();
     }
