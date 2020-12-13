@@ -106,8 +106,14 @@ export default class FileTimestamped extends File {
         //
         // Coherence tests
         //
+    }
 
+    checkConsistency() {
         if (!this.get(File.I_FN_TIME).expected) {
+            this.addProblem(FileTimestamped.P_NO_TIMESTAMP);
+        }
+
+        if (!this.get(File.I_FN_TITLE).expected) {
             this.addProblem(FileTimestamped.P_NO_TITLE);
         }
 
