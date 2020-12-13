@@ -127,18 +127,4 @@ export default class FileTimestamped extends File {
             }
         }
     }
-
-    getCanonicalFilename() {
-        let proposedFilename = '';
-        if (this.get(File.I_FN_TIME).expected.humanReadable() > '') {
-            proposedFilename += this.get(File.I_FN_TIME).expected.humanReadable();
-        }
-        if (this.get(File.I_FN_TITLE).expected > '') {
-            proposedFilename += ' ' + this.get(File.I_FN_TITLE).expected;
-        }
-        if (this.get(File.I_FN_QUALIF).current + '' > '') {
-            proposedFilename += ' [' + this.get(File.I_FN_QUALIF).current + ']';
-        }
-        return proposedFilename.trim();
-    }
 }
