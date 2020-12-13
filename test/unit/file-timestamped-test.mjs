@@ -123,4 +123,70 @@ describe(t(import.meta), function () {
             //                 new2.remove();
         });
     });
+
+    // describe('should adapt to options', () => {
+    //     fit('should take the new title from file', async () => {
+    //         // const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
+    //         // await new1.exifWriteTitle('');
+
+    //         // new2 is a virtual alias of new1 with fields initialized
+    //         const new2 = await buildFile(new1.getPath());
+    //         await new2.runAnalyse();
+    //         //                 expect(new2.exif_title).toBe('');
+    //         //                 expect(new2.filenameTS.title).toBe('exifok01');
+
+    //         //                 await new2.check();
+    //         //                 await new2.exifReload();
+    //         //                 expect(new2.exif_title).toBe('exifok01');
+    //         //                 expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 exifok01');
+
+    //         //                 new2.remove();
+    //     });
+
+    //     xit('should take the new title from the folder', async () => {
+    //         //                 const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
+    //         //                 await new1.exifWriteTitle('');
+    //         //                 await new1.changeFilename('1998-12-31 12-10-11');
+
+    //         //                 // new2 is a virtual alias of new1 with fields initialized
+    //         //                 const new2 = await buildFile(new1.getPath());
+    //         //                 await new2.loadData();
+    //         //                 expect(new2.exif_title).toBe('');
+    //         //                 expect(new2.filenameTS.title).toBe('');
+    //         //                 new2._parent = new FileFolder('1998 parent title');
+    //         //                 expect(new2.parent.filenameTS.title).toBe('parent title');
+
+    //         //                 try {
+    //         //                     // TODO(cleanup): this check lead to a lot of error
+    //         //                     // import fs from 'fs';
+    //         //                     // spyOn(fs.promises, 'rename').and.returnValue(Promise.resolve(true));
+    //         //                     // spyOn(spawn-promise, '?').and.returnValue(Promise.resolve(true));
+    //         //                     await new2.check();
+    //         //                 } catch (_e) {
+    //         //                     // expected
+    //         //                 }
+    //         //                 // !! new2 is in a non-existant folder
+    //         //                 expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 parent title');
+
+    //         //                 new1.remove();
+    //     });
+
+    //     xit('should keep original title', async () => {
+    //         //                 const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
+    //         //                 await new1.exifWriteTitle('x test');
+
+    //         //                 // new2 is a virtual alias of new1 with fields initialized
+    //         //                 const new2 = await buildFile(new1.getPath());
+    //         //                 await new2.loadData();
+    //         //                 expect(new2.exif_title).toBe('x test');
+
+    //         //                 await new2.check();
+    //         //                 await new2.exifReload();
+    //         //                 expect(new2.exif_title).toBe('x test');
+    //         //                 expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 x test');
+
+    //         //                 new2.remove();
+    //     });
+    // });
+
 });
