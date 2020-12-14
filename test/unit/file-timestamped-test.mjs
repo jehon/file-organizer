@@ -16,7 +16,7 @@ import {
     // fileExists,
     tempPath
 } from './help-functions.mjs';
-
+import { tsFromExif } from '../../file-organizer/timestamp.js';
 
 /**
  * @param {File} file whose parents need to be created
@@ -26,6 +26,103 @@ function mkParentFolder(file) {
 }
 
 describe(t(import.meta), function () {
+    describe('it should complete', function () {
+        it('should take the new title from filename', async () => {
+            const f = new FileTimestamped('2020-01-01 canon.JPG');
+            f.readInternalData = () => ({
+                ts: tsFromExif('1999:01:02 03:04:05'),
+                title: ''
+            });
+
+            await f.runAnalyse();
+            expect(f.get(File.I_FN_TITLE).expected).toBe('canon');
+            expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('canon');
+        });
+
+        it('should take the new title from the folder when nothing is found', async () => {
+            const f = new FileTimestamped('1998-12-31 12-10-11.jpg', new File('1998 parent title'));
+            expect(f.parent.get(File.I_FN_TITLE).initial).toBe('parent title');
+            f.readInternalData = () => ({
+                ts: tsFromExif('1999:01:02 03:04:05'),
+                title: ''
+            });
+
+            await f.runAnalyse();
+
+            expect(f.getCanonicalFilename()).toBe('1999-01-02 03-04-05 parent title');
+        });
+    });
+
+    describe('should adapt to options', () => {
+        afterEach(() => {
+            _resetToDefault();
+        });
+
+        it('should take the title from options', async () => {
+            options.setTitle = 'blablabla';
+
+            const f = new FileTimestamped('2020-01-01 canon.JPG');
+            f.readInternalData = () => ({
+                ts: tsFromExif('1999:01:02 03:04:05'),
+                title: 'exif_title'
+            });
+
+            await f.runAnalyse();
+            expect(f.get(File.I_FN_TITLE).expected).toBe('blablabla');
+            expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('blablabla');
+        });
+
+        it('should take the new title from the folder when option require it', async () => {
+            options.forceTitleFromFolder = true;
+
+            const f = new FileTimestamped('1998-12-31 12-10-11 blabla.jpg', new File('1998 parent title'));
+            expect(f.parent.get(File.I_FN_TITLE).initial).toBe('parent title');
+            f.readInternalData = () => ({
+                ts: tsFromExif('1999:01:02 03:04:05'),
+                title: 'exif_title'
+            });
+
+            await f.runAnalyse();
+
+            expect(f.get(File.I_FN_TITLE).expected).toBe('parent title');
+            expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('parent title');
+            expect(f.getCanonicalFilename()).toBe('1999-01-02 03-04-05 parent title');
+        });
+
+        it('should take the new title from the filename when option require it', async () => {
+            options.forceTitleFromFilename = true;
+
+            const f = new FileTimestamped('1998-12-31 12-10-11 blabla.jpg');
+            f.readInternalData = () => ({
+                ts: tsFromExif('1999:01:02 03:04:05'),
+                title: 'exif_title'
+            });
+
+            await f.runAnalyse();
+
+            expect(f.get(File.I_FN_TITLE).expected).toBe('blabla');
+            expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('blabla');
+            expect(f.getCanonicalFilename()).toBe('1999-01-02 03-04-05 blabla');
+        });
+
+        it('should take the new timestamp from the filename when option require it', async () => {
+            options.forceTimestampFromFilename = true;
+
+            const f = new FileTimestamped('1998-12-31 12-10-11 blabla.jpg');
+            f.readInternalData = () => ({
+                ts: tsFromExif('1999:01:02 03:04:05'),
+                title: 'exif_title'
+            });
+
+            await f.runAnalyse();
+
+            expect(f.get(File.I_FN_TIME).expected.humanReadable()).toBe('1998-12-31 12-10-11');
+            expect(f.get(FileTimestamped.I_ITS_TIME).expected.humanReadable()).toBe('1998-12-31 12-10-11');
+            expect(f.getCanonicalFilename()).toBe('1998-12-31 12-10-11 exif_title');
+        });
+
+    });
+
     describe('should check coherence with parent folder', () => {
         it('should be ok when file date and folder date are coherent', async () => {
             const f = new FileTimestamped(tempPath('1998-12-31 virtual', '1998-12-31 12-13-24 test.jpg'));
@@ -56,85 +153,6 @@ describe(t(import.meta), function () {
                 }
                 expect(f.hasProblem(FileTimestamped.P_TS_INCOHERENT)).toBeTrue();
             }
-        });
-    });
-
-    describe('should adapt to options', () => {
-        afterEach(() => {
-            _resetToDefault();
-        });
-
-        xit('should take the new title from filename', async () => {
-            const f = new FileTimestamped('2020-01-01 canon.JPG');
-            await f.runAnalyse();
-            expect(f.get(File.I_FN_TITLE).expected).toBe('canon');
-            expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('canon');
-        });
-
-        xit('should take the title from options', async () => {
-            options.setTitle = 'blablabla';
-
-            const f = new FileTimestamped('2020-01-01 canon.JPG');
-            await f.runAnalyse();
-            expect(f.get(File.I_FN_TITLE).expected).toBe('blablabla');
-            expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('blablabla');
-        });
-
-        xit('', async () => {
-            // expect(new2.exif_title).toBe('');
-            //                 expect(new2.filenameTS.title).toBe('exifok01');
-
-            //                 await new2.check();
-            //                 await new2.exifReload();
-            //                 expect(new2.exif_title).toBe('exifok01');
-            //                 expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 exifok01');
-
-            //                 new2.remove();
-        });
-
-        xit('should take the new title from the folder', async () => {
-            //                 const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
-            //                 await new1.exifWriteTitle('');
-            //                 await new1.changeFilename('1998-12-31 12-10-11');
-
-            //                 // new2 is a virtual alias of new1 with fields initialized
-            //                 const new2 = await buildFile(new1.getPath());
-            //                 await new2.loadData();
-            //                 expect(new2.exif_title).toBe('');
-            //                 expect(new2.filenameTS.title).toBe('');
-            //                 new2._parent = new FileFolder('1998 parent title');
-            //                 expect(new2.parent.filenameTS.title).toBe('parent title');
-
-            //                 try {
-            //                     // TODO(cleanup): this check lead to a lot of error
-            //                     // import fs from 'fs';
-            //                     // spyOn(fs.promises, 'rename').and.returnValue(Promise.resolve(true));
-            //                     // spyOn(spawn-promise, '?').and.returnValue(Promise.resolve(true));
-            //                     await new2.check();
-            //                 } catch (_e) {
-            //                     // expected
-            //                 }
-            //                 // !! new2 is in a non-existant folder
-            //                 expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 parent title');
-
-            //                 new1.remove();
-        });
-
-        xit('should keep original title', async () => {
-            //                 const new1 = await createFileGeneric('1998-12-31 12-10-11 exifok01.jpg');
-            //                 await new1.exifWriteTitle('x test');
-
-            //                 // new2 is a virtual alias of new1 with fields initialized
-            //                 const new2 = await buildFile(new1.getPath());
-            //                 await new2.loadData();
-            //                 expect(new2.exif_title).toBe('x test');
-
-            //                 await new2.check();
-            //                 await new2.exifReload();
-            //                 expect(new2.exif_title).toBe('x test');
-            //                 expect(new2.getCanonicalFilename()).toBe('1998-12-31 12-10-11 x test');
-
-            //                 new2.remove();
         });
     });
 });
