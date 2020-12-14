@@ -10,10 +10,6 @@ import options from '../../file-organizer/options.js';
 const _resetToDefault = options._resetToDefault;
 
 import {
-    // listenForItemNotify,
-    // getStatusChangesForItem,
-    // createFileFrom,
-    // fileExists,
     tempPath
 } from './help-functions.mjs';
 import { tsFromExif } from '../../file-organizer/timestamp.js';
@@ -22,7 +18,7 @@ import { tsFromExif } from '../../file-organizer/timestamp.js';
  * @param {File} file whose parents need to be created
  */
 function mkParentFolder(file) {
-    fs.mkdirSync(path.dirname(file._path), { recursive: true });
+    fs.mkdirSync(path.dirname(file.getCurrentPath()), { recursive: true });
 }
 
 describe(t(import.meta), function () {

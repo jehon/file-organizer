@@ -165,6 +165,11 @@ export default class File extends Item {
         return v;
     }
 
+    getCurrentPath() {
+        // TODO: should be based on properties
+        return this._path;
+    }
+
     getCanonicalFilename() {
         if (this.get(File.I_FILENAME).expected == null) {
             return null;
