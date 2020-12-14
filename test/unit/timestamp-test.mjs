@@ -218,6 +218,20 @@ describe(t(import.meta), function () {
             isA('canon brol',
                 'minimal', '0000:00:00 00:00:00', '',
                 { title: 'canon brol' });
+
+            isA('brol - machin',
+                'minimal', '0000:00:00 00:00:00', '',
+                {
+                    title: 'brol - machin'
+                });
+
+            isA('canon brol [truc]',
+                'minimal', '0000:00:00 00:00:00', '',
+                {
+                    title: 'canon brol',
+                    qualif: 'truc'
+                });
+
         });
 
         it('should detect invalid formats', function () {
@@ -225,12 +239,6 @@ describe(t(import.meta), function () {
                 'invalid', '0000:00:00 00:00:00', '',
                 {
                     title: '2018-01-02-03'
-                });
-
-            isA('brol - machin',
-                'invalid', '0000:00:00 00:00:00', '',
-                {
-                    title: 'brol - machin'
                 });
 
             isA('brol 2018-01-02 machin',

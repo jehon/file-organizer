@@ -81,10 +81,17 @@ describe(t(import.meta), function () {
             expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('');
         });
 
-        it('should parse filename original', async () => {
+        it('should parse filename qualif', async () => {
             const f = new File('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
             await f.runAnalyse();
             expect(f.get(File.I_FN_TIME).expected.moment.year()).toBe(2012);
+            expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
+        });
+
+        it('should parse remove duplicate title/qualif', async () => {
+            const f = new File('vie de famille [vie de famille]');
+            await f.runAnalyse();
+            expect(f.get(File.I_FN_QUALIF).expected).toBe('');
             expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
         });
 

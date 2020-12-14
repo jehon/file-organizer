@@ -241,6 +241,11 @@ export default class File extends Item {
                         this.get(File.I_FN_TIME).expect(ts2, 'parse the qualif instead of the timestamp');
                     }
                 }
+
+                if (this.get(File.I_FN_QUALIF).expected && this.get(File.I_FN_TITLE).expected == this.get(File.I_FN_QUALIF).expected) {
+                    // 'remove duplicate title/original'
+                    this.get(File.I_FN_QUALIF).expect('', 'Original is a duplicate of the title');
+                }
             });
     }
 

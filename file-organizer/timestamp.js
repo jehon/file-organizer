@@ -56,7 +56,7 @@ const screen = /^(?<qualif>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9
 
 const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})( (?<title>.*))?$`);
 
-const minimal = new RegExp(`^(?!${ts.source})(?<title>(?!.* - )(?!.* ${removeNames(ts)}).*)`);
+const minimal = new RegExp(`^(?!${ts.source})(?<title>(?!.* ${removeNames(ts)})[^[]+)( \\[(?<qualif>.+)\\])?$`);
 
 const invalid = /^(?<title>.*$)/; // Fallback
 
