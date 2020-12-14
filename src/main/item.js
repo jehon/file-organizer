@@ -86,7 +86,7 @@ export default class Item {
      * @protected
      * @param {string} key of the value
      * @param {module:file-organizer/main/Value} value to be added (see info-* files)
-     * @returns {Value} the constructed value
+     * @returns {module:src/main/Value} the constructed value
      */
     set(key, value) {
         this.values[key] = value;
