@@ -39,6 +39,9 @@ module.exports.statsAddSkippedFix = function () {
     stats.fixesSkipped++;
 };
 
+/**
+ * @param {*} e to be notified
+ */
 function notifyError(e) {
     console.error('!! ');
     console.error('!! Error: ', e.getMessage ? e.getMessage() : '', e);
