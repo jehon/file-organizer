@@ -204,41 +204,7 @@ export default class FileExif extends FileTimestamped {
         // TODO: handle timezone?
     }
 
-    // async exifWriteTimestamp(ts_original) {
-    //     const ts = ts_original.clone();
-    //     return exifWrite(this, this.constExifTS, ts.exif())
-    //         .then(() => {
-    //             this.exif_timestamp_raw = ts.exif();
-    //             this.exif_timestamp = tsFromExif(this.exif_timestamp_raw, this.exif_calculated_timezone);
-    //             return this;
-    //         });
-    // }
-
-    // async exifWriteTitle(msg) {
-    //     return exifWrite(this, this.constExifTitle, msg)
-    //         .then(() => {
-    //             this.exif_title = msg;
-    //             this.calculatedTS.title = msg;
-    //             return this;
-    //         });
-    // }
-
-    // async act() {
-    //     await super.act();
-
-    //     if (this.exif_title != this.calculatedTS.title && this.calculatedTS.title) {
-    //         const c = this.calculatedTS.title;
-    //         res = res && await this.addMessageCommit('EXIF_WRITE_TITLE', 'Write title',
-    //             c,
-    //             () => this.exifWriteTitle(c)
-    //         );
-    //     }
-
-    //     if (this.exif_timestamp_raw != this.calculatedTS.exif() && this.calculatedTS.humanReadable()) {
-    //         res = res && await this.addMessageCommit('EXIF_WRITE_TIMESTAMP', 'Write timestamp',
-    //             `${this.calculatedTS.humanReadable()} (${this.calculatedTS.exif()}) <- ${this.exif_timestamp_raw}`,
-    //             () => this.exifWriteTimestamp(this.calculatedTS)
-    //         );
-    //     }
-    // }
+    async act() {
+        await super.act();
+    }
 }
