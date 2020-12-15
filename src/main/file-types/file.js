@@ -69,36 +69,36 @@ export default class File extends Item {
      *
      * null mean the file has been deleted
      */
-    static I_FILENAME = 'filename'
+    static I_FILENAME = 'File_filename'
 
     /**
      * Format: .blabla (always have a dot)
      *
      * null mean the file has been deleted
      */
-    static I_EXTENSION = 'extension'
+    static I_EXTENSION = 'File_extension'
 
     /**
      * true if it is a folder
      *
      * this will be set by the build file factory (in register-file-types)
      */
-    static I_IS_FOLDER = 'is_folder';
+    static I_IS_FOLDER = 'File_is_folder';
 
     /**
      * In the filename, the title part
      */
-    static I_FN_TITLE = 'filename_ts_title';
+    static I_FN_TITLE = 'File_title';
 
     /**
      * In the filename, the qualif filename part
      */
-    static I_FN_QUALIF = 'filename_ts_qualif';
+    static I_FN_QUALIF = 'File_qualif';
 
     /**
      * In the filename, the timestamp part
      */
-    static I_FN_TIME = 'filename_ts_time';
+    static I_FN_TIME = 'File_time';
 
     /** @type {string} */
     _path
@@ -423,10 +423,11 @@ export default class File extends Item {
                     return;
                 }
 
-                for (const k in this.values) {
-                    if (!this.values[k].isDone()) {
-                        throw new FOError('Information not solved: ' + k);
-                    }
+                const unsolved = Object.entries(this.values) // [ key, value ]
+                    .filter(e => !e[1].isDone())
+                    .map(e => e[0]);
+                if (unsolved.length > 0) {
+                    throw new FOError('Information not solved: ' + unsolved.join(', '));
                 }
             })
             .then(
