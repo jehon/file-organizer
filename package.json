@@ -1,59 +1,63 @@
 {
-    "name": "file-organizer",
-    "version": "1.0.0",
-    "private": true,
-    "author": "Jean Honlet",
-    "license": "MIT",
-    "repository": "https://github.com/jehon/file-organizer",
-    "dependencies": {
-        "chalk": "4.1.0",
-        "colors": "1.4.0",
-        "command-exists": "1.2.9",
-        "css-inherit": "https://github.com/jehon/css-inherit.git",
-        "debug": "4.3.1",
-        "electron": "11.1.0",
-        "fs-extra": "9.0.1",
-        "graceful-fs": "4.2.4",
-        "is-interactive": "1.0.0",
-        "moment": "2.29.1",
-        "moment-timezone": "0.5.32",
-        "p-limit": "3.1.0",
-        "p-queue": "6.6.2",
-        "shell-exec": "1.0.2",
-        "tz-lookup": "6.1.25",
-        "yargs": "16.2.0"
-    },
-    "devDependencies": {
-        "@types/jasmine": "3.6.2",
-        "babel-eslint": "10.1.0",
-        "current-git-branch": "1.1.0",
-        "depcheck": "1.3.1",
-        "eslint": "7.15.0",
-        "eslint-plugin-jsdoc": "30.7.8",
-        "jasmine": "github:jasmine/jasmine-npm",
-        "nyc": "15.1.0",
-        "spectron": "13.0.0",
-        "watch": "1.0.2"
-    },
-    "scripts": {
-        "demo": "electron ./demo.cjs",
-        "start": "electron src/main.cjs",
-        "start-headless": "electron src/main.cjs --headless",
-        "postinstall": "touch node_modules/.dependencies"
-    },
-    "main": "src/main.cjs",
-    "type": "module",
-    "nyc": {
-        "all": true,
-        "reporter": [
-            "lcov",
-            "text-summary"
-        ],
-        "include": [
-            "file-organizer/**",
-            "src/**"
-        ],
-        "temp-dir": "./tmp/coverage",
-        "report-dir": "./tmp/unit-coverage"
-    }
+  "name": "file-organizer",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Jean Honlet",
+  "license": "MIT",
+  "repository": "https://github.com/jehon/file-organizer",
+  "dependencies": {
+    "chalk": "4.1.0",
+    "colors": "1.4.0",
+    "command-exists": "1.2.9",
+    "css-inherit": "https://github.com/jehon/css-inherit.git",
+    "debug": "4.3.1",
+    "electron": "11.1.0",
+    "fs-extra": "9.0.1",
+    "graceful-fs": "4.2.4",
+    "is-interactive": "1.0.0",
+    "moment": "2.29.1",
+    "moment-timezone": "0.5.32",
+    "p-limit": "3.1.0",
+    "p-queue": "6.6.2",
+    "shell-exec": "1.0.2",
+    "tz-lookup": "6.1.25",
+    "yargs": "16.2.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "11.0.0",
+    "@commitlint/config-conventional": "11.0.0",
+    "@types/jasmine": "3.6.2",
+    "babel-eslint": "10.1.0",
+    "commitizen": "^4.2.2",
+    "current-git-branch": "1.1.0",
+    "depcheck": "1.3.1",
+    "eslint": "7.15.0",
+    "eslint-plugin-jsdoc": "30.7.8",
+    "husky": "4.3.6",
+    "jasmine": "github:jasmine/jasmine-npm",
+    "nyc": "15.1.0",
+    "spectron": "13.0.0",
+    "watch": "1.0.2"
+  },
+  "scripts": {
+    "demo": "electron ./demo.cjs",
+    "start": "electron src/main.cjs",
+    "start-headless": "electron src/main.cjs --headless",
+    "postinstall": "touch node_modules/.dependencies"
+  },
+  "main": "src/main.cjs",
+  "type": "module",
+  "nyc": {
+    "all": true,
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "include": [
+      "file-organizer/**",
+      "src/**"
+    ],
+    "temp-dir": "./tmp/coverage",
+    "report-dir": "./tmp/unit-coverage"
+  }
 }
