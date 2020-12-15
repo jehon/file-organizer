@@ -19,8 +19,8 @@
 const EXIFTOOL = 'exiftool';
 
 import FileTimestamped from './file-timestamped.js';
-import timestampFactory, { tsFromString } from '../../../file-organizer/timestamp.js';
-const { tsFromExif, tzFromGPS } = timestampFactory;
+import timestampFactory from '../../../file-organizer/timestamp.js';
+const { tsFromExif, tzFromGPS, tsFromString } = timestampFactory;
 import fileUtils from '../../../file-organizer/file-utils.js';
 
 import debug from 'debug';
