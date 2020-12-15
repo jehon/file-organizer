@@ -7,7 +7,7 @@ export const _map = new Map();
 export default class FileUnsupported extends File {
     constructor(filePath, parent = null) {
         super(filePath, parent);
-        const ext = this.get('extension').current.toLowerCase();
+        const ext = this.get(File.I_EXTENSION).current.toLowerCase();
         const i = _map.has(ext) ? _map.get(ext) : 0;
         _map.set(ext, i + 1);
     }
