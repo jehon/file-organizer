@@ -4,7 +4,7 @@ import options from '../../../file-organizer/options.js';
 import Value from '../value.js';
 
 export default class FileTimestamped extends File {
-    static I_ITS_TIME = 'FileTimestamped_timestamp'
+    static I_ITS_TIME = 'FileTimestamped_time'
     static I_ITS_TITLE = 'FileTimestamped_title'
 
     static P_TS_NOT_PARSABLE = 'Filename is not parsable'
