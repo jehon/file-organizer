@@ -165,8 +165,7 @@ class Timestamp {
      * @returns {boolean} if equals
      */
     equals(b) {
-        return this.type == b.type
-            && this.humanReadable() == b.humanReadable();
+        return this.humanReadable() == b.humanReadable();
     }
 
     yearMonthOnly() {
