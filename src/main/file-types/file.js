@@ -425,7 +425,7 @@ export default class File extends Item {
 
                 const unsolved = Object.entries(this.values) // [ key, value ]
                     .filter(e => !e[1].isDone())
-                    .map(e => e[0]);
+                    .map(e => e[0] + `(${JSON.stringify(e[1].expected)} vs ${JSON.stringify(e[1].current)})`);
                 if (unsolved.length > 0) {
                     throw new FOError('Information not solved: ' + unsolved.join(', '));
                 }
