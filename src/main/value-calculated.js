@@ -66,6 +66,7 @@ export default class ValueCalculated extends ValueConstant {
         // TODO: find out what is the good behavior
         // Mock to allow fixing this value
         this.#calculatedExpected = this.current;
+        return this;
     }
 
     /**
