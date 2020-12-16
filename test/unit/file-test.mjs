@@ -287,7 +287,14 @@ describe(t(import.meta), function () {
 
             expect(f2.currentFilePath.endsWith('.tx2')).toBeTrue();
             await expectAsync(fileExists(f2.currentFilePath)).toBeResolvedTo(true);
-
         });
+
+        it('should manage filename', async () => {
+            const f = await createFileFrom('20150306_153340 Cable internet dans la rue.jpg');
+            await f.runAnalyse();
+            await f.runActing();
+            expect(f.getCanonicalFilename()).toBe('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340]');
+        });
+
     });
 });
