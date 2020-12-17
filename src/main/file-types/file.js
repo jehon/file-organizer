@@ -165,9 +165,9 @@ export default class File extends Item {
         return v;
     }
 
-    getCurrentPath() {
-        // TODO: should be based on properties
-        return this._path;
+    get currentPath() {
+        const cpath = this.parent ? this.parent.currentPath : '/';
+        return path.join(cpath, this.get(File.I_FILENAME).current + this.get(File.I_EXTENSION).current);
     }
 
     getCanonicalFilename() {

@@ -20,7 +20,8 @@ import {
     listenForItemNotify,
     getStatusChangesForItem,
     createFileFrom,
-    fileExists
+    fileExists,
+    tempPath
 } from './help-functions.mjs';
 
 import { resetOptionsForUnitTesting, r } from './run-helper.mjs';
@@ -294,7 +295,7 @@ describe(t(import.meta), function () {
             await f.runAnalyse();
             await f.runActing();
             expect(f.getCanonicalFilename()).toBe('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340]');
+            expect(f.currentPath).toBe(tempPath('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340].jpg'));
         });
-
     });
 });
