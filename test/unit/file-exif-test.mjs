@@ -1,10 +1,10 @@
 
-import { t } from '../test-helper.js';
-
+import { tsFromString } from '../../file-organizer/timestamp.js';
 import FileExif from '../../src/main/file-types/file-exif.js';
-import { dataPath } from './help-functions.mjs';
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
-import { FOError } from '../../src/main/file-types/file.js';
+import File, { FOError } from '../../src/main/file-types/file.js';
+import { t } from '../test-helper.js';
+import { createFileFrom, dataPath } from './help-functions.mjs';
 
 describe(t(import.meta), function () {
     describe('it should read data', function () {
@@ -81,8 +81,43 @@ describe(t(import.meta), function () {
         });
     });
 
-    xdescribe('should write exif data', function () {
+    describe('should write exif data', function () {
+        it('should write', async () => {
+            const ff = await createFileFrom('no_exif.jpg');
 
+            let filename = ff.currentPath;
+
+            {
+                // Build up the data to be written
+                const f = new FileExif(filename);
+                try {
+                    await f.analyse();
+                } catch (e) {
+                    if (!(e instanceof FOError)) {
+                        throw e;
+                    }
+                }
+
+                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('');
+                f.get(FileTimestamped.I_ITS_TIME).expect(tsFromString('2020-01-02 03-05-06'));
+                expect(f.get(FileTimestamped.I_ITS_TIME).expected.humanReadable()).toBe('2020-01-02 03-05-06');
+                expect(f.get(File.I_FILENAME).expected).toBe('2020-01-02 03-05-06 no_exif');
+
+                await f.act();
+                filename = f.currentPath;
+            }
+
+            console.log(filename);
+
+            {
+                // Check the data
+                const f = new FileExif(filename);
+                await f.analyse();
+                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 03-05-06');
+                expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('no_exif');
+                filename = f.currentPath;
+            }
+        });
     });
 
 });

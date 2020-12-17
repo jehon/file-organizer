@@ -205,6 +205,19 @@ export default class FileExif extends FileTimestamped {
     }
 
     async act() {
+        const title = this.get(FileTimestamped.I_ITS_TITLE);
+
+        if (!title.isDone()) {
+            await exifWrite(this, this.constExifTitle, title.expected);
+            title.fix();
+        }
+
+        const ts = this.get(FileTimestamped.I_ITS_TIME);
+        if (!ts.isDone()) {
+            await exifWrite(this, this.constExifTS, ts.expected.exif());
+            ts.fix();
+        }
+
         await super.act();
     }
 }
