@@ -54,11 +54,12 @@ export default class ValueCalculated extends ValueConstant {
         return this.#calculatedExpected;
     }
 
-    expect(val, message = null) {
+    expect(expect, message = null) {
         if (message) {
             this.messages.push(message);
         }
-        this.#calculatedExpected = val;
+        this.#calculatedExpected = expect;
+        this.emit('expectedChanged', expect);
         return this;
     }
 
