@@ -216,6 +216,13 @@ class Timestamp {
             .replace(' 00-00-00', '');
     }
 
+    /**
+     * Instead is internally used in file-exif
+     *
+     * @deprecated
+     *
+     * @returns {string} formatted for Exif
+     */
     exif() {
         if (!this.isTimestamped()) {
             return EMPTY_EXIF;
