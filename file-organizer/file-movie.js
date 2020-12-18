@@ -5,8 +5,8 @@ const { tsFromExif, tzFromGPS } = require('./timestamp.js');
 class FileMovie extends FileExif {
     get constExifTS() { return 'CreateDate'; }
 
-    async exifReadAll(file) {
-        return super.exifReadAll(file)
+    async exifReadAll() {
+        return super.exifReadAll()
             .then(exifData => {
                 if (exifData.GPSPosition) {
                     exifData.calculatedTimezone = tzFromGPS(exifData.GPSPosition);

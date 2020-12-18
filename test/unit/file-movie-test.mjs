@@ -1,99 +1,84 @@
 
 import { t } from '../test-helper.js';
+import fs from 'fs';
 
-import { dataPath, createFileGeneric } from './help-functions.mjs';
-import FileMovie from '../../file-organizer/file-movie.js';
-import { tsFromString } from '../../file-organizer/timestamp.js';
-import { buildFile } from '../../src/main/register-file-types.js';
+import FileMovie from '../../src/main/file-types/file-movie.js';
+import { tsFromExif } from '../../file-organizer/timestamp.js';
+
+import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
+import { createFileFrom, tempPath } from './help-functions.mjs';
 
 /**
- * @param {string} dPath of data
- * @returns {FileMovie} of dpath
+ * @param {string} title to describe the test
+ * @param {string} baseFilename to be tested
+ * @param {string} its_time - timestamp to be checked
+ * @param {string} its_title - title to be checked
  */
-async function getMov(dPath) {
-    return new FileMovie(dataPath(dPath)).loadData();
+function testFullFlow(title, baseFilename, its_time, its_title) {
+    describe(`with ${title}`, function () {
+
+        it('should get exif', async () => {
+            // Canon files
+            const fo = await createFileFrom(baseFilename);
+            let filename = fo.currentFilePath;
+
+            try {
+                const f = new FileMovie(filename);
+                await f.runAnalyse();
+
+                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe(its_time);
+                expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe(its_title);
+                filename = f.currentFilePath;
+            } finally {
+                await fs.promises.unlink(filename);
+            }
+        });
+
+        it('should write timestamps', async () => {
+            const fo = await createFileFrom(baseFilename);
+            let filename = fo.currentFilePath;
+            try {
+                {
+                    const f = new FileMovie(filename);
+
+                    await f.runAnalyse();
+
+                    /**
+                     * @param {string} str to be escaped
+                     * @returns {string} escaped
+                     */
+                    const esc = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+
+
+                    // Set some values
+                    f.get(FileTimestamped.I_ITS_TITLE).expect('new title');
+                    f.get(FileTimestamped.I_ITS_TIME).expect(tsFromExif('2020:01:02 02:03:04'));
+
+                    await f.runActing();
+                    filename = f.currentFilePath;
+
+                    expect(f.currentFilePath).toMatch(new RegExp('^' + esc(tempPath('2020-01-02 02-03-04 new title ['))));
+                }
+
+                {
+                    // Create a new file, and see if it is ok
+                    const f = new FileMovie(filename);
+
+                    await f.runAnalyse();
+                    expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('new title');
+                    expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 02-03-04');
+                }
+            } finally {
+                await fs.promises.unlink(filename);
+            }
+        });
+    });
 }
 
-const canonMOV = 'DSC_2506.MOV';
-const canonMOV_EXIF_TS = '2019:09:19 07:48:25';
-
-const AndroidMP4 = '2019-09-03 12-48/20190903_124726.mp4';
-const AndroidMP4_TS = '2019-09-03 12-47-31';
-const AndroidMP4_EXIF_TS = '2019:09:03 10:47:31';
-
 describe(t(import.meta), function () {
-    it('should get exif from files', async () => {
-        // Canon files
-        let mov;
-        mov = await getMov(canonMOV);
-        expect(mov.exif_timestamp_raw).toBe(canonMOV_EXIF_TS);
 
-        // Adroid files
-        mov = await getMov(AndroidMP4);
-        expect(mov.exif_timestamp_raw).toBe(AndroidMP4_EXIF_TS);
-        expect(mov.exif_calculated_timezone).toBe('Europe/Brussels');
-        expect(mov.exif_timestamp.humanReadable()).toBe(AndroidMP4_TS);
-    });
+    //   internal TS is '2019:09:19 07:48:25';
+    testFullFlow('canon mov', 'DSC_2506.MOV', '2019-09-19 07-48-25', '');
 
-    it('should get title from files', async () => {
-        // Android files
-        expect((await getMov(canonMOV)).exif_title).toBe('');
-        expect((await getMov(AndroidMP4)).exif_title).toBe('');
-    });
-
-    it('should write timestamps correctly with MOV', async () => {
-        const new1 = await createFileGeneric(canonMOV);
-        expect(new1.exif_calculated_timezone).toBe('');
-        expect(new1.exif_timestamp.exif()).toBe(canonMOV_EXIF_TS);
-
-        // We don't have a timezone, so everything is "utc"
-        await new1.exifWriteTimestamp(tsFromString('2016-02-04 01-02-03'));
-        expect(new1.exif_calculated_timezone).toBe('');
-        expect(new1.exif_timestamp.exif()).toBe('2016:02:04 01:02:03');
-        expect(new1.exif_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
-
-        const new2 = await buildFile(new1.getPath());
-        await new2.loadData();
-        expect(new2.exif_calculated_timezone).toBe('');
-        expect(new2.exif_timestamp.exif()).toBe('2016:02:04 01:02:03');
-        expect(new2.exif_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
-
-        new1.remove();
-    });
-
-    it('should write timestamps correctly with MP4', async () => {
-        const new1 = await createFileGeneric(AndroidMP4);
-        expect(new1.exif_calculated_timezone).toBe('Europe/Brussels');
-        expect(new1.exif_timestamp.exif()).toBe(AndroidMP4_EXIF_TS);
-
-        await new1.exifWriteTimestamp(tsFromString('2016-02-04 01-02-03'));
-        expect(new1.exif_calculated_timezone).toBe('Europe/Brussels');
-        expect(new1.exif_timestamp.exif()).toBe('2016:02:04 00:02:03');
-        expect(new1.exif_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
-
-        const new2 = await buildFile(new1.getPath());
-        await new2.loadData();
-        expect(new2.exif_calculated_timezone).toBe('Europe/Brussels');
-        expect(new2.exif_timestamp_raw).toBe('2016:02:04 00:02:03');
-        expect(new2.exif_timestamp.exif()).toBe('2016:02:04 00:02:03');
-        expect(new2.exif_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
-
-        new1.remove();
-    });
-
-    it('should write titles correctly', async () => {
-        const newTitle = 'test';
-        const new1 = await createFileGeneric(canonMOV);
-        expect(new1.exif_title).toBe('');
-
-        await new1.exifWriteTitle(newTitle);
-        expect(new1.exif_title).toBe(newTitle);
-
-        const new2 = await buildFile(new1.getPath());
-        await new2.loadData();
-        expect(new2.exif_title).toBe(newTitle);
-
-        new1.remove();
-    });
-
+    testFullFlow('android mp4', '2019-09-03 12-48/20190903_124726.mp4', '2019-09-03 12-47-31', '');
 });

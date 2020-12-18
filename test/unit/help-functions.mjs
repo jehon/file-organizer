@@ -32,7 +32,9 @@ export async function createFileGeneric(subPath, inFolder = '') {
     );
 
     return buildFile(path.join(where, newName))
-        .then(f => f.loadData());
+        .then(f => f.loadData()
+            .then(() => f)
+        );
 }
 
 /**

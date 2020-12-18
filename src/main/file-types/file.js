@@ -476,4 +476,12 @@ export default class File extends Item {
         }
         return this.runActing();
     }
+
+    /**
+     * @deprecated
+     * @returns {string} current path
+     */
+    getPath() {
+        return this.currentFilePath;
+    }
 }
