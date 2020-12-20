@@ -17,7 +17,7 @@ import { createFileFrom, tempPath } from './help-functions.mjs';
 function testFullFlow(title, baseFilename, its_time, its_title) {
     describe(`with ${title}`, function () {
 
-        it('should get exif', async () => {
+        it('should read data', async () => {
             // Canon files
             const fo = await createFileFrom(baseFilename);
             let filename = fo.currentFilePath;
@@ -34,7 +34,7 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
             }
         });
 
-        it('should write timestamps', async () => {
+        it('should write data', async () => {
             const fo = await createFileFrom(baseFilename);
             let filename = fo.currentFilePath;
             try {
