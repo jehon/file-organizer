@@ -7,7 +7,7 @@ import {
     STATUS_CREATED,
     STATUS_ANALYSING,
     STATUS_FAILURE
-} from '../../file-organizer/constants.js';
+} from '../../src/common/constants.js';
 
 import { getStatusChangesForItem } from './help-functions.mjs';
 import { FOError } from '../../src/main/file-types/file.js';
