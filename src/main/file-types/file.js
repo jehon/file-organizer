@@ -412,11 +412,6 @@ export default class File extends Item {
         this.notify(STATUS_ACTING);
 
         return this.act()
-            // .then(() => {
-            //     // TODO: remove: Do the act on all enqueued acts
-            //     this._actChainStart();
-            //     return this._actChain;
-            // })
             .then(() => {
                 if (this.get(File.I_FILENAME).current == null) {
                     // The file will be deleted anyway

@@ -273,7 +273,8 @@ describe(t(import.meta), function () {
         it('should lowercase extensions', async function () {
             options.dryRun = true;
 
-            const f1 = await createFileFrom('jh-patch-file-patch.txt');
+            const filename = await createFileFrom('jh-patch-file-patch.txt');
+            const f1 = new File(filename);
 
             f1.get(File.I_EXTENSION).expect('.TX2');
             await fileRename(f1);
@@ -291,7 +292,8 @@ describe(t(import.meta), function () {
         });
 
         it('should manage filename', async () => {
-            const f = await createFileFrom('20150306_153340 Cable internet dans la rue.jpg');
+            const filename = await createFileFrom('20150306_153340 Cable internet dans la rue.jpg');
+            const f = new File(filename);
             await f.runAnalyse();
             await f.runActing();
             expect(f.getCanonicalFilename()).toBe('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340]');

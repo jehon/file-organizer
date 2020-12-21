@@ -18,9 +18,7 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
     describe(`with ${title}`, function () {
 
         it('should read data', async () => {
-            // Canon files
-            const fo = await createFileFrom(baseFilename);
-            let filename = fo.currentFilePath;
+            let filename = await createFileFrom(baseFilename);
 
             try {
                 const f = new FileMovie(filename);
@@ -39,8 +37,7 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
         });
 
         it('should write data', async () => {
-            const fo = await createFileFrom(baseFilename);
-            let filename = fo.currentFilePath;
+            let filename = await createFileFrom(baseFilename);
             try {
                 {
                     const f = new FileMovie(filename);

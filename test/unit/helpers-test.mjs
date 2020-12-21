@@ -3,7 +3,8 @@ import { t } from '../test-helper.js';
 
 import fs from 'fs';
 
-import { dataPath, tempPath, createFileGeneric } from './help-functions.mjs';
+import { dataPath, tempPath, createFileFrom } from './help-functions.mjs';
+import File from '../../src/main/file-types/file.js';
 
 describe(t(import.meta), function () {
     it('should have a data path', function () {
@@ -12,9 +13,10 @@ describe(t(import.meta), function () {
     });
 
     it('should create temp generic file', async () => {
-        const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
-        expect(new1.getFilename()).toBe('20150306_153340 Cable internet dans la rue');
-        expect(new1.parent.getPath()).toBe(tempPath());
-        fs.unlinkSync(new1.getPath());
+        const filename = await createFileFrom('20150306_153340 Cable internet dans la rue.jpg');
+        const f = new File(filename);
+        expect(f.get(File.I_FILENAME).initial).toBe('20150306_153340 Cable internet dans la rue');
+        expect(f.parent.currentFilePath).toBe(tempPath());
+        fs.unlinkSync(f.currentFilePath);
     });
 });

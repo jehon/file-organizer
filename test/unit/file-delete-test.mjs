@@ -19,8 +19,8 @@ describe(t(import.meta), function () {
     });
 
     it('should delete a file', async function () {
-        const fo = await createFileFrom('jh-patch-file-patch.txt');
-        const f = new FileDelete(fo.currentFilePath);
+        const fpath = await createFileFrom('jh-patch-file-patch.txt');
+        const f = new FileDelete(fpath);
         await f.runAnalyse();
         await f.runActing();
 

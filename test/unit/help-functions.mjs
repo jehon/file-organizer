@@ -2,11 +2,9 @@
 import path from 'path';
 import fs from 'fs';
 
-import File from '../../src/main/file-types/file.js';
 import Item from '../../src/main/item.js';
 
 import { __dirname } from '../test-helper.js';
-import { buildFile } from '../../src/main/register-file-types.js';
 
 const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname(import.meta)))), ...args);
 
@@ -15,38 +13,23 @@ export const dataPath = (...args) => rootPath('test', 'data', ...args);
 export const tempPath = (...args) => rootPath('tmp', 'unit', ...args);
 
 /**
- * @param {string} subPath source of the file
- * @param {string} inFolder of the file
- * @returns {File} - a copy ready for the test
+ * Create a new file and returns its path
+ * The file is a copy of the original one
+ *
+ * @param {string} subPath of the file to be copied
+ * @param {string} inFolder if to be created in subfolder
+ * @returns {Promise<string>} the path of the new file
  */
-export async function createFileGeneric(subPath, inFolder = '') {
+export async function createFileFrom(subPath, inFolder = '') {
     const fullSource = dataPath(subPath);
     const newName = path.parse(fullSource).base;
     const where = path.join(tempPath(inFolder));
+    const target = path.join(where, newName);
 
-    fs.mkdirSync(where, { recursive: true });
+    await fs.promises.mkdir(where, { recursive: true });
+    await fs.promises.copyFile(fullSource, target);
 
-    fs.copyFileSync(
-        fullSource,
-        path.join(where, newName)
-    );
-
-    return buildFile(path.join(where, newName))
-        .then(f => f.loadData()
-            .then(() => f)
-        );
-}
-
-/**
- * @deprecated
- * @param subPath
- */
-export async function createFileFrom(subPath) {
-    const f = await createFileGeneric(subPath);
-    if (f instanceof File) {
-        return f;
-    }
-    return new File(f.getPath());
+    return target;
 }
 
 /**

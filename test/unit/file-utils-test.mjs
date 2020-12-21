@@ -1,7 +1,7 @@
 
 import { t, __filename } from '../test-helper.js';
 
-import { createFileGeneric, fileExists } from './help-functions.mjs';
+import { createFileFrom, fileExists } from './help-functions.mjs';
 import fileUtils from '../../file-organizer/file-utils.js';
 
 describe(t(import.meta), function () {
@@ -10,11 +10,11 @@ describe(t(import.meta), function () {
         expect(await fileExists(__filename(import.meta) + '.brol')).toBeFalsy();
 
         // Ask to move to new file, but without telling him it is itself -> should be incremented
-        const new1 = await createFileGeneric('jh-patch-file-patch.txt');
-        expect(await fileExists(new1.getPath())).toBeTruthy();
+        const fp = await createFileFrom('jh-patch-file-patch.txt');
+        expect(await fileExists(fp)).toBeTruthy();
 
-        await fileUtils.fileDelete(new1.getPath());
-        expect(await fileExists(new1.getPath())).toBeFalsy();
+        await fileUtils.fileDelete(fp);
+        expect(await fileExists(fp)).toBeFalsy();
     });
 
     it('should launch subprocesses', async function () {
@@ -27,11 +27,11 @@ describe(t(import.meta), function () {
     });
 
     it('should work with reservations', async function () {
-        const new1 = await createFileGeneric('jh-patch-file-patch.txt');
-        const new2Name = new1.getPath() + '.ok';
+        const fp = await createFileFrom('jh-patch-file-patch.txt');
+        const new2Name = fp + '.ok';
 
         // The file exists
-        await expectAsync(fileUtils.checkAndReserveName(new1.getPath(), 'someone-else')).toBeRejected();
+        await expectAsync(fileUtils.checkAndReserveName(fp, 'someone-else')).toBeRejected();
 
         // It is available
         await expectAsync(fileUtils.checkAndReserveName(new2Name, 'for-me')).toBeResolvedTo(true);
@@ -42,6 +42,6 @@ describe(t(import.meta), function () {
         // Now it is reserved
         await expectAsync(fileUtils.checkAndReserveName(new2Name, 'someone-else')).toBeRejected();
 
-        await fileUtils.fileDelete(new1.getPath());
+        await fileUtils.fileDelete(fp);
     });
 });

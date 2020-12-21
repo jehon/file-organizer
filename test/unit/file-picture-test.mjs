@@ -21,9 +21,7 @@ import File, { FOError } from '../../src/main/file-types/file.js';
 function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0, cb_check = async () => { }) {
     describe(`with ${baseFilename}`, function () {
         it('should read data', async function () {
-            const fo = await createFileFrom(baseFilename);
-            let filename = fo.currentFilePath;
-
+            let filename = await createFileFrom(baseFilename);
 
             try {
                 let f;
@@ -52,8 +50,7 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0, cb_ch
         });
 
         it('should write data', async function () {
-            const fo = await createFileFrom(baseFilename);
-            let filename = fo.currentFilePath;
+            let filename = await createFileFrom(baseFilename);
             try {
                 {
                     const f = new FilePicture(filename);

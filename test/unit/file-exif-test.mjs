@@ -83,9 +83,7 @@ describe(t(import.meta), function () {
 
     describe('should write exif data', function () {
         it('should write', async () => {
-            const ff = await createFileFrom('no_exif.jpg');
-
-            let filename = ff.currentPath;
+            let filename = await createFileFrom('no_exif.jpg');
 
             {
                 // Build up the data to be written
