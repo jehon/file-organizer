@@ -124,9 +124,14 @@ test-unit-continuously: build
 
 .PHONY: test-cmd
 test-cmd: build
+	@echo "************** running test commands ...  ***************************"
+	@echo "************** dump "
 	xvfb-run --auto-servernum ./file-organizer.sh dump test/data
+	@echo "************** info all "
 	./file-organizer-headless.sh info test/data/canon.JPG
+	@echo "************** info one "
 	./file-organizer-headless.sh info -k exif_timestamp test/data/canon.JPG
+	@echo "************** running test commands done ***************************"
 
 .PHONY: test-system
 test-system: build
