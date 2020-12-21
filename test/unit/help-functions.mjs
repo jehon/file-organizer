@@ -38,6 +38,7 @@ export async function createFileGeneric(subPath, inFolder = '') {
 }
 
 /**
+ * @deprecated
  * @param subPath
  */
 export async function createFileFrom(subPath) {
@@ -72,7 +73,7 @@ export function listenForItemNotify() {
  * @param {module:src/main/Item} item to listen to
  * @returns {Array<string>} all the statuses calls
  */
-export function _getNotifyCallsForItem(item) {
+function _getNotifyCallsForItem(item) {
     // When creating a file, it notifies the creation of the parent's
     // we does need to filter on this
     const list = Item.prototype.notify.calls.all()
