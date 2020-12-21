@@ -23,11 +23,3 @@ export function resetOptionsForUnitTesting() {
     options.withFileSummary = false;
     options.headless = true;
 }
-
-/**
- * @param {string} p - path absolute
- * @returns {string} path relative to cwd
- */
-export function r(p) {
-    return path.relative(process.cwd(), p);
-}

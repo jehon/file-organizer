@@ -119,6 +119,10 @@ describe(t(import.meta), function () {
         it('should always have the current path', () => {
             const f = new File('test/brol/a.txt');
 
+            const r = function (p) {
+                return path.relative(process.cwd(), p);
+            };
+
             expect(r(f.currentFilePath)).toBe('test/brol/a.txt');
 
             f.get(File.I_FILENAME).expect('b').fix();
@@ -132,7 +136,8 @@ describe(t(import.meta), function () {
         });
 
         xit('should find an indexed filename', async function () {
-            //         const n1 = await createFileGeneric('canon.JPG');
+            //         const filename = await createFileFrom('canon.JPG');
+            //         const n1 = new File(filename);
             //         await n1.check();
             //         expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
             //         const n2 = new FileTimestamped(n1.getPath());
