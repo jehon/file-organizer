@@ -4,6 +4,7 @@
  *
  * See https://www.sno.phy.queensu.ca/~phil/exiftool/#supported
  *
+ * QuickTime -> mov?
  *
  * According to the specification, many QuickTime date/time tags should be stored as UTC.
  * Unfortunately, digital cameras often store local time values instead (presumably because
@@ -167,7 +168,12 @@ async function exifReadAll(file) {
     if (rawExifData.GPSPosition) {
         exifData.timezone = tzFromGPS(rawExifData.GPSPosition);
     }
-    exifData.ts = tsFromExif(rawExifData[file.EXIF_TS], exifData.timezone);
+
+    // If the data is stored in UTC and if we have a timezone,
+    // translate the date/time into local time (of the timezone)
+    exifData.ts = tsFromExif(rawExifData[file.EXIF_TS], (
+        file.EXIF_TS_IS_UTC && exifData.timezone ? exifData.timezone : false)
+    );
 
     return exifData;
 }
@@ -178,7 +184,7 @@ export default class FileExif extends FileTimestamped {
 
     get EXIF_TS() { return 'DateTimeOriginal'; }
     get EXIF_TITLE() { return 'UserComment'; }
-    get EXIF_TS_IS_UTC() { return true; }
+    get EXIF_TS_IS_UTC() { return false; }
 
     async readInternalData() {
         await super.readInternalData();
@@ -223,9 +229,11 @@ export default class FileExif extends FileTimestamped {
             if (ts.expected.isTimestamped()) {
                 let tsZoned = ts.expected.moment;
 
+                // TODO: refactor about date's and timestamps
+
                 // If a timezone is set, and the exif timestamp is not stored in UTC
                 // then we need to calculate the moment in local timezone
-                if (!this.EXIF_TS_IS_UTC && this.get(FileExif.I_FE_TZ).expected) {
+                if (this.EXIF_TS_IS_UTC && this.get(FileExif.I_FE_TZ).expected) {
 
                     // We adapt the tz field, but not the time
                     // @See https://momentjs.com/timezone/docs/#/using-timezones/converting-to-zone/

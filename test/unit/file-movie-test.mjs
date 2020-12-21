@@ -26,8 +26,12 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
                 const f = new FileMovie(filename);
                 await f.runAnalyse();
 
-                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe(its_time);
-                expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe(its_title);
+                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
+                    .withContext(baseFilename)
+                    .toBe(its_time);
+                expect(f.get(FileTimestamped.I_ITS_TITLE).initial)
+                    .withContext(baseFilename)
+                    .toBe(its_title);
                 filename = f.currentFilePath;
             } finally {
                 await fs.promises.unlink(filename);
@@ -57,7 +61,9 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
                     await f.runActing();
                     filename = f.currentFilePath;
 
-                    expect(f.currentFilePath).toMatch(new RegExp('^' + esc(tempPath('2020-01-02 02-03-04 new title ['))));
+                    expect(f.currentFilePath)
+                        .withContext(baseFilename)
+                        .toMatch(new RegExp('^' + esc(tempPath('2020-01-02 02-03-04 new title ['))));
                 }
 
                 {
@@ -65,8 +71,12 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
                     const f = new FileMovie(filename);
 
                     await f.runAnalyse();
-                    expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('new title');
-                    expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 02-03-04');
+                    expect(f.get(FileTimestamped.I_ITS_TITLE).initial)
+                        .withContext(baseFilename)
+                        .toBe('new title');
+                    expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
+                        .withContext(baseFilename)
+                        .toBe('2020-01-02 02-03-04');
                 }
             } finally {
                 await fs.promises.unlink(filename);
@@ -78,7 +88,9 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
 describe(t(import.meta), function () {
 
     //   internal TS is '2019:09:19 07:48:25';
+    // Canon MOV
     testFullFlow('canon mov', 'DSC_2506.MOV', '2019-09-19 07-48-25', '');
 
+    // Android MP4
     testFullFlow('android mp4', '2019-09-03 12-48/20190903_124726.mp4', '2019-09-03 12-47-31', '');
 });

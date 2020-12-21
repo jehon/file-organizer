@@ -1,133 +1,139 @@
 
 import { t } from '../test-helper.js';
+import fs from 'fs';
 
-import { dataPath, createFileGeneric } from './help-functions.mjs';
-import FilePicture from '../../file-organizer/file-picture.js';
+import { createFileFrom, tempPath, dataPath } from './help-functions.mjs';
+import FilePicture from '../../src/main/file-types/file-picture.js';
+import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
+import FileExif from '../../src/main/file-types/file-exif.js';
 
-import { tsFromString } from '../../file-organizer/timestamp.js';
+import { tsFromExif } from '../../file-organizer/timestamp.js';
 
-import { resetOptionsForUnitTesting } from './run-helper.mjs';
+import File, { FOError } from '../../src/main/file-types/file.js';
 
 /**
- * @param dPath
+ * @param {string} baseFilename to be tested
+ * @param {string} its_time to be checked
+ * @param {string} its_title to be checked
+ * @param {number} its_rotation to be checked
+ * @param {function(File, Error): void} cb_check to check the file
  */
-async function getPict(dPath) {
-    return new FilePicture(dataPath(dPath)).loadData();
+function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0, cb_check = async () => { }) {
+    describe(`with ${baseFilename}`, function () {
+        it('should read data', async function () {
+            const fo = await createFileFrom(baseFilename);
+            let filename = fo.currentFilePath;
+
+
+            try {
+                let f;
+                try {
+                    f = new FilePicture(filename);
+                    await f.runAnalyse();
+                } catch (e) {
+                    if (!(e instanceof FOError)) {
+                        throw e;
+                    }
+                    await cb_check(f, e);
+                }
+                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
+                    .withContext(baseFilename)
+                    .toBe(its_time);
+                expect(f.get(FileTimestamped.I_ITS_TITLE).initial)
+                    .withContext(baseFilename)
+                    .toBe(its_title);
+                expect(f.get(FileExif.I_FE_ORIENTATION).initial)
+                    .withContext(baseFilename)
+                    .toBe(its_rotation);
+                filename = f.currentFilePath;
+            } finally {
+                await fs.promises.unlink(filename);
+            }
+        });
+
+        it('should write data', async function () {
+            const fo = await createFileFrom(baseFilename);
+            let filename = fo.currentFilePath;
+            try {
+                {
+                    const f = new FilePicture(filename);
+
+                    try {
+                        await f.runAnalyse();
+                    } catch (e) {
+                        if (!(e instanceof FOError)) {
+                            throw e;
+                        }
+                    }
+
+                    /**
+                     * @param {string} str to be escaped
+                     * @returns {string} escaped
+                     */
+                    const esc = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+
+
+                    // Set some values
+                    f.get(FileTimestamped.I_ITS_TITLE).expect('new title');
+                    f.get(FileTimestamped.I_ITS_TIME).expect(tsFromExif('2020:01:02 02:03:04'));
+
+                    await f.runActing();
+                    filename = f.currentFilePath;
+                    expect(f.currentFilePath)
+                        .withContext(baseFilename)
+                        .toMatch(new RegExp('^' + esc(tempPath('2020-01-02 02-03-04 new title'))));
+                }
+
+                {
+                    // Create a new file, and see if it is ok
+                    const f = new FilePicture(filename);
+
+                    await f.runAnalyse();
+                    filename = f.currentFilePath;
+                    expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('new title');
+                    expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 02-03-04');
+                    expect(f.get(FileExif.I_FE_ORIENTATION).initial).toBe(0);
+                }
+            } catch (e) {
+                if (!(e instanceof FOError)) {
+                    throw e;
+                }
+                // console.log(e);
+            } finally {
+                await fs.promises.unlink(filename);
+            }
+        });
+
+    });
 }
 
-xdescribe(t(import.meta), function () {
-    it('should get exif from files', async () => {
-        // No exif at all
-        expect((await getPict('no_exif.jpg')).exif_timestamp.humanReadable()).toBe('');
-
-        // Picture
-        expect((await getPict('20150306_153340 Cable internet dans la rue.jpg')).exif_timestamp.humanReadable()).toBe('2015-03-06 15-33-40');
-        expect((await getPict('canon.JPG')).exif_timestamp.humanReadable()).toBe('2018-02-04 13-17-50');
-        expect((await getPict('petitAppPhoto.jpg')).exif_timestamp.humanReadable()).toBe('2020-01-19 01-24-02');
-
-        // Adroid files
-        expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exif_timestamp.humanReadable()).toBe('2019-09-03 12-47-21');
-    });
+describe(t(import.meta), function () {
+    testFullFlow('no_exif.jpg', '', '');
+    testFullFlow('20150306_153340 Cable internet dans la rue.jpg', '2015-03-06 15-33-40', 'User comments', 90);
+    testFullFlow('canon.JPG', '2018-02-04 13-17-50', '');
+    testFullFlow('petitAppPhoto.jpg', '2020-01-19 01-24-02', '');
+    // testFullFlow('2019-09-03 12-48/20190903_124722.jpg', '2019-09-03 12-47-21', '', 90);
 
     it('should normalize extensions when necessary', async () => {
-        const new1 = await createFileGeneric('rotated-bottom-left.jpg');
-        await new1.rename('test.jpeg');
-        new1.exif_timestamp = tsFromString('2018-01-02');
-        new1.exif_title = 'title';
-        await FilePicture.prototype.check.call(new1); // new1.check();
-        expect(Array.from(new1.messages.keys())).toContain('FILE_EXT_NORMALIZE');
-        expect(new1.getExtension()).toBe('.jpg');
-        new1.remove();
+        const f = new FilePicture(dataPath('system_test/2019 test/1.jpeg'));
+        try {
+            await f.runAnalyse();
+        } catch (e) {
+            if (!(e instanceof FOError)) {
+                throw e;
+            }
+        }
+        expect(f.get(File.I_EXTENSION).expected).toBe('.jpg');
     });
 
-    it('should get exif rotation from files', async () => {
-        expect((await getPict('rotated.jpg')).exif_orientation).toBe(270);
-        expect((await getPict('rotated-ok.jpg')).exif_orientation).toBe(0);
-        expect((await getPict('rotated-bottom-left.jpg')).exif_orientation).toBe(270);
-        expect((await getPict('rotated-right-top.jpg')).exif_orientation).toBe(90);
+    // xit('should get exif rotation from files', async () => {
+    //     expect((await getPict('rotated.jpg')).exif_orientation).toBe(270);
+    //     expect((await getPict('rotated-ok.jpg')).exif_orientation).toBe(0);
+    //     expect((await getPict('rotated-bottom-left.jpg')).exif_orientation).toBe(270);
+    //     expect((await getPict('rotated-right-top.jpg')).exif_orientation).toBe(90);
 
-        expect((await getPict('petitAppPhoto.jpg')).exif_orientation).toBe(0);
-        expect((await getPict('no_exif.jpg')).exif_orientation).toBe(0);
-    });
+    //     expect((await getPict('petitAppPhoto.jpg')).exif_orientation).toBe(0);
+    //     expect((await getPict('no_exif.jpg')).exif_orientation).toBe(0);
+    // });
 
-    it('should get title from files', async () => {
-        expect((await getPict('20150306_153340 Cable internet dans la rue.jpg')).exif_title).toBe('User comments');
-        expect((await getPict('canon.JPG')).exif_title).toBe('');
-        expect((await getPict('petitAppPhoto.jpg')).exif_title).toBe('');
-
-        // Android files
-        expect((await getPict('2019-09-03 12-48/20190903_124722.jpg')).exif_title).toBe('');
-
-        expect((await getPict('no_exif.jpg')).exif_title).toBe('');
-    });
-
-    it('should write timestamps correctly', async () => {
-        const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
-        expect(new1.exif_timestamp.humanReadable()).toBe('2015-03-06 15-33-40');
-
-        await new1.exifWriteTimestamp(tsFromString('2016-02-04 01-02-03'));
-        expect(new1.exif_timestamp.humanReadable()).toBe('2016-02-04 01-02-03');
-
-        await new1.exifWriteTimestamp(tsFromString('2014-05-06'));
-        expect(new1.exif_timestamp.humanReadable()).toBe('2014-05-06');
-
-        new1.remove();
-    });
-
-    it('should write titles correctly', async () => {
-        const new1 = await createFileGeneric('20150306_153340 Cable internet dans la rue.jpg');
-        expect(new1.exif_title).toBe('User comments');
-        await new1.exifWriteTitle('My new title with àn accent');
-        expect(new1.exif_title).toBe('My new title with àn accent');
-        new1.remove();
-
-        const new2 = await createFileGeneric('canon.JPG');
-        expect(new2.exif_title).toBe('');
-        await new2.exifWriteTitle('My other title with àn accent');
-        expect(new2.exif_title).toBe('My other title with àn accent');
-        new2.remove();
-    });
-
-    describe('check', () => {
-        it('should be problems when no exif is present', async () => {
-            const new1 = await getPict('no_exif.jpg');
-            await new1.check();
-            expect(Array.from(new1.messages.keys())).toContain('TS_NO_TIMESTAMP');
-        });
-
-        it('should rotate pictures when necessary', async () => {
-            const new1 = await createFileGeneric('rotated-bottom-left.jpg');
-
-            // Set data to go to the target test
-            new1.exif_timestamp = tsFromString('2018-01-02');
-            new1.exif_timestamp_raw = new1.exif_timestamp.exif();
-            new1.calculatedTS = new1.exif_timestamp;
-            new1.calculatedTS.title = new1.exif_title;
-
-            expect(new1.exif_orientation).toBe(270);
-            await new1.check();
-            expect(Array.from(new1.messages.keys())).toContain('PICT_ROTATE');
-            expect(new1.exif_orientation).toBe(0);
-            new1.remove();
-        });
-
-        it('should set title if necessary', async () => {
-            const new1 = await createFileGeneric('no_exif.jpg');
-
-            // Set data to go to the target test
-            new1.exif_timestamp = tsFromString('2018-01-02');
-            new1.exif_timestamp_raw = new1.exif_timestamp.exif();
-            new1.calculatedTS = new1.exif_timestamp;
-
-            expect(new1.exif_title).toBe('');
-            new1.calculatedTS.title = 'override title';
-
-            await new1.check();
-            expect(Array.from(new1.messages.keys())).toContain('EXIF_WRITE_TITLE');
-            expect(new1.exif_title).toBe('override title');
-            new1.remove();
-
-            resetOptionsForUnitTesting();
-        });
-    });
 });

@@ -107,8 +107,6 @@ describe(t(import.meta), function () {
                 filename = f.currentPath;
             }
 
-            console.log(filename);
-
             {
                 // Check the data
                 const f = new FileExif(filename);

@@ -1,4 +1,6 @@
 
+// TODO(timestamp): refactor into string or dates????
+
 const tzlookup = require('tz-lookup');
 
 // TODO: remove momentjs

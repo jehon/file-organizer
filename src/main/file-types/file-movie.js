@@ -4,7 +4,7 @@ import FileExif from './file-exif.js';
 
 export default class FileMovie extends FileExif {
     get EXIF_TS() { return 'CreateDate'; }
-    get EXIF_TS_IS_UTC() { return false; }
+    get EXIF_TS_IS_UTC() { return true; }
 }
 
 // registerRegExp([
