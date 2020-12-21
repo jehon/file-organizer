@@ -7,16 +7,6 @@ import fileUtils from '../../file-organizer/file-utils.js';
 import pLimit from 'p-limit'; // https://www.npmjs.com/package/p-limit
 const renameLimiter = pLimit(1);
 
-// import Task from './task.js';
-
-// export class TaskFileDelete extends Task {
-//     constructor() {
-//         super('Delete file', () =>
-//             fs.promises.unlink((/** @type {module:src/main/file-types.File} */(this.parent)).currentFilePath)
-//         );
-//     }
-// }
-
 /**
  * Delete a file and update values
  *
@@ -59,4 +49,15 @@ export async function fileRename(file) {
             })
     );
 
+}
+
+/**
+ * @param {File} file to be searched
+ * @returns {Promise<string[]>} of relative filepath
+ */
+export async function folderListing(file) {
+    const list = (await fs.promises.readdir(file.currentFilePath))
+        .filter(f => f != '.' && f != '..');
+    list.sort();
+    return list;
 }

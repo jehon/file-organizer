@@ -2,22 +2,13 @@
 import { t } from '../test-helper.js';
 import File from '../../src/main/file-types/file.js';
 import {
-    fileDelete
+    fileDelete,
+    folderListing
 } from '../../src/main/tasks-fs.js';
 
-import { createFileFrom, fileExists } from './help-functions.mjs';
+import { createFileFrom, fileExists, dataPath } from './help-functions.mjs';
 
 describe(t(import.meta), function () {
-    // it('should delete a file', async function () {
-    //     const f = await createFileFrom('jh-patch-file-patch.txt');
-
-    //     await (new TaskFileDelete())
-    //         .setParent(f)
-    //         .run();
-
-    //     expect(await fileExists(f.currentFilePath)).toBeFalsy();
-    // });
-
     it('should delete a file', async function () {
         const fp = await createFileFrom('jh-patch-file-patch.txt');
         const f = new File(fp);
@@ -28,5 +19,18 @@ describe(t(import.meta), function () {
 
         expect(f.get(File.I_FILENAME).current).toBeFalsy();
         expect(f.get(File.I_FILENAME).isDone()).toBeTrue();
+    });
+
+    it('should list a folder', async function () {
+        const f = new File(dataPath(''));
+
+        const list = await (folderListing(f));
+
+        for (const fp of list) {
+            expect(await fileExists(fp.currentFilePath)).toBeFalsy();
+            expect(fp.currentFilePath).not.toBe('.');
+            expect(fp.currentFilePath).not.toBe('..');
+        }
+        expect(list.length).toBe(15);
     });
 });
