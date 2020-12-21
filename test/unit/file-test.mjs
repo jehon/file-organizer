@@ -24,7 +24,7 @@ import {
     tempPath
 } from './help-functions.mjs';
 
-import { resetOptionsForUnitTesting, r } from './run-helper.mjs';
+import { resetOptionsForUnitTesting } from './run-helper.mjs';
 
 class DemoFile extends File {
     fnAct = () => { }

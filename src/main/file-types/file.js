@@ -155,6 +155,7 @@ export default class File extends Item {
      * @returns {string} absolute path
      */
     get currentFilePath() {
+        // TODO: remove this test, since it prevent FileDelete from working
         if ((this.get(File.I_FILENAME).current == null) && (this.get(File.I_EXTENSION).current == null)) {
             return null;
         }
@@ -165,6 +166,9 @@ export default class File extends Item {
         return v;
     }
 
+    /**
+     * @deprecated: use currentFilePath instead
+     */
     get currentPath() {
         const cpath = this.parent ? this.parent.currentPath : '/';
         return path.join(cpath, this.get(File.I_FILENAME).current + this.get(File.I_EXTENSION).current);
@@ -229,29 +233,37 @@ export default class File extends Item {
      * @returns {Promise<*>} resolved as analysis is done
      */
     async analyse() {
-        return Promise.resolve()
-            .then(() => {
-                // Lowercase extension
-                const currentExtension = this.get(File.I_EXTENSION).current;
-                if (currentExtension.toLowerCase() != currentExtension) {
-                    this.get(File.I_EXTENSION).expect(currentExtension.toLowerCase(), 'to lower case');
-                }
+        // Folders
+        // if (this.get(File.I_IS_FOLDER)) {
+        //     const children = await folderListing(this);
+        //     console.log('***', children);
 
-                // Parse the qualif filename to see if it is a timestamp too
-                // and take it as the source of thruth if applicable
-                // TODO: this should move into timestamp ?
-                if (this.get(File.I_FN_QUALIF).current) {
-                    const ts2 = tsFromString(this.get(File.I_FN_QUALIF).current);
-                    if (ts2.isTimestamped()) {
-                        this.get(File.I_FN_TIME).expect(ts2, 'parse the qualif instead of the timestamp');
-                    }
-                }
+        //     this.childrens = children.map(f => buildFile(f));
+        //     await Promise.all(
+        //         this.children.map(f => f.runAnalisys())
+        //     );
+        // }
 
-                if (this.get(File.I_FN_QUALIF).expected && this.get(File.I_FN_TITLE).expected == this.get(File.I_FN_QUALIF).expected) {
-                    // 'remove duplicate title/original'
-                    this.get(File.I_FN_QUALIF).expect('', 'Original is a duplicate of the title');
-                }
-            });
+        // Lowercase extension
+        const currentExtension = this.get(File.I_EXTENSION).current;
+        if (currentExtension.toLowerCase() != currentExtension) {
+            this.get(File.I_EXTENSION).expect(currentExtension.toLowerCase(), 'to lower case');
+        }
+
+        // Parse the qualif filename to see if it is a timestamp too
+        // and take it as the source of thruth if applicable
+        // TODO: this should move into timestamp ?
+        if (this.get(File.I_FN_QUALIF).current) {
+            const ts2 = tsFromString(this.get(File.I_FN_QUALIF).current);
+            if (ts2.isTimestamped()) {
+                this.get(File.I_FN_TIME).expect(ts2, 'parse the qualif instead of the timestamp');
+            }
+        }
+
+        if (this.get(File.I_FN_QUALIF).expected && this.get(File.I_FN_TITLE).expected == this.get(File.I_FN_QUALIF).expected) {
+            // 'remove duplicate title/original'
+            this.get(File.I_FN_QUALIF).expect('', 'Original is a duplicate of the title');
+        }
     }
 
     /**
@@ -259,8 +271,7 @@ export default class File extends Item {
      *
      * @protected
      */
-    checkConsistency() {
-    }
+    checkConsistency() { }
 
     /**
      * Do the act based on .values
@@ -272,14 +283,15 @@ export default class File extends Item {
      * @returns {Promise<void>} when finished
      */
     async act() {
-        return Promise.resolve()
-            .then(() => {
-                if (this.get(File.I_FILENAME).expected == null || this.get(File.I_EXTENSION).expected == null) {
-                    return fileDelete(this);
-                } else {
-                    return fileRename(this);
-                }
-            });
+        if (this.get(File.I_FILENAME).expected == null || this.get(File.I_EXTENSION).expected == null) {
+            await fileDelete(this);
+        } else {
+            await fileRename(this);
+            // Folders
+            if (this.get(File.I_IS_FOLDER)) {
+                // TODO
+            }
+        }
     }
 
     // ------------------------------------------
