@@ -26,18 +26,19 @@ describe(t(import.meta), function () {
 
         {
             const f = new FileUnsupported('failure.txt');
-            await expectAsync(f.runAnalyse()).toBePending();
-            await expectAsync(f.runActing()).toBeRejectedWithError(FOError);
+            await f.runAnalyse();
+            expect(() => f.runConsistencyCheck()).toThrowError(FOError);
             expect(getStatusChangesForItem(f)).toEqual([
                 STATUS_CREATED,
                 STATUS_ANALYSING,
                 STATUS_FAILURE
             ]);
         }
+
         {
             const f = new FileUnsupported('failure2.txt');
-            await expectAsync(f.runAnalyse()).toBeRejectedWithError(FOError);
-            await expectAsync(f.runActing()).toBeRejectedWithError(FOError);
+            await f.runAnalyse();
+            expect(() => f.runConsistencyCheck()).toThrowError(FOError);
         }
 
         console.info.calls.reset();

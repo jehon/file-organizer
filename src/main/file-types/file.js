@@ -44,7 +44,6 @@ export class FOError extends Error { }
  *      - initial (=current) and expected
  *
  * - checkConsistency()
- *      started by runAnalisys
  *      could not change anything
  *      check only "expected" values
  *      create problems
@@ -185,7 +184,8 @@ export default class File extends Item {
     }
 
     /**
-     * @deprecated: use currentFilePath instead
+     * @deprecated (use currentFilePath instead)
+     * @returns {string} absolute path
      */
     get currentPath() {
         const cpath = this.parent ? this.parent.currentPath : '/';
@@ -238,13 +238,8 @@ export default class File extends Item {
      *   - call super.analyse() => initialize the above layers
      *   - analisysAddInfo with the information from the layer
      *   - set the expected values from the layer and the above layers
-     *   - analisysAddInfo(InfoProblems)
-     *   - enqueueAct() with non-info related fixes (should be on top elements)
      *
-     *   - add an info (addInfo)
-     *   - task to fix (enqueueAct)
-     *
-     * This is a mock, and should be implemented by childrends
+     * This is a mock, and should be implemented by children
      *
      * @abstract
      *
@@ -334,6 +329,7 @@ export default class File extends Item {
         }
 
         if (!parentsMap.has(parentDir)) {
+            // TODO(legacy): use the buildFile facility
             parentsMap.set(parentDir,
                 // buildFolderFn(parentDir)
                 // TODO(file-folder): remove this horrible hack
@@ -388,43 +384,49 @@ export default class File extends Item {
      */
     async runAnalyse() {
         this.notify(STATUS_ANALYSING);
-        return this.analyse()
-            .then(
-                () => {
-                    if (this.get(File.I_FILENAME).expected == null) {
-                        // The file will be deleted anyway
-                        this.notify(STATUS_NEED_ACTION);
-                        return;
-                    }
+        await this.analyse();
+        return this;
+    }
 
-                    this.checkConsistency();
+    /**
+     * @returns {boolean} true if the file is consistent
+     */
+    runConsistencyCheck() {
+        if (this.get(File.I_FILENAME).expected == null) {
+            // The file will be deleted anyway
+            this.notify(STATUS_NEED_ACTION);
+            return false;
+        }
 
-                    // Look for problems
-                    if (this.problemsList.length > 0) {
-                        this.notify(STATUS_FAILURE);
-                        throw new FOError(this.problemsList.length + ' problem(s) found: ' + this.problemsList.join(' / '));
-                    }
+        try {
+            this.checkConsistency();
 
-                    // Look at all values, and if some are note ok
-                    // it means we have stuff to do
-                    for (const v of Object.values(this.values)) {
-                        if (!v.isDone()) {
-                            this.notify(STATUS_NEED_ACTION);
-                        }
-                    }
+            // Look for problems
+            if (this.problemsList.length > 0) {
+                this.notify(STATUS_FAILURE);
+                throw new FOError(this.problemsList.length + ' problem(s) found: ' + this.problemsList.join(' / '));
+            }
 
-                    // TODO: clean up this status
-                    if (this.status == STATUS_ANALYSING) {
-                        // We did not enqueue any action
-                        this.notify(STATUS_SUCCESS);
-                    }
-                    return this;
-                },
-                (e) => {
-                    this.notify(STATUS_FAILURE);
-                    throw e;
-                }
-            );
+            // Look at all values, and if some are note ok
+            // it means we have stuff to do
+            const unsolvedValuesKeys = Object.keys(this.values)
+                .filter(k => !this.values[k].isDone());
+
+            if (unsolvedValuesKeys.length > 0) {
+                this.notify(STATUS_NEED_ACTION);
+                // throw new FOError(unsolvedValuesKeys.length + ' unsolved value(s) found: '
+                //     + unsolvedValuesKeys.map(k => `${k} (${this.get(k).current} <-> ${this.get(k).expected})`)
+                // );
+                return false;
+            }
+
+            // Cool, this is done
+            this.notify(STATUS_SUCCESS);
+            return true;
+        } catch (e) {
+            this.notify(STATUS_FAILURE);
+            throw e;
+        }
     }
 
     /**
@@ -483,9 +485,10 @@ export default class File extends Item {
      * @returns {Promise<boolean>} when data is loaded
      */
     async loadData() {
+        await this.runAnalyse();
         try {
-            return this.runAnalyse()
-                .then(() => true);
+            this.runConsistencyCheck();
+            return true;
         } catch (e) {
             return false;
         }

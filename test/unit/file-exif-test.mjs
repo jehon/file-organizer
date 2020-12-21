@@ -10,8 +10,9 @@ describe(t(import.meta), function () {
     describe('it should read data', function () {
         it('no exif', async function () {
             const f = new FileExif(dataPath('no_exif.jpg'));
+            await f.runAnalyse();
             try {
-                await f.runAnalyse();
+                f.runConsistencyCheck();
             } catch (e) {
                 if (!(e instanceof FOError)) {
                     throw e;
@@ -28,8 +29,9 @@ describe(t(import.meta), function () {
 
         it('time', async function () {
             const f = new FileExif(dataPath('1998-12-31 12-10-11 exifok01.jpg'));
+            await f.runAnalyse();
             try {
-                await f.runAnalyse();
+                f.runConsistencyCheck();
             } catch (e) {
                 if (!(e instanceof FOError)) {
                     throw e;
@@ -44,9 +46,9 @@ describe(t(import.meta), function () {
 
         it('title', async function () {
             const f = new FileExif(dataPath('20150306_153340 Cable internet dans la rue.jpg'));
+            await f.runAnalyse();
             try {
-                await f.runAnalyse();
-
+                f.runConsistencyCheck();
             } catch (e) {
                 if (!(e instanceof FOError)) {
                     throw e;
@@ -63,9 +65,9 @@ describe(t(import.meta), function () {
 
         it('rotation', async function () {
             const f = new FileExif(dataPath('rotated-bottom-left.jpg'));
+            await f.runAnalyse();
             try {
-                await f.runAnalyse();
-
+                f.runConsistencyCheck();
             } catch (e) {
                 if (!(e instanceof FOError)) {
                     throw e;
@@ -88,8 +90,10 @@ describe(t(import.meta), function () {
             {
                 // Build up the data to be written
                 const f = new FileExif(filename);
+                await f.analyse();
+
                 try {
-                    await f.analyse();
+                    f.runConsistencyCheck();
                 } catch (e) {
                     if (!(e instanceof FOError)) {
                         throw e;

@@ -31,15 +31,26 @@ import { resetOptionsForUnitTesting } from './run-helper.mjs';
 class DemoFile extends File {
     fnAct = () => { }
     fnAnalyse = () => { }
+    fnCheckConsistency = () => { }
 
     withAnalyse(fn) {
+        super.analyse();
         this.fnAnalyse = fn;
         return this;
     }
 
     async analyse() {
-        return super.analyse()
-            .then(this.fnAnalyse);
+        this.fnAnalyse();
+    }
+
+    withConsistency(fn) {
+        this.fnCheckConsistency = fn;
+        return this;
+    }
+
+    checkConsistency() {
+        super.checkConsistency();
+        this.fnCheckConsistency();
     }
 
     withAct(fn) {
@@ -47,10 +58,7 @@ class DemoFile extends File {
     }
 
     async act() {
-        return Promise.resolve()
-            .then(() => this.fnAct ? this.fnAct() : true)
-            .then(() => super.act());
-
+        await this.fnAct();
     }
 }
 
@@ -78,7 +86,6 @@ describe(t(import.meta), function () {
 
         it('parse invalid filename', async () => {
             const f = new File('1913-14-75 Cable internet dans la rue.jpg');
-            // await expectAsync(f.runAnalyse()).toBeRejectedWithError(FOError);
             expect(f.get(File.I_FN_QUALIF).initial).toBe('');
             expect(f.get(File.I_FN_TITLE).initial).toBe('1913-14-75 Cable internet dans la rue');
             expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('');
@@ -172,8 +179,8 @@ describe(t(import.meta), function () {
 
             expect(getStatusChangesForItem(f)[0]).toBe(STATUS_CREATED);
 
-            await expectAsync(f.runAnalyse())
-                .toBeResolved();
+            await f.runAnalyse();
+            f.runConsistencyCheck();
 
             expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
 
@@ -181,9 +188,10 @@ describe(t(import.meta), function () {
         });
 
         it('should analyse a file impossible', async function () {
-            f.withAnalyse(() => { throw new FOError('impossible'); });
+            f.withConsistency(() => { throw new FOError('impossible'); });
 
-            await expectAsync(f.runAnalyse()).toBeRejectedWithError(FOError, 'impossible');
+            await f.runAnalyse();
+            await expect(() => f.runConsistencyCheck()).toThrowError(FOError, 'impossible');
 
             expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
 
@@ -193,7 +201,8 @@ describe(t(import.meta), function () {
         it('should checkConsistency', async function (done) {
             f.checkConsistency = () => { f.addProblem('test'); };
 
-            await expectAsync(f.runAnalyse()).toBeRejectedWithError(FOError);
+            await f.runAnalyse();
+            await expect(() => f.runConsistencyCheck()).toThrowError(FOError);
             expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
             done();
             // }
@@ -202,19 +211,24 @@ describe(t(import.meta), function () {
 
         describe('with act', function () {
             beforeEach(() => {
-                f.withAnalyse(() => { f.notify(STATUS_NEED_ACTION); });
+                f.withConsistency(() => f.get(File.I_FILENAME).expect('go to need action'));
+                f.withAct(() => {
+                    f.get(File.I_FILENAME).fix();
+                    f.get(File.I_FN_TITLE).fix();
+                });
             });
 
             it('with successfull task', async function () {
                 let i = 0;
-                f.withAct(() => true);
 
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
-                await expectAsync(f.runAnalyse()).toBeResolved();
+                await f.runAnalyse();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
+
+                f.runConsistencyCheck();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
-                await expectAsync(f.runActing()).toBeResolved();
+                await f.runActing();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_SUCCESS);
 
@@ -226,8 +240,10 @@ describe(t(import.meta), function () {
                 f.withAct(() => { throw new FOError('impossible'); });
 
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
-                await expectAsync(f.runAnalyse()).toBeResolved();
+                await f.runAnalyse();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
+
+                await f.runConsistencyCheck();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
                 await expectAsync(f.runActing()).toBeRejectedWithError(FOError, 'impossible');
@@ -241,14 +257,13 @@ describe(t(import.meta), function () {
                 it('with legacy workflow', async function () {
                     options.dryRun = false;
                     let i = 0;
-                    f.withAct(() => true);
 
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
-                    await expectAsync(f.loadData()).toBeResolved();
+                    await f.loadData();
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
-                    await expectAsync(f.check()).toBeResolved();
+                    await f.check();
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_SUCCESS);
 
@@ -259,7 +274,6 @@ describe(t(import.meta), function () {
                 it('with legacy workflow', async function () {
                     options.dryRun = true;
                     let i = 0;
-                    f.withAct(() => true);
 
                     expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
                     await expectAsync(f.loadData()).toBeResolved();
@@ -291,6 +305,8 @@ describe(t(import.meta), function () {
             const f2 = new File(f1.currentFilePath);
             await f2.runAnalyse();
             expect(f2.get(File.I_EXTENSION).expected).toBe('.tx2');
+
+            f2.runConsistencyCheck();
             await f2.runActing();
 
             expect(f2.currentFilePath.endsWith('.tx2')).toBeTrue();
@@ -301,9 +317,11 @@ describe(t(import.meta), function () {
             const filename = await createFileFrom('20150306_153340 Cable internet dans la rue.jpg');
             const f = new File(filename);
             await f.runAnalyse();
+
+            f.runConsistencyCheck();
             await f.runActing();
             expect(f.getCanonicalFilename()).toBe('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340]');
-            expect(f.currentPath).toBe(tempPath('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340].jpg'));
+            expect(f.currentFilePath).toBe(tempPath('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340].jpg'));
         });
     });
 

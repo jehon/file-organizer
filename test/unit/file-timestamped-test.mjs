@@ -140,15 +140,9 @@ describe(t(import.meta), function () {
             const f = new FileTimestamped(tempPath('1998-12-31 virtual', '1999-09-09 12-00-00 test.jpg'));
             mkParentFolder(f);
             await f.parent.runAnalyse();
-            try {
-                await f.runAnalyse();
-                throw 'It should throw';
-            } catch (e) {
-                if (!(e instanceof FOError)) {
-                    throw e;
-                }
-                expect(f.hasProblem(FileTimestamped.P_TS_INCOHERENT)).toBeTrue();
-            }
+            await f.runAnalyse();
+            expect(() => f.runConsistencyCheck()).toThrowError(FOError);
+            expect(f.hasProblem(FileTimestamped.P_TS_INCOHERENT)).toBeTrue();
         });
     });
 });

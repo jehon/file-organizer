@@ -16,24 +16,16 @@ import File, { FOError } from '../../src/main/file-types/file.js';
  * @param {string} its_time to be checked
  * @param {string} its_title to be checked
  * @param {number} its_rotation to be checked
- * @param {function(File, Error): void} cb_check to check the file
  */
-function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0, cb_check = async () => { }) {
+function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
     describe(`with ${baseFilename}`, function () {
         it('should read data', async function () {
             let filename = await createFileFrom(baseFilename);
 
             try {
                 let f;
-                try {
-                    f = new FilePicture(filename);
-                    await f.runAnalyse();
-                } catch (e) {
-                    if (!(e instanceof FOError)) {
-                        throw e;
-                    }
-                    await cb_check(f, e);
-                }
+                f = new FilePicture(filename);
+                await f.runAnalyse();
                 expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
                     .withContext(baseFilename)
                     .toBe(its_time);
@@ -55,8 +47,9 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0, cb_ch
                 {
                     const f = new FilePicture(filename);
 
+                    await f.runAnalyse();
                     try {
-                        await f.runAnalyse();
+                        f.runConsistencyCheck();
                     } catch (e) {
                         if (!(e instanceof FOError)) {
                             throw e;
@@ -113,24 +106,17 @@ describe(t(import.meta), function () {
 
     it('should normalize extensions when necessary', async () => {
         const f = new FilePicture(dataPath('system_test/2019 test/1.jpeg'));
-        try {
-            await f.runAnalyse();
-        } catch (e) {
-            if (!(e instanceof FOError)) {
-                throw e;
-            }
-        }
+        await f.runAnalyse();
         expect(f.get(File.I_EXTENSION).expected).toBe('.jpg');
     });
 
-    // xit('should get exif rotation from files', async () => {
-    //     expect((await getPict('rotated.jpg')).exif_orientation).toBe(270);
-    //     expect((await getPict('rotated-ok.jpg')).exif_orientation).toBe(0);
-    //     expect((await getPict('rotated-bottom-left.jpg')).exif_orientation).toBe(270);
-    //     expect((await getPict('rotated-right-top.jpg')).exif_orientation).toBe(90);
+    xit('should get exif rotation from files', async () => {
+        //     expect((await getPict('rotated.jpg')).exif_orientation).toBe(270);
+        //     expect((await getPict('rotated-ok.jpg')).exif_orientation).toBe(0);
+        //     expect((await getPict('rotated-bottom-left.jpg')).exif_orientation).toBe(270);
+        //     expect((await getPict('rotated-right-top.jpg')).exif_orientation).toBe(90);
 
-    //     expect((await getPict('petitAppPhoto.jpg')).exif_orientation).toBe(0);
-    //     expect((await getPict('no_exif.jpg')).exif_orientation).toBe(0);
-    // });
-
+        //     expect((await getPict('petitAppPhoto.jpg')).exif_orientation).toBe(0);
+        //     expect((await getPict('no_exif.jpg')).exif_orientation).toBe(0);
+    });
 });

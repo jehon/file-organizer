@@ -19,6 +19,7 @@ describe(t(import.meta), function () {
     it('should be always good', async function () {
         const f = new FileHidden('.');
         await expectAsync(f.runAnalyse()).toBeResolved();
+        expect(() => f.runConsistencyCheck()).not.toThrow();
         await expectAsync(f.runActing()).toBeResolved();
 
         expect(getStatusChangesForItem(f)).toEqual([
