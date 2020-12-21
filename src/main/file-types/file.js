@@ -15,9 +15,9 @@ import {
 } from '../../common/constants.js';
 
 import fileUtils from '../../../file-organizer/file-utils.js';
-import { folderListing } from '../tasks-fs.js';
+// import { folderListing } from '../tasks-fs.js';
 
-import { buildFile, _regExpMapForFolders } from '../register-file-types.js';
+import { _regExpMapForFolders } from '../register-file-types.js';
 
 import Value from '../value.js';
 
@@ -147,6 +147,12 @@ export default class File extends Item {
         }
         this.set(File.I_IS_FOLDER, new ValueConstant(isFolder));
 
+        // // Build children
+        // if (this.get(File.I_IS_FOLDER).current) {
+        //     this.children = folderListing(this)
+        //         .map(f => buildFile(path.join(this.currentFilePath, f), this));
+        // }
+
         /* Build up all informations and link them to I_FILENAME */
 
         /* auto update filename  */
@@ -246,17 +252,6 @@ export default class File extends Item {
      * @returns {Promise<*>} resolved as analysis is done
      */
     async analyse() {
-        // Folders
-        if (this.get(File.I_IS_FOLDER).current) {
-            this.children = await Promise.all(
-                (await folderListing(this))
-                    .map(f => buildFile(path.join(this.currentFilePath, f), this))
-            );
-            // await Promise.all(
-            //     this.children.map(f => f.runAnalyse())
-            // );
-        }
-
         // Lowercase extension
         const currentExtension = this.get(File.I_EXTENSION).current;
         if (currentExtension.toLowerCase() != currentExtension) {

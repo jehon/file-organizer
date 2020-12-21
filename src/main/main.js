@@ -78,9 +78,8 @@ Promise.resolve()
                             argv.files.push('.');
                         }
                         messages.statsAddFileToTotal(argv.files.length);
-                        return Promise.all(argv.files.map(f => buildFile('' + f)))
-                            .then(nlist => argv.files = nlist)
-                            .then(() => argv);
+                        argv.files = argv.files.map(f => buildFile('' + f));
+                        return argv;
                     })
                     .onFinishCommand(() => {
                         if (options.headless) {

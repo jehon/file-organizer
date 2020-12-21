@@ -100,19 +100,20 @@ function _getClassFromMap(regExpMap, filepath, parent) {
 }
 
 /**
+ * This function is called in constructor of File, so it must be SYNC
+ *
  * @param {string|object} filepath to be build
  * @param {module:file-organizer/main/FileFolder} parent of the file
  * @returns {module:common/File} the File object
  */
-export async function buildFile(filepath, parent = null) {
+export function buildFile(filepath, parent = null) {
     // TODO(migration): accept File and FileGeneric as it
     if (typeof filepath == 'object') {
         return filepath;
     }
 
     try {
-        const stat = fs.statSync(filepath);
-        if (stat.isDirectory()) {
+        if (fs.statSync(filepath).isDirectory()) {
             return _getClassFromMap(_regExpMapForFolders, filepath, parent);
         }
     } catch {

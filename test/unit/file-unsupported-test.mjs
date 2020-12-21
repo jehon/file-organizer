@@ -45,6 +45,8 @@ describe(t(import.meta), function () {
         expect(() => dumpDiscoveredExtension()).not.toThrow();
         expect(console.info).toHaveBeenCalled();
 
+        // Only the really analysed are present here...
+        // (runAnalyse is not recursive)
         expect(_map.size).toBe(1);
         expect(_map.get('.txt')).toBe(2);
     });

@@ -52,11 +52,13 @@ export async function fileRename(file) {
 }
 
 /**
+ * This function is used in constructor, so it must be SYNC
+ *
  * @param {File} file to be searched
- * @returns {Promise<string[]>} of relative filepath
+ * @returns {string[]} of relative filepath
  */
-export async function folderListing(file) {
-    const list = (await fs.promises.readdir(file.currentFilePath))
+export function folderListing(file) {
+    const list = fs.readdirSync(file.currentFilePath)
         .filter(f => f != '.' && f != '..');
     list.sort();
     return list;

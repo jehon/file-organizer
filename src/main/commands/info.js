@@ -33,8 +33,8 @@ export const handler = async function (noptions) {
         withFileSummary: false
     });
 
-    return buildFile(options.file)
-        .then(f => f.loadData())
+    await buildFile(options.file)
+        .loadData()
         .then(f => {
             if (options.key) {
                 if (options.key in f) {

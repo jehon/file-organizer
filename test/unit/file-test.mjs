@@ -325,7 +325,7 @@ describe(t(import.meta), function () {
         });
     });
 
-    describe('with folders', function () {
+    xdescribe('with folders', function () {
         it('should pass on all files', async () => {
             const folder = new File(dataPath());
             let res = 0;
