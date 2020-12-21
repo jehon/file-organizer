@@ -4,6 +4,7 @@ import path from 'path';
 
 import File, { FOError } from '../../src/main/file-types/file.js';
 import options from '../../file-organizer/options.js';
+
 import {
     STATUS_CREATED,
     STATUS_ANALYSING,
@@ -21,7 +22,8 @@ import {
     getStatusChangesForItem,
     createFileFrom,
     fileExists,
-    tempPath
+    tempPath,
+    dataPath
 } from './help-functions.mjs';
 
 import { resetOptionsForUnitTesting } from './run-helper.mjs';
@@ -235,7 +237,6 @@ describe(t(import.meta), function () {
                 expect(getStatusChangesForItem(f).length).toBe(i);
             });
 
-
             describe('with legacy workflow', function () {
                 it('with legacy workflow', async function () {
                     options.dryRun = false;
@@ -303,6 +304,37 @@ describe(t(import.meta), function () {
             await f.runActing();
             expect(f.getCanonicalFilename()).toBe('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340]');
             expect(f.currentPath).toBe(tempPath('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340].jpg'));
+        });
+    });
+
+    describe('with folders', function () {
+        it('should pass on all files', async () => {
+            const folder = new File(dataPath());
+            let res = 0;
+            try {
+                await folder.runAnalyse();
+            } catch (e) {
+                if (!(e instanceof FOError)) {
+                    throw e;
+                }
+            }
+
+            for (const f of folder.children) {
+                // expect(f).toEqual(jasmine.any(File));
+                expect(f.parent.getPath()).toBe(dataPath());
+                expect(f.getFilename()).not.toBe('.');
+                expect(f.getFilename()).not.toBe('..');
+
+                // Hidden files
+                expect(f.getFilename()).not.toBe('@eaDir');
+
+                // Do we have ... (by 2^ bits)
+                if (f.getFilename() == 'jh-patch-file-patch') {
+                    res += 2;
+                }
+            }
+            expect(res).toBe(2);
+            expect(folder.children.length).toBe(15);
         });
     });
 });

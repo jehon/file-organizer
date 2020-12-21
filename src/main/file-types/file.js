@@ -15,9 +15,9 @@ import {
 } from '../../common/constants.js';
 
 import fileUtils from '../../../file-organizer/file-utils.js';
-// import { buildFolder } from '../main/loadFileTypes.js';
+import { folderListing } from '../tasks-fs.js';
 
-import { _regExpMapForFolders } from '../register-file-types.js';
+import { buildFile, _regExpMapForFolders } from '../register-file-types.js';
 
 import Value from '../value.js';
 
@@ -120,19 +120,20 @@ export default class File extends Item {
         super(filePath);
         this._path = filePath;
 
-        if (parent) {
-            this.parent = parent;
-        }
-        if (this.parent === undefined) {
-            this.parent = this._calculateParent();
-        }
-
         const vFn = new Value(fileUtils.getFilename(this._path));
         this.set(File.I_FILENAME, vFn);
 
         this.set(File.I_EXTENSION,
             new Value(fileUtils.getExtension(this._path))
         );
+
+        if (parent) {
+            this.parent = parent;
+        }
+
+        if (this.parent === undefined) {
+            this.parent = this._calculateParent();
+        }
 
         let isFolder = false;
         try {
@@ -251,15 +252,15 @@ export default class File extends Item {
      */
     async analyse() {
         // Folders
-        // if (this.get(File.I_IS_FOLDER)) {
-        //     const children = await folderListing(this);
-        //     console.log('***', children);
-
-        //     this.childrens = children.map(f => buildFile(f));
-        //     await Promise.all(
-        //         this.children.map(f => f.runAnalisys())
-        //     );
-        // }
+        if (this.get(File.I_IS_FOLDER).current) {
+            this.children = await Promise.all(
+                (await folderListing(this))
+                    .map(f => buildFile(path.join(this.currentFilePath, f), this))
+            );
+            // await Promise.all(
+            //     this.children.map(f => f.runAnalyse())
+            // );
+        }
 
         // Lowercase extension
         const currentExtension = this.get(File.I_EXTENSION).current;
