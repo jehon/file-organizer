@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 
 import Item from '../item.js';
 import options from '../../../file-organizer/options.js';
@@ -26,7 +27,7 @@ import timestampAPI from '../../../file-organizer/timestamp.js';
 const { tsFromString } = timestampAPI;
 
 import ValueCalculated from '../value-calculated.js';
-
+import ValueConstant from '../value-constant.js';
 
 const parentsMap = new Map();
 
@@ -103,6 +104,9 @@ export default class File extends Item {
     /** @type {string} */
     _path
 
+    /** @type {File[]} */
+    children = []
+
     // /**
     //  * The actChain will fill in progressively, but should fire only
     //  * when starting the "act"
@@ -129,6 +133,19 @@ export default class File extends Item {
         this.set(File.I_EXTENSION,
             new Value(fileUtils.getExtension(this._path))
         );
+
+        let isFolder = false;
+        try {
+            isFolder = fs.statSync(this.currentFilePath).isDirectory();
+        } catch (e) {
+            // For testing purpose, if a file does not exists, it is not a folder
+            if (!(e instanceof Error)
+                /** eslint-ignore-next-line */
+                || (e instanceof Error && e.code !== 'ENOENT')) {
+                throw e;
+            }
+        }
+        this.set(File.I_IS_FOLDER, new ValueConstant(isFolder));
 
         /* Build up all informations and link them to I_FILENAME */
 

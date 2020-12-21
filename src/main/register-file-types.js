@@ -1,8 +1,6 @@
 
 import fs from 'fs';
 import fileUtils from '../../file-organizer/file-utils.js';
-import ValueConstant from './value-constant.js';
-import File from './file-types/file.js';
 
 // TODO(style): object should be "class constructor"
 /**
@@ -113,28 +111,15 @@ export async function buildFile(filepath, parent = null) {
     }
 
     try {
-        // Is it real? Let's go further
         const stat = fs.statSync(filepath);
         if (stat.isDirectory()) {
-            const f = _getClassFromMap(_regExpMapForFolders, filepath, parent);
-
-            // TODO(legacy): this is always true with new file
-            if (f.set) {
-                f.set(File.I_IS_FOLDER, new ValueConstant(true));
-            }
-            return f;
+            return _getClassFromMap(_regExpMapForFolders, filepath, parent);
         }
     } catch {
-        // ok
+        // For testing purpose, if a file does not exists, it is not a folder
     }
 
-    const f = _getClassFromMap(_regExpMapForFiles, filepath, parent);
-
-    // TODO(legacy): this is always true with new file
-    if (f.set) {
-        f.set(File.I_IS_FOLDER, new ValueConstant(false));
-    }
-    return f;
+    return _getClassFromMap(_regExpMapForFiles, filepath, parent);
 }
 
 /**
