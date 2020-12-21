@@ -35,6 +35,7 @@
     "eslint-plugin-jsdoc": "30.7.9",
     "husky": "4.3.6",
     "jasmine": "github:jasmine/jasmine-npm",
+    "lint-staged": "10.5.3",
     "nyc": "15.1.0",
     "spectron": "13.0.0",
     "watch": "1.0.2"
