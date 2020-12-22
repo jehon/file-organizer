@@ -374,7 +374,7 @@ export default class File extends Item {
     // }
 
     /**
-     * Run the analysis on this files
+     * Run the analysis on this files, and all related one's (ex: FileFolder)
      *
      * @private
      *
