@@ -105,15 +105,10 @@ export default class FileTimestamped extends File {
             this.addProblem(FileTimestamped.P_NO_TIMESTAMP);
         } else {
             // Check filename according to parent folder TS
-
-            // TODO(legacy): wait for folder to be migrated
-            // TODO: look upto "root" (concept to be defined)
-            if (this.parent && this.parent.get(File.I_FN_TIME)) {
-                if (this.parent.get(File.I_FN_TIME).expected.isTimestamped()
-                    || this.parent.get(File.I_FN_TIME).expected.isRange()) {
-                    if (!this.get(File.I_FN_TIME).expected.matchLithe(this.parent.get(File.I_FN_TIME).expected)) {
-                        this.addProblem(FileTimestamped.P_TS_INCOHERENT);
-                    }
+            if (this.parent && this.parent.get(File.I_FN_TIME).expected.isTimestamped()
+                || this.parent.get(File.I_FN_TIME).expected.isRange()) {
+                if (!this.get(File.I_FN_TIME).expected.matchLithe(this.parent.get(File.I_FN_TIME).expected)) {
+                    this.addProblem(FileTimestamped.P_TS_INCOHERENT);
                 }
             }
         }

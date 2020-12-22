@@ -24,12 +24,8 @@ describe(t(import.meta), function () {
         _regExpMapForFiles.clear();
         _regExpMapForFolders.clear();
 
-
         // We need this one in the File.js to build up the parent
-        // registerRegExp(FallBackRegExp, A, { forFiles: true, forFolders: true });
-        // TODO(file-folder): remove this horrible hack
-        registerRegExp('//', A, { forFiles: true, forFolders: true });
-
+        // registerRegExp(FallBackRegExp, A, { forFiles: false, forFolders: true });
     });
 
     it('should register and find it back', async () => {

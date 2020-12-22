@@ -5,13 +5,11 @@ import iterate from '../../src/main/iterate.js';
 import {
     dataPath
 } from './help-functions.mjs';
-// TODO: use buildFile
-// import { buildFile } from '../../src/main/register-file-types.js';
-import File from '../../src/main/file-types/file.js';
+import { buildFile } from '../../src/main/register-file-types.js';
 
 describe(t(import.meta), function () {
     it('should iterate', async () => {
-        const root = new File(dataPath('system_test'));
+        const root = buildFile(dataPath('system_test'));
         const res = await iterate(root, _f => '123');
 
         // console.log(res);

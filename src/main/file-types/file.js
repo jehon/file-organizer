@@ -2,7 +2,6 @@ import path from 'path';
 import fs from 'fs';
 
 import Item from '../item.js';
-import options from '../../common/options.js';
 import {
     TYPE_FILE,
     STATUS_ANALYSING,
@@ -17,7 +16,7 @@ import {
 import fileUtils from '../../../file-organizer/file-utils.js';
 import { folderListing } from '../tasks-fs.js';
 
-import { buildFile, FallBackRegExp, registerRegExp, _regExpMapForFolders } from '../register-file-types.js';
+import { buildFile, FallBackRegExp, registerRegExp } from '../register-file-types.js';
 
 import Value from '../value.js';
 
@@ -302,10 +301,6 @@ export default class File extends Item {
             await fileDelete(this);
         } else {
             await fileRename(this);
-            // Folders
-            if (this.get(File.I_IS_FOLDER)) {
-                // TODO
-            }
         }
     }
 
@@ -497,69 +492,6 @@ export default class File extends Item {
 
         return list;
     }
-
-    // ------------------------------------------------
-    //
-    // TODO(migration): LEGACY BRIDGE
-    //
-    // ------------------------------------------------
-
-    async getList() {
-        return this.children;
-    }
-
-    /**
-     * @deprecated TODO: Mock of previous version
-     *
-     * @param {function(File):any} fn to be applied
-     * @returns {Promise<object>} applied on the file
-     */
-    async iterate(fn) {
-        return {
-            [this.currentFilePath]: await fn(this),
-            ...(await Promise.all(
-                this.children.map(async function (f) {
-                    let res = {};
-                    res[f.currentFilePath] = await fn(f);
-                    return res;
-                })
-            ))
-        };
-    }
-
-    /**
-     * @deprecated TODO: Mock of previous version
-     * @returns {Promise<File>} when data is loaded
-     */
-    async loadData() {
-        await this.runAnalyse();
-        try {
-            this.runConsistencyCheck();
-            return this;
-        } catch (e) {
-            return this;
-        }
-    }
-
-    /**
-     * @deprecated TODO: Mock of previous version
-     * @returns {Promise<void>} when data is loaded
-     */
-    async check() {
-        if (options.dryRun) {
-            return;
-        }
-        return this.runActing();
-    }
-
-    /**
-     * @deprecated
-     * @returns {string} current path
-     */
-    getPath() {
-        return this.currentFilePath;
-    }
 }
 
-_regExpMapForFolders.set('//', File);
 registerRegExp(FallBackRegExp, File, { forFiles: true, forFolders: true });

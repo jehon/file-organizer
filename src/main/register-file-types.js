@@ -89,7 +89,6 @@ function _getClassFromMap(regExpMap, filepath, parent) {
     regExps.sort((a, b) => (b.toString().length - a.toString().length));
     for (const key of regExps) {
         const classConstructor = regExpMap.get(key);
-
         if (key.test(fname)) {
             return new classConstructor(filepath, parent);
         }
@@ -106,7 +105,6 @@ function _getClassFromMap(regExpMap, filepath, parent) {
  * @returns {module:common/File} the File object
  */
 export function buildFile(filepath, parent = null) {
-    // TODO(migration): accept File and FileGeneric as it
     if (typeof filepath == 'object') {
         return filepath;
     }

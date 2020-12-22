@@ -11,16 +11,7 @@ export default async function iterate(file, func) {
         [file.currentFilePath]: await func(file)
     };
 
-    let list = [];
-
-    if (file.getList) {
-        list.push(... await file.getList());
-    }
-
-    // // getList implies children
-    // list.push(...file.children);
-
-    for (const f of list) {
+    for (const f of file.children) {
         res = {
             ...res,
             ...(await iterate(f, func))
