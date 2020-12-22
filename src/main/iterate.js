@@ -20,14 +20,3 @@ export default async function iterate(file, func) {
 
     return res;
 }
-
-// async iterate(apply) {
-//     return Promise.resolve(this)
-//         .then(() => this.getList())
-//         .then(list => Promise.all(list.map(
-//             // Iterate on each child
-//             f => f.iterate(apply)
-//         )))
-//         // Iterate on us-self
-//         .then(() => super.iterate(apply));
-// }

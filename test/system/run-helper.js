@@ -2,9 +2,10 @@
 import path from 'path';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
-import shellExec from 'shell-exec';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+
+const pExecFile = promisify(execFile);
 
 import { t } from '../test-helper.js';
 
@@ -63,8 +64,7 @@ export async function describeAndSetup(url, fn) {
         return fn({
             testName,
             tempPath: tPath,
-            // TODO: remove shellExec in favor of builtin child_process.fileExec
-            listAll: async () => shellExec(`find ${tPath()} -type f`).then(res => console.info('Listing: \n', res.stdout))
+            listAll: async () => pExecFile('find', [tPath(), '-type', 'f']).then(res => console.info('Listing: \n', res.stdout))
         });
     });
 }
@@ -97,15 +97,23 @@ export class FORun {
     async run(...args) {
         this.args = args;
 
-        this.cmdLine = rootPath('/file-organizer.sh') + ' --headless "' + this.args.join('" "') + '"';
-        // { stdout: '', stderr: '', cmd: '', code: x }
-        // TODO: remove shellExec in favor of builtin child_process.fileExec
-        this.result = await shellExec(this.cmdLine, { cwd: this.cwd });
+        this.cmdLine = ['--headless', ...this.args];
+        // https://nodejs.org/api/child_process.html#child_process_child_process_execfile_file_args_options_callback
+        await pExecFile(rootPath('/file-organizer.sh'), this.cmdLine, { cwd: this.cwd })
+            .then(result => {
+                this.result = result;
+                this.result.code = 0;
+            }, result => {
+                // What is the error code ????
+                // code should be on error.code
+                this.result = result;
+                this.code = result.code;
+            });
 
         await Promise.all([
-            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.cmd'), this.result.cmd),
-            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.log'), this.result.stdout),
-            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.err'), this.result.stderr),
+            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.cmd'), '"' + this.cmdLine.join('" "') + '"'),
+            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.log'), this.result.stdout || ''),
+            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.err'), this.result.stderr || ''),
         ]);
     }
 
