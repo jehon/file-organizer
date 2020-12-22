@@ -480,15 +480,15 @@ export default class File extends Item {
 
     /**
      * @deprecated TODO: Mock of previous version
-     * @returns {Promise<boolean>} when data is loaded
+     * @returns {Promise<File>} when data is loaded
      */
     async loadData() {
         await this.runAnalyse();
         try {
             this.runConsistencyCheck();
-            return true;
+            return this;
         } catch (e) {
-            return false;
+            return this;
         }
     }
 
