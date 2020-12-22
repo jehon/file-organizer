@@ -124,13 +124,18 @@ test-unit-continuously: build
 
 .PHONY: test-cmd
 test-cmd: build
+	@rm -fr tmp/cmd
+	@mkdir -p tmp/cmd
 	@echo "************** running test commands ...  ***************************"
 	@echo "************** dump "
-	xvfb-run --auto-servernum ./file-organizer.sh dump test/data
+	xvfb-run --auto-servernum ./file-organizer.sh dump --all test/data
 	@echo "************** info all "
 	./file-organizer-headless.sh info test/data/canon.JPG
 	@echo "************** info one "
-	./file-organizer-headless.sh info -k exif_timestamp test/data/canon.JPG
+	./file-organizer-headless.sh info -k FileTimestamped_time test/data/canon.JPG
+	@echo "************** fix one "
+	rsync -a test/data/canon.JPG tmp/cmd/canon.JPG
+	./file-organizer-headless.sh regularize --headless tmp/cmd/canon.JPG
 	@echo "************** running test commands done ***************************"
 
 .PHONY: test-system
