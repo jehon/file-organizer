@@ -1,5 +1,5 @@
 
-import options from '../../../file-organizer/options.js';
+import options from '../../common/options.js';
 import { buildFile } from '../../../src/main/register-file-types.js';
 import timestampAPI from '../../../file-organizer/timestamp.js';
 const { Timestamp } = timestampAPI;

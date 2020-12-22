@@ -1,11 +1,12 @@
 
-import options from '../../../file-organizer/options.js';
+import options from '../../common/options.js';
 import fileUtils from '../../../file-organizer/file-utils.js';
 import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
 import iterate from '../iterate.js';
-import messages from '../../../file-organizer/messages.js';
 import File from '../file-types/file.js';
 import FileTimestamped from '../file-types/file-timestamped.js';
+import { IconFailure, IconSuccess } from '../console-utils.js';
+import chalk from 'chalk';
 
 export const command = 'dump [files..]';
 
@@ -99,19 +100,19 @@ export async function handler(noptions) {
                     + sep
                     + (fi.get(FileTimestamped.I_ITS_TIME)
                         ? l(fi.get(FileTimestamped.I_ITS_TIME).initial.humanReadable(), padTimestamp)
-                        : messages.IconFailure + ' ' + l(fi.get(File.I_FN_TIME).initial.humanReadable(), padTimestamp - 2).red
+                        : IconFailure + ' ' + chalk.red(l(fi.get(File.I_FN_TIME).initial.humanReadable(), padTimestamp - 2))
                     )
                     + sep
                     + (fi.get(FileTimestamped.I_ITS_TITLE)
                         ? l(fi.get(FileTimestamped.I_ITS_TITLE).initial, padTitle)
-                        : messages.IconFailure + ' ' + l(fi.get(File.I_FN_TITLE).initial, padTitle - 2).red
+                        : IconFailure + ' ' + chalk.red(l(fi.get(File.I_FN_TITLE).initial, padTitle - 2))
                     )
                     ;
 
                 if (ok) {
-                    process.stdout.write(messages.IconSuccess + ' ' + msg + '\n');
+                    process.stdout.write(IconSuccess + ' ' + msg + '\n');
                 } else {
-                    process.stdout.write(messages.IconFailure + ' ' + msg.red + '\n');
+                    process.stdout.write(IconFailure + ' ' + chalk.red(msg) + '\n');
                 }
 
             })

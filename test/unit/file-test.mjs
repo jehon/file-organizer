@@ -3,7 +3,7 @@ import { t } from '../test-helper.js';
 import path from 'path';
 
 import File, { FOError } from '../../src/main/file-types/file.js';
-import options from '../../file-organizer/options.js';
+import options from '../../src/common/options.js';
 
 import {
     STATUS_CREATED,

@@ -6,8 +6,7 @@
 
 import yargs from 'yargs';
 
-import options from '../../file-organizer/options.js';
-import messages from '../../file-organizer/messages.js';
+import options from '../common/options.js';
 
 // TODO: Fix problem in version < 4.1 coming from jsonfile 4.0.0 in fs-extra 8.1.0
 import 'graceful-fs';
@@ -77,7 +76,6 @@ Promise.resolve()
                         if (argv.files.length == 0) {
                             argv.files.push('.');
                         }
-                        messages.statsAddFileToTotal(argv.files.length);
                         argv.files = argv.files.map(f => buildFile('' + f));
                         return argv;
                     })

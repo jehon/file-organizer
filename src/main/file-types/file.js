@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 
 import Item from '../item.js';
-import options from '../../../file-organizer/options.js';
+import options from '../../common/options.js';
 import {
     TYPE_FILE,
     STATUS_ANALYSING,

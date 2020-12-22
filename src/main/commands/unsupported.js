@@ -1,5 +1,5 @@
 
-import options from '../../../file-organizer/options.js';
+import options from '../../common/options.js';
 import fileUtils from '../../../file-organizer/file-utils.js';
 import FileUnsupported, { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
 

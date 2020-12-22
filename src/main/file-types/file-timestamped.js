@@ -1,6 +1,6 @@
 
 import File from './file.js';
-import options from '../../../file-organizer/options.js';
+import options from '../../common/options.js';
 import Value from '../value.js';
 
 export default class FileTimestamped extends File {

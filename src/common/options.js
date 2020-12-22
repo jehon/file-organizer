@@ -1,5 +1,5 @@
 
-const isInteractive = require('is-interactive');
+import isInteractive from 'is-interactive';
 
 const defaultOptions = {
     dryRun: false,
@@ -10,19 +10,15 @@ const defaultOptions = {
 };
 
 const options = {};
+export default options;
 
 /**
  * For testing purpose
  */
-function _resetToDefault() {
+export function _resetToDefault() {
     for (var member in options) delete options[member];
     Object.assign(options, defaultOptions);
     options._resetToDefault = _resetToDefault;
 }
 
 _resetToDefault();
-
-module.exports = options;
-
-// For testing purpose
-options._resetToDefault = _resetToDefault;

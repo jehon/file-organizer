@@ -6,8 +6,7 @@ import path from 'path';
 import File, { FOError } from '../../src/main/file-types/file.js';
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
 
-import options from '../../file-organizer/options.js';
-const _resetToDefault = options._resetToDefault;
+import options, { _resetToDefault } from '../../src/common/options.js';
 
 import {
     tempPath

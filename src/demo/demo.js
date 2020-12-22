@@ -1,5 +1,5 @@
 
-import options from '../../file-organizer/options.js';
+import options from '../common/options.js';
 
 import File from '../main/file-types/file.js';
 import Task from '../main/task.js';

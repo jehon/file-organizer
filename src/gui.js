@@ -14,7 +14,7 @@ const { app, BrowserWindow, screen } = require('electron');
 app.allowRendererProcessReuse = true;
 
 import { register } from './main/messenger.js';
-import options from '../file-organizer/options.js';
+import options from './common/options.js';
 
 import { rootDir } from './main/main-constants.js';
 

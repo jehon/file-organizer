@@ -1,9 +1,8 @@
 
 import fs from 'fs';
-import path from 'path';
 import { tempPath } from './help-functions.mjs';
 
-import options from '../../file-organizer/options.js';
+import options, { _resetToDefault } from '../../src/common/options.js';
 
 import loadFileTypes from '../../src/main/loadFileTypes.js';
 
@@ -19,7 +18,7 @@ beforeAll(async () => {
  *
  */
 export function resetOptionsForUnitTesting() {
-    options._resetToDefault();
+    _resetToDefault();
     options.withFileSummary = false;
     options.headless = true;
 }
