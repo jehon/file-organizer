@@ -9,6 +9,7 @@ import { promisify } from 'util';
 import { t } from '../test-helper.js';
 
 import datas from './data.js';
+import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
 
 const rootPath = (...args) => path.join((path.dirname(path.dirname(path.dirname(new URL(import.meta.url).pathname)))), ...args);
 
@@ -221,9 +222,9 @@ export const assert = {
         if (data === null) {
             data = datas[foriginal ? foriginal : f].ts;
         }
-        const res = await getFileExifField(ctx, 'exif_timestamp', f);
+        const res = await getFileExifField(ctx, FileTimestamped.I_ITS_TIME, f);
         expect(res)
-            .withContext(`File ${f} must have exif timestamp ${data} but have ${res}`)
+            .withContext(`File ${f} exif timestamp`)
             .toEqual(data);
     },
 
@@ -231,9 +232,9 @@ export const assert = {
         if (data === null) {
             data = datas[foriginal ? foriginal : f].title;
         }
-        const res = await getFileExifField(ctx, 'exif_title', f);
+        const res = await getFileExifField(ctx, FileTimestamped.I_ITS_TITLE, f);
         expect(res)
-            .withContext(`File ${f} must have exif title ${data} but have ${res}`)
+            .withContext(`File ${f} exif title`)
             .toEqual(data);
     }
 };

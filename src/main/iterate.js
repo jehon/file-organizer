@@ -2,8 +2,8 @@
 import File from './file-types/file.js';
 
 /**
- * @param {File|module:file-generic/FileGeneric} file as the root of the change
- * @param {function(File):any} func to be applied
+ * @param {File} file as the root of the change
+ * @param {function(File):Promise<any>} func to be applied
  * @returns {Promise<object>} applied on the file
  */
 export default async function iterate(file, func) {

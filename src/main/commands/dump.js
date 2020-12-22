@@ -2,7 +2,10 @@
 import options from '../../../file-organizer/options.js';
 import fileUtils from '../../../file-organizer/file-utils.js';
 import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
+import iterate from '../iterate.js';
 import messages from '../../../file-organizer/messages.js';
+import File from '../file-types/file.js';
+import FileTimestamped from '../file-types/file-timestamped.js';
 
 export const command = 'dump [files..]';
 
@@ -67,44 +70,53 @@ export async function handler(noptions) {
     );
     console.info('-'.repeat(padFilename + padExtension + padTimestamp + padTitle + 4));
 
-    return Promise.all(options.files.map(
-        f0 => f0.iterate(
-            fi => fi.loadData()
-                .then(fi => fi.check().then(() => fi))
-                .then(fi => {
-                    const ok = fi.stats.fixSkipped == 0;
-                    if (!options.all && ok) {
-                        // Display only problems
-                        return;
-                    }
-                    const sep = (ok) ? '|' : '|';
-                    let msg = ''
-                        + r(fileUtils.getPathRelativeTo(fi.parent.getPath()) + '/' + fi.getFilename(), padFilename)
-                        + sep
-                        + l(fi.generic_original_extension, padExtension)
-                        + sep
-                        + (fi.exif_timestamp
-                            ? l(fi.exif_timestamp.humanReadable(), padTimestamp)
-                            : messages.IconFailure + ' ' + l(fi.filenameTS.qualif, padTimestamp - 2).red
-                        )
-                        + sep
-                        + (fi.exif_title
-                            ? l(fi.exif_title, padTitle)
-                            : messages.IconFailure + ' ' + l(fi.filenameTS.title, padTitle - 2).red
-                        )
-                        ;
+    await Promise.all(options.files.map(
+        f0 => iterate(f0,
+            /**
+             * @param {File} fi to be dumped
+             * @returns {Promise<void>} when done
+             */
+            async function (fi) {
+                await fi.runAnalyse();
+                let ok;
+                try {
+                    fi.runConsistencyCheck();
+                    ok = true;
+                } catch {
+                    ok = false;
+                }
 
-                    if (ok) {
-                        process.stdout.write(messages.IconSuccess + ' ' + msg + '\n');
-                    } else {
-                        process.stdout.write(messages.IconFailure + ' ' + msg.red + '\n');
-                    }
+                if (!options.all && ok) {
+                    // Display only problems
+                    return;
+                }
 
-                })
-        )
-    ))
-        .then(() => {
-            console.info('\n\n');
-            dumpDiscoveredExtension();
-        });
+                const sep = (ok) ? '|' : '|';
+                let msg = ''
+                    + r(fileUtils.getPathRelativeTo(fi.currentFilePath), padFilename)
+                    + sep
+                    + l(fi.get(File.I_EXTENSION).initial, padExtension)
+                    + sep
+                    + (fi.get(FileTimestamped.I_ITS_TIME)
+                        ? l(fi.get(FileTimestamped.I_ITS_TIME).initial.humanReadable(), padTimestamp)
+                        : messages.IconFailure + ' ' + l(fi.get(File.I_FN_TIME).initial.humanReadable(), padTimestamp - 2).red
+                    )
+                    + sep
+                    + (fi.get(FileTimestamped.I_ITS_TITLE)
+                        ? l(fi.get(FileTimestamped.I_ITS_TITLE).initial, padTitle)
+                        : messages.IconFailure + ' ' + l(fi.get(File.I_FN_TITLE).initial, padTitle - 2).red
+                    )
+                    ;
+
+                if (ok) {
+                    process.stdout.write(messages.IconSuccess + ' ' + msg + '\n');
+                } else {
+                    process.stdout.write(messages.IconFailure + ' ' + msg.red + '\n');
+                }
+
+            })
+    ));
+
+    console.info('\n\n');
+    dumpDiscoveredExtension();
 }

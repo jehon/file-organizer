@@ -1,5 +1,5 @@
 
-// import { registerRegExp, glob2regExp } from '../register-file-types.js';
+import { registerRegExp, glob2regExp } from '../register-file-types.js';
 import FileExif from './file-exif.js';
 
 export default class FileMovie extends FileExif {
@@ -7,10 +7,10 @@ export default class FileMovie extends FileExif {
     get EXIF_TS_IS_UTC() { return true; }
 }
 
-// registerRegExp([
-//     glob2regExp('*.mov'),
-//     glob2regExp('*.mp4')
-// ], FileMovie, { forFiles: true });
+registerRegExp([
+    glob2regExp('*.mov'),
+    glob2regExp('*.mp4')
+], FileMovie, { forFiles: true });
 
 // Convert all theses ???
 // case '.avi':  // 17  // TODO (extensions): unsupported

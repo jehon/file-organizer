@@ -17,7 +17,7 @@ import {
 import fileUtils from '../../../file-organizer/file-utils.js';
 import { folderListing } from '../tasks-fs.js';
 
-import { buildFile, _regExpMapForFolders } from '../register-file-types.js';
+import { buildFile, FallBackRegExp, registerRegExp, _regExpMapForFolders } from '../register-file-types.js';
 
 import Value from '../value.js';
 
@@ -161,6 +161,10 @@ export default class File extends Item {
         this.get(File.I_FN_TITLE).onExpectedChanged(updateFn);
         this.get(File.I_FN_TIME).onExpectedChanged(updateFn);
     }
+
+    // get currentFilename() {
+    //     return this.get(File.I_FILENAME).current + this.get(File.I_EXTENSION).current;
+    // }
 
     /**
      * Get the current path from the file
@@ -327,12 +331,7 @@ export default class File extends Item {
         }
 
         if (!parentsMap.has(parentDir)) {
-            // TODO(legacy): use the buildFile facility
-            parentsMap.set(parentDir,
-                // buildFolderFn(parentDir)
-                // TODO(file-folder): remove this horrible hack
-                new (_regExpMapForFolders.get('//'))(parentDir)
-            );
+            parentsMap.set(parentDir, buildFile(parentDir));
         }
         return parentsMap.get(parentDir);
     }
@@ -375,8 +374,6 @@ export default class File extends Item {
 
     /**
      * Run the analysis on this files, and all related one's (ex: FileFolder)
-     *
-     * @private
      *
      * @returns {Promise<File>} when completed
      */
@@ -467,6 +464,40 @@ export default class File extends Item {
                 });
     }
 
+    /**
+     * Get a description of all actions taken
+     *
+     * @returns {string[]} the list of problems
+     */
+    getActionsList() {
+        const list = [];
+
+        list.push(...Object.keys(this.values)
+            .filter(k => this.values[k].isModified())
+            .map(k => `${k} (${this.get(k).initial} -> ${this.get(k).current})`)
+        );
+
+        return list;
+    }
+
+    /**
+     * Get the list of detected problems
+     * based on problems and values
+     *
+     * @returns {string[]} the list of problems
+     */
+    getProblemsList() {
+        const list = [];
+        list.push(...this.problemsList);
+
+        list.push(...Object.keys(this.values)
+            .filter(k => !this.values[k].isDone())
+            .map(k => `${k} (${this.get(k).current} <-> ${this.get(k).expected})`)
+        );
+
+        return list;
+    }
+
     // ------------------------------------------------
     //
     // TODO(migration): LEGACY BRIDGE
@@ -531,3 +562,4 @@ export default class File extends Item {
 }
 
 _regExpMapForFolders.set('//', File);
+registerRegExp(FallBackRegExp, File, { forFiles: true, forFolders: true });

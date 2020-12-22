@@ -33,17 +33,21 @@ export const handler = async function (noptions) {
         withFileSummary: false
     });
 
-    await buildFile(options.file)
-        .loadData()
-        .then(f => {
-            if (options.key) {
-                if (options.key in f) {
-                    process.stdout.write(presentIt('', f[options.key]) + '\n');
-                } else {
-                    process.stdout.write('\n');
-                }
-            } else {
-                process.stdout.write(JSON.stringify(f, presentIt, 2) + '\n');
-            }
-        });
+    const f = buildFile(options.file);
+    await f.runAnalyse();
+    if (options.key) {
+        const opt = f.get(options.key);
+        if (opt) {
+            process.stdout.write(presentIt('', opt.initial) + '\n');
+        } else {
+            process.stdout.write('\n');
+        }
+    } else {
+        const res = {};
+        for (const k of Object.keys(f.values)) {
+            res[k] = f.get(k).initial;
+        }
+
+        process.stdout.write(JSON.stringify(res, presentIt, 2) + '\n');
+    }
 };

@@ -1,5 +1,5 @@
 
-// import { registerRegExp, glob2regExp } from '../register-file-types.js';
+import { registerRegExp, glob2regExp } from '../register-file-types.js';
 import FileExif from './file-exif.js';
 import fileUtils from '../../../file-organizer/file-utils.js';
 import File from './file.js';
@@ -47,10 +47,10 @@ export default class FilePicture extends FileExif {
     }
 }
 
-// registerRegExp([
-//     glob2regExp('*.jpg'),
-//     glob2regExp('*.jpeg')
-// ], FilePicture, { forFiles: true });
+registerRegExp([
+    glob2regExp('*.jpg'),
+    glob2regExp('*.jpeg')
+], FilePicture, { forFiles: true });
 
 // case '.mts':  // ?   // TODO (extensions): unsupported
 // case '.png':  // ?   // TODO (extensions): unsupported

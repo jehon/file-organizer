@@ -26,8 +26,6 @@ import {
     dataPath
 } from './help-functions.mjs';
 
-import { resetOptionsForUnitTesting } from './run-helper.mjs';
-
 class DemoFile extends File {
     fnAct = () => { }
     fnAnalyse = () => { }
@@ -252,40 +250,6 @@ describe(t(import.meta), function () {
 
                 expect(getStatusChangesForItem(f).length).toBe(i);
             });
-
-            describe('with legacy workflow', function () {
-                it('with legacy workflow', async function () {
-                    options.dryRun = false;
-                    let i = 0;
-
-                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
-                    await f.loadData();
-                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
-                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
-
-                    await f.check();
-                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
-                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_SUCCESS);
-
-                    expect(getStatusChangesForItem(f).length).toBe(i);
-                    resetOptionsForUnitTesting();
-                });
-
-                it('with legacy workflow', async function () {
-                    options.dryRun = true;
-                    let i = 0;
-
-                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
-                    await expectAsync(f.loadData()).toBeResolved();
-                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
-                    expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
-
-                    await expectAsync(f.check()).toBeResolved();
-
-                    expect(getStatusChangesForItem(f).length).toBe(i);
-                    resetOptionsForUnitTesting();
-                });
-            });
         });
     });
 
@@ -338,16 +302,13 @@ describe(t(import.meta), function () {
             }
 
             for (const f of folder.children) {
-                // expect(f).toEqual(jasmine.any(File));
-                expect(f.parent.getPath()).toBe(dataPath());
-                expect(f.getFilename()).not.toBe('.');
-                expect(f.getFilename()).not.toBe('..');
-
-                // Hidden files
-                expect(f.getFilename()).not.toBe('@eaDir');
+                expect(f).toEqual(jasmine.any(File));
+                expect(f.parent.currentFilePath).toBe(dataPath());
+                expect(f.get(File.I_FILENAME).initial).not.toBe('.');
+                expect(f.get(File.I_FILENAME).initial).not.toBe('..');
 
                 // Do we have ... (by 2^ bits)
-                if (f.getFilename() == 'jh-patch-file-patch') {
+                if (f.get(File.I_FILENAME).initial == 'jh-patch-file-patch') {
                     res += 2;
                 }
             }

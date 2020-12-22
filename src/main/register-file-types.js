@@ -90,8 +90,7 @@ function _getClassFromMap(regExpMap, filepath, parent) {
     for (const key of regExps) {
         const classConstructor = regExpMap.get(key);
 
-        // TODO(file-folder): remove this horrible hack
-        if (key.test && key.test(fname)) {
+        if (key.test(fname)) {
             return new classConstructor(filepath, parent);
         }
     }
