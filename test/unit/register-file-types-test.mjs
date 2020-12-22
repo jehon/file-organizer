@@ -5,7 +5,6 @@ import {
     FallBackRegExp, _backup, _regExpMapForFolders, _regExpMapForFiles
 } from '../../src/main/register-file-types.js';
 import File from '../../src/main/file-types/file.js';
-import '../../src/main/file-types/file-folder.js';
 
 class A extends File { }
 class B extends File { }

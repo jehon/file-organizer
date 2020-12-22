@@ -374,7 +374,7 @@ export default class File extends Item {
     // }
 
     /**
-     * Run the analysis on this files, and all related one's (ex: FileFolder)
+     * Run the analysis on this files
      *
      * @private
      *
@@ -511,3 +511,5 @@ export default class File extends Item {
         return this.currentFilePath;
     }
 }
+
+_regExpMapForFolders.set('//', File);
