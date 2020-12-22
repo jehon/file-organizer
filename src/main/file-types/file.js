@@ -15,9 +15,9 @@ import {
 } from '../../common/constants.js';
 
 import fileUtils from '../../../file-organizer/file-utils.js';
-// import { folderListing } from '../tasks-fs.js';
+import { folderListing } from '../tasks-fs.js';
 
-import { _regExpMapForFolders } from '../register-file-types.js';
+import { buildFile, _regExpMapForFolders } from '../register-file-types.js';
 
 import Value from '../value.js';
 
@@ -103,16 +103,13 @@ export default class File extends Item {
     /** @type {string} */
     _path
 
-    /** @type {File[]} */
-    children = []
-
-    // /**
-    //  * The actChain will fill in progressively, but should fire only
-    //  * when starting the "act"
-    //  *
-    //  * @type {function(void): void}
-    //  */
-    // _actChainStart
+    /**
+     * cache
+     *
+     * @type {File[]}
+     *
+     */
+    #children = null
 
     constructor(filePath, parent) {
         /* filepath is the title */
@@ -146,12 +143,6 @@ export default class File extends Item {
             }
         }
         this.set(File.I_IS_FOLDER, new ValueConstant(isFolder));
-
-        // // Build children
-        // if (this.get(File.I_IS_FOLDER).current) {
-        //     this.children = folderListing(this)
-        //         .map(f => buildFile(path.join(this.currentFilePath, f), this));
-        // }
 
         /* Build up all informations and link them to I_FILENAME */
 
@@ -196,6 +187,18 @@ export default class File extends Item {
     get currentPath() {
         const cpath = this.parent ? this.parent.currentPath : '/';
         return path.join(cpath, this.get(File.I_FILENAME).current + this.get(File.I_EXTENSION).current);
+    }
+
+    get children() {
+        if (this.#children === null) {
+            if (this.get(File.I_IS_FOLDER).current) {
+                this.#children = folderListing(this)
+                    .map(f => buildFile(path.join(this.currentFilePath, f), this));
+            } else {
+                this.#children = [];
+            }
+        }
+        return this.#children;
     }
 
     getCanonicalFilename() {
