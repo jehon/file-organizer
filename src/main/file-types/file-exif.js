@@ -22,7 +22,6 @@ const EXIFTOOL = 'exiftool';
 import FileTimestamped from './file-timestamped.js';
 import timestampFactory from '../../../file-organizer/timestamp.js';
 const { tsFromExif, tzFromGPS, tsFromString } = timestampFactory;
-import fileUtils from '../../../file-organizer/file-utils.js';
 
 import debug from 'debug';
 const debugExif = debug('exiftool');
@@ -30,6 +29,10 @@ const debugExifOutput = debugExif.extend('output');
 
 import PQueue from 'p-queue'; // https://www.npmjs.com/package/p-queue
 const exifExecLimiter = new PQueue.default({ concurrency: 5 });
+
+import { execFile } from 'child_process';
+import { promisify } from 'util';
+const pExecFile = promisify(execFile);
 
 import commandExists from 'command-exists';
 import Value from '../value.js';
@@ -50,34 +53,36 @@ if (!commandExistsSync(EXIFTOOL)) {
  */
 export async function runExif(priority, params) {
     return exifExecLimiter.add(() =>
-        fileUtils.fileExec(EXIFTOOL, [...params])
-            .then(log => { debugExif('runExif result: ', log); return log; })
-            .catch(processResult => {
-                console.error(processResult);
-                debugExif('runExif result:', processResult.code);
-                debugExifOutput('runExif output:', processResult.stdout, processResult.stderr);
-                switch (processResult.code) {
-                    case 0:   // ok, continue
-                        break;
-                    // case 1:   // The file contains data of an unknown image type
-                    case 253: // No exif data found in file
-                        return '';
-                    case 255: // File does not exists
-                        return '';
-                    default:
-                        console.error(`
+        pExecFile(EXIFTOOL, [...params])
+            .then(
+                result => { debugExif('runExif result: ', result); return result.stdout; },
+                processResult => {
+                    console.error(processResult);
+                    debugExif('runExif result:', processResult.code);
+                    debugExifOutput('runExif output:', processResult.stdout, processResult.stderr);
+                    switch (processResult.code) {
+                        case 0:   // ok, continue
+                            break;
+                        // case 1:   // The file contains data of an unknown image type
+                        case 253: // No exif data found in file
+                            return '';
+                        case 255: // File does not exists
+                            return '';
+                        default:
+                            console.error(`
 *********
 *** runExif process: ${processResult.code}
 *** ${EXIFTOOL} '${params.join(' , ')}'
 *** ${processResult.stderr.toString()}
 *********
 `);
-                        throw new Error('runExif failed');
-                }
+                            throw new Error('runExif failed');
+                    }
 
-                throw processResult;
-            })
-            .then(log => log ? log : ''),
+                    throw processResult;
+                }
+            )
+            .then(stdout => stdout ? stdout : ''),
         { priority });
 }
 

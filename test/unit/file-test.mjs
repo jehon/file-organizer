@@ -15,13 +15,12 @@ import {
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
 } from '../../src/common/constants.js';
-import { fileRename } from '../../src/main/tasks-fs.js';
+import { fileRename, fileExists } from '../../src/main/fs-utils.js';
 
 import {
     listenForItemNotify,
     getStatusChangesForItem,
     createFileFrom,
-    fileExists,
     tempPath,
     dataPath
 } from './help-functions.mjs';

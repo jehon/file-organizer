@@ -13,14 +13,13 @@ import {
     STATUS_ACTED_FAILURE
 } from '../../common/constants.js';
 
-import fileUtils from '../../../file-organizer/file-utils.js';
-import { folderListing } from '../tasks-fs.js';
+import { folderListing } from '../fs-utils.js';
 
 import { buildFile, FallBackRegExp, registerRegExp } from '../register-file-types.js';
 
 import Value from '../value.js';
 
-import { fileDelete, fileRename } from '../tasks-fs.js';
+import { fileDelete, fileRename } from '../fs-utils.js';
 
 import timestampAPI from '../../../file-organizer/timestamp.js';
 const { tsFromString } = timestampAPI;
@@ -115,12 +114,10 @@ export default class File extends Item {
         super(filePath);
         this._path = filePath;
 
-        const vFn = new Value(fileUtils.getFilename(this._path));
+        const vFn = new Value(path.parse(this._path).name);
         this.set(File.I_FILENAME, vFn);
 
-        this.set(File.I_EXTENSION,
-            new Value(fileUtils.getExtension(this._path))
-        );
+        this.set(File.I_EXTENSION, new Value(path.parse(this._path).ext));
 
         if (parent) {
             this.parent = parent;

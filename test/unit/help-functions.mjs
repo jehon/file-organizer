@@ -33,15 +33,6 @@ export async function createFileFrom(subPath, inFolder = '') {
 }
 
 /**
- * @param filePath
- */
-export async function fileExists(filePath) {
-    return fs.promises.stat(filePath)
-        .then(() => true)
-        .catch(() => false);
-}
-
-/**
  *
  */
 export function listenForItemNotify() {

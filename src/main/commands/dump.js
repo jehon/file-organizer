@@ -1,12 +1,12 @@
 
-import options from '../../common/options.js';
-import fileUtils from '../../../file-organizer/file-utils.js';
-import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
-import iterate from '../iterate.js';
-import File from '../file-types/file.js';
-import FileTimestamped from '../file-types/file-timestamped.js';
-import { IconFailure, IconSuccess } from '../console-utils.js';
 import chalk from 'chalk';
+import path from 'path';
+import options from '../../common/options.js';
+import { IconFailure, IconSuccess } from '../console-utils.js';
+import FileTimestamped from '../file-types/file-timestamped.js';
+import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
+import File from '../file-types/file.js';
+import iterate from '../iterate.js';
 
 export const command = 'dump [files..]';
 
@@ -94,7 +94,7 @@ export async function handler(noptions) {
 
                 const sep = (ok) ? '|' : '|';
                 let msg = ''
-                    + r(fileUtils.getPathRelativeTo(fi.currentFilePath), padFilename)
+                    + r(path.relative(process.cwd(), fi.currentFilePath), padFilename)
                     + sep
                     + l(fi.get(File.I_EXTENSION).initial, padExtension)
                     + sep

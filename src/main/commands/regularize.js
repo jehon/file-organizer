@@ -1,11 +1,12 @@
 
-import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
-import options from '../../common/options.js';
-import iterate from '../iterate.js';
-import File, { FOError } from '../file-types/file.js';
-import fileUtils from '../../../file-organizer/file-utils.js';
 import chalk from 'chalk';
+import path from 'path';
+import options from '../../common/options.js';
 import { IconFailure, IconSuccess } from '../console-utils.js';
+import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
+import File, { FOError } from '../file-types/file.js';
+import iterate from '../iterate.js';
+
 
 export const command = ['$0 [files..]', 'regularize [files..]'];
 
@@ -43,7 +44,7 @@ export async function handler(noptions) {
                 const actionsList = fi.getActionsList();
                 const problemsList = fi.getProblemsList();
                 if (actionsList.length + problemsList.length > 0) {
-                    process.stdout.write(chalk.yellow(`* ${fileUtils.getPathRelativeTo(fi.currentFilePath, f0.parent.currentFilePath)}\n`));
+                    process.stdout.write(chalk.yellow(`* ${path.relative(f0.parent.currentFilePath, fi.currentFilePath)}\n`));
                 }
                 actionsList.forEach(l => process.stdout.write(`  ${IconSuccess} ${l}\n`));
                 problemsList.forEach(l => process.stdout.write(chalk.red(`  ${IconFailure} ${l}\n`)));

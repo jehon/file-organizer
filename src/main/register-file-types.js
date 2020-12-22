@@ -1,6 +1,6 @@
 
 import fs from 'fs';
-import fileUtils from '../../file-organizer/file-utils.js';
+import path from 'path';
 
 // TODO(style): object should be "class constructor"
 /**
@@ -83,7 +83,7 @@ export function registerRegExp(regExp, classConstructor, options = {}) {
  * @returns {module:common/File} the File object
  */
 function _getClassFromMap(regExpMap, filepath, parent) {
-    const fname = fileUtils.getFullFilename(filepath);
+    const fname = path.parse(filepath).base;
 
     const regExps = Array.from(regExpMap.keys());
     regExps.sort((a, b) => (b.toString().length - a.toString().length));

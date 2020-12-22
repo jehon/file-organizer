@@ -1,17 +1,16 @@
 
-import { t } from '../test-helper.js';
-
-import FileDelete from '../../src/main/file-types/file-delete.js';
-import Item from '../../src/main/item.js';
 import {
-    STATUS_CREATED,
-    STATUS_ANALYSING,
-    STATUS_NEED_ACTION,
-    STATUS_ACTING,
-    STATUS_ACTED_SUCCESS
-} from '../../src/common/constants.js';
+    STATUS_ACTED_SUCCESS, STATUS_ACTING, STATUS_ANALYSING, STATUS_CREATED,
 
-import { createFileFrom, fileExists, getStatusChangesForItem } from './help-functions.mjs';
+    STATUS_NEED_ACTION
+} from '../../src/common/constants.js';
+import FileDelete from '../../src/main/file-types/file-delete.js';
+import { fileExists } from '../../src/main/fs-utils.js';
+import Item from '../../src/main/item.js';
+import { t } from '../test-helper.js';
+import { createFileFrom, getStatusChangesForItem } from './help-functions.mjs';
+
+
 
 describe(t(import.meta), function () {
     beforeEach(() => {
