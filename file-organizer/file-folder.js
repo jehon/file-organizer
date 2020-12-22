@@ -2,7 +2,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// import { FallBackRegExp, registerRegExp, buildFile } from '../src/main/register-file-types.js';
 let buildFileFn;
 
 const FileTimestamped = require('./file-timestamped.js');
