@@ -56,7 +56,7 @@ export default class Value extends EventEmitter {
      * @returns {boolean} true if something has been done
      */
     isModified() {
-        return !this.equals(this.#current, this.#initial);
+        return !this.equals(this.current, this.initial);
     }
 
     /**
@@ -65,7 +65,7 @@ export default class Value extends EventEmitter {
      * @returns {boolean} true if nothing to be done
      */
     isDone() {
-        return this.equals(this.#expected, this.#current);
+        return this.equals(this.expected, this.current);
     }
 
     /**

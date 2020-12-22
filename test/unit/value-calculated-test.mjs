@@ -6,15 +6,15 @@ import Value from '../../src/main/value.js';
 
 describe(t(import.meta), function () {
     it('should have properties and methods', async function () {
-        const vb = new Value('test');
-        const v = new ValueCalculated(vb, (val) => val + '_calc');
+        const basis = new Value('test');
+        const calc = new ValueCalculated(basis, (val) => val + '_calc');
 
-        expect(v.initial).toBe('test_calc');
-        expect(v.current).toBe('test_calc');
-        expect(v.expected).toBe('test_calc');
+        expect(calc.initial).toBe('test_calc');
+        expect(calc.current).toBe('test_calc');
+        expect(calc.expected).toBe('test_calc');
 
-        expect(v.isDone()).toBeTrue();
-        expect(v.isModified()).toBeFalse();
+        expect(calc.isDone()).toBeTrue();
+        expect(calc.isModified()).toBeFalse();
 
         // expect(() => v.fix()).toThrow();
 
@@ -23,41 +23,47 @@ describe(t(import.meta), function () {
         // now, the basis is not ready anymore
         //
 
-        vb.expect('new');
+        basis.expect('new');
+        expect(basis.current).toBe('test');
+        expect(basis.expected).toBe('new');
+        expect(basis.isDone()).toBeFalse();
 
-        expect(vb.isDone()).toBeFalse();
-        expect(v.expected).toBe('test_calc');
-        expect(v.isDone()).toBeFalse();
-        expect(v.isModified()).toBeFalse();
+        expect(calc.current).toBe('test_calc');
+        expect(calc.expected).toBe('test_calc');
+        expect(calc.isDone()).toBeTrue();
+        expect(calc.isModified()).toBeFalse();
 
         //
         // We fix the basis
         // now the expected is not in line anymore
         //
 
-        vb.fix();
-        expect(vb.current).toBe('new');
+        basis.fix();
+        expect(basis.current).toBe('new');
+        expect(basis.expected).toBe('new');
+        expect(basis.isDone()).toBeTrue();
 
-        expect(v.current).toBe('new_calc');
-        expect(v.expected).toBe('test_calc');
-        expect(v.isDone()).toBeFalse();
-        expect(v.isModified()).toBeTrue();
+        expect(calc.current).toBe('new_calc');
+        expect(calc.expected).toBe('test_calc');
+        expect(calc.isDone()).toBeFalse();
+        expect(calc.isModified()).toBeTrue();
 
 
         //
         // We set the correct value in the basis and in expected
         // Now everything is ok
         //
-        v.expect('something_calc');
-        vb.expect('something');
-        vb.fix();
+        basis.expect('something');
+        basis.fix();
+        expect(basis.current).toBe('something');
+        expect(basis.expected).toBe('something');
 
-        expect(vb.current).toBe('something');
+        expect(calc.current).toBe('something_calc');
+        expect(calc.expected).toBe('test_calc');
 
-        expect(v.current).toBe('something_calc');
-        expect(v.expected).toBe('something_calc');
-        expect(v.isDone()).toBeTrue();
-        expect(v.isModified()).toBeTrue();
-
+        calc.expect('something_calc');
+        expect(calc.expected).toBe('something_calc');
+        expect(calc.isDone()).toBeTrue();
+        expect(calc.isModified()).toBeTrue();
     });
 });

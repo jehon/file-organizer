@@ -3,7 +3,7 @@ import { t } from '../test-helper.js';
 import fs from 'fs';
 
 import FileMovie from '../../src/main/file-types/file-movie.js';
-import { tsFromExif } from '../../file-organizer/timestamp.js';
+import { tsFromExif } from '../../src/main/timestamp.js';
 
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
 import { createFileFrom, tempPath } from './help-functions.mjs';

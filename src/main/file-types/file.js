@@ -21,8 +21,7 @@ import Value from '../value.js';
 
 import { fileDelete, fileRename } from '../fs-utils.js';
 
-import timestampAPI from '../../../file-organizer/timestamp.js';
-const { tsFromString } = timestampAPI;
+import { tsFromString } from '../timestamp.js';
 
 import ValueCalculated from '../value-calculated.js';
 import ValueConstant from '../value-constant.js';
@@ -455,9 +454,10 @@ export default class File extends Item {
     getActionsList() {
         const list = [];
 
+        // TODO: filter is not working
         list.push(...Object.keys(this.values)
             .filter(k => this.values[k].isModified())
-            .map(k => `${k} (${this.get(k).initial} -> ${this.get(k).current})`)
+            .map(k => `${k} (${this.get(k).initial} -> ${this.get(k).expected}) ${this.get(k).messages.join(' / ')}`)
         );
 
         return list;

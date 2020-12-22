@@ -7,7 +7,7 @@ import FilePicture from '../../src/main/file-types/file-picture.js';
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
 import FileExif from '../../src/main/file-types/file-exif.js';
 
-import { tsFromExif } from '../../file-organizer/timestamp.js';
+import { tsFromExif } from '../../src/main/timestamp.js';
 
 import File, { FOError } from '../../src/main/file-types/file.js';
 

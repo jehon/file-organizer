@@ -20,8 +20,7 @@
 const EXIFTOOL = 'exiftool';
 
 import FileTimestamped from './file-timestamped.js';
-import timestampFactory from '../../../file-organizer/timestamp.js';
-const { tsFromExif, tzFromGPS, tsFromString } = timestampFactory;
+import { tsFromExif, tzFromGPS, tsFromString } from '../timestamp.js';
 
 import debug from 'debug';
 const debugExif = debug('exiftool');

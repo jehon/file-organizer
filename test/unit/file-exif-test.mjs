@@ -1,5 +1,5 @@
 
-import { tsFromString } from '../../file-organizer/timestamp.js';
+import { tsFromString } from '../../src/main/timestamp.js';
 import FileExif from '../../src/main/file-types/file-exif.js';
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
 import File, { FOError } from '../../src/main/file-types/file.js';

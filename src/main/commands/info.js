@@ -1,8 +1,7 @@
 
 import options from '../../common/options.js';
 import { buildFile } from '../../../src/main/register-file-types.js';
-import timestampAPI from '../../../file-organizer/timestamp.js';
-const { Timestamp } = timestampAPI;
+import Timestamp from '../timestamp.js';
 
 export const command = 'info <file>';
 

@@ -71,21 +71,12 @@ export default class ValueCalculated extends ValueConstant {
     }
 
     /**
-     * Test if someone did modify the (current) value
-     *
-     * @returns {boolean} true if something has been done
-     */
-    isModified() {
-        return this.#basis.isModified();
-    }
-
-    /**
      * Test if some action need to be done
      *
      * @returns {boolean} true if nothing to be done
      */
     isDone() {
-        return this.#basis.isDone()
-            && this.equals(this.current, this.#calculatedExpected);
+        // return this.#basis.isDone()
+        return this.equals(this.current, this.#calculatedExpected);
     }
 }

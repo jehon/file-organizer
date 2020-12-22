@@ -2,7 +2,7 @@
 import { t } from '../test-helper.js';
 
 import Value from '../../src/main/value.js';
-import { Timestamp } from '../../file-organizer/timestamp.js';
+import Timestamp from '../../src/main/timestamp.js';
 
 describe(t(import.meta), function () {
     it('should have properties and methods', async function () {

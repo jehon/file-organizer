@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 
-import { regexps, tsFromString, tsFromExif, tzFromGPS } from '../../file-organizer/timestamp.js';
+import { regexps, tsFromString, tsFromExif, tzFromGPS } from '../../src/main/timestamp.js';
 
 /**
  * @param originalString

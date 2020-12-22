@@ -16,3 +16,11 @@
 // export function local2utc(time, fromTZ) {
 
 // }
+
+/**
+ * @param {module:src/main/Timestamp} timestamp to be checked
+ * @returns {boolean} if it is yyyy-yyyy format or yyyy-mm yyyy-mm format
+ */
+export function isRange(timestamp) {
+    return timestamp.yearMin > 0 && timestamp.yearMax > 0;
+}

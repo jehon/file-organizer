@@ -11,7 +11,7 @@ import options, { _resetToDefault } from '../../src/common/options.js';
 import {
     tempPath
 } from './help-functions.mjs';
-import { tsFromExif } from '../../file-organizer/timestamp.js';
+import { tsFromExif } from '../../src/main/timestamp.js';
 
 /**
  * @param {File} file whose parents need to be created

@@ -1,11 +1,11 @@
 
 // TODO(timestamp): refactor into string or dates????
 
-const tzlookup = require('tz-lookup');
+import tzlookup from 'tz-lookup';
 
 // TODO: remove momentjs
-const moment = require('moment');
-require('moment-timezone');
+import moment from 'moment';
+import 'moment-timezone';
 
 /**
  * @param {object} object where to look for the key
@@ -75,7 +75,7 @@ const matchers = {
     invalid // Fallback
 };
 
-exports.defaultValues = {
+export const defaultValues = {
     year: 0,
     month: -1, // -> YYYY:01:01 01:01:01
     day: -1, // -> YYYY:MM:02 02:02:02
@@ -92,9 +92,9 @@ exports.defaultValues = {
 
 const EMPTY_EXIF = '0000:00:00 00:00:00';
 
-class Timestamp {
+export default class Timestamp {
     constructor(str = '', tz = false) {
-        const parsed = Object.assign({}, exports.defaultValues);
+        const parsed = Object.assign({}, defaultValues);
 
         this.string = str;
 
@@ -307,20 +307,25 @@ class Timestamp {
 
 }
 
-exports.tsFromString = function (str) {
+/**
+ * @param str
+ */
+export function tsFromString(str) {
     return new Timestamp(str);
-};
+}
 
-exports.tsFromExif = function (str, tz = false) {
+/**
+ * @param str
+ * @param tz
+ */
+export function tsFromExif(str, tz = false) {
     return new Timestamp(str, tz);
-};
+}
 
-exports.Timestamp = Timestamp;
-exports.regexps = {
-    android
-};
-
-exports.tzFromGPS = function (GPS) {
+/**
+ * @param GPS
+ */
+export function tzFromGPS(GPS) {
     const p = function (str) {
         const parser = /(?<v1>\d+) deg (?<v2>\d+)' (?<v3>\d+)\.(?<v4>\d+)" (?<orien>(N|S|E|O))/;
         const c = str.match(parser);
@@ -337,8 +342,13 @@ exports.tzFromGPS = function (GPS) {
     const long = p(coord[1]);
 
     return tzlookup(lat, long);
-};
+}
 
-exports.currentTzOffset = function () {
+/**
+ *
+ */
+export function currentTzOffset() {
     return moment().utcOffset();
-};
+}
+
+export const regexps = { android };
