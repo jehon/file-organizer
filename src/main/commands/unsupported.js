@@ -16,7 +16,7 @@ export const handler = function (noptions) {
         f0 => f0.iterate(
             f => {
                 if (f instanceof FileUnsupported) {
-                    process.stdout.write('Unsupported: ', fileUtils.getPathRelativeTo(f.getPath()) + '\n');
+                    process.stdout.write('Unsupported: ', fileUtils.getPathRelativeTo(f.currentFilePath) + '\n');
                 }
             })
     ))

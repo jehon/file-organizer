@@ -479,8 +479,22 @@ export default class File extends Item {
 
     /**
      * @deprecated TODO: Mock of previous version
+     *
+     * @param {function(File):any} fn to be applied
+     * @returns {Promise<object>} applied on the file
      */
-    iterate() { }
+    async iterate(fn) {
+        return {
+            [this.currentFilePath]: await fn(this),
+            ...(await Promise.all(
+                this.children.map(async function (f) {
+                    let res = {};
+                    res[f.currentFilePath] = await fn(f);
+                    return res;
+                })
+            ))
+        };
+    }
 
     /**
      * @deprecated TODO: Mock of previous version
