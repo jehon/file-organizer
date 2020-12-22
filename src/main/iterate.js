@@ -1,8 +1,5 @@
 
-import path from 'path';
-
 import File from './file-types/file.js';
-import { buildFile } from './register-file-types.js';
 
 /**
  * @param {File|module:file-generic/FileGeneric} file as the root of the change
@@ -10,22 +7,18 @@ import { buildFile } from './register-file-types.js';
  * @returns {Promise<object>} applied on the file
  */
 export default async function iterate(file, func) {
-    let thisPath = file.currentFilePath ? file.currentFilePath : file.getPath();
     let res = {
-        [thisPath]: await func(file)
+        [file.currentFilePath]: await func(file)
     };
 
     let list = [];
 
     if (file.getList) {
-        for (const fn in await file.getList()) {
-            list.push(await buildFile(path.join(thisPath, fn)));
-        }
+        list.push(... await file.getList());
     }
 
-    if (file.children) {
-        list = [...list, ...file.children];
-    }
+    // // getList implies children
+    // list.push(...file.children);
 
     for (const f of list) {
         res = {

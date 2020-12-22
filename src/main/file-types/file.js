@@ -473,6 +473,10 @@ export default class File extends Item {
     //
     // ------------------------------------------------
 
+    async getList() {
+        return this.children;
+    }
+
     /**
      * @deprecated TODO: Mock of previous version
      */

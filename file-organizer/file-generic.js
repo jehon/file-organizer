@@ -40,6 +40,11 @@ class FileGeneric {
         this.messages = new Map();
     }
 
+    // TODO(legacy): back bridge
+    get currentFilePath() {
+        return this.getPath();
+    }
+
     end() {
         if (activeFilesList.has(this._id)) {
             activeFilesList.delete(this._id);

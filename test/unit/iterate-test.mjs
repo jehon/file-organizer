@@ -14,6 +14,8 @@ describe(t(import.meta), function () {
         const root = new File(dataPath('system_test'));
         const res = await iterate(root, _f => '123');
 
+        // console.log(res);
+
         expect(Object.keys(res).length).toBe(9);
         expect(res[dataPath('system_test')]).toBe('123');
     });
