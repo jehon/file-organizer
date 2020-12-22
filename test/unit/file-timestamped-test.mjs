@@ -17,7 +17,7 @@ import { tsFromExif } from '../../file-organizer/timestamp.js';
  * @param {File} file whose parents need to be created
  */
 function mkParentFolder(file) {
-    fs.mkdirSync(path.dirname(file.currentPath), { recursive: true });
+    fs.mkdirSync(path.dirname(file.currentFilePath), { recursive: true });
 }
 
 describe(t(import.meta), function () {

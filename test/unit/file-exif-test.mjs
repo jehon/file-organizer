@@ -106,7 +106,7 @@ describe(t(import.meta), function () {
                 expect(f.get(File.I_FILENAME).expected).toBe('2020-01-02 03-05-06 no_exif');
 
                 await f.act();
-                filename = f.currentPath;
+                filename = f.currentFilePath;
             }
 
             {
@@ -115,7 +115,7 @@ describe(t(import.meta), function () {
                 await f.analyse();
                 expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 03-05-06');
                 expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('no_exif');
-                filename = f.currentPath;
+                filename = f.currentFilePath;
             }
         });
     });

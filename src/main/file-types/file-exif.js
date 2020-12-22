@@ -87,12 +87,12 @@ export async function runExif(priority, params) {
  * @param {string} value to be written
  */
 export async function exifWrite(file, tag, value) {
-    debugExif('exifWrite:', file.currentPath, tag, value);
+    debugExif('exifWrite:', file.currentFilePath, tag, value);
     await runExif(10,
         [
             '-overwrite_original',
             '-m', // Ignore minor errors and warnings
-            `-${tag}=${value}`, file.currentPath
+            `-${tag}=${value}`, file.currentFilePath
         ]
     );
 }
@@ -144,17 +144,17 @@ function translateRotation(rotation) {
  * @property {module:file-organizer/Timestamp} ts of the element
  */
 async function exifReadAll(file) {
-    debugExif('exifReadAll:', file.currentPath);
+    debugExif('exifReadAll:', file.currentFilePath);
 
     const txtResult = await runExif(0,
         [
             '-j',
             '-m', // Ignore minor errors and warnings
-            file.currentPath
+            file.currentFilePath
         ]);
 
     let rawExifData = JSON.parse(txtResult)[0];
-    debugExif('exifReadAll got:', file.currentPath, rawExifData);
+    debugExif('exifReadAll got:', file.currentFilePath, rawExifData);
 
     const exifData = {
         title: rawExifData[file.EXIF_TITLE] || '',

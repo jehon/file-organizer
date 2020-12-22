@@ -183,15 +183,6 @@ export default class File extends Item {
         return v;
     }
 
-    /**
-     * @deprecated (use currentFilePath instead)
-     * @returns {string} absolute path
-     */
-    get currentPath() {
-        const cpath = this.parent ? this.parent.currentPath : '/';
-        return path.join(cpath, this.get(File.I_FILENAME).current + this.get(File.I_EXTENSION).current);
-    }
-
     get children() {
         if (this.#children === null) {
             if (this.get(File.I_IS_FOLDER).current) {
