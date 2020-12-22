@@ -110,13 +110,20 @@ describe(t(import.meta), function () {
         expect(f.get(File.I_EXTENSION).expected).toBe('.jpg');
     });
 
-    xit('should get exif rotation from files', async () => {
-        //     expect((await getPict('rotated.jpg')).exif_orientation).toBe(270);
-        //     expect((await getPict('rotated-ok.jpg')).exif_orientation).toBe(0);
-        //     expect((await getPict('rotated-bottom-left.jpg')).exif_orientation).toBe(270);
-        //     expect((await getPict('rotated-right-top.jpg')).exif_orientation).toBe(90);
+    describe('should get exif rotation from files', () => {
+        const testRotation = function (fn, angle) {
+            it(`${fn} with ${angle}`, async () => {
+                const f = new FilePicture(dataPath(fn));
+                await f.runAnalyse();
+                expect(f.get(FileExif.I_FE_ORIENTATION).initial).toBe(angle);
+            });
+        };
 
-        //     expect((await getPict('petitAppPhoto.jpg')).exif_orientation).toBe(0);
-        //     expect((await getPict('no_exif.jpg')).exif_orientation).toBe(0);
+        testRotation('rotated.jpg', 270);
+        testRotation('rotated-ok.jpg', 0);
+        testRotation('rotated-bottom-left.jpg', 270);
+        testRotation('rotated-right-top.jpg', 90);
+        testRotation('petitAppPhoto.jpg', 0);
+        testRotation('no_exif.jpg', 0);
     });
 });
