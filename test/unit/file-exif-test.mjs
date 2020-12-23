@@ -1,5 +1,5 @@
 
-import { tsFromString } from '../../src/main/timestamp.js';
+import { parseFilename } from '../../src/main/timestamp.js';
 import FileExif, { exif2ts, ts2exif } from '../../src/main/file-types/file-exif.js';
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
 import File, { FOError } from '../../src/main/file-types/file.js';
@@ -86,15 +86,15 @@ describe(t(import.meta), function () {
     it('should generate exif timestamp', function () {
         // Date only cases
         expect(ts2exif(
-            tsFromString('2018')
+            parseFilename('2018').ts
         )).toBe('2018:01:01 01:01:01');
 
         expect(ts2exif(
-            tsFromString('2018-01')
+            parseFilename('2018-01').ts
         )).toBe('2018:01:02 02:02:02');
 
         expect(ts2exif(
-            tsFromString('2018-02')
+            parseFilename('2018-02').ts
         )).toBe('2018:02:02 02:02:02');
 
         // exif is always in utc

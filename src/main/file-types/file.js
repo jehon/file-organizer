@@ -21,7 +21,7 @@ import Value from '../value.js';
 
 import { fileDelete, fileRename } from '../fs-utils.js';
 
-import { tsFromString } from '../timestamp.js';
+import { parseFilename } from '../timestamp.js';
 
 import ValueCalculated from '../value-calculated.js';
 import ValueConstant from '../value-constant.js';
@@ -146,9 +146,9 @@ export default class File extends Item {
 
         // Handle initialization
 
-        this.set(File.I_FN_QUALIF, new ValueCalculated(vFn, fn => tsFromString(fn).qualif));
-        this.set(File.I_FN_TITLE, new ValueCalculated(vFn, fn => tsFromString(fn).title));
-        this.set(File.I_FN_TIME, new ValueCalculated(vFn, fn => tsFromString(fn)));
+        this.set(File.I_FN_QUALIF, new ValueCalculated(vFn, fn => parseFilename(fn).qualif));
+        this.set(File.I_FN_TITLE, new ValueCalculated(vFn, fn => parseFilename(fn).title));
+        this.set(File.I_FN_TIME, new ValueCalculated(vFn, fn => parseFilename(fn).ts));
 
         // Now that everything is intialized, let's handle change
 
@@ -255,7 +255,7 @@ export default class File extends Item {
         // and take it as the source of thruth if applicable
         // TODO: this should move into timestamp ?
         if (this.get(File.I_FN_QUALIF).current) {
-            const ts2 = tsFromString(this.get(File.I_FN_QUALIF).current);
+            const ts2 = parseFilename(this.get(File.I_FN_QUALIF).current).ts;
             if (ts2.isTimestamped()) {
                 this.get(File.I_FN_TIME).expect(ts2, 'parse the qualif instead of the timestamp');
             }

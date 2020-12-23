@@ -27,7 +27,7 @@
 const EXIFTOOL = 'exiftool';
 
 import FileTimestamped from './file-timestamped.js';
-import Timestamp, { tsFromString } from '../timestamp.js';
+import Timestamp, { parseFilename } from '../timestamp.js';
 
 import debug from 'debug';
 const debugExif = debug('exiftool');
@@ -170,7 +170,7 @@ async function exifReadAll(file) {
 
     const exifData = {
         title: rawExifData[file.EXIF_TITLE] || '',
-        ts: tsFromString(''),
+        ts: parseFilename('').ts,
         timezone: null,
         orientation: translateRotation(rawExifData.Orientation)
     };
@@ -204,7 +204,7 @@ export function exif2ts(exif, tz) {
     if (exif == EMPTY_EXIF) {
         return new Timestamp();
     }
-    // return tsFromString(exif.split(':').join('-'));
+    // return parseFilename(exif.split(':').join('-'));
     // TODO: handle timezone here and return new Timestamp(exif)
     return new Timestamp(exif, tz);
 }

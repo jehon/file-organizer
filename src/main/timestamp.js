@@ -211,10 +211,23 @@ export default class Timestamp {
 }
 
 /**
- * @param str
+ * @param {string} str to be parsed
+ * @returns {object} parsed
+ * @property {string} title of the string
+ * @property {string} qualif of the string
+ * @property {Timestamp} ts of the string
  */
-export function tsFromString(str) {
-    return new Timestamp(str);
+export function parseFilename(str) {
+    const ts = new Timestamp(str);
+    const res = {
+        ts,
+        title: ts.title,
+        qualif: ts.qualif
+    };
+    delete (res.ts.title);
+    delete (res.ts.qualif);
+
+    return res;
 }
 
 export const regexps = { android };
