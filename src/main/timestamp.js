@@ -1,10 +1,10 @@
 
 // TODO(timestamp): refactor into string or dates????
-
 // TODO: remove momentjs
+
 import moment from 'moment';
 import 'moment-timezone';
-import { isRange } from './time-helpers.js';
+import { canonizeTimestamp, isRange } from './time-helpers.js';
 
 /**
  * @param {object} object where to look for the key
@@ -142,7 +142,7 @@ export default class Timestamp {
         this.yearMin = parsed.yearMin;
         this.yearMax = parsed.yearMax;
 
-        if (!isRange(this) && (parsed.year > 0)) {
+        if (!isRange(this.humanReadable()) && (parsed.year > 0)) {
             // // We hardcode a limit where the day has no meaning...
             if (parsed.month < 1
                 || (parsed.year < 1998 && parsed.month < 2 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
@@ -197,16 +197,8 @@ export default class Timestamp {
         this.moment.second(1);
     }
 
-    isTextOnly() {
-        return !isRange(this) && !this.moment;
-    }
-
     isTimestamped() {
         return this.moment != null;
-    }
-
-    isYearOnly() {
-        return this.isTimestamped() && this.humanReadable().length == 4;
     }
 
     humanReadable() {
@@ -214,10 +206,7 @@ export default class Timestamp {
             return '';
         }
 
-        return this.moment.format('YYYY-MM-DD HH-mm-ss')
-            .replace('-01-01 01-01-01', '')
-            .replace('-02 02-02-02', '')
-            .replace(' 00-00-00', '');
+        return canonizeTimestamp(this.moment.format('YYYY-MM-DD HH-mm-ss'));
     }
 }
 

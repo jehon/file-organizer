@@ -107,8 +107,8 @@ export default class FileTimestamped extends File {
         } else {
             // Check filename according to parent folder TS
             if (this.parent && this.parent.get(File.I_FN_TIME).expected.isTimestamped()
-                || isRange(this.parent.get(File.I_FN_TIME).expected)) {
-                if (!timestampMatchLithe(this.get(File.I_FN_TIME).expected, this.parent.get(File.I_FN_TIME).expected)) {
+                || isRange(this.parent.get(File.I_FN_TIME).expected.humanReadable())) {
+                if (!timestampMatchLithe(this.get(File.I_FN_TIME).expected.humanReadable(), this.parent.get(File.I_FN_TIME).expected.humanReadable())) {
                     this.addProblem(FileTimestamped.P_TS_INCOHERENT);
                 }
             }

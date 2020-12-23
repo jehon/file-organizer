@@ -245,29 +245,5 @@ describe(t(import.meta), function () {
 
         });
     });
-
-    describe('functionalities', function () {
-        //
-        //
-        // Functionnal stuffs
-        //
-        //
-
-        it('should be clonable', function () {
-            let ts0 = tsFromString('2018-01-02');
-            expect(ts0.moment.year()).toBe(2018);
-            expect(ts0.humanReadable()).toBe('2018-01-02');
-
-            let ts1 = ts0.clone();
-            ts1.moment.year(2019);
-            expect(ts0.moment.year()).toBe(2018);
-            expect(ts0.humanReadable()).toBe('2018-01-02');
-
-            expect(ts1.moment.year()).toBe(2019);
-            expect(ts1.humanReadable()).toBe('2019-01-02');
-        });
-
-    });
-
 });
 

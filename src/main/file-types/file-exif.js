@@ -1,18 +1,25 @@
 
-/**
- * Exif File
- *
- * See https://www.sno.phy.queensu.ca/~phil/exiftool/#supported
- *
- * QuickTime -> mov?
- *
- * According to the specification, many QuickTime date/time tags should be stored as UTC.
- * Unfortunately, digital cameras often store local time values instead (presumably because
- * they don't know the time zone). For this reason, by default ExifTool does not assume
- * a time zone for these values. However, if the QuickTimeUTC API option is set, then ExifTool
- * will assume these values are properly stored as UTC, and will convert them to local time when extracting.
- *
- */
+//
+// Exif File
+//
+//  See https://www.sno.phy.queensu.ca/~phil/exiftool/#supported
+//  QuickTime -> mov?
+//
+// According to the specification, many QuickTime date/time tags should be stored as UTC.
+// Unfortunately, digital cameras often store local time values instead (presumably because
+// they don't know the time zone). For this reason, by default ExifTool does not assume
+// a time zone for these values. However, if the QuickTimeUTC API option is set, then ExifTool
+// will assume these values are properly stored as UTC, and will convert them to local time when extracting.
+//
+//
+
+//
+// The timestamp string must be stored in the application in the local time of the element
+//    It will be translated from/to UTC onRead and onWrite when necessary
+//
+// TODO (urgent): timestamp in string
+//
+
 
 /**
  * Exif executable
@@ -168,8 +175,6 @@ async function exifReadAll(file) {
         orientation: translateRotation(rawExifData.Orientation)
     };
 
-    // TODO(timezone): decide how the time is stored in the application
-    //    and unify it
     if (rawExifData.GPSPosition) {
         exifData.timezone = coordonate2tz(rawExifData.GPSPosition);
     }
@@ -177,7 +182,7 @@ async function exifReadAll(file) {
     // If the data is stored in UTC and if we have a timezone,
     // translate the date/time into local time (of the timezone)
     exifData.ts = exif2ts(rawExifData[file.EXIF_TS], (
-        file.EXIF_TS_IS_UTC && exifData.timezone ? exifData.timezone : false)
+        file.EXIF_TS_STORED_IN_UTC && exifData.timezone ? exifData.timezone : false)
     );
 
     return exifData;
@@ -187,29 +192,36 @@ const EMPTY_EXIF = '0000:00:00 00:00:00';
 // const TS_REGEXP = /(?<year>[0-9][0-9][0-9][0-9])([-:](?<month>[0-1][0-9])([-:](?<day>[0-3][0-9]))?)?( (?<hour>[0-2][0-9])[:-](?<minute>[0-5][0-9])([:-](?<second>[0-5][0-9])(?<timezone>[+-]\d\d:\d\d)?))?/;
 
 /**
+ * Return the timestamp in local timezone
+ *
+ * TODO: use strings !
+ *
  * @param {string} exif - the exif just read from the file
  * @param {string} tz - the timezone
- * @returns {module:src/main/Timestamp} parsed
+ * @returns {module:src/main/Timestamp} parsed and in local timezone
  */
 export function exif2ts(exif, tz) {
     if (exif == EMPTY_EXIF) {
         return new Timestamp();
     }
     // return tsFromString(exif.split(':').join('-'));
+    // TODO: handle timezone here and return new Timestamp(exif)
     return new Timestamp(exif, tz);
 }
 
 /**
+ * TODO: use strings !
+ *
  * @param {module:/src/main/Timestamp} ts - timestamp to be transformed
  * @param {boolean} isUTC - true if the data must be stored in UTC
  * @param {string} tz - the timezone
  * @returns {string} the timezone transformed
  */
 export function ts2exif(ts, isUTC, tz) {
-
     if (!ts.isTimestamped()) {
         return EMPTY_EXIF;
     }
+
     let tsZoned = ts.moment;
 
     // If a timezone is set, and the exif timestamp is not stored in UTC
@@ -231,7 +243,7 @@ export default class FileExif extends FileTimestamped {
 
     get EXIF_TS() { return 'DateTimeOriginal'; }
     get EXIF_TITLE() { return 'UserComment'; }
-    get EXIF_TS_IS_UTC() { return false; }
+    get EXIF_TS_STORED_IN_UTC() { return false; }
 
     async readInternalData() {
         await super.readInternalData();
@@ -240,8 +252,6 @@ export default class FileExif extends FileTimestamped {
 
         this.set(FileExif.I_FE_TZ, new Value(data.timezone));
         this.set(FileExif.I_FE_ORIENTATION, new Value(data.orientation));
-
-        // TODO(timezone): link data's TZ ???
 
         return {
             ts: data.ts,
@@ -257,7 +267,7 @@ export default class FileExif extends FileTimestamped {
 
         this.get(FileExif.I_FE_ORIENTATION).expect(0, 'orientation to top');
 
-        // TODO(timezone): handle timezone?
+        // TODO(timezone): force BRU timezone?
     }
 
     async act() {
@@ -271,7 +281,8 @@ export default class FileExif extends FileTimestamped {
         const ts = this.get(FileTimestamped.I_ITS_TIME);
         if (!ts.isDone()) {
             await exifWrite(this, this.EXIF_TS,
-                ts2exif(ts.expected, this.EXIF_TS_IS_UTC, this.get(FileExif.I_FE_TZ).expected)
+                // TODO: humanreadable()
+                ts2exif(ts.expected, this.EXIF_TS_STORED_IN_UTC, this.get(FileExif.I_FE_TZ).expected)
             );
             ts.fix();
         }
