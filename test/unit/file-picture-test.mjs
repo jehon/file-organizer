@@ -5,9 +5,7 @@ import fs from 'fs';
 import { createFileFrom, tempPath, dataPath } from './help-functions.mjs';
 import FilePicture from '../../src/main/file-types/file-picture.js';
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
-import FileExif from '../../src/main/file-types/file-exif.js';
-
-import { tsFromExif } from '../../src/main/timestamp.js';
+import FileExif, { exif2ts } from '../../src/main/file-types/file-exif.js';
 
 import File, { FOError } from '../../src/main/file-types/file.js';
 
@@ -65,7 +63,7 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
 
                     // Set some values
                     f.get(FileTimestamped.I_ITS_TITLE).expect('new title');
-                    f.get(FileTimestamped.I_ITS_TIME).expect(tsFromExif('2020:01:02 02:03:04'));
+                    f.get(FileTimestamped.I_ITS_TIME).expect(exif2ts('2020:01:02 02:03:04'));
 
                     await f.runActing();
                     filename = f.currentFilePath;

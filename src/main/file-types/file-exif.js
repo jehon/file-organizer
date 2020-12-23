@@ -20,7 +20,7 @@
 const EXIFTOOL = 'exiftool';
 
 import FileTimestamped from './file-timestamped.js';
-import { tsFromExif, tzFromGPS, tsFromString } from '../timestamp.js';
+import Timestamp, { tsFromString } from '../timestamp.js';
 
 import debug from 'debug';
 const debugExif = debug('exiftool');
@@ -35,6 +35,7 @@ const pExecFile = promisify(execFile);
 
 import commandExists from 'command-exists';
 import Value from '../value.js';
+import { coordonate2tz } from '../time-helpers.js';
 const commandExistsSync = commandExists.sync;
 // returns true/false; doesn't throw
 if (!commandExistsSync(EXIFTOOL)) {
@@ -170,16 +171,58 @@ async function exifReadAll(file) {
     // TODO(timezone): decide how the time is stored in the application
     //    and unify it
     if (rawExifData.GPSPosition) {
-        exifData.timezone = tzFromGPS(rawExifData.GPSPosition);
+        exifData.timezone = coordonate2tz(rawExifData.GPSPosition);
     }
 
     // If the data is stored in UTC and if we have a timezone,
     // translate the date/time into local time (of the timezone)
-    exifData.ts = tsFromExif(rawExifData[file.EXIF_TS], (
+    exifData.ts = exif2ts(rawExifData[file.EXIF_TS], (
         file.EXIF_TS_IS_UTC && exifData.timezone ? exifData.timezone : false)
     );
 
     return exifData;
+}
+
+const EMPTY_EXIF = '0000:00:00 00:00:00';
+// const TS_REGEXP = /(?<year>[0-9][0-9][0-9][0-9])([-:](?<month>[0-1][0-9])([-:](?<day>[0-3][0-9]))?)?( (?<hour>[0-2][0-9])[:-](?<minute>[0-5][0-9])([:-](?<second>[0-5][0-9])(?<timezone>[+-]\d\d:\d\d)?))?/;
+
+/**
+ * @param {string} exif - the exif just read from the file
+ * @param {string} tz - the timezone
+ * @returns {module:src/main/Timestamp} parsed
+ */
+export function exif2ts(exif, tz) {
+    if (exif == EMPTY_EXIF) {
+        return new Timestamp();
+    }
+    // return tsFromString(exif.split(':').join('-'));
+    return new Timestamp(exif, tz);
+}
+
+/**
+ * @param {module:/src/main/Timestamp} ts - timestamp to be transformed
+ * @param {boolean} isUTC - true if the data must be stored in UTC
+ * @param {string} tz - the timezone
+ * @returns {string} the timezone transformed
+ */
+export function ts2exif(ts, isUTC, tz) {
+
+    if (!ts.isTimestamped()) {
+        return EMPTY_EXIF;
+    }
+    let tsZoned = ts.moment;
+
+    // If a timezone is set, and the exif timestamp is not stored in UTC
+    // then we need to calculate the moment in local timezone
+    if (isUTC && tz) {
+
+        // We adapt the tz field, but not the time
+        // @See https://momentjs.com/timezone/docs/#/using-timezones/converting-to-zone/
+        tsZoned = tsZoned.tz(tz, true);
+    }
+
+    const utc = tsZoned.clone().utc();
+    return utc.format('YYYY:MM:DD HH:mm:ss');
 }
 
 export default class FileExif extends FileTimestamped {
@@ -227,28 +270,9 @@ export default class FileExif extends FileTimestamped {
 
         const ts = this.get(FileTimestamped.I_ITS_TIME);
         if (!ts.isDone()) {
-
-            let tsFormatted = '0000:00:00 00:00:00';
-
-            if (ts.expected.isTimestamped()) {
-                let tsZoned = ts.expected.moment;
-
-                // TODO: refactor about date's and timestamps
-
-                // If a timezone is set, and the exif timestamp is not stored in UTC
-                // then we need to calculate the moment in local timezone
-                if (this.EXIF_TS_IS_UTC && this.get(FileExif.I_FE_TZ).expected) {
-
-                    // We adapt the tz field, but not the time
-                    // @See https://momentjs.com/timezone/docs/#/using-timezones/converting-to-zone/
-                    tsZoned = tsZoned.tz(this.get(FileExif.I_FE_TZ).expected, true);
-                }
-
-                const utc = tsZoned.clone().utc();
-                tsFormatted = utc.format('YYYY:MM:DD HH:mm:ss');
-            }
-
-            await exifWrite(this, this.EXIF_TS, tsFormatted);
+            await exifWrite(this, this.EXIF_TS,
+                ts2exif(ts.expected, this.EXIF_TS_IS_UTC, this.get(FileExif.I_FE_TZ).expected)
+            );
             ts.fix();
         }
 

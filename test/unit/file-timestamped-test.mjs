@@ -11,7 +11,7 @@ import options, { _resetToDefault } from '../../src/common/options.js';
 import {
     tempPath
 } from './help-functions.mjs';
-import { tsFromExif } from '../../src/main/timestamp.js';
+import { exif2ts } from '../../src/main/file-types/file-exif.js';
 
 /**
  * @param {File} file whose parents need to be created
@@ -25,7 +25,7 @@ describe(t(import.meta), function () {
         it('should take the new title from filename', async () => {
             const f = new FileTimestamped('2020-01-01 canon.JPG');
             f.readInternalData = () => ({
-                ts: tsFromExif('1999:01:02 03:04:05'),
+                ts: exif2ts('1999:01:02 03:04:05'),
                 title: ''
             });
 
@@ -38,7 +38,7 @@ describe(t(import.meta), function () {
             const f = new FileTimestamped('1998-12-31 12-10-11.jpg', new File('1998 parent title'));
             expect(f.parent.get(File.I_FN_TITLE).initial).toBe('parent title');
             f.readInternalData = () => ({
-                ts: tsFromExif('1999:01:02 03:04:05'),
+                ts: exif2ts('1999:01:02 03:04:05'),
                 title: ''
             });
 
@@ -58,7 +58,7 @@ describe(t(import.meta), function () {
 
             const f = new FileTimestamped('2020-01-01 canon.JPG');
             f.readInternalData = () => ({
-                ts: tsFromExif('1999:01:02 03:04:05'),
+                ts: exif2ts('1999:01:02 03:04:05'),
                 title: 'exif_title'
             });
 
@@ -73,7 +73,7 @@ describe(t(import.meta), function () {
             const f = new FileTimestamped('1998-12-31 12-10-11 blabla.jpg', new File('1998 parent title'));
             expect(f.parent.get(File.I_FN_TITLE).initial).toBe('parent title');
             f.readInternalData = () => ({
-                ts: tsFromExif('1999:01:02 03:04:05'),
+                ts: exif2ts('1999:01:02 03:04:05'),
                 title: 'exif_title'
             });
 
@@ -89,7 +89,7 @@ describe(t(import.meta), function () {
 
             const f = new FileTimestamped('1998-12-31 12-10-11 blabla.jpg');
             f.readInternalData = () => ({
-                ts: tsFromExif('1999:01:02 03:04:05'),
+                ts: exif2ts('1999:01:02 03:04:05'),
                 title: 'exif_title'
             });
 
@@ -105,7 +105,7 @@ describe(t(import.meta), function () {
 
             const f = new FileTimestamped('1998-12-31 12-10-11 blabla.jpg');
             f.readInternalData = () => ({
-                ts: tsFromExif('1999:01:02 03:04:05'),
+                ts: exif2ts('1999:01:02 03:04:05'),
                 title: 'exif_title'
             });
 

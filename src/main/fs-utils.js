@@ -19,6 +19,7 @@ function getPath(file) {
 
 /**
  * @param {string|File} file to be handled
+ * @returns {Promise<boolean>} if the file exists
  */
 export async function fileExists(file) {
     return fs.promises.stat(getPath(file))
@@ -46,7 +47,7 @@ export async function fileDelete(file) {
 /**
  * Rename a file according to its values
  *
- * TODO (indexed): //ise it
+ * TODO(indexed): //ise it
  *
  * @param {File} file to be renamed according to values
  * @returns {Promise<void>} when finished
@@ -89,7 +90,7 @@ export function folderListing(file) {
 
 
 
-/** Old code */
+/** TODO(indexed): Old code */
 
 
 const reservedNames = new Map();

@@ -1,11 +1,10 @@
 
 // TODO(timestamp): refactor into string or dates????
 
-import tzlookup from 'tz-lookup';
-
 // TODO: remove momentjs
 import moment from 'moment';
 import 'moment-timezone';
+import { isRange } from './time-helpers.js';
 
 /**
  * @param {object} object where to look for the key
@@ -90,28 +89,51 @@ export const defaultValues = {
     yearMax: 0
 };
 
-const EMPTY_EXIF = '0000:00:00 00:00:00';
 
 export default class Timestamp {
-    constructor(str = '', tz = false) {
-        const parsed = Object.assign({}, defaultValues);
+    year = 0
+    month = -1 // -> YYYY:01:01 01:01:01
+    day = -1 // -> YYYY:MM:02 02:02:02
+    hour = 0
+    minute = 0
+    second = 0
+    moment = null
 
+    qualif = '' // in the tag, the filename
+    title = ''  // in the tag, the rest (out of the filename)
+
+    yearMin = 0
+    yearMax = 0
+
+    string = ''
+    tz = ''
+
+    constructor(str = '', tz = '') {
         this.string = str;
+
+        if (!str) {
+            return;
+        }
 
         for (const k of Object.keys(matchers)) {
             const re = new RegExp(matchers[k], 'gm');
             const matches = re.exec(str);
             if (matches && matches.groups) {
                 this.type = k;
-
-                for (const m of Object.keys(matches.groups)) {
-                    if (m[0] == '_') {
-                        continue;
-                    }
-                    parsed[m] = parseInfo(matches.groups, m, parsed[m]);
-                }
+                this.store(matches, tz);
                 break;
             }
+        }
+    }
+
+    store(matches, tz = '') {
+        const parsed = Object.assign({}, defaultValues);
+
+        for (const m of Object.keys(matches.groups)) {
+            if (m[0] == '_') {
+                continue;
+            }
+            parsed[m] = parseInfo(matches.groups, m, parsed[m]);
         }
 
         /** @type {string|number} */
@@ -120,39 +142,29 @@ export default class Timestamp {
         this.yearMin = parsed.yearMin;
         this.yearMax = parsed.yearMax;
 
-        if (this.isRange()) {
-            this.moment = null;
-        } else {
-            this.moment = null;
-            if (parsed.year < 1) {
-                // Nothing to do
-                this.moment = null;
+        if (!isRange(this) && (parsed.year > 0)) {
+            // // We hardcode a limit where the day has no meaning...
+            if (parsed.month < 1
+                || (parsed.year < 1998 && parsed.month < 2 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
+            ) {
+                this.moment = moment.utc([parsed.year]);
+                this.yearOnly();
             } else {
-                // // We hardcode a limit where the day has no meaning...
-                if (parsed.month < 1
-                    || (parsed.year < 1998 && parsed.month < 2 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
+                if (parsed.day < 0
+                    || (parsed.year < 1998 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
                 ) {
-                    this.moment = moment.utc([parsed.year]);
-                    this.yearOnly();
+                    this.moment = moment.utc([parsed.year, parsed.month - 1]);
+                    this.yearMonthOnly();
                 } else {
-                    if (parsed.day < 0
-                        || (parsed.year < 1998 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
-                    ) {
-                        this.moment = moment.utc([parsed.year, parsed.month - 1]);
-                        this.yearMonthOnly();
-                    } else {
-                        // Normal case
-                        this.moment = moment.utc([parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second]);
-                        if (tz) {
-                            this.utcToTimezone(tz);
-                        }
+                    // Normal case
+                    this.moment = moment.utc([parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second]);
+                    if (tz) {
+                        if (this.isTimestamped())
+                            this.moment = this.moment.tz(tz); // true: force to keep the initial value, false: convert
                     }
                 }
-
             }
         }
-
-        return;
     }
 
     clone() {
@@ -185,12 +197,8 @@ export default class Timestamp {
         this.moment.second(1);
     }
 
-    isRange() {
-        return this.yearMin > 0 && this.yearMax > 0;
-    }
-
     isTextOnly() {
-        return !this.isRange() && !this.moment;
+        return !isRange(this) && !this.moment;
     }
 
     isTimestamped() {
@@ -199,12 +207,6 @@ export default class Timestamp {
 
     isYearOnly() {
         return this.isTimestamped() && this.humanReadable().length == 4;
-    }
-
-    utcToTimezone(tz) {
-        if (this.isTimestamped()) {
-            this.moment = this.moment.tz(tz); // true: force to keep the initial value, false: convert
-        }
     }
 
     humanReadable() {
@@ -217,94 +219,6 @@ export default class Timestamp {
             .replace('-02 02-02-02', '')
             .replace(' 00-00-00', '');
     }
-
-    /**
-     * Instead is internally used in file-exif
-     *
-     * @deprecated
-     *
-     * @returns {string} formatted for Exif
-     */
-    exif() {
-        if (!this.isTimestamped()) {
-            return EMPTY_EXIF;
-        }
-        const utc = this.moment.clone().utc();
-        return utc.format('YYYY:MM:DD HH:mm:ss');
-    }
-
-    // match test if the timestamp match against (larger) ts
-    match(larger) {
-        if (this.isTextOnly()) {
-            return true;
-        }
-
-        if (larger.isRange()) {
-            return this.moment.year() >= larger.yearMin && this.moment.year() <= larger.yearMax;
-        }
-
-        if (this.humanReadable().startsWith(larger.humanReadable())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    // MatchExact test if two TS are exactly the same
-    matchExact(t2) {
-        if (!this.match(t2)) {
-            return false;
-        }
-        return (this.humanReadable() == t2.humanReadable());
-    }
-
-    // MatchAgainstLithe test if the timestamp match against (larger) ts, but by closest month
-    matchLithe(larger) {
-        if (this.match(larger)) {
-            return true;
-        }
-        if (larger.isRange()) {
-            return false;
-        }
-
-        { // By same month
-            const ref = larger.clone();
-            ref.yearMonthOnly();
-            if (this.match(ref)) {
-                return true;
-            }
-        }
-        { // By month before
-            const ref = larger.clone();
-            if (ref.isYearOnly()) {
-                // Match by year
-                ref.moment.subtract(1, 'year');
-                ref.moment.month(11);
-            } else {
-                ref.moment.subtract(1, 'month');
-            }
-            ref.yearMonthOnly();
-            if (this.match(ref)) {
-                return true;
-            }
-        }
-        { // By month after
-            const ref = larger.clone();
-            if (ref.isYearOnly()) {
-                // Match by year
-                ref.moment.add(1, 'year');
-                ref.moment.month(0);
-            } else {
-                ref.moment.add(1, 'month');
-            }
-            ref.yearMonthOnly();
-            if (this.match(ref)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
 
 /**
@@ -312,43 +226,6 @@ export default class Timestamp {
  */
 export function tsFromString(str) {
     return new Timestamp(str);
-}
-
-/**
- * @param str
- * @param tz
- */
-export function tsFromExif(str, tz = false) {
-    return new Timestamp(str, tz);
-}
-
-/**
- * @param GPS
- */
-export function tzFromGPS(GPS) {
-    const p = function (str) {
-        const parser = /(?<v1>\d+) deg (?<v2>\d+)' (?<v3>\d+)\.(?<v4>\d+)" (?<orien>(N|S|E|O))/;
-        const c = str.match(parser);
-        const val = (parseInt(c.groups.v1)
-            + (parseInt(c.groups.v2) / 60)
-            + ((parseInt(c.groups.v3) + parseInt(c.groups.v4) / 100) / 3600)
-        ) * (c.groups.orien == 'N' || c.groups.orien == 'E' ? 1 : -1);
-        return val;
-    };
-
-    const coord = GPS.split(',');
-
-    const lat = p(coord[0]);
-    const long = p(coord[1]);
-
-    return tzlookup(lat, long);
-}
-
-/**
- *
- */
-export function currentTzOffset() {
-    return moment().utcOffset();
 }
 
 export const regexps = { android };

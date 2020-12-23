@@ -1,6 +1,6 @@
 
 import { tsFromString } from '../../src/main/timestamp.js';
-import FileExif from '../../src/main/file-types/file-exif.js';
+import FileExif, { exif2ts, ts2exif } from '../../src/main/file-types/file-exif.js';
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
 import File, { FOError } from '../../src/main/file-types/file.js';
 import { t } from '../test-helper.js';
@@ -83,6 +83,37 @@ describe(t(import.meta), function () {
         });
     });
 
+    it('should generate exif timestamp', function () {
+        // Date only cases
+        expect(ts2exif(
+            tsFromString('2018')
+        )).toBe('2018:01:01 01:01:01');
+
+        expect(ts2exif(
+            tsFromString('2018-01')
+        )).toBe('2018:01:02 02:02:02');
+
+        expect(ts2exif(
+            tsFromString('2018-02')
+        )).toBe('2018:02:02 02:02:02');
+
+        // exif is always in utc
+        expect(ts2exif(
+            exif2ts('2019:07:02 15:16:17', 'Europe/Brussels'),
+            'Europe/Brussels'
+        )).toBe('2019:07:02 15:16:17');
+
+        expect(ts2exif(
+            exif2ts('2019:07:02 15:16:17', 'Asia/Dhaka'),
+            'Asia/Dhaka'
+        )).toBe('2019:07:02 15:16:17');
+
+        // Normal case
+        expect(ts2exif(
+            exif2ts('2019-01-02 03-04-05')
+        )).toBe('2019:01:02 03:04:05');
+    });
+
     describe('should write exif data', function () {
         it('should write', async () => {
             let filename = await createFileFrom('no_exif.jpg');
@@ -101,7 +132,7 @@ describe(t(import.meta), function () {
                 }
 
                 expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('');
-                f.get(FileTimestamped.I_ITS_TIME).expect(tsFromString('2020-01-02 03-05-06'));
+                f.get(FileTimestamped.I_ITS_TIME).expect(exif2ts('2020:01:02 03:05:06'));
                 expect(f.get(FileTimestamped.I_ITS_TIME).expected.humanReadable()).toBe('2020-01-02 03-05-06');
                 expect(f.get(File.I_FILENAME).expected).toBe('2020-01-02 03-05-06 no_exif');
 

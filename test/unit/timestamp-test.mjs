@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 
-import { regexps, tsFromString, tsFromExif, tzFromGPS } from '../../src/main/timestamp.js';
+import { regexps, tsFromString } from '../../src/main/timestamp.js';
 
 /**
  * @param originalString
@@ -15,10 +15,6 @@ function isA(originalString, type, exifTarget, TSTarget = originalString, extra 
     expect(parsed.type)
         .withContext(`${originalString}: Interpreted wrongly as`)
         .toBe(type);
-
-    expect(parsed.exif())
-        .withContext(`${originalString}: Not correctly interpreted as exif`)
-        .toBe(exifTarget);
 
     expect(parsed.humanReadable())
         .withContext(`${originalString}: Not correctly interpreted as TS`)
@@ -257,27 +253,6 @@ describe(t(import.meta), function () {
         //
         //
 
-        it('should generate exif timestamp', () => {
-            // Date only cases
-            expect(tsFromString('2018').exif()).toBe('2018:01:01 01:01:01');
-            expect(tsFromString('2018-01').exif()).toBe('2018:01:02 02:02:02');
-            expect(tsFromString('2018-02').exif()).toBe('2018:02:02 02:02:02');
-
-            // exif is always in utc
-            expect(tsFromExif('2019:07:02 15:16:17', 'Europe/Brussels').exif()).toBe('2019:07:02 15:16:17');
-            expect(tsFromExif('2019:07:02 15:16:17', 'Asia/Dhaka').exif()).toBe('2019:07:02 15:16:17');
-
-            // Normal case
-            expect(tsFromString('2019-01-02 03-04-05').exif()).toBe('2019:01:02 03:04:05');
-
-
-            expect(tsFromExif('2019:07:02 15:16:17').humanReadable()).withContext('No timezone').toBe('2019-07-02 15-16-17');
-            expect(tsFromExif('2019:07:02 15:16:17', 'Europe/Brussels').humanReadable()).withContext('Summer time').toBe('2019-07-02 17-16-17');
-            expect(tsFromExif('2019:02:02 15:16:17', 'Europe/Brussels').humanReadable()).withContext('Winter time').toBe('2019-02-02 16-16-17');
-
-            expect(tsFromString('2019-01-02 03-04-05').exif()).toBe('2019:01:02 03:04:05');
-        });
-
         it('should be clonable', function () {
             let ts0 = tsFromString('2018-01-02');
             expect(ts0.moment.year()).toBe(2018);
@@ -292,70 +267,7 @@ describe(t(import.meta), function () {
             expect(ts1.humanReadable()).toBe('2019-01-02');
         });
 
-        it('should match timestamps', function () {
-            expect(tsFromString('2018-01-02').match(tsFromString('2018-01'))).toBeTruthy();
-            expect(tsFromString('2018-01-02').match(tsFromString('2018'))).toBeTruthy();
-
-            expect(tsFromString('2018-01-02').match(tsFromString('2019'))).toBeFalsy();
-
-            // Invalid
-            expect(tsFromString('2018-01-02').match(tsFromString(''))).toBeTruthy();
-            expect(tsFromString('').match(tsFromString('2018'))).toBeTruthy();
-            expect(tsFromString('').match(tsFromString(''))).toBeTruthy();
-        });
-
-        it('should match timestamps exactly', function () {
-            expect(tsFromString('2018-01-02').matchExact(tsFromString('2018-01'))).toBeFalsy();
-            expect(tsFromString('2018-01').matchExact(tsFromString('2018-01'))).toBeTruthy();
-
-            expect(tsFromString('2018-01-02 00-00-00').matchExact(tsFromString('2018-01-02'))).toBeTruthy();
-            expect(tsFromString('2018-01-02 00-00-01').matchExact(tsFromString('2018-01-02'))).toBeFalsy();
-            expect(tsFromString('2018-01-02 00-00-01').matchExact(tsFromString('2018-01-02 00-00-01'))).toBeTruthy();
-        });
-
-        it('should match timestamps lithe', function () {
-            expect(tsFromString('2018-01-02').matchLithe(tsFromString('2018-01'))).toBeTruthy();
-
-            expect(tsFromString('2018-01-02').matchLithe(tsFromString('2017-12-31'))).toBeTruthy();
-
-            expect(tsFromString('2018-01-02').matchLithe(tsFromString('2018-02'))).toBeTruthy();
-            expect(tsFromString('2018-01-02').matchLithe(tsFromString('2017-12'))).toBeTruthy();
-            expect(tsFromString('2018-12-30').matchLithe(tsFromString('2019-01'))).toBeTruthy();
-
-            expect(tsFromString('2018-01-02').matchLithe(tsFromString('2017'))).toBeTruthy();
-            expect(tsFromString('2018-12-30').matchLithe(tsFromString('2019'))).toBeTruthy();
-
-            // 	// Real tests
-            expect(tsFromString('2009-02-22').matchLithe(tsFromString('2009-02-21'))).toBeTruthy();
-        });
-
-        it('should match timestamps range', function () {
-            const bt = tsFromString('1990-2000 rest');
-            expect(bt.isRange()).toBeTruthy();
-
-            expect(bt.yearMin).toBe(1990);
-            expect(bt.yearMax).toBe(2000);
-            expect(bt.title).toBe('rest');
-
-            expect(tsFromString('1990-01-03 test').match(bt)).toBeTruthy();
-            expect(tsFromString('1998-01-03 test').match(bt)).toBeTruthy();
-            expect(tsFromString('2000-01-03 test').match(bt)).toBeTruthy();
-
-            expect(tsFromString('1989-01-03 test').match(bt)).toBeFalsy();
-            expect(tsFromString('2001-01-03 test').match(bt)).toBeFalsy();
-
-
-            expect(tsFromString('1990-01-03 test').matchLithe(bt)).toBeTruthy();
-            expect(tsFromString('1998-01-03 test').matchLithe(bt)).toBeTruthy();
-            expect(tsFromString('2000-01-03 test').matchLithe(bt)).toBeTruthy();
-
-            expect(tsFromString('1989-01-03 test').matchLithe(bt)).toBeFalsy();
-            expect(tsFromString('2001-01-03 test').matchLithe(bt)).toBeFalsy();
-        });
     });
 
-    it('tzFromGPS', () => {
-        expect(tzFromGPS('50 deg 35\' 30.84" N, 5 deg 33\' 25.92" E')).toBe('Europe/Brussels');
-    });
 });
 

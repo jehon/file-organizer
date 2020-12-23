@@ -3,10 +3,10 @@ import { t } from '../test-helper.js';
 import fs from 'fs';
 
 import FileMovie from '../../src/main/file-types/file-movie.js';
-import { tsFromExif } from '../../src/main/timestamp.js';
 
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
 import { createFileFrom, tempPath } from './help-functions.mjs';
+import { exif2ts } from '../../src/main/file-types/file-exif.js';
 
 /**
  * @param {string} title to describe the test
@@ -55,7 +55,7 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
 
                     // Set some values
                     f.get(FileTimestamped.I_ITS_TITLE).expect('new title');
-                    f.get(FileTimestamped.I_ITS_TIME).expect(tsFromExif('2020:01:02 02:03:04'));
+                    f.get(FileTimestamped.I_ITS_TIME).expect(exif2ts('2020:01:02 02:03:04'));
 
                     await f.runActing();
                     filename = f.currentFilePath;

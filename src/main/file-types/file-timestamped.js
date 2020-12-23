@@ -2,6 +2,7 @@
 import File from './file.js';
 import options from '../../common/options.js';
 import Value from '../value.js';
+import { isRange, timestampMatchLithe } from '../time-helpers.js';
 
 export default class FileTimestamped extends File {
     static I_ITS_TIME = 'FileTimestamped_time'
@@ -106,8 +107,8 @@ export default class FileTimestamped extends File {
         } else {
             // Check filename according to parent folder TS
             if (this.parent && this.parent.get(File.I_FN_TIME).expected.isTimestamped()
-                || this.parent.get(File.I_FN_TIME).expected.isRange()) {
-                if (!this.get(File.I_FN_TIME).expected.matchLithe(this.parent.get(File.I_FN_TIME).expected)) {
+                || isRange(this.parent.get(File.I_FN_TIME).expected)) {
+                if (!timestampMatchLithe(this.get(File.I_FN_TIME).expected, this.parent.get(File.I_FN_TIME).expected)) {
                     this.addProblem(FileTimestamped.P_TS_INCOHERENT);
                 }
             }
