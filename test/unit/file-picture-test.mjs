@@ -27,12 +27,15 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
                 expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
                     .withContext(baseFilename)
                     .toBe(its_time);
+
                 expect(f.get(FileTimestamped.I_ITS_TITLE).initial)
                     .withContext(baseFilename)
                     .toBe(its_title);
+
                 expect(f.get(FileExif.I_FE_ORIENTATION).initial)
                     .withContext(baseFilename)
                     .toBe(its_rotation);
+
                 filename = f.currentFilePath;
             } finally {
                 await fs.promises.unlink(filename);
@@ -100,7 +103,7 @@ describe(t(import.meta), function () {
     testFullFlow('20150306_153340 Cable internet dans la rue.jpg', '2015-03-06 15-33-40', 'User comments', 90);
     testFullFlow('canon.JPG', '2018-02-04 13-17-50', '');
     testFullFlow('petitAppPhoto.jpg', '2020-01-19 01-24-02', '');
-    // testFullFlow('2019-09-03 12-48/20190903_124722.jpg', '2019-09-03 12-47-21', '', 90);
+    testFullFlow('2019-09-03 12-48/20190903_124722.jpg', '2019-09-03 12-47-21', '', 90);
 
     it('should normalize extensions when necessary', async () => {
         const f = new FilePicture(dataPath('system_test/2019 test/1.jpeg'));

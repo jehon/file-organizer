@@ -1,7 +1,9 @@
 
 import {
-    STATUS_ACTED_SUCCESS, STATUS_ACTING, STATUS_ANALYSING, STATUS_CREATED,
-
+    STATUS_ACTED_SUCCESS,
+    STATUS_ACTING,
+    STATUS_ANALYSING,
+    STATUS_CREATED,
     STATUS_NEED_ACTION
 } from '../../src/common/constants.js';
 import FileDelete from '../../src/main/file-types/file-delete.js';

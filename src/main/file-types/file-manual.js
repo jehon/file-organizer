@@ -7,8 +7,9 @@ import {
 import { registerRegExp, glob2regExp } from '../register-file-types.js';
 
 export default class FileManual extends File {
-    async analyse() {
-        await super.analyse();
+    checkConsistency() {
+        super.checkConsistency();
+
         this.addProblem('Manual operation needed');
     }
 }

@@ -20,7 +20,6 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
         it('should read data', async () => {
             let filename = await createFileFrom(baseFilename);
 
-
             try {
                 const f = new FileMovie(filename);
                 await f.runAnalyse();

@@ -43,9 +43,9 @@ const pExecFile = promisify(execFile);
 import commandExists from 'command-exists';
 import Value from '../value.js';
 import { coordonate2tz } from '../time-helpers.js';
-const commandExistsSync = commandExists.sync;
+
 // returns true/false; doesn't throw
-if (!commandExistsSync(EXIFTOOL)) {
+if (!commandExists.sync(EXIFTOOL)) {
     console.error('Command exiftool not found in path');
     // TODO: this is not easy to debug:
     process.exit(254);

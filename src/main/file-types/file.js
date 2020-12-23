@@ -157,10 +157,6 @@ export default class File extends Item {
         this.get(File.I_FN_TIME).onExpectedChanged(updateFn);
     }
 
-    // get currentFilename() {
-    //     return this.get(File.I_FILENAME).current + this.get(File.I_EXTENSION).current;
-    // }
-
     /**
      * Get the current path from the file
      * based on "current" values
@@ -168,7 +164,6 @@ export default class File extends Item {
      * @returns {string} absolute path
      */
     get currentFilePath() {
-        // TODO: remove this test, since it prevent FileDelete from working
         if ((this.get(File.I_FILENAME).current == null) && (this.get(File.I_EXTENSION).current == null)) {
             return null;
         }
@@ -420,30 +415,30 @@ export default class File extends Item {
         }
         this.notify(STATUS_ACTING);
 
-        return this.act()
-            .then(() => {
-                if (this.get(File.I_FILENAME).current == null) {
-                    // The file will be deleted anyway
-                    return;
-                }
+        try {
+            await this.act();
 
-                const unsolved = Object.entries(this.values) // [ key, value ]
-                    .filter(e => !e[1].isDone())
-                    .map(e => e[0] + `(${JSON.stringify(e[1].expected)} vs ${JSON.stringify(e[1].current)})`);
-                if (unsolved.length > 0) {
-                    throw new FOError('Information not solved: ' + unsolved.join(', '));
-                }
-            })
-            .then(
-                () => {
-                    this.notify(STATUS_ACTED_SUCCESS);
-                },
-                (e) => {
-                    // TODO: handle error
-                    this.error = e;
-                    this.notify(STATUS_ACTED_FAILURE);
-                    throw e;
-                });
+            if (this.get(File.I_FILENAME).current == null) {
+                // The file will be deleted anyway
+                this.notify(STATUS_ACTED_SUCCESS);
+                return;
+            }
+
+            const unsolved = Object.entries(this.values) // [ key, value ]
+                .filter(e => !e[1].isDone())
+                .map(e => e[0] + `(${JSON.stringify(e[1].expected)} vs ${JSON.stringify(e[1].current)})`);
+
+            if (unsolved.length > 0) {
+                throw new FOError('Information not solved: ' + unsolved.join(', '));
+            }
+
+            this.notify(STATUS_ACTED_SUCCESS);
+        } catch (e) {
+            // TODO: handle error
+            this.error = e;
+            this.notify(STATUS_ACTED_FAILURE);
+            throw e;
+        }
     }
 
     /**

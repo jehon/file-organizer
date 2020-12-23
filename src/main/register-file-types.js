@@ -2,7 +2,6 @@
 import fs from 'fs';
 import path from 'path';
 
-// TODO(style): object should be "class constructor"
 /**
  * @type {Map<RegExp, object>} to store all mapping for files
  */

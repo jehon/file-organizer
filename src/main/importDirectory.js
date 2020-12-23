@@ -14,9 +14,9 @@ export default async function (folder, regExpMask = /[.]js/) {
         folder = path.join(rootDir, folder);
     }
 
-    let list = await fs.promises.readdir(folder);
-    list = list.filter(v => regExpMask.test(v));
-    list = list.map(v => path.join(folder, v));
+    let list = (await fs.promises.readdir(folder))
+        .filter(v => regExpMask.test(v))
+        .map(v => path.join(folder, v));
     return await Promise.all(
         list.map(f => import(f)
             .catch(e => {

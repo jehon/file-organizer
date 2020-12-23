@@ -85,33 +85,16 @@ describe(t(import.meta), function () {
 
     it('should generate exif timestamp', function () {
         // Date only cases
-        expect(ts2exif(
-            parseFilename('2018').ts
-        )).toBe('2018:01:01 01:01:01');
-
-        expect(ts2exif(
-            parseFilename('2018-01').ts
-        )).toBe('2018:01:02 02:02:02');
-
-        expect(ts2exif(
-            parseFilename('2018-02').ts
-        )).toBe('2018:02:02 02:02:02');
+        expect(ts2exif(parseFilename('2018').ts)).toBe('2018:01:01 01:01:01');
+        expect(ts2exif(parseFilename('2018-01').ts)).toBe('2018:01:02 02:02:02');
+        expect(ts2exif(parseFilename('2018-02').ts)).toBe('2018:02:02 02:02:02');
 
         // exif is always in utc
-        expect(ts2exif(
-            exif2ts('2019:07:02 15:16:17', 'Europe/Brussels'),
-            'Europe/Brussels'
-        )).toBe('2019:07:02 15:16:17');
-
-        expect(ts2exif(
-            exif2ts('2019:07:02 15:16:17', 'Asia/Dhaka'),
-            'Asia/Dhaka'
-        )).toBe('2019:07:02 15:16:17');
+        expect(ts2exif(exif2ts('2019:07:02 15:16:17', 'Europe/Brussels'), 'Europe/Brussels')).toBe('2019:07:02 15:16:17');
+        expect(ts2exif(exif2ts('2019:07:02 15:16:17', 'Asia/Dhaka'), 'Asia/Dhaka')).toBe('2019:07:02 15:16:17');
 
         // Normal case
-        expect(ts2exif(
-            exif2ts('2019-01-02 03-04-05')
-        )).toBe('2019:01:02 03:04:05');
+        expect(ts2exif(exif2ts('2019-01-02 03-04-05'))).toBe('2019:01:02 03:04:05');
     });
 
     describe('should write exif data', function () {
@@ -132,6 +115,7 @@ describe(t(import.meta), function () {
                 }
 
                 expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('');
+
                 f.get(FileTimestamped.I_ITS_TIME).expect(exif2ts('2020:01:02 03:05:06'));
                 expect(f.get(FileTimestamped.I_ITS_TIME).expected.humanReadable()).toBe('2020-01-02 03-05-06');
                 expect(f.get(File.I_FILENAME).expected).toBe('2020-01-02 03-05-06 no_exif');
@@ -144,6 +128,7 @@ describe(t(import.meta), function () {
                 // Check the data
                 const f = new FileExif(filename);
                 await f.analyse();
+
                 expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 03-05-06');
                 expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('no_exif');
                 filename = f.currentFilePath;

@@ -1,14 +1,4 @@
 
-// /**
-//  * Thanks to https://stackoverflow.com/a/36871498/1954789
-//  */
-// class ExtensibleFunction extends Function {
-//     constructor(f) {
-//         super();
-//         return Object.setPrototypeOf(f, new.target.prototype);
-//     }
-// }
-
 import EventEmitter from '../../node_modules/eventemitter3/index.js';
 
 export default class Value extends EventEmitter {
@@ -115,9 +105,9 @@ export default class Value extends EventEmitter {
         return this;
     }
 
-    onExpectedChanged(cb) {
+    async onExpectedChanged(cb) {
         this.on('expectedChanged', () => cb(this));
-        cb(this);
+        await cb(this);
         return this;
     }
 

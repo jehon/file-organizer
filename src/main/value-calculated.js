@@ -63,10 +63,10 @@ export default class ValueCalculated extends ValueConstant {
         return this;
     }
 
-    fix(_val) {
-        // TODO: find out what is the good behavior
+    fix(val = this.current) {
+        // TODO: check this behavior
         // Mock to allow fixing this value
-        this.#calculatedExpected = this.current;
+        this.#calculatedExpected = val;
         return this;
     }
 
@@ -76,7 +76,6 @@ export default class ValueCalculated extends ValueConstant {
      * @returns {boolean} true if nothing to be done
      */
     isDone() {
-        // return this.#basis.isDone()
         return this.equals(this.current, this.#calculatedExpected);
     }
 }

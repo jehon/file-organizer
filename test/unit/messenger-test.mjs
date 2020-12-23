@@ -28,7 +28,9 @@ describe(t(import.meta), function () {
             }
             expect(data).toBeDefined();
             expect(data.id).toBe(ID);
-            expect(data.type).toBe('test');
+            expect(data.type)
+                .withContext(data)
+                .toBe('test');
             expect(data.info).toBe('yes');
             done();
         });
