@@ -14,39 +14,40 @@ describe(t(import.meta), function () {
     });
 
     it('should require some fields', () => {
+        const id = getEntityId();
         expect(() => notify({})).toThrow();
-        expect(() => notify({ id: 123 })).toThrow();
-        expect(() => notify({ type: 123 })).toThrow();
-        expect(() => notify({ id: 123, type: 123 })).not.toThrow();
+        expect(() => notify({ id: id })).toThrow();
+        expect(() => notify({ type: 'messenger-test' })).toThrow();
+        expect(() => notify({ id: id, type: 'messenger-test' })).not.toThrow();
     });
 
     it('should send data on registered callback', (done) => {
-        const ID = 124;
+        const id = getEntityId;
         register((data) => {
-            if (data.id != ID) {
+            if (data.id != id) {
                 return;
             }
             expect(data).toBeDefined();
-            expect(data.id).toBe(ID);
+            expect(data.id).toBe(id);
             expect(data.type)
                 .withContext(JSON.stringify(data))
                 .toBe('test');
             expect(data.info).toBe('yes');
             done();
         });
-        notify({ id: 124, type: 'test', info: 'yes' });
+        notify({ id, type: 'test', info: 'yes' });
     });
 
     it('should receive history on registered callback', (done) => {
-        const ID = 125;
-        notify({ id: ID, type: 'history', info: 'some' });
+        const id = getEntityId();
+        notify({ id: id, type: 'history', info: 'some' });
 
         register((data) => {
-            if (data.id != ID) {
+            if (data.id != id) {
                 return;
             }
             expect(data).toBeDefined();
-            expect(data.id).toBe(ID);
+            expect(data.id).toBe(id);
             expect(data.type)
                 .withContext(JSON.stringify(data))
                 .toBe('history');
