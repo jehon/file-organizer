@@ -120,7 +120,7 @@ test-unit: build
 
 .PHONY: test-unit-continuously
 test-unit-continuously: build
-	watch "make test-unit" src file-organizer test/unit
+	watch "make test-unit" src test/unit
 
 .PHONY: test-cmd
 test-cmd: build
