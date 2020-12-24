@@ -1,7 +1,7 @@
 
 import { t } from '../test-helper.js';
 
-import { getEntityId, notify, register } from '../../src/main/messenger.js';
+import { getEntityId, notify, registerGuiCallback } from '../../src/main/messenger.js';
 
 describe(t(import.meta), function () {
     it('should generate differents id', () => {
@@ -23,7 +23,7 @@ describe(t(import.meta), function () {
 
     it('should send data on registered callback', (done) => {
         const id = getEntityId;
-        register((data) => {
+        registerGuiCallback((data) => {
             if (data.id != id) {
                 return;
             }
@@ -42,7 +42,7 @@ describe(t(import.meta), function () {
         const id = getEntityId();
         notify({ id: id, type: 'history', info: 'some' });
 
-        register((data) => {
+        registerGuiCallback((data) => {
             if (data.id != id) {
                 return;
             }

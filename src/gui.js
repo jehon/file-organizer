@@ -13,7 +13,7 @@ const { app, BrowserWindow, screen } = require('electron');
 // Remove warning: https://github.com/electron/electron/issues/18397
 app.allowRendererProcessReuse = true;
 
-import { register } from './main/messenger.js';
+import { registerGuiCallback } from './main/messenger.js';
 import options from './common/options.js';
 
 import { rootDir } from './main/main-constants.js';
@@ -41,7 +41,7 @@ export default new Promise((resolve, _reject) => {
                 console.info('waiting for dom ready');
                 mainWindow.loadFile(path.join(rootDir, 'src/renderer/index.html'))
                     .then(() => {
-                        register((data) => {
+                        registerGuiCallback((data) => {
                             BrowserWindow.getAllWindows().forEach(b => b.webContents.send(CHANNEL_MAIN, data));
                         });
                         resolve();

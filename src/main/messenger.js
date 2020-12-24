@@ -28,7 +28,7 @@ export function notify(data) {
 /**
  * @param {function(object): void} cb to receive updates
  */
-export async function register(cb) {
+export async function registerGuiCallback(cb) {
     guiCallback = cb;
     for (const data of list) {
         await cb(data);
