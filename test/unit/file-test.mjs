@@ -31,13 +31,14 @@ class DemoFile extends File {
     fnCheckConsistency = () => { }
 
     withAnalyse(fn) {
-        super.analyse();
         this.fnAnalyse = fn;
         return this;
     }
 
     async analyse() {
-        this.fnAnalyse();
+        await super.analyse();
+        await this.fnAnalyse();
+        return this;
     }
 
     withConsistency(fn) {
@@ -55,90 +56,96 @@ class DemoFile extends File {
     }
 
     async act() {
+        // await super.act();
         await this.fnAct();
     }
 }
 
 describe(t(import.meta), function () {
-    describe('attributes', () => {
-        it('should parse extension', () => {
-            expect((new File('a.txt')).get(File.I_EXTENSION).initial).toBe('.txt');
-            expect((new File('a')).get(File.I_EXTENSION).initial).toBe('');
+    describe('with attributes', () => {
+        describe('initial', () => {
+            it('should parse extension', () => {
+                expect((new File('a.txt')).get(File.I_EXTENSION).initial).toBe('.txt');
+                expect((new File('a')).get(File.I_EXTENSION).initial).toBe('');
+            });
+
+            it('should parse filename', () => {
+                expect((new File('a.txt')).get(File.I_FILENAME).initial).toBe('a');
+                expect((new File('a')).get(File.I_FILENAME).initial).toBe('a');
+                expect((new File('test/a.txt')).get(File.I_FILENAME).initial).toBe('a');
+                expect((new File('test/a')).get(File.I_FILENAME).initial).toBe('a');
+            });
+
+            it('parse filename', async () => {
+                const f = new File('20150306_153340 Cable internet dans la rue.jpg');
+                // await f.runAnalyse();
+                expect(f.get(File.I_FN_QUALIF).initial).toBe('20150306_153340');
+                expect(f.get(File.I_FN_TITLE).initial).toBe('Cable internet dans la rue');
+                expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('2015-03-06 15-33-40');
+            });
+
+            it('parse invalid filename', async () => {
+                const f = new File('1913-14-75 Cable internet dans la rue.jpg');
+                expect(f.get(File.I_FN_QUALIF).initial).toBe('');
+                expect(f.get(File.I_FN_TITLE).initial).toBe('1913-14-75 Cable internet dans la rue');
+                expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('');
+            });
+
+            it('should give a parent', () => {
+                // We need real files here, since "buildFile" will check for folder existence
+
+                expect((new File('test/data/canon.JPG')).parent.currentFilePath).toBe(path.join(process.cwd(), 'test/data'));
+                expect((new File('test/test.txt')).parent.currentFilePath).toBe(path.join(process.cwd(), 'test'));
+                expect((new File('test/test.txt').parent.parent.currentFilePath)).toBe(process.cwd());
+                expect((new File('test.txt').parent.currentFilePath)).toBe(process.cwd());
+            });
+
+            it('should be constructed with a parent', () => {
+                expect((new File('test/brol/a2.txt', new File('/machin'))).parent.currentFilePath).toBe('/machin');
+            });
+
+            it('should always have the current path', () => {
+                const f = new File('test/brol/a.txt');
+
+                const r = function (p) {
+                    return path.relative(process.cwd(), p);
+                };
+
+                expect(r(f.currentFilePath)).toBe('test/brol/a.txt');
+
+                f.get(File.I_FILENAME).expect('b').fix();
+                expect(r(f.currentFilePath)).toBe('test/brol/b.txt');
+
+                f.get(File.I_EXTENSION).expect('.jpg').fix();
+                expect(r(f.currentFilePath)).toBe('test/brol/b.jpg');
+
+                f.parent.get(File.I_FILENAME).expect('machin').fix();
+                expect(r(f.currentFilePath)).toBe('test/machin/b.jpg');
+            });
+
         });
 
-        it('should parse filename', () => {
-            expect((new File('a.txt')).get(File.I_FILENAME).initial).toBe('a');
-            expect((new File('a')).get(File.I_FILENAME).initial).toBe('a');
-            expect((new File('test/a.txt')).get(File.I_FILENAME).initial).toBe('a');
-            expect((new File('test/a')).get(File.I_FILENAME).initial).toBe('a');
-        });
+        describe('expected', () => {
+            it('should parse filename qualif', async () => {
+                const f = new File('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
+                await f.runAnalyse();
+                expect(f.get(File.I_FN_TIME).expected.humanReadable().substr(0, 4)).toBe('2012');
+                expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
+            });
 
-        it('parse filename', async () => {
-            const f = new File('20150306_153340 Cable internet dans la rue.jpg');
-            await f.runAnalyse();
-            expect(f.get(File.I_FN_QUALIF).initial).toBe('20150306_153340');
-            expect(f.get(File.I_FN_TITLE).initial).toBe('Cable internet dans la rue');
-            expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('2015-03-06 15-33-40');
-        });
+            it('should parse remove duplicate title/qualif', async () => {
+                const f = new File('vie de famille [vie de famille]');
+                await f.runAnalyse();
+                expect(f.get(File.I_FN_QUALIF).expected).toBe('');
+                expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
+            });
 
-        it('parse invalid filename', async () => {
-            const f = new File('1913-14-75 Cable internet dans la rue.jpg');
-            expect(f.get(File.I_FN_QUALIF).initial).toBe('');
-            expect(f.get(File.I_FN_TITLE).initial).toBe('1913-14-75 Cable internet dans la rue');
-            expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('');
-        });
-
-        it('should parse filename qualif', async () => {
-            const f = new File('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
-            await f.runAnalyse();
-            expect(f.get(File.I_FN_TIME).expected.moment.year()).toBe(2012);
-            expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
-        });
-
-        it('should parse remove duplicate title/qualif', async () => {
-            const f = new File('vie de famille [vie de famille]');
-            await f.runAnalyse();
-            expect(f.get(File.I_FN_QUALIF).expected).toBe('');
-            expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
-        });
-
-        it('should calculate a canonicalFilename', async () => {
-            expect((await new File('2018-02-04').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04');
-            expect((await new File('2018-02-04 13-17-50 canon').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
-            expect((await new File('2020-01-19 01-24-02 petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
-            expect((await new File('petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('petitAppPhoto');
-        });
-
-        it('should give a parent', () => {
-            // We need real files here, since "buildFile" will check for folder existence
-
-            expect((new File('test/data/canon.JPG')).parent.currentFilePath).toBe(path.join(process.cwd(), 'test/data'));
-            expect((new File('test/test.txt')).parent.currentFilePath).toBe(path.join(process.cwd(), 'test'));
-            expect((new File('test/test.txt').parent.parent.currentFilePath)).toBe(process.cwd());
-            expect((new File('test.txt').parent.currentFilePath)).toBe(process.cwd());
-        });
-
-        it('should be constructed with a parent', () => {
-            expect((new File('test/brol/a.txt', new File('/machin'))).parent.currentFilePath).toBe('/machin');
-        });
-
-        it('should always have the current path', () => {
-            const f = new File('test/brol/a.txt');
-
-            const r = function (p) {
-                return path.relative(process.cwd(), p);
-            };
-
-            expect(r(f.currentFilePath)).toBe('test/brol/a.txt');
-
-            f.get(File.I_FILENAME).expect('b').fix();
-            expect(r(f.currentFilePath)).toBe('test/brol/b.txt');
-
-            f.get(File.I_EXTENSION).expect('.jpg').fix();
-            expect(r(f.currentFilePath)).toBe('test/brol/b.jpg');
-
-            f.parent.get(File.I_FILENAME).expect('machin').fix();
-            expect(r(f.currentFilePath)).toBe('test/machin/b.jpg');
+            it('should calculate a canonicalFilename', async () => {
+                expect((await new File('2018-02-04').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04');
+                expect((await new File('2018-02-04 13-17-50 canon').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
+                expect((await new File('2020-01-19 01-24-02 petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
+                expect((await new File('petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('petitAppPhoto');
+            });
         });
 
         xit('should find an indexed filename', async function () {

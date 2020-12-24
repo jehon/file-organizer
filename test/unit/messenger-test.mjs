@@ -29,7 +29,7 @@ describe(t(import.meta), function () {
             expect(data).toBeDefined();
             expect(data.id).toBe(ID);
             expect(data.type)
-                .withContext(data)
+                .withContext(JSON.stringify(data))
                 .toBe('test');
             expect(data.info).toBe('yes');
             done();
@@ -47,7 +47,9 @@ describe(t(import.meta), function () {
             }
             expect(data).toBeDefined();
             expect(data.id).toBe(ID);
-            expect(data.type).toBe('history');
+            expect(data.type)
+                .withContext(JSON.stringify(data))
+                .toBe('history');
             expect(data.info).toBe('some');
             done();
         });
