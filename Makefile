@@ -80,21 +80,32 @@ clean:
 # start: build
 # 	electron .
 
-start-test: build
-	mkdir -p tmp/gui
-	cd tmp/gui && ../../reset.sh
-	cd tmp/gui && ../../file-organizer.sh dump
+start-demo: build
+	electron src/demo.cjs
 
 start-test-gui: build
 	mkdir -p tmp/gui
 	cd tmp/gui && ../../reset.sh
 	cd tmp/gui && ../../file-organizer-gui.sh regularize -n
 
-start-demo: build
-	electron src/demo.cjs
+start-test-dump: build
+	@echo "************** dump "
+	./file-organizer.sh dump --all test/data
 
-start-test-info: build
-	./file-organizer.sh "info" "test/data/DSC_2506.MOV"
+start-test-info-all:
+	@echo "************** info all "
+	./file-organizer.sh info test/data/canon.JPG
+
+start-test-info-ts:
+	@echo "************** info timestamp "
+	./file-organizer.sh info -k FileTimestamped_time test/data/canon.JPG
+
+start-test-fix-one:
+	@echo "************** fix one "
+	@rm -fr tmp/cmd
+	@mkdir -p tmp/cmd
+	rsync -a test/data/canon.JPG tmp/cmd/canon.JPG
+	./file-organizer.sh regularize tmp/cmd/canon.JPG
 
 .PHONY: build
 build: dependencies
@@ -123,19 +134,7 @@ test-unit-continuously: build
 	watch "make test-unit" src test/unit
 
 .PHONY: test-cmd
-test-cmd: build
-	@rm -fr tmp/cmd
-	@mkdir -p tmp/cmd
-	@echo "************** running test commands ...  ***************************"
-	@echo "************** dump "
-	xvfb-run --auto-servernum ./file-organizer-gui.sh dump --all test/data
-	@echo "************** info all "
-	./file-organizer.sh info test/data/canon.JPG
-	@echo "************** info one "
-	./file-organizer.sh info -k FileTimestamped_time test/data/canon.JPG
-	@echo "************** fix one "
-	rsync -a test/data/canon.JPG tmp/cmd/canon.JPG
-	./file-organizer.sh regularize tmp/cmd/canon.JPG
+test-cmd: start-test-dump start-test-info-all start-test-info-ts start-test-fix-one
 	@echo "************** running test commands done ***************************"
 
 .PHONY: test-system
