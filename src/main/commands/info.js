@@ -27,7 +27,6 @@ const presentIt = (k, v) => {
 
 export const handler = async function (noptions) {
     Object.assign(options, noptions, {
-        headless: true,
         dryRun: true,
         withFileSummary: false
     });

@@ -97,7 +97,7 @@ export class FORun {
     async run(...args) {
         this.args = args;
 
-        this.cmdLine = ['--headless', ...this.args];
+        this.cmdLine = [...this.args];
         // https://nodejs.org/api/child_process.html#child_process_child_process_execfile_file_args_options_callback
         await pExecFile(rootPath('/file-organizer.sh'), this.cmdLine, { cwd: this.cwd })
             .then(result => {
@@ -166,7 +166,7 @@ export class FORun {
 export async function getFileExifField(ctx, field, f) {
     // https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
     const result = await promisify(execFile)(
-        rootPath('file-organizer-headless.sh'),
+        rootPath('file-organizer.sh'),
         ['info', '-k', field, ctx.tempPath(f)]
     )
         .catch(e => {

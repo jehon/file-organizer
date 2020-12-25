@@ -55,7 +55,6 @@ function r(str, ll) {
  */
 export async function handler(noptions) {
     Object.assign(options, noptions, {
-        headless: true,
         dryRun: true,
         withFileSummary: false
     });

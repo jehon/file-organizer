@@ -80,21 +80,21 @@ clean:
 # start: build
 # 	electron .
 
-start-test-headless: build
+start-test: build
 	mkdir -p tmp/gui
 	cd tmp/gui && ../../reset.sh
-	cd tmp/gui && ../../file-organizer-headless.sh dump
+	cd tmp/gui && ../../file-organizer.sh dump
 
 start-test-gui: build
 	mkdir -p tmp/gui
 	cd tmp/gui && ../../reset.sh
-	cd tmp/gui && ../../file-organizer.sh regularize -n
+	cd tmp/gui && ../../file-organizer-gui.sh regularize -n
 
 start-demo: build
 	electron src/demo.cjs
 
 start-test-info: build
-	./file-organizer-headless.sh "info" "test/data/DSC_2506.MOV"
+	./file-organizer.sh "info" "test/data/DSC_2506.MOV"
 
 .PHONY: build
 build: dependencies
@@ -128,14 +128,14 @@ test-cmd: build
 	@mkdir -p tmp/cmd
 	@echo "************** running test commands ...  ***************************"
 	@echo "************** dump "
-	xvfb-run --auto-servernum ./file-organizer.sh dump --all test/data
+	xvfb-run --auto-servernum ./file-organizer-gui.sh dump --all test/data
 	@echo "************** info all "
-	./file-organizer-headless.sh info test/data/canon.JPG
+	./file-organizer.sh info test/data/canon.JPG
 	@echo "************** info one "
-	./file-organizer-headless.sh info -k FileTimestamped_time test/data/canon.JPG
+	./file-organizer.sh info -k FileTimestamped_time test/data/canon.JPG
 	@echo "************** fix one "
 	rsync -a test/data/canon.JPG tmp/cmd/canon.JPG
-	./file-organizer-headless.sh regularize --headless tmp/cmd/canon.JPG
+	./file-organizer.sh regularize tmp/cmd/canon.JPG
 	@echo "************** running test commands done ***************************"
 
 .PHONY: test-system

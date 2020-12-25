@@ -2,15 +2,13 @@
 import options from '../common/options.js';
 
 import File from '../main/file-types/file.js';
-import Task from '../main/task.js';
-import gui from '../gui.js';
 import loadFileTypes from '../main/loadFileTypes.js';
+import { guiStart } from '../gui.js';
 
-options.headless = false;
 options.debug = true;
 
 loadFileTypes()
-    .then(() => gui)
+    .then(() => guiStart())
     .then(() => {
         /**
          * @param {number} secs to wait
@@ -37,10 +35,10 @@ loadFileTypes()
             const f1 = new DemoFile('test (stay in analysis)');
             const f2 = new DemoFile('test2 (status_failure)');
             const f3 = new DemoFile('test3 (status_success)');
-            const f4 = new DemoFile('test4 (need action)');
-            const f5 = new DemoFile('test5 (acting)');
-            const f6 = new DemoFile('test6 (act success)');
-            const f7 = new DemoFile('test7 (act ko)');
+            // const f4 = new DemoFile('test4 (need action)');
+            // const f5 = new DemoFile('test5 (acting)');
+            // const f6 = new DemoFile('test6 (act success)');
+            // const f7 = new DemoFile('test7 (act ko)');
 
             await w(2, 1);
             console.info('Analysing...');
@@ -65,23 +63,23 @@ loadFileTypes()
                     )
                     .runAnalyse(),
 
-                f4
-                    .withAnalyse(
-                        () => f4.analysisAddProblem('Problem')
-                    )
-                    .runAnalyse(),
+                // f4
+                //     .withAnalyse(
+                //         () => f4.analysisAddProblem('Problem')
+                //     )
+                //     .runAnalyse(),
 
-                f5
-                    .withAnalyse(() => f5.analysisAddFixAct(new Task('F5 task never end', () => new Promise(() => { }))))
-                    .runAnalyse(),
+                // f5
+                //     .withAnalyse(() => f5.analysisAddFixAct(new Task('F5 task never end', () => new Promise(() => { }))))
+                //     .runAnalyse(),
 
-                f6
-                    .withAnalyse(() => f6.analysisAddFixAct(new Task('F6 task ok', () => w(1))))
-                    .runAnalyse(),
+                // f6
+                //     .withAnalyse(() => f6.analysisAddFixAct(new Task('F6 task ok', () => w(1))))
+                //     .runAnalyse(),
 
-                f7
-                    .withAnalyse(() => f7.analysisAddFixAct(new Task('F7 task error', () => { throw 'euh'; })))
-                    .runAnalyse(),
+                // f7
+                //     .withAnalyse(() => f7.analysisAddFixAct(new Task('F7 task error', () => { throw 'euh'; })))
+                //     .runAnalyse(),
             ]);
             console.info('Analysing done');
 
@@ -91,9 +89,9 @@ loadFileTypes()
             await Promise.all([
                 f2.runActing(), // do nothing
                 f3.runActing(), // do nothing
-                f5.runActing(),
-                f6.runActing(),
-                f7.runActing().catch(() => { })
+                // f5.runActing(),
+                // f6.runActing(),
+                // f7.runActing().catch(() => { })
             ]);
             console.info('Acting done');
         })();

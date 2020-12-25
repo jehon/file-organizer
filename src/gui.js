@@ -10,19 +10,29 @@ const require = createRequire(import.meta.url);
 const { app, BrowserWindow, screen } = require('electron');
 
 
-// Remove warning: https://github.com/electron/electron/issues/18397
-app.allowRendererProcessReuse = true;
-
 import { registerGuiCallback } from './main/messenger.js';
 import options from './common/options.js';
 
 import { rootDir } from './main/main-constants.js';
 
-(async () => {
-    if (!app) {
+/**
+ *
+ */
+export function guiAvailable() {
+    return !!app;
+}
+
+/**
+ *
+ */
+export async function guiStart() {
+    if (!guiAvailable()) {
         console.info('No app found, not launching gui');
         return;
     }
+
+    // Remove warning: https://github.com/electron/electron/issues/18397
+    app.allowRendererProcessReuse = true;
 
     await app.whenReady();
 
@@ -50,8 +60,6 @@ import { rootDir } from './main/main-constants.js';
 
     // Close (exit) when all windows are closed
     app.on('window-all-closed', function () {
-        if (!options.headless) {
-            app.quit();
-        }
+        app.quit();
     });
-})();
+}

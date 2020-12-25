@@ -14,9 +14,11 @@ import 'graceful-fs';
 import importDirectory from './importDirectory.js';
 import loadFileTypes from './loadFileTypes.js';
 import { buildFile } from './register-file-types.js';
+import { guiAvailable, guiStart } from '../gui.js';
 
 Promise.resolve()
     .then(() => loadFileTypes())
+    .then(() => { if (guiAvailable()) { return guiStart(); } })
     .then(() =>
         importDirectory('src/main/commands')
             .then(cmds => {
@@ -31,10 +33,6 @@ Promise.resolve()
                                 }
                                 return val;
                             }
-                        },
-                        'headless': {
-                            type: 'boolean',
-                            default: false
                         },
                         'debug': {
                             alias: ['d'],
@@ -80,7 +78,7 @@ Promise.resolve()
                         return argv;
                     })
                     .onFinishCommand(() => {
-                        if (options.headless) {
+                        if (guiAvailable()) {
                             process.exit(0);
                         }
                     });

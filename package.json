@@ -40,8 +40,8 @@
   },
   "scripts": {
     "demo": "electron ./demo.cjs",
-    "start": "electron src/main.cjs",
-    "start-headless": "electron src/main.cjs --headless",
+    "start": "src/main.cjs",
+    "start-gui": "electron src/main.cjs",
     "postinstall": "touch node_modules/.dependencies"
   },
   "main": "src/main.cjs",

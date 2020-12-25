@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 SWD="$( dirname "$( realpath -P "${BASH_SOURCE[0]}" )" )"
 
-set -o pipefail
-( "$SWD/node_modules/.bin/electron" "$SWD" "$@" 3>&1 1>&2 2>&3 | ( grep -v "ExperimentalWarning" || true )) 3>&1 1>&2 2>&3
-
-# set -e
-# "$SWD/node_modules/.bin/electron" "$SWD" "$@"
+"$SWD/src/main/main.js" "$@"

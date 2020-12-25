@@ -19,10 +19,6 @@ export const describe = 'Regularize the files';
 export async function handler(noptions) {
     Object.assign(options, noptions);
 
-    if (!options.headless) {
-        await import('../../gui.js');
-    }
-
     await Promise.all(options.files.map(
         f0 => iterate(f0,
             /**
