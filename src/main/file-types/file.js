@@ -19,7 +19,7 @@ import { buildFile, FallBackRegExp, registerRegExp } from '../register-file-type
 
 import Value from '../value.js';
 
-import { fileDelete, fileRename } from '../fs-utils.js';
+import { fileDeleteAndRelease, fileRename } from '../fs-utils.js';
 
 import { parseFilename } from '../timestamp.js';
 
@@ -280,7 +280,7 @@ export default class File extends Item {
      */
     async act() {
         if (this.get(File.I_FILENAME).expected == null || this.get(File.I_EXTENSION).expected == null) {
-            await fileDelete(this);
+            await fileDeleteAndRelease(this);
         } else {
             await fileRename(this);
         }

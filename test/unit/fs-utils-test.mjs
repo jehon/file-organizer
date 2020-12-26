@@ -2,21 +2,22 @@
 import { t, __filename } from '../test-helper.js';
 import File from '../../src/main/file-types/file.js';
 import {
-    fileDelete,
-    folderListing
+    fileDeleteAndRelease,
+    folderListing,
+    checkAndReserveName,
+    fileExistsPhysically
 } from '../../src/main/fs-utils.js';
 
 import { createFileFrom, dataPath } from './help-functions.mjs';
-import { checkAndReserveName, fileExists } from '../../src/main/fs-utils.js';
 
 describe(t(import.meta), function () {
     it('should delete a file', async function () {
         const fp = await createFileFrom('jh-patch-file-patch.txt');
         const f = new File(fp);
 
-        await fileDelete(f);
+        await fileDeleteAndRelease(f);
 
-        expect(await fileExists(fp)).toBeFalsy();
+        expect(await fileExistsPhysically(fp)).toBeFalsy();
 
         expect(f.get(File.I_FILENAME).current).toBeFalsy();
         expect(f.get(File.I_FILENAME).isDone()).toBeTrue();
@@ -28,7 +29,7 @@ describe(t(import.meta), function () {
         const list = await (folderListing(f));
 
         for (const fp of list) {
-            expect(await fileExists(fp.currentFilePath)).toBeFalsy();
+            expect(await fileExistsPhysically(fp.currentFilePath)).toBeFalsy();
             expect(fp.currentFilePath).not.toBe('.');
             expect(fp.currentFilePath).not.toBe('..');
         }
@@ -36,15 +37,15 @@ describe(t(import.meta), function () {
     });
 
     it('should findIndexedFilename', async function () {
-        expect(await fileExists(__filename(import.meta))).toBeTruthy();
-        expect(await fileExists(__filename(import.meta) + '.brol')).toBeFalsy();
+        expect(await fileExistsPhysically(__filename(import.meta))).toBeTruthy();
+        expect(await fileExistsPhysically(__filename(import.meta) + '.brol')).toBeFalsy();
 
         // Ask to move to new file, but without telling him it is itself -> should be incremented
         const fp = await createFileFrom('jh-patch-file-patch.txt');
-        expect(await fileExists(fp)).toBeTruthy();
+        expect(await fileExistsPhysically(fp)).toBeTruthy();
 
-        await fileDelete(fp);
-        expect(await fileExists(fp)).toBeFalsy();
+        await fileDeleteAndRelease(fp);
+        expect(await fileExistsPhysically(fp)).toBeFalsy();
     });
 
     it('should work with reservations', async function () {
@@ -63,7 +64,7 @@ describe(t(import.meta), function () {
         // Now it is reserved
         await expectAsync(checkAndReserveName(new2Name, 'someone-else')).toBeRejected();
 
-        await fileDelete(fp);
+        await fileDeleteAndRelease(fp);
     });
 
 });

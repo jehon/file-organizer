@@ -2,7 +2,6 @@
 import { execFile } from 'child_process';
 import fs from 'fs';
 import { promisify } from 'util';
-import { fileDelete } from '../fs-utils.js';
 import { glob2regExp, registerRegExp } from '../register-file-types.js';
 import FileExif from './file-exif.js';
 import File from './file.js';
@@ -26,7 +25,7 @@ async function exifRotatePicture(file) {
 
     await pExecFile('exiftran', ['-a', '-p', '-g', orig, '-o', temp]);
     await pExecFile('touch', ['-r', orig, temp]);
-    await fileDelete(new File(orig));
+    await fs.promises.unlink(new File(orig).currentFilePath);
     await fs.promises.rename(temp, orig);
     await file.get(FileExif.I_FE_ORIENTATION).fix();
 

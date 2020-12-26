@@ -15,7 +15,7 @@ import {
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
 } from '../../src/common/constants.js';
-import { fileRename, fileExists } from '../../src/main/fs-utils.js';
+import { fileRename, fileExistsPhysically } from '../../src/main/fs-utils.js';
 
 import {
     listenForItemNotify,
@@ -269,7 +269,7 @@ describe(t(import.meta), function () {
             f1.get(File.I_EXTENSION).expect('.TX2');
             await fileRename(f1);
 
-            await expectAsync(fileExists(f1.currentFilePath)).toBeResolvedTo(true);
+            await expectAsync(fileExistsPhysically(f1.currentFilePath)).toBeResolvedTo(true);
             expect(f1.currentFilePath.endsWith('.TX2')).toBeTrue();
 
             const f2 = new File(f1.currentFilePath);
@@ -280,7 +280,7 @@ describe(t(import.meta), function () {
             await f2.runActing();
 
             expect(f2.currentFilePath.endsWith('.tx2')).toBeTrue();
-            await expectAsync(fileExists(f2.currentFilePath)).toBeResolvedTo(true);
+            await expectAsync(fileExistsPhysically(f2.currentFilePath)).toBeResolvedTo(true);
         });
 
         it('should manage filename', async () => {

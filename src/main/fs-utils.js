@@ -18,10 +18,12 @@ function getPath(file) {
 }
 
 /**
+ * Test if a file exists physically
+ *
  * @param {string|File} file to be handled
  * @returns {Promise<boolean>} if the file exists
  */
-export async function fileExists(file) {
+export async function fileExistsPhysically(file) {
     return fs.promises.stat(getPath(file))
         .then(() => true)
         .catch(() => false);
@@ -33,7 +35,7 @@ export async function fileExists(file) {
  * @param {string|File} file to be handled
  * @returns {Promise<*>} when finished
  */
-export async function fileDelete(file) {
+export async function fileDeleteAndRelease(file) {
     const p = getPath(file);
     return fs.promises.unlink(p)
         .then(() => {
@@ -97,8 +99,8 @@ const reservedNames = new Map();
 const releasedNames = new Set();
 
 /**
- * @param filePath
- * @param forMe
+ * @param {string} filePath of the file
+ * @param {string} forMe if it is for me
  */
 function reserveNameForMe(filePath, forMe) {
     reservedNames.set(filePath.toUpperCase(), forMe);
@@ -106,38 +108,42 @@ function reserveNameForMe(filePath, forMe) {
 }
 
 /**
- * @param filePath
- * @param forMe
+ * @param {string} filePath of the file
+ * @param {string} forMe if it is for me
+ * @returns {boolean} if reservation is ok
  */
 function isReservedNameForSomeoneElse(filePath, forMe) {
     return reservedNames.has(filePath.toUpperCase()) && reservedNames.get(filePath.toUpperCase()) != forMe;
 }
 
 /**
- * @param filePath
- * @param forMe
+ * @param {string} filePath of the file
+ * @param {string} forMe if it is for me
+ * @returns {boolean} if reservation was ok
  */
 function isReservedNameForMe(filePath, forMe) {
     return reservedNames.has(filePath.toUpperCase()) && reservedNames.get(filePath.toUpperCase()) == forMe;
 }
 
 /**
- * @param filePath
+ * @param {string} filePath of the file
  */
 function releaseName(filePath) {
     reservedNames.delete(filePath.toUpperCase());
     releasedNames.add(filePath.toUpperCase());
 }
 /**
- * @param filePath
+ * @param {string} filePath of the file
+ * @returns {boolean} if reservation is ok
  */
 function isReleasedName(filePath) {
     return reservedNames.has(filePath.toUpperCase());
 }
 
 /**
- * @param filePath
- * @param forMe
+ * @param {string} filePath of the file
+ * @param {string} forMe if it is for me
+ * @returns {Promise<boolean>} if reservation is ok
  */
 export async function checkAndReserveName(filePath, forMe) {
     if (isReservedNameForMe(filePath, forMe)) {
@@ -164,8 +170,9 @@ export async function checkAndReserveName(filePath, forMe) {
 }
 
 /**
- * @param filePathOriginal
- * @param filePathDest
+ * @param {string} filePathOriginal - from
+ * @param {string} filePathDest - to
+ * @returns {Promise<boolean>} if success
  */
 export async function fileUtilsFileRename(filePathOriginal, filePathDest) {
     if (filePathOriginal == filePathDest) {

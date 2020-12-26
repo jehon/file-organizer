@@ -16,14 +16,14 @@ import options from './common/options.js';
 import { rootDir } from './main/main-constants.js';
 
 /**
- *
+ * @returns {boolean} if available
  */
 export function guiAvailable() {
     return !!app;
 }
 
 /**
- *
+ * @returns {Promise} resolve when started
  */
 export async function guiStart() {
     if (!guiAvailable()) {

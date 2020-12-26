@@ -7,7 +7,7 @@ import {
     STATUS_NEED_ACTION
 } from '../../src/common/constants.js';
 import FileDelete from '../../src/main/file-types/file-delete.js';
-import { fileExists } from '../../src/main/fs-utils.js';
+import { fileExistsPhysically } from '../../src/main/fs-utils.js';
 import Item from '../../src/main/item.js';
 import { t } from '../test-helper.js';
 import { createFileFrom, getStatusChangesForItem } from './help-functions.mjs';
@@ -26,7 +26,7 @@ describe(t(import.meta), function () {
         f.runConsistencyCheck();
         await f.runActing();
 
-        expect(await fileExists(f.currentFilePath)).toBeFalsy();
+        expect(await fileExistsPhysically(f.currentFilePath)).toBeFalsy();
 
         expect(getStatusChangesForItem(f)).toEqual([
             STATUS_CREATED,
