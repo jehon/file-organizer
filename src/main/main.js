@@ -16,81 +16,87 @@ import loadFileTypes from './loadFileTypes.js';
 import { buildFile } from './register-file-types.js';
 import { guiAvailable, guiStart } from '../gui.js';
 
-Promise.resolve()
-    .then(() => loadFileTypes())
-    .then(() => { if (guiAvailable()) { return guiStart(); } })
-    .then(() =>
-        importDirectory('src/main/commands')
-            .then(cmds => {
-                let yparser = yargs(process.argv.slice(2))
-                    .options({
-                        'dryRun': {
-                            alias: ['dry-run', 'n'],
-                            type: 'boolean',
-                            coerce: (val) => {
-                                if (val) {
-                                    console.info('Using dry run mode');
-                                }
-                                return val;
-                            }
-                        },
-                        'debug': {
-                            alias: ['d'],
-                            type: 'boolean',
-                            default: false
-                        },
-                        'files': {
-                            alias: ['f'],
-                            type: 'array',
-                            default: [],
-                        },
-                        'setTitle': {
-                            alias: ['set-title', 'c'],
-                            type: 'string',
-                            default: ''
-                        },
-                        'forceTitleFromFilename': {
-                            alias: ['force-title-from-filename', 'ftfn'],
-                            type: 'boolean',
-                            default: false
-                        },
-                        'forceTitleFromFolder': {
-                            alias: ['force-title-from-folder', 'ftff'],
-                            type: 'boolean',
-                            default: false
-                        },
-                        'forceTimestampFromFilename': {
-                            alias: ['force-timestamp-from-filename', 'ftsfn'],
-                            type: 'boolean',
-                            default: false
-                        }
-                    })
-                    // .commandDir('./main/commands')
-                    .recommendCommands()
-                    .strict()
-                    .help()
-                    .middleware(async (argv) => {
-                        // Put a default value in files if the list is empty
-                        if (argv.files.length == 0) {
-                            argv.files.push('.');
-                        }
-                        argv.files = argv.files.map(f => buildFile('' + f));
-                        return argv;
-                    })
-                    .onFinishCommand(() => {
-                        if (guiAvailable()) {
-                            process.exit(0);
-                        }
-                    });
+(async () => {
+    try {
+        await loadFileTypes();
 
-                for (const c of cmds) {
-                    yparser = yparser.command(c.command,
-                        c.describe,
-                        c.builder ?? {},
-                        c.handler ?? '');
+        if (guiAvailable()) {
+            await guiStart();
+        }
+
+        let cmds = await importDirectory('src/main/commands');
+
+        let yparser = yargs(process.argv.slice(2))
+            .options({
+                'dryRun': {
+                    alias: ['dry-run', 'n'],
+                    type: 'boolean',
+                    coerce: (val) => {
+                        if (val) {
+                            console.info('Using dry run mode');
+                        }
+                        return val;
+                    }
+                },
+                'debug': {
+                    alias: ['d'],
+                    type: 'boolean',
+                    default: false
+                },
+                'files': {
+                    alias: ['f'],
+                    type: 'array',
+                    default: [],
+                },
+                'setTitle': {
+                    alias: ['set-title', 'c'],
+                    type: 'string',
+                    default: ''
+                },
+                'forceTitleFromFilename': {
+                    alias: ['force-title-from-filename', 'ftfn'],
+                    type: 'boolean',
+                    default: false
+                },
+                'forceTitleFromFolder': {
+                    alias: ['force-title-from-folder', 'ftff'],
+                    type: 'boolean',
+                    default: false
+                },
+                'forceTimestampFromFilename': {
+                    alias: ['force-timestamp-from-filename', 'ftsfn'],
+                    type: 'boolean',
+                    default: false
                 }
-
-                Object.assign(options, yparser.argv);
             })
-    )
-    .catch(e => console.error(e));
+            // .commandDir('./main/commands')
+            .recommendCommands()
+            .strict()
+            .help()
+            .middleware(async (argv) => {
+                // Put a default value in files if the list is empty
+                if (argv.files.length == 0) {
+                    argv.files.push('.');
+                }
+                argv.files = argv.files.map(f => buildFile('' + f));
+                return argv;
+            })
+            .onFinishCommand(() => {
+                if (guiAvailable()) {
+                    process.exit(0);
+                }
+            });
+
+        for (const c of cmds) {
+            yparser = yparser.command(c.command,
+                c.describe,
+                c.builder ?? {},
+                c.handler ?? '');
+        }
+
+        Object.assign(options, yparser.argv);
+    } catch (e) {
+        console.error(e);
+        process.exit(1);
+    }
+})();
