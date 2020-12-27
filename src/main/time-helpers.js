@@ -1,6 +1,10 @@
 
 import tzlookup from 'tz-lookup';
+import moment from 'moment';
+import 'moment-timezone';
+
 import { FOError } from './file-types/file.js';
+import { pad } from '../common/string-utilities.js';
 
 //
 // if you create a Date object in valid ISO date format (YYYY-MM-DD), it will default to UTC instead of defaulting to the browser’s time zone.
@@ -14,22 +18,11 @@ import { FOError } from './file-types/file.js';
 
 const yearRangeRegexp = /^(?<yearMin>(19|20)[0-9][0-9])-(?<yearMax>(19|20)[0-9][0-9])?$/;
 
-/**
- * @param {number} number to be padded to <n> digits
- * @param {number} n of digits
- * @returns {string} padded
+/************************
+ *
+ * Conversion utilities
+ *
  */
-function pad(number, n = 2) {
-    return ('' + number).padStart(n, '0');
-}
-
-/**
- * @param {Date} date to be formatted
- * @returns {string} formatted
- */
-export function date2string(date) {
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}-${pad(date.getMinutes())}-${pad(date.getSeconds())}`;
-}
 
 /**
  * @param {string} string to be canonized
@@ -41,6 +34,45 @@ export function canonizeTimestamp(string) {
         .replace('-02 02-02-02', '')
         .replace(' 00-00-00', '');
 }
+
+/**
+ * @param {Date|moment} dateOrMoment to be formatted
+ * @returns {string} formatted
+ */
+export function date2string(dateOrMoment) {
+    if (moment.isMoment(dateOrMoment)) {
+        return canonizeTimestamp(dateOrMoment.format('YYYY-MM-DD HH-mm-ss'));
+    }
+
+    let date = (/** @type {Date} */ /** @type {any} */ (dateOrMoment));
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}-${pad(date.getMinutes())}-${pad(date.getSeconds())}`;
+}
+
+/**
+ * @param {string} date to be parsed
+ * @returns {*} representing the date, in local timezone
+ */
+export function string2moment(date) {
+    if (date.length < 19) {
+        throw new Error(`Unimplemented: string2moment of ${date}`);
+    }
+    return moment(date, 'YYYY-MM-DD hh-mm-ss');
+}
+
+/**
+ * Test utilities
+ *
+ */
+
+/**
+ * @param {string} str to be tested
+ * @returns {boolean} if string is a 'YYYY-MM-DD hh-mm-ss'+
+ */
+export function isDateTime(str) {
+    return str.length >= 19;
+}
+
 
 /**
  * @param {string} timestamp to be checked
@@ -71,6 +103,11 @@ export function parseRange(timestamp) {
     };
 }
 
+/**********
+ *
+ * Equalities
+ *
+ */
 /**
  * match test if the timestamp match against (larger) ts
  *
@@ -141,6 +178,12 @@ export function timestampMatchLithe(strict, larger) {
     }
     return false;
 }
+
+/******************************
+ *
+ * GPS Utilities
+ *
+ */
 
 /**
  * Used mainly in EXIF

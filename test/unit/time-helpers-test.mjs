@@ -1,6 +1,15 @@
 
 import { FOError } from '../../src/main/file-types/file.js';
-import { canonizeTimestamp, coordonate2tz, date2string, isRange, parseRange, timestampMatch, timestampMatchLithe } from '../../src/main/time-helpers.js';
+import {
+    canonizeTimestamp,
+    coordonate2tz,
+    date2string,
+    isRange,
+    parseRange,
+    string2moment,
+    timestampMatch,
+    timestampMatchLithe
+} from '../../src/main/time-helpers.js';
 import { t } from '../test-helper.js';
 
 describe(t(import.meta), function () {
@@ -75,5 +84,44 @@ describe(t(import.meta), function () {
 
         expect(timestampMatchLithe('1989-01-03', bt)).toBeFalsy();
         expect(timestampMatchLithe('2001-01-03', bt)).toBeFalsy();
+    });
+
+    it('should change from timestamp', () => {
+
+
+    });
+
+    describe('internals', function () {
+        it('date2string', function () {
+            // expect(string2moment('2018').year()).toBe(2018);
+            // expect(string2moment('2018').month()).toBe(0);
+            // expect(string2moment('2018').date()).toBe(1);
+            // expect(string2moment('2018').hour()).toBe(1);
+            // expect(string2moment('2018').minutes()).toBe(1);
+            // expect(string2moment('2018').seconds()).toBe(1);
+            // expect(date2string(string2moment('2018'))).toBe('2018');
+
+            // expect(string2moment('2018-02').year()).toBe(2018);
+            // expect(string2moment('2018-02').month()).toBe(1);
+            // expect(string2moment('2018-02').date()).toBe(1);
+            // expect(string2moment('2018-02').hours()).toBe(0);
+            // expect(string2moment('2018-02').minutes()).toBe(0);
+            // expect(string2moment('2018-02').seconds()).toBe(0);
+
+            // expect(string2moment('2018-02-02').year()).toBe(2018);
+            // expect(string2moment('2018-02-02').month()).toBe(1);
+            // expect(string2moment('2018-02-02').date()).toBe(2);
+            // expect(string2moment('2018-02-02').hours()).toBe(0);
+            // expect(string2moment('2018-02-02').minutes()).toBe(0);
+            // expect(string2moment('2018-02-02').seconds()).toBe();
+
+            expect(string2moment('2018-02-02 03-04-05').year()).toBe(2018);
+            expect(string2moment('2018-02-02 03-04-05').month()).toBe(1);
+            expect(string2moment('2018-02-02 03-04-05').date()).toBe(2);
+            expect(string2moment('2018-02-02 03-04-05').hours()).toBe(3);
+            expect(string2moment('2018-02-02 03-04-05').minutes()).toBe(4);
+            expect(string2moment('2018-02-02 03-04-05').seconds()).toBe(5);
+            expect(date2string(string2moment('2018-02-02 03-04-05'))).toBe('2018-02-02 03-04-05');
+        });
     });
 });
