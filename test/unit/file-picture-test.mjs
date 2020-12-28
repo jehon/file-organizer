@@ -23,7 +23,7 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
             try {
                 let f;
                 f = new FilePicture(filename);
-                await f.runAnalyse();
+                await f.loadData();
                 expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
                     .withContext(baseFilename)
                     .toBe(its_time);
@@ -48,9 +48,9 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
                 {
                     const f = new FilePicture(filename);
 
-                    await f.runAnalyse();
+                    await f.loadData();
                     try {
-                        f.runConsistencyCheck();
+                        f.runPrepare();
                     } catch (e) {
                         if (!(e instanceof FOError)) {
                             throw e;
@@ -68,7 +68,7 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
                     f.get(FileTimestamped.I_ITS_TITLE).expect('new title');
                     f.get(FileTimestamped.I_ITS_TIME).expect(exif2ts('2020:01:02 02:03:04'));
 
-                    await f.runActing();
+                    await f.runFix();
                     filename = f.currentFilePath;
                     expect(f.currentFilePath)
                         .withContext(baseFilename)
@@ -79,7 +79,7 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
                     // Create a new file, and see if it is ok
                     const f = new FilePicture(filename);
 
-                    await f.runAnalyse();
+                    await f.loadData();
                     filename = f.currentFilePath;
                     expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('new title');
                     expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 02-03-04');
@@ -107,7 +107,7 @@ describe(t(import.meta), function () {
 
     it('should normalize extensions when necessary', async () => {
         const f = new FilePicture(dataPath('system_test/2019 test/1.jpeg'));
-        await f.runAnalyse();
+        await f.loadData();
         expect(f.get(File.I_EXTENSION).expected).toBe('.jpg');
     });
 
@@ -115,7 +115,7 @@ describe(t(import.meta), function () {
         const testRotation = function (fn, angle) {
             it(`${fn} with ${angle}`, async () => {
                 const f = new FilePicture(dataPath(fn));
-                await f.runAnalyse();
+                await f.loadData();
                 expect(f.get(FileExif.I_FE_ORIENTATION).initial).toBe(angle);
             });
         };

@@ -19,9 +19,9 @@ describe(t(import.meta), function () {
 
     it('should be always good', async function () {
         const f = new FileManual('failure.txt');
-        await f.runAnalyse();
-        expect(() => f.runConsistencyCheck()).toThrowError(FOError);
-        await expectAsync(f.runActing()).toBeRejectedWithError(FOError);
+        await f.loadData();
+        expect(() => f.runPrepare()).toThrowError(FOError);
+        await expectAsync(f.runFix()).toBeRejectedWithError(FOError);
 
         expect(getStatusChangesForItem(f)).toEqual([
             STATUS_CREATED,

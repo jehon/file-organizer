@@ -325,15 +325,17 @@ export default class FileExif extends FileTimestamped {
     /**
      * @override
      */
-    async analyse() {
-        await super.analyse();
+    async loadData() {
+        await super.loadData();
 
         this.get(FileExif.I_FE_ORIENTATION).expect(0, 'orientation to top');
 
         // TODO(timezone): force BRU timezone?
+
+        return this;
     }
 
-    async act() {
+    async fix() {
         const title = this.get(FileTimestamped.I_ITS_TITLE);
 
         if (!title.isDone()) {
@@ -348,6 +350,8 @@ export default class FileExif extends FileTimestamped {
             ts.fix();
         }
 
-        await super.act();
+        await super.fix();
+
+        return this;
     }
 }

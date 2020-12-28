@@ -35,17 +35,18 @@ export class FOError extends Error { }
  * How does this work?
  *
  * - new File()
- * - analyse()
+ * - loadData()
  *      will make the full "readonly" analysis
  *      will build up info (and values-problems)
  *      - initial (=current) and expected
  *
- * - checkConsistency()
+ * - runPrepare() / prepare()
+ *      manage options
  *      could not change anything
  *      check only "expected" values
  *      create problems
  *
- * - act()
+ * - runFix() / fix()
  *      is only based on values
  *      the only "write" part of the process
  *      values{}.fix() (expected -> current)
@@ -112,6 +113,8 @@ export default class File extends Item {
         /* filepath is the title */
         super(filePath);
         this._path = filePath;
+
+        this.notify(STATUS_ANALYSING);
 
         const vFn = new Value(path.parse(this._path).name);
         this.set(File.I_FILENAME, vFn);
@@ -249,11 +252,9 @@ export default class File extends Item {
      *
      * This is a mock, and should be implemented by children
      *
-     * @abstract
-     *
-     * @returns {Promise<*>} resolved as analysis is done
+     * @returns {Promise<File>} resolved as analysis is done
      */
-    async analyse() {
+    async loadData() {
         // Lowercase extension
         const currentExtension = this.get(File.I_EXTENSION).current;
         if (currentExtension.toLowerCase() != currentExtension) {
@@ -274,6 +275,8 @@ export default class File extends Item {
             // 'remove duplicate title/original'
             this.get(File.I_FN_QUALIF).expect('', 'Original is a duplicate of the title');
         }
+
+        return this;
     }
 
     /**
@@ -281,7 +284,7 @@ export default class File extends Item {
      *
      * @protected
      */
-    checkConsistency() { }
+    prepare() { }
 
     /**
      * Do the act based on .values
@@ -290,14 +293,16 @@ export default class File extends Item {
      *
      * @protected
      *
-     * @returns {Promise<void>} when finished
+     * @returns {Promise<File>} when finished
      */
-    async act() {
+    async fix() {
         if (this.get(File.I_FILENAME).expected == null || this.get(File.I_EXTENSION).expected == null) {
             await fileDeleteAndRelease(this);
         } else {
             await fileRename(this);
         }
+
+        return this;
     }
 
     // ------------------------------------------
@@ -343,20 +348,9 @@ export default class File extends Item {
     // }
 
     /**
-     * Run the analysis on this files, and all related one's (ex: FileFolder)
-     *
-     * @returns {Promise<File>} when completed
-     */
-    async runAnalyse() {
-        this.notify(STATUS_ANALYSING);
-        await this.analyse();
-        return this;
-    }
-
-    /**
      * @returns {boolean} true if the file is consistent
      */
-    runConsistencyCheck() {
+    runPrepare() {
         if (this.get(File.I_FILENAME).expected == null) {
             // The file will be deleted anyway
             this.notify(STATUS_NEED_ACTION);
@@ -364,7 +358,7 @@ export default class File extends Item {
         }
 
         try {
-            this.checkConsistency();
+            this.prepare();
 
             // Look for problems
             if (this.problemsList.length > 0) {
@@ -399,7 +393,7 @@ export default class File extends Item {
      *
      * @returns {Promise<void>} when finished
      */
-    async runActing() {
+    async runFix() {
         if (this.status == STATUS_SUCCESS) {
             return;
         }
@@ -409,7 +403,7 @@ export default class File extends Item {
         this.notify(STATUS_ACTING);
 
         try {
-            await this.act();
+            await this.fix();
 
             if (this.get(File.I_FILENAME).current == null) {
                 // The file will be deleted anyway

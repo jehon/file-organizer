@@ -22,9 +22,9 @@ describe(t(import.meta), function () {
     it('should delete a file', async function () {
         const fpath = await createFileFrom('jh-patch-file-patch.txt');
         const f = new FileDelete(fpath);
-        await f.runAnalyse();
-        f.runConsistencyCheck();
-        await f.runActing();
+        await f.loadData();
+        f.runPrepare();
+        await f.runFix();
 
         expect(await fileExistsPhysically(f.currentFilePath)).toBeFalsy();
 

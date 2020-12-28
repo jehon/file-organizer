@@ -30,8 +30,8 @@ export default class FileTimestamped extends File {
         };
     }
 
-    async analyse() {
-        await super.analyse();
+    async loadData() {
+        await super.loadData();
 
         const d = await this.readInternalData();
 
@@ -47,7 +47,7 @@ export default class FileTimestamped extends File {
 
         if (this.get(File.I_FN_TIME).initial.type == 'invalid') {
             this.addProblem(FileTimestamped.P_TS_NOT_PARSABLE);
-            return;
+            return this;
         }
 
         /**********************************
@@ -91,9 +91,11 @@ export default class FileTimestamped extends File {
         if (!this.get(FileTimestamped.I_ITS_TITLE).expected) {
             this.get(FileTimestamped.I_ITS_TITLE).expect(this.parent.get(File.I_FN_TITLE).current, 'guessing the title from the parent folder');
         }
+
+        return this;
     }
 
-    checkConsistency() {
+    prepare() {
         if (!this.get(File.I_FN_TIME).expected) {
             this.addProblem(FileTimestamped.P_NO_TIMESTAMP);
         }

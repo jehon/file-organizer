@@ -32,7 +32,7 @@ export const handler = async function (noptions) {
     });
 
     const f = buildFile(options.file);
-    await f.runAnalyse();
+    await f.loadData();
     if (options.key) {
         const opt = f.get(options.key);
         if (opt) {

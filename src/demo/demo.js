@@ -25,9 +25,10 @@ loadFileTypes()
                 return this;
             }
 
-            async analyse() {
-                return super.analyse()
-                    .then(this.fnAnalyse);
+            async loadData() {
+                return super.loadData()
+                    .then(this.fnAnalyse)
+                    .then(() => this);
             }
         }
 
@@ -45,7 +46,7 @@ loadFileTypes()
 
             f1
                 .withAnalyse(() => new Promise(() => { }))
-                .runAnalyse();
+                .loadData();
 
             await Promise.all([
                 f2
@@ -53,7 +54,7 @@ loadFileTypes()
                         () => w(2)
                             .then(() => { throw 'euh'; })
                     )
-                    .runAnalyse()
+                    .loadData()
                     .catch(() => { }),
 
                 f3
@@ -61,25 +62,25 @@ loadFileTypes()
                         () => w(2)
                             .then(() => w(2))
                     )
-                    .runAnalyse(),
+                    .loadData(),
 
                 // f4
                 //     .withAnalyse(
                 //         () => f4.analysisAddProblem('Problem')
                 //     )
-                //     .runAnalyse(),
+                //     .loadData(),
 
                 // f5
                 //     .withAnalyse(() => f5.analysisAddFixAct(new Task('F5 task never end', () => new Promise(() => { }))))
-                //     .runAnalyse(),
+                //     .loadData(),
 
                 // f6
                 //     .withAnalyse(() => f6.analysisAddFixAct(new Task('F6 task ok', () => w(1))))
-                //     .runAnalyse(),
+                //     .loadData(),
 
                 // f7
                 //     .withAnalyse(() => f7.analysisAddFixAct(new Task('F7 task error', () => { throw 'euh'; })))
-                //     .runAnalyse(),
+                //     .loadData(),
             ]);
             console.info('Analysing done');
 
@@ -87,11 +88,11 @@ loadFileTypes()
 
             console.info('Acting...');
             await Promise.all([
-                f2.runActing(), // do nothing
-                f3.runActing(), // do nothing
-                // f5.runActing(),
-                // f6.runActing(),
-                // f7.runActing().catch(() => { })
+                f2.runFix(), // do nothing
+                f3.runFix(), // do nothing
+                // f5.runFix(),
+                // f6.runFix(),
+                // f7.runFix().catch(() => { })
             ]);
             console.info('Acting done');
         })();

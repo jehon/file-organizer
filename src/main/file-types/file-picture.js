@@ -33,21 +33,25 @@ async function exifRotatePicture(file) {
 }
 
 export default class FilePicture extends FileExif {
-    async analyse() {
-        await super.analyse();
+    async loadData() {
+        await super.loadData();
 
         if (this.get(File.I_EXTENSION).expected == '.jpeg') {
             this.get(File.I_EXTENSION).expect('.jpg', 'normalize to 3 letters extension');
         }
+
+        return this;
     }
 
-    async act() {
-        await super.act();
+    async fix() {
+        await super.fix();
 
         // Rotate according to exif tag
         if (!this.get(FileExif.I_FE_ORIENTATION).isDone()) {
             await exifRotatePicture(this);
         }
+
+        return this;
     }
 }
 

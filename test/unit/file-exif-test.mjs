@@ -9,9 +9,9 @@ describe(t(import.meta), function () {
     describe('it should read data', function () {
         it('no exif', async function () {
             const f = new FileExif(dataPath('no_exif.jpg'));
-            await f.runAnalyse();
+            await f.loadData();
             try {
-                f.runConsistencyCheck();
+                f.runPrepare();
             } catch (e) {
                 if (!(e instanceof FOError)) {
                     throw e;
@@ -28,9 +28,9 @@ describe(t(import.meta), function () {
 
         it('time', async function () {
             const f = new FileExif(dataPath('1998-12-31 12-10-11 exifok01.jpg'));
-            await f.runAnalyse();
+            await f.loadData();
             try {
-                f.runConsistencyCheck();
+                f.runPrepare();
             } catch (e) {
                 if (!(e instanceof FOError)) {
                     throw e;
@@ -45,9 +45,9 @@ describe(t(import.meta), function () {
 
         it('title', async function () {
             const f = new FileExif(dataPath('20150306_153340 Cable internet dans la rue.jpg'));
-            await f.runAnalyse();
+            await f.loadData();
             try {
-                f.runConsistencyCheck();
+                f.runPrepare();
             } catch (e) {
                 if (!(e instanceof FOError)) {
                     throw e;
@@ -64,9 +64,9 @@ describe(t(import.meta), function () {
 
         it('rotation', async function () {
             const f = new FileExif(dataPath('rotated-bottom-left.jpg'));
-            await f.runAnalyse();
+            await f.loadData();
             try {
-                f.runConsistencyCheck();
+                f.runPrepare();
             } catch (e) {
                 if (!(e instanceof FOError)) {
                     throw e;
@@ -103,10 +103,10 @@ describe(t(import.meta), function () {
             {
                 // Build up the data to be written
                 const f = new FileExif(filename);
-                await f.analyse();
+                await f.loadData();
 
                 try {
-                    f.runConsistencyCheck();
+                    f.runPrepare();
                 } catch (e) {
                     if (!(e instanceof FOError)) {
                         throw e;
@@ -119,14 +119,14 @@ describe(t(import.meta), function () {
                 expect(f.get(FileTimestamped.I_ITS_TIME).expected.humanReadable()).toBe('2020-01-02 03-05-06');
                 expect(f.get(File.I_FILENAME).expected).toBe('2020-01-02 03-05-06 no_exif');
 
-                await f.act();
+                await f.fix();
                 filename = f.currentFilePath;
             }
 
             {
                 // Check the data
                 const f = new FileExif(filename);
-                await f.analyse();
+                await f.loadData();
 
                 expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 03-05-06');
                 expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('no_exif');

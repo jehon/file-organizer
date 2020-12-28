@@ -26,8 +26,8 @@ describe(t(import.meta), function () {
 
         {
             const f = new FileUnsupported('failure.txt');
-            await f.runAnalyse();
-            expect(() => f.runConsistencyCheck()).toThrowError(FOError);
+            await f.loadData();
+            expect(() => f.runPrepare()).toThrowError(FOError);
             expect(getStatusChangesForItem(f)).toEqual([
                 STATUS_CREATED,
                 STATUS_ANALYSING,
@@ -37,8 +37,8 @@ describe(t(import.meta), function () {
 
         {
             const f = new FileUnsupported('failure2.txt');
-            await f.runAnalyse();
-            expect(() => f.runConsistencyCheck()).toThrowError(FOError);
+            await f.loadData();
+            expect(() => f.runPrepare()).toThrowError(FOError);
         }
 
         console.info.calls.reset();

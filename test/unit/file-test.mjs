@@ -1,6 +1,5 @@
 
 import { t } from './help-functions.mjs';
-import path from 'path';
 
 import File, { FOError } from '../../src/main/file-types/file.js';
 import options from '../../src/common/options.js';
@@ -27,38 +26,39 @@ import {
 } from './help-functions.mjs';
 
 class DemoFile extends File {
-    fnAct = () => { }
-    fnAnalyse = () => { }
-    fnCheckConsistency = () => { }
+    fnLoadData = () => { }
+    fnPrepare = () => { }
+    fnFix = () => { }
 
-    withAnalyse(fn) {
-        this.fnAnalyse = fn;
+    withLoadData(fn) {
+        this.fnLoadData = fn;
         return this;
     }
 
-    async analyse() {
-        await super.analyse();
-        await this.fnAnalyse();
+    async loadData() {
+        await super.loadData();
+        await this.fnLoadData();
         return this;
     }
 
-    withConsistency(fn) {
-        this.fnCheckConsistency = fn;
+    withPrepare(fn) {
+        this.fnPrepare = fn;
         return this;
     }
 
-    checkConsistency() {
-        super.checkConsistency();
-        this.fnCheckConsistency();
+    prepare() {
+        super.prepare();
+        this.fnPrepare();
     }
 
-    withAct(fn) {
-        this.fnAct = () => fn();
+    withFix(fn) {
+        this.fnFix = () => fn();
     }
 
-    async act() {
+    async fix() {
         // await super.act();
-        await this.fnAct();
+        await this.fnFix();
+        return this;
     }
 }
 
@@ -79,7 +79,7 @@ describe(t(import.meta), function () {
 
             it('parse filename', async () => {
                 const f = new File('20150306_153340 Cable internet dans la rue.jpg');
-                // await f.runAnalyse();
+                // await f.loadData();
                 expect(f.get(File.I_FN_QUALIF).initial).toBe('20150306_153340');
                 expect(f.get(File.I_FN_TITLE).initial).toBe('Cable internet dans la rue');
                 expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('2015-03-06 15-33-40');
@@ -124,23 +124,23 @@ describe(t(import.meta), function () {
         describe('expected', () => {
             it('should parse filename qualif', async () => {
                 const f = new File('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
-                await f.runAnalyse();
+                await f.loadData();
                 expect(f.get(File.I_FN_TIME).expected.humanReadable().substr(0, 4)).toBe('2012');
                 expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
             });
 
             it('should parse remove duplicate title/qualif', async () => {
                 const f = new File('vie de famille [vie de famille]');
-                await f.runAnalyse();
+                await f.loadData();
                 expect(f.get(File.I_FN_QUALIF).expected).toBe('');
                 expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
             });
 
             it('should calculate a canonicalFilename', async () => {
-                expect((await new File('2018-02-04').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04');
-                expect((await new File('2018-02-04 13-17-50 canon').runAnalyse()).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
-                expect((await new File('2020-01-19 01-24-02 petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
-                expect((await new File('petitAppPhoto').runAnalyse()).getCanonicalFilename()).toBe('petitAppPhoto');
+                expect((await new File('2018-02-04').loadData()).getCanonicalFilename()).toBe('2018-02-04');
+                expect((await new File('2018-02-04 13-17-50 canon').loadData()).getCanonicalFilename()).toBe('2018-02-04 13-17-50 canon');
+                expect((await new File('2020-01-19 01-24-02 petitAppPhoto').loadData()).getCanonicalFilename()).toBe('2020-01-19 01-24-02 petitAppPhoto');
+                expect((await new File('petitAppPhoto').loadData()).getCanonicalFilename()).toBe('petitAppPhoto');
             });
         });
 
@@ -174,45 +174,45 @@ describe(t(import.meta), function () {
             f = new DemoFile('file-test');
         });
 
-        it('should analyse a file already ok', async function () {
-            f.withAnalyse(() => true);
+        it('should load data a file already ok', async function () {
+            f.withLoadData(() => true);
 
             expect(getStatusChangesForItem(f)[0]).toBe(STATUS_CREATED);
 
-            await f.runAnalyse();
-            f.runConsistencyCheck();
+            await f.loadData();
+            f.runPrepare();
 
             expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_SUCCESS]);
 
-            await expectAsync(f.runActing()).toBeResolved();
+            await expectAsync(f.runFix()).toBeResolved();
         });
 
         it('should analyse a file impossible', async function () {
-            f.withConsistency(() => { throw new FOError('impossible'); });
+            f.withPrepare(() => { throw new FOError('impossible'); });
 
-            await f.runAnalyse();
-            await expect(() => f.runConsistencyCheck()).toThrowError(FOError, 'impossible');
+            await f.loadData();
+            await expect(() => f.runPrepare()).toThrowError(FOError, 'impossible');
 
             expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
 
-            await expectAsync(f.runActing()).toBeRejectedWithError(FOError);
+            await expectAsync(f.runFix()).toBeRejectedWithError(FOError);
         });
 
         it('should checkConsistency', async function (done) {
-            f.checkConsistency = () => { f.addProblem('test'); };
+            f.withPrepare(() => { f.addProblem('test'); });
 
-            await f.runAnalyse();
-            await expect(() => f.runConsistencyCheck()).toThrowError(FOError);
+            await f.loadData();
+            await expect(() => f.runPrepare()).toThrowError(FOError);
             expect(getStatusChangesForItem(f)).toEqual([STATUS_CREATED, STATUS_ANALYSING, STATUS_FAILURE]);
             done();
             // }
         });
 
 
-        describe('with act', function () {
+        describe('with fix', function () {
             beforeEach(() => {
-                f.withConsistency(() => f.get(File.I_FILENAME).expect('go to need action'));
-                f.withAct(() => {
+                f.withPrepare(() => f.get(File.I_FILENAME).expect('go to need action'));
+                f.withFix(() => {
                     f.get(File.I_FILENAME).fix();
                     f.get(File.I_FN_TITLE).fix();
                 });
@@ -222,13 +222,13 @@ describe(t(import.meta), function () {
                 let i = 0;
 
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
-                await f.runAnalyse();
+                await f.loadData();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
 
-                f.runConsistencyCheck();
+                f.runPrepare();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
-                await f.runActing();
+                await f.runFix();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_SUCCESS);
 
@@ -237,16 +237,16 @@ describe(t(import.meta), function () {
 
             it('with failing task', async function () {
                 let i = 0;
-                f.withAct(() => { throw new FOError('impossible'); });
+                f.withFix(() => { throw new FOError('impossible'); });
 
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_CREATED);
-                await f.runAnalyse();
+                await f.loadData();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ANALYSING);
 
-                await f.runConsistencyCheck();
+                await f.runPrepare();
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_NEED_ACTION);
 
-                await expectAsync(f.runActing()).toBeRejectedWithError(FOError, 'impossible');
+                await expectAsync(f.runFix()).toBeRejectedWithError(FOError, 'impossible');
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTING);
                 expect(getStatusChangesForItem(f)[i++]).toBe(STATUS_ACTED_FAILURE);
 
@@ -269,11 +269,11 @@ describe(t(import.meta), function () {
             expect(f1.currentFilePath.endsWith('.TX2')).toBeTrue();
 
             const f2 = new File(f1.currentFilePath);
-            await f2.runAnalyse();
+            await f2.loadData();
             expect(f2.get(File.I_EXTENSION).expected).toBe('.tx2');
 
-            f2.runConsistencyCheck();
-            await f2.runActing();
+            f2.runPrepare();
+            await f2.runFix();
 
             expect(f2.currentFilePath.endsWith('.tx2')).toBeTrue();
             await expectAsync(fileExistsPhysically(f2.currentFilePath)).toBeResolvedTo(true);
@@ -282,10 +282,10 @@ describe(t(import.meta), function () {
         it('should manage filename', async () => {
             const filename = await createFileFrom('20150306_153340 Cable internet dans la rue.jpg');
             const f = new File(filename);
-            await f.runAnalyse();
+            await f.loadData();
 
-            f.runConsistencyCheck();
-            await f.runActing();
+            f.runPrepare();
+            await f.runFix();
             expect(f.getCanonicalFilename()).toBe('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340]');
             expect(f.currentFilePath).toBe(tempPath('2015-03-06 15-33-40 Cable internet dans la rue [20150306_153340].jpg'));
         });
@@ -296,7 +296,7 @@ describe(t(import.meta), function () {
             const folder = new File(dataPath());
             let res = 0;
             try {
-                await folder.runAnalyse();
+                await folder.loadData();
             } catch (e) {
                 if (!(e instanceof FOError)) {
                     throw e;

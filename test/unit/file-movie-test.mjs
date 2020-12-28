@@ -22,7 +22,7 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
 
             try {
                 const f = new FileMovie(filename);
-                await f.runAnalyse();
+                await f.loadData();
 
                 expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
                     .withContext(baseFilename)
@@ -42,8 +42,8 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
                 {
                     const f = new FileMovie(filename);
 
-                    await f.runAnalyse();
-                    f.runConsistencyCheck();
+                    await f.loadData();
+                    f.runPrepare();
 
                     /**
                      * @param {string} str to be escaped
@@ -56,7 +56,7 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
                     f.get(FileTimestamped.I_ITS_TITLE).expect('new title');
                     f.get(FileTimestamped.I_ITS_TIME).expect(exif2ts('2020:01:02 02:03:04'));
 
-                    await f.runActing();
+                    await f.runFix();
                     filename = f.currentFilePath;
 
                     expect(f.currentFilePath)
@@ -68,7 +68,7 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
                     // Create a new file, and see if it is ok
                     const f = new FileMovie(filename);
 
-                    await f.runAnalyse();
+                    await f.loadData();
                     expect(f.get(FileTimestamped.I_ITS_TITLE).initial)
                         .withContext(baseFilename)
                         .toBe('new title');

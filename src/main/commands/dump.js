@@ -77,10 +77,10 @@ export async function handler(noptions) {
              * @returns {Promise<void>} when done
              */
             async function (fi) {
-                await fi.runAnalyse();
+                await fi.loadData();
                 let ok;
                 try {
-                    fi.runConsistencyCheck();
+                    fi.runPrepare();
                     ok = true;
                 } catch {
                     ok = false;

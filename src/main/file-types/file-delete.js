@@ -3,12 +3,14 @@ import File from './file.js';
 import { registerRegExp, glob2regExp } from '../register-file-types.js';
 
 export default class FileDelete extends File {
-    async analyse() {
-        await super.analyse();
+    async loadData() {
+        await super.loadData();
 
         // By setting any one of these to null
         // the file will be deleted
         this.get(File.I_FILENAME).expect(null, 'file is deleted');
+
+        return this;
     }
 }
 

@@ -26,11 +26,11 @@ export async function handler(noptions) {
              * @returns {Promise<void>} when done
              */
             async function (fi) {
-                await fi.runAnalyse();
+                await fi.loadData();
                 try {
-                    fi.runConsistencyCheck();
+                    fi.runPrepare();
                     if (!options.dryRun) {
-                        await fi.runActing();
+                        await fi.runFix();
                     }
                 } catch (e) {
                     if (!(e instanceof FOError)) {
