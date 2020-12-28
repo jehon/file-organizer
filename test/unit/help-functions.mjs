@@ -6,7 +6,9 @@ import Item from '../../src/main/item.js';
 
 import { __dirname } from '../test-helper.js';
 
-const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname(import.meta)))), ...args);
+export const fromCWD = (...args) => path.join(process.cwd(), ...args);
+
+export const rootPath = (...args) => path.join((path.dirname(path.dirname(__dirname(import.meta)))), ...args);
 
 // Test
 export const dataPath = (...args) => rootPath('test', 'data', ...args);

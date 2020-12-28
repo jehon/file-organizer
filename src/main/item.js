@@ -24,7 +24,6 @@ export default class Item {
         this._id = getEntityId();
         this._title = title;
         this.notify(STATUS_CREATED);
-
     }
 
 

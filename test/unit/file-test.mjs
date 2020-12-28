@@ -22,7 +22,8 @@ import {
     getStatusChangesForItem,
     createFileFrom,
     tempPath,
-    dataPath
+    dataPath,
+    fromCWD
 } from './help-functions.mjs';
 
 class DemoFile extends File {
@@ -101,7 +102,7 @@ describe(t(import.meta), function () {
             });
 
             it('should be constructed with a parent', () => {
-                expect((new File('test/brol/a2.txt', new File('/machin'))).parent.currentFilePath).toBe('/machin');
+                expect(new File('test/brol/a2.txt').parent.currentFilePath).toBe(fromCWD('test/brol'));
             });
 
             it('should always have the current path', () => {

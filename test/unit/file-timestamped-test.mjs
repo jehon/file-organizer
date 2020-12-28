@@ -35,7 +35,7 @@ describe(t(import.meta), function () {
         });
 
         it('should take the new title from the folder when nothing is found', async () => {
-            const f = new FileTimestamped('1998-12-31 12-10-11.jpg', new File('1998 parent title'));
+            const f = new FileTimestamped('1998 parent title/1998-12-31 12-10-11.jpg');
             expect(f.parent.get(File.I_FN_TITLE).initial).toBe('parent title');
             f.readInternalData = () => ({
                 ts: exif2ts('1999:01:02 03:04:05'),
@@ -70,7 +70,8 @@ describe(t(import.meta), function () {
         it('should take the new title from the folder when option require it', async () => {
             options.forceTitleFromFolder = true;
 
-            const f = new FileTimestamped('1998-12-31 12-10-11 blabla.jpg', new File('1998 parent title'));
+            const f = new FileTimestamped('1998 parent title/1998-12-31 12-10-11 blabla.jpg');
+
             expect(f.parent.get(File.I_FN_TITLE).initial).toBe('parent title');
             f.readInternalData = () => ({
                 ts: exif2ts('1999:01:02 03:04:05'),

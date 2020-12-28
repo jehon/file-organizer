@@ -18,9 +18,7 @@ registerRegExp([
 // case '.mpeg': // ?   // TODO (extensions): unsupported
 // case '.wmv':  // ?   // TODO (extensions): unsupported
 // case '.mod':  // ?   // TODO (extensions): unsupported
-// return new FileMovieMov(filepath, parent);
 
 // Convert all theses ???
 // case '.m4v':  // 11  // TODO (extensions): unsupported
 // case '.mkv':  // 1   // TODO (extensions): unsupported
-// return new FileMovieMP4(filepath, parent);

@@ -108,7 +108,7 @@ export default class File extends Item {
      */
     #children = null
 
-    constructor(filePath, parent) {
+    constructor(filePath) {
         /* filepath is the title */
         super(filePath);
         this._path = filePath;
@@ -117,14 +117,6 @@ export default class File extends Item {
         this.set(File.I_FILENAME, vFn);
 
         this.set(File.I_EXTENSION, new Value(path.parse(this._path).ext));
-
-        if (parent) {
-            this.parent = parent;
-        }
-
-        if (this.parent === undefined) {
-            this.parent = this._calculateParent();
-        }
 
         let isFolder = false;
         try {
@@ -155,6 +147,28 @@ export default class File extends Item {
         this.get(File.I_FN_QUALIF).onExpectedChanged(updateFn);
         this.get(File.I_FN_TITLE).onExpectedChanged(updateFn);
         this.get(File.I_FN_TIME).onExpectedChanged(updateFn);
+    }
+
+    get parent() {
+        // A get parent is made before this initialization
+        // by item.notify
+        if (!this._path) {
+            return null;
+        }
+
+        let parentDir = path.dirname(this._path);
+        if (parentDir == '/') {
+            return null;
+        }
+
+        if (parentDir == '.') {
+            parentDir = process.cwd();
+        }
+
+        if (!parentsMap.has(parentDir)) {
+            parentsMap.set(parentDir, buildFile(parentDir));
+        }
+        return parentsMap.get(parentDir);
     }
 
     /**
@@ -291,27 +305,6 @@ export default class File extends Item {
     // Private methods
     //
     // ------------------------------------------
-
-    /**
-     * @private
-     *
-     * @returns {File} the potential parent
-     */
-    _calculateParent() {
-        let parentDir = path.dirname(this._path);
-        if (parentDir == '/') {
-            return null;
-        }
-
-        if (parentDir == '.') {
-            parentDir = process.cwd();
-        }
-
-        if (!parentsMap.has(parentDir)) {
-            parentsMap.set(parentDir, buildFile(parentDir));
-        }
-        return parentsMap.get(parentDir);
-    }
 
     // // TODO (indexed): remember names to // rename
     // // @Limited(1)
