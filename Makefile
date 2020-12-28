@@ -5,7 +5,8 @@
 # Default target
 #
 #
-auto:
+.PHONY: full
+full: clear test lint
 
 #
 #
