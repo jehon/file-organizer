@@ -301,8 +301,10 @@ async function exifReadAll(file) {
 }
 
 export default class FileExif extends FileTimestamped {
-    static I_FE_ORIENTATION = 'FileExif_orientation'
+    static I_FE_TIME = 'FileExif_time'
+    static I_FE_TITLE = 'FileExif_title'
     static I_FE_TZ = 'FileExif_tz'
+    static I_FE_ORIENTATION = 'FileExif_orientation'
 
     get EXIF_TS() { return 'DateTimeOriginal'; }
     get EXIF_TITLE() { return 'UserComment'; }

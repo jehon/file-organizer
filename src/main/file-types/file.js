@@ -136,6 +136,8 @@ export default class File extends Item {
 
         /* Build up all informations and link them to I_FILENAME */
 
+        // TODO: handle unparsable filenames ?
+
         /* auto update filename  */
         const updateFn = () => this.get(File.I_FILENAME).expect(this.getCanonicalFilename());
 

@@ -30,6 +30,12 @@ export default class FileTimestamped extends File {
         };
     }
 
+    /**
+     * @see File#loadData()
+     *
+     *
+     * @returns {Promise<FileTimestamped>} this
+     */
     async loadData() {
         await super.loadData();
 
@@ -48,6 +54,8 @@ export default class FileTimestamped extends File {
         /*
          * Let's go with calculations
          */
+
+        // TODO(timestamp): this should dissapear
 
         if (this.get(File.I_FN_TIME).initial.type == 'invalid') {
             this.addProblem(FileTimestamped.P_TS_NOT_PARSABLE);
@@ -88,6 +96,7 @@ export default class FileTimestamped extends File {
         /************************************
          * Set missing values
          */
+
         if (!this.get(FileTimestamped.I_ITS_TITLE).expected) {
             this.get(FileTimestamped.I_ITS_TITLE).expect(this.get(File.I_FN_TITLE).current, 'guessing the title from the filename');
         }
@@ -95,6 +104,10 @@ export default class FileTimestamped extends File {
         if (!this.get(FileTimestamped.I_ITS_TITLE).expected) {
             this.get(FileTimestamped.I_ITS_TITLE).expect(this.parent.get(File.I_FN_TITLE).current, 'guessing the title from the parent folder');
         }
+
+        /***************************************
+         * Raise problems
+         */
 
         if (!this.get(File.I_FN_TIME).expected) {
             this.addProblem(FileTimestamped.P_NO_TIMESTAMP);
