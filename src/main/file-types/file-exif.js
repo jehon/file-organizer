@@ -17,9 +17,9 @@
 // The timestamp string must be stored in the application in the local time of the element
 //    It will be translated from/to UTC onRead and onWrite when necessary
 //
+// TODO: I_EXIF_TS => auto calculate to I_TS_TS
 // TODO (urgent): timestamp in string
 //
-
 
 /**
  * Exif executable
@@ -42,7 +42,7 @@ const pExecFile = promisify(execFile);
 
 import commandExists from 'command-exists';
 import Value from '../value.js';
-import { coordonate2tz } from '../time-helpers.js';
+import { canonizeTimestamp, coordonate2tz, EMPTY_TS, fullTimestamp, isDateTime, utc2localTime } from '../time-helpers.js';
 
 // returns true/false; doesn't throw
 if (!commandExists.sync(EXIFTOOL)) {
@@ -50,6 +50,152 @@ if (!commandExists.sync(EXIFTOOL)) {
     // TODO: this is not easy to debug:
     process.exit(254);
 }
+
+const EMPTY_EXIF = '0000:00:00 00:00:00';
+
+/************************************************
+ *
+ * Conversion functions
+ *
+ */
+
+/**
+ * Return the exif as timestamp (local timezone) (reading)
+ *
+ *   When reading the exif, it is sometimes in UTC, and we treat only Local Time timestamps!
+ *
+ * @param {string} exif - the exif just read from the file
+ * @param {boolean} isUTC - true if the data must be stored in UTC
+ * @param {string} tz - the timezone
+ * @returns {string} parsed and in local timezone
+ */
+export function _exif2ts(exif, isUTC, tz) {
+    if (exif == EMPTY_EXIF) {
+        return EMPTY_TS;
+    }
+    let str = canonizeTimestamp(exif.split(':').join('-'));
+
+    if (!isDateTime(str)) {
+        return str;
+    }
+
+    if (isUTC && tz) {
+        str = utc2localTime(str, tz);
+    }
+
+    return str;
+}
+
+/**
+ * Return timestamp (local timezone) as exif data (writing)
+ *
+ *   When writing the exif, it is sometimes in UTC, and we treat only Local Time timestamps!
+ *
+ * @param {string} ts - timestamp to be transformed
+ * @param {boolean} isUTC - true if the data must be stored in UTC
+ * @param {string} tz - the timezone
+ * @returns {string} exif data to write
+ */
+export function _ts2exif(ts, isUTC, tz) {
+    if (ts == EMPTY_TS) {
+        return EMPTY_EXIF;
+    }
+
+    let str = ts;
+    if (isDateTime(str) && isUTC && tz) {
+        str = utc2localTime(str, tz);
+    }
+
+    return fullTimestamp(str).split('-').join(':');
+}
+
+/**
+ * Return the timestamp in local timezone
+ *
+ * TODO: use strings !
+ *
+ * @param {string} exif - the exif just read from the file
+ * @param {string} tz - the timezone
+ * @returns {module:src/main/Timestamp} parsed and in local timezone
+ */
+export function exif2ts(exif, tz) {
+    if (exif == EMPTY_EXIF) {
+        return new Timestamp();
+    }
+    // return parseFilename(exif.split(':').join('-'));
+    // TODO: handle timezone here and return new Timestamp(exif)
+    return new Timestamp(exif, tz);
+}
+
+/**
+ * TODO: use strings !
+ *
+ * @param {module:/src/main/Timestamp} ts - timestamp to be transformed
+ * @param {boolean} isUTC - true if the data must be stored in UTC
+ * @param {string} tz - the timezone
+ * @returns {string} the timezone transformed
+ */
+export function ts2exif(ts, isUTC, tz) {
+    if (!ts.isTimestamped()) {
+        return EMPTY_EXIF;
+    }
+
+    let tsZoned = ts.moment;
+
+    // If a timezone is set, and the exif timestamp is not stored in UTC
+    // then we need to calculate the moment in local timezone
+    if (isUTC && tz) {
+
+        // We adapt the tz field, but not the time
+        // @See https://momentjs.com/timezone/docs/#/using-timezones/converting-to-zone/
+        tsZoned = tsZoned.tz(tz, true);
+    }
+
+    const utc = tsZoned.clone().utc();
+    return utc.format('YYYY:MM:DD HH:mm:ss');
+}
+
+/**
+ * @param {string} rotation received from exif
+ * @returns {number} in an human readable form
+ */
+function translateRotation(rotation) {
+    switch (rotation) {
+        // What is the top-left corner?
+        case 'Rotate 270 CW':
+        case 'left, bottom':
+            // https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_8.jpg
+            return 270;
+
+        case 'Rotate 90 CW':
+        case 'right, top':
+            // https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_6.jpg
+            return 90;
+
+        case 'bottom, right':
+            // https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_3.jpg
+            return 180;
+
+        // No information given
+        case undefined:
+        case 'Unknown (0)':
+        case '':
+        case '(0)':
+        case 'top, left':
+        case 'Horizontal (normal)':
+            return 0;
+
+        default:
+            throw new Error(`exifReadRotation: could not understand value: ${rotation}`);
+    }
+}
+
+
+/********************************************************
+ *
+ * Execution
+ *
+ */
 
 /**
  * Limited //isme on exifExecLimiter
@@ -110,41 +256,6 @@ export async function exifWrite(file, tag, value) {
 }
 
 /**
- * @param {string} rotation received from exif
- * @returns {number} in an human readable form
- */
-function translateRotation(rotation) {
-    switch (rotation) {
-        // What is the top-left corner?
-        case 'Rotate 270 CW':
-        case 'left, bottom':
-            // https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_8.jpg
-            return 270;
-
-        case 'Rotate 90 CW':
-        case 'right, top':
-            // https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_6.jpg
-            return 90;
-
-        case 'bottom, right':
-            // https://github.com/recurser/exif-orientation-examples/blob/master/Landscape_3.jpg
-            return 180;
-
-        // No information given
-        case undefined:
-        case 'Unknown (0)':
-        case '':
-        case '(0)':
-        case 'top, left':
-        case 'Horizontal (normal)':
-            return 0;
-
-        default:
-            throw new Error(`exifReadRotation: could not understand value: ${rotation}`);
-    }
-}
-
-/**
  * Read all required data from exif
  * And returns them as object
  *
@@ -181,60 +292,12 @@ async function exifReadAll(file) {
 
     // If the data is stored in UTC and if we have a timezone,
     // translate the date/time into local time (of the timezone)
+    // exifData.ts = _exif2ts(rawExifData[file.EXIF_TS], this.EXIF_TS_STORED_IN_UTC, exifData.timezone);
     exifData.ts = exif2ts(rawExifData[file.EXIF_TS], (
         file.EXIF_TS_STORED_IN_UTC && exifData.timezone ? exifData.timezone : false)
     );
 
     return exifData;
-}
-
-const EMPTY_EXIF = '0000:00:00 00:00:00';
-// const TS_REGEXP = /(?<year>[0-9][0-9][0-9][0-9])([-:](?<month>[0-1][0-9])([-:](?<day>[0-3][0-9]))?)?( (?<hour>[0-2][0-9])[:-](?<minute>[0-5][0-9])([:-](?<second>[0-5][0-9])(?<timezone>[+-]\d\d:\d\d)?))?/;
-
-/**
- * Return the timestamp in local timezone
- *
- * TODO: use strings !
- *
- * @param {string} exif - the exif just read from the file
- * @param {string} tz - the timezone
- * @returns {module:src/main/Timestamp} parsed and in local timezone
- */
-export function exif2ts(exif, tz) {
-    if (exif == EMPTY_EXIF) {
-        return new Timestamp();
-    }
-    // return parseFilename(exif.split(':').join('-'));
-    // TODO: handle timezone here and return new Timestamp(exif)
-    return new Timestamp(exif, tz);
-}
-
-/**
- * TODO: use strings !
- *
- * @param {module:/src/main/Timestamp} ts - timestamp to be transformed
- * @param {boolean} isUTC - true if the data must be stored in UTC
- * @param {string} tz - the timezone
- * @returns {string} the timezone transformed
- */
-export function ts2exif(ts, isUTC, tz) {
-    if (!ts.isTimestamped()) {
-        return EMPTY_EXIF;
-    }
-
-    let tsZoned = ts.moment;
-
-    // If a timezone is set, and the exif timestamp is not stored in UTC
-    // then we need to calculate the moment in local timezone
-    if (isUTC && tz) {
-
-        // We adapt the tz field, but not the time
-        // @See https://momentjs.com/timezone/docs/#/using-timezones/converting-to-zone/
-        tsZoned = tsZoned.tz(tz, true);
-    }
-
-    const utc = tsZoned.clone().utc();
-    return utc.format('YYYY:MM:DD HH:mm:ss');
 }
 
 export default class FileExif extends FileTimestamped {
@@ -280,10 +343,8 @@ export default class FileExif extends FileTimestamped {
 
         const ts = this.get(FileTimestamped.I_ITS_TIME);
         if (!ts.isDone()) {
-            await exifWrite(this, this.EXIF_TS,
-                // TODO: humanreadable()
-                ts2exif(ts.expected, this.EXIF_TS_STORED_IN_UTC, this.get(FileExif.I_FE_TZ).expected)
-            );
+            // await exifWrite(this, this.EXIF_TS, _ts2exif(ts.expected, this.EXIF_TS_STORED_IN_UTC, this.get(FileExif.I_FE_TZ).expected));
+            await exifWrite(this, this.EXIF_TS, ts2exif(ts.expected, this.EXIF_TS_STORED_IN_UTC, this.get(FileExif.I_FE_TZ).expected));
             ts.fix();
         }
 

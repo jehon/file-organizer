@@ -1,6 +1,5 @@
 
-import { parseFilename } from '../../src/main/timestamp.js';
-import FileExif, { exif2ts, ts2exif } from '../../src/main/file-types/file-exif.js';
+import FileExif, { exif2ts, _exif2ts, _ts2exif } from '../../src/main/file-types/file-exif.js';
 import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
 import File, { FOError } from '../../src/main/file-types/file.js';
 import { t } from '../test-helper.js';
@@ -85,16 +84,16 @@ describe(t(import.meta), function () {
 
     it('should generate exif timestamp', function () {
         // Date only cases
-        expect(ts2exif(parseFilename('2018').ts)).toBe('2018:01:01 01:01:01');
-        expect(ts2exif(parseFilename('2018-01').ts)).toBe('2018:01:02 02:02:02');
-        expect(ts2exif(parseFilename('2018-02').ts)).toBe('2018:02:02 02:02:02');
+        expect(_ts2exif('2018')).toBe('2018:01:01 01:01:01');
+        expect(_ts2exif('2018-01')).toBe('2018:01:02 02:02:02');
+        expect(_ts2exif('2018-02')).toBe('2018:02:02 02:02:02');
 
         // exif is always in utc
-        expect(ts2exif(exif2ts('2019:07:02 15:16:17', 'Europe/Brussels'), 'Europe/Brussels')).toBe('2019:07:02 15:16:17');
-        expect(ts2exif(exif2ts('2019:07:02 15:16:17', 'Asia/Dhaka'), 'Asia/Dhaka')).toBe('2019:07:02 15:16:17');
+        expect(_ts2exif(_exif2ts('2019:07:02 15:16:17', 'Europe/Brussels'), 'Europe/Brussels')).toBe('2019:07:02 15:16:17');
+        expect(_ts2exif(_exif2ts('2019:07:02 15:16:17', 'Asia/Dhaka'), 'Asia/Dhaka')).toBe('2019:07:02 15:16:17');
 
         // Normal case
-        expect(ts2exif(exif2ts('2019-01-02 03-04-05'))).toBe('2019:01:02 03:04:05');
+        expect(_ts2exif(_exif2ts('2019-01-02 03-04-05'))).toBe('2019:01:02 03:04:05');
     });
 
     describe('should write exif data', function () {

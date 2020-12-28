@@ -15,6 +15,8 @@ import { pad } from '../common/string-utilities.js';
 //   - in the filename, the timestamp is local
 //   - a picture? the local time at the place where the picture was taken (taken into account the timezone)
 //
+// The timestamp is always canonized (except when sent back from fullTimestamp)
+//
 
 const yearRangeRegexp = /^(?<yearMin>(19|20)[0-9][0-9])-(?<yearMax>(19|20)[0-9][0-9])?$/;
 
@@ -39,27 +41,27 @@ export function canonizeTimestamp(str) {
 }
 
 /**
- * @param {string} str to be canonized
+ * @param {string} ts to be canonized
  * @returns {string} canonized
  */
-export function fullTimestamp(str) {
-    if (str.length == 0) {
+export function fullTimestamp(ts) {
+    if (ts.length == 0) {
         return '0000-00-00 00-00-00';
     }
 
-    if (str.length == 4) {
-        return str + '-01-01 01-01-01';
+    if (ts.length == 4) {
+        return ts + '-01-01 01-01-01';
     }
 
-    if (str.length == 7) {
-        return str + '-02 02-02-02';
+    if (ts.length == 7) {
+        return ts + '-02 02-02-02';
     }
 
-    if (str.length == 10) {
-        return str + ' 00-00-00';
+    if (ts.length == 10) {
+        return ts + ' 00-00-00';
     }
 
-    return str;
+    return ts;
 }
 
 /**
@@ -77,14 +79,14 @@ export function date2string(dateOrMoment) {
 }
 
 /**
- * @param {string} date to be parsed
+ * @param {string} ts to be parsed
  * @returns {*} representing the date, in local timezone
  */
-export function string2moment(date) {
-    if (date.length < 19) {
-        throw new Error(`Unimplemented: string2moment of ${date}`);
+export function string2moment(ts) {
+    if (ts.length < 19) {
+        throw new Error(`Unimplemented: string2moment of ${ts}`);
     }
-    return moment(date, 'YYYY-MM-DD hh-mm-ss');
+    return moment(ts, 'YYYY-MM-DD hh-mm-ss');
 }
 
 /*****************************************
@@ -94,33 +96,33 @@ export function string2moment(date) {
  */
 
 /**
- * @param {string} str to be tested
+ * @param {string} ts to be tested
  * @returns {boolean} if string is a 'YYYY-MM-DD hh-mm-ss'+
  */
-export function isDateTime(str) {
-    return str.length >= 19;
+export function isDateTime(ts) {
+    return ts.length >= 19;
 }
 
 
 /**
- * @param {string} timestamp to be checked
+ * @param {string} ts to be checked
  * @returns {boolean} if it is yyyy-yyyy format or yyyy-mm yyyy-mm format
  */
-export function isRange(timestamp) {
-    return yearRangeRegexp.test(timestamp);
+export function isRange(ts) {
+    return yearRangeRegexp.test(ts);
 }
 
 /**
  * @private
  *
- * @param {string} timestamp to be parsed
+ * @param {string} string to be parsed
  *
  * @returns {object} parsed
  * @property {number} yearMin - lower bound
  * @property {number} yearMax - upper bound
  */
-export function parseRange(timestamp) {
-    const matches = yearRangeRegexp.exec(timestamp);
+export function parseRange(string) {
+    const matches = yearRangeRegexp.exec(string);
     if (!matches) {
         throw new FOError('is not a range');
     }
@@ -139,68 +141,68 @@ export function parseRange(timestamp) {
 /**
  * match test if the timestamp match against (larger) ts
  *
- * @param {string} strict to be compared
- * @param {string} larger to be compared
+ * @param {string} tsStrict to be compared
+ * @param {string} tsLarger to be compared
  * @returns {boolean} if it match
  */
-export function timestampMatch(strict, larger) {
-    if (!strict) {
+export function timestampMatch(tsStrict, tsLarger) {
+    if (!tsStrict) {
         return true;
     }
 
-    if (isRange(larger)) {
-        const { yearMin, yearMax } = parseRange(larger);
-        const y = parseInt(strict.substring(0, 4));
+    if (isRange(tsLarger)) {
+        const { yearMin, yearMax } = parseRange(tsLarger);
+        const y = parseInt(tsStrict.substring(0, 4));
         return y >= yearMin && y <= yearMax;
     }
 
-    return strict.startsWith(larger);
+    return tsStrict.startsWith(tsLarger);
 }
 
 /**
  * MatchAgainstLithe test if the timestamp match against (larger) ts, but by closest month
  *
- * @param {string} strict to be compared
- * @param {string} larger to be compared
+ * @param {string} tsStrict to be compared
+ * @param {string} tsLarger to be compared
  * @returns {boolean} if it match
  */
-export function timestampMatchLithe(strict, larger) {
-    if (timestampMatch(strict, larger)) {
+export function timestampMatchLithe(tsStrict, tsLarger) {
+    if (timestampMatch(tsStrict, tsLarger)) {
         return true;
     }
-    if (isRange(larger)) {
+    if (isRange(tsLarger)) {
         return false;
     }
 
     { // By same month
-        const ref = larger.substring(0, 7); // yyyy-mm
-        if (timestampMatch(strict, ref)) {
+        const ref = tsLarger.substring(0, 7); // yyyy-mm
+        if (timestampMatch(tsStrict, ref)) {
             return true;
         }
     }
 
     { // By month before
-        let year = parseInt(larger.substr(0, 4));
-        let month = larger.length >= 6 ? parseInt(larger.substr(5, 2)) : 1;
+        let year = parseInt(tsLarger.substr(0, 4));
+        let month = tsLarger.length >= 6 ? parseInt(tsLarger.substr(5, 2)) : 1;
         month--;
         if (month == 0) {
             month = 12;
             year--;
         }
-        if (timestampMatch(strict, year + '-' + pad(month))) {
+        if (timestampMatch(tsStrict, year + '-' + pad(month))) {
             return true;
         }
     }
 
     { // By month after
-        let year = parseInt(larger.substr(0, 4));
-        let month = larger.length >= 6 ? parseInt(larger.substr(5, 2)) : 12;
+        let year = parseInt(tsLarger.substr(0, 4));
+        let month = tsLarger.length >= 6 ? parseInt(tsLarger.substr(5, 2)) : 12;
         month++;
         if (month == 13) {
             month = 1;
             year++;
         }
-        if (timestampMatch(strict, year + '-' + pad(month))) {
+        if (timestampMatch(tsStrict, year + '-' + pad(month))) {
             return true;
         }
     }
@@ -214,16 +216,21 @@ export function timestampMatchLithe(strict, larger) {
  */
 
 /**
- * @param {string} str as a basis
+ * @param {string} ts as a basis
  * @param {string} tz as the timezone target
  * @returns {string} - the timestamp in local time
  */
-export function utc2localTime(str, tz) {
-    if (!tz) {
-        return str;
+export function utc2localTime(ts, tz) {
+    if (!isDateTime(ts)) {
+        // If we don't have a time, let's bail out
+        return ts;
     }
 
-    const m = string2moment(str);
+    if (!tz) {
+        return ts;
+    }
+
+    const m = string2moment(ts);
 
     // We adapt the tz field, but not the time (abstract time)
     const utc = m.tz('UTC', true);
@@ -236,16 +243,21 @@ export function utc2localTime(str, tz) {
 }
 
 /**
- * @param {string} str as a basis
+ * @param {string} ts as a basis
  * @param {string} tz as the timezone source
  * @returns {string} - the timestamp in utc
  */
-export function localTime2utc(str, tz = '') {
-    if (!tz) {
-        return str;
+export function localTime2utc(ts, tz = '') {
+    if (!isDateTime(ts)) {
+        // If we don't have a time, let's bail out
+        return ts;
     }
 
-    const m = string2moment(str);
+    if (!tz) {
+        return ts;
+    }
+
+    const m = string2moment(ts);
     // We adapt the tz field, but not the time
     // @See https://momentjs.com/timezone/docs/#/using-timezones/converting-to-zone/
     const zoned = m.tz(tz, true);
