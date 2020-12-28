@@ -60,7 +60,8 @@ export function string2moment(date) {
     return moment(date, 'YYYY-MM-DD hh-mm-ss');
 }
 
-/**
+/*****************************************
+ *
  * Test utilities
  *
  */
@@ -177,6 +178,54 @@ export function timestampMatchLithe(strict, larger) {
         }
     }
     return false;
+}
+
+/**************************
+ *
+ * Timezone utilities
+ *
+ */
+
+/**
+ * @param {string} str as a basis
+ * @param {string} tz as the timezone target
+ * @returns {string} - the timestamp in local time
+ */
+export function utc2localTime(str, tz) {
+    if (!tz) {
+        return str;
+    }
+
+    const m = string2moment(str);
+
+    // We adapt the tz field, but not the time (abstract time)
+    const utc = m.tz('UTC', true);
+
+    // We adapt the tz field, but not the time
+    // @See https://momentjs.com/timezone/docs/#/using-timezones/converting-to-zone/
+    const zoned = utc.tz(tz);
+
+    return date2string(zoned);
+}
+
+/**
+ * @param {string} str as a basis
+ * @param {string} tz as the timezone source
+ * @returns {string} - the timestamp in utc
+ */
+export function localTime2utc(str, tz = '') {
+    if (!tz) {
+        return str;
+    }
+
+    const m = string2moment(str);
+    // We adapt the tz field, but not the time
+    // @See https://momentjs.com/timezone/docs/#/using-timezones/converting-to-zone/
+    const zoned = m.tz(tz, true);
+
+    const utc = zoned.clone().utc();
+
+    return date2string(utc);
 }
 
 /******************************
