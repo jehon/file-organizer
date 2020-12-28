@@ -1,5 +1,5 @@
 
-import { t } from '../test-helper.js';
+import { t } from './help-functions.mjs';
 
 import Value from '../../src/main/value.js';
 import Timestamp from '../../src/main/timestamp.js';

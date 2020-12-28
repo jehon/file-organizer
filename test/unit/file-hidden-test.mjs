@@ -1,5 +1,5 @@
 
-import { t } from '../test-helper.js';
+import { t } from './help-functions.mjs';
 
 import FileHidden from '../../src/main/file-types/file-hidden.js';
 import Item from '../../src/main/item.js';

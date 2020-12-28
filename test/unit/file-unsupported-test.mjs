@@ -1,5 +1,5 @@
 
-import { t } from '../test-helper.js';
+import { t } from './help-functions.mjs';
 
 import FileUnsupported, { dumpDiscoveredExtension, _map } from '../../src/main/file-types/file-unsupported.js';
 import Item from '../../src/main/item.js';

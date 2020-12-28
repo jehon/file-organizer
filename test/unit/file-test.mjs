@@ -1,5 +1,5 @@
 
-import { t } from '../test-helper.js';
+import { t } from './help-functions.mjs';
 import path from 'path';
 
 import File, { FOError } from '../../src/main/file-types/file.js';
@@ -95,10 +95,10 @@ describe(t(import.meta), function () {
             it('should give a parent', () => {
                 // We need real files here, since "buildFile" will check for folder existence
 
-                expect((new File('test/data/canon.JPG')).parent.currentFilePath).toBe(path.join(process.cwd(), 'test/data'));
-                expect((new File('test/test.txt')).parent.currentFilePath).toBe(path.join(process.cwd(), 'test'));
-                expect((new File('test/test.txt').parent.parent.currentFilePath)).toBe(process.cwd());
-                expect((new File('test.txt').parent.currentFilePath)).toBe(process.cwd());
+                expect((new File('test/data/canon.JPG')).parent.currentFilePath).toBe(fromCWD('test/data'));
+                expect((new File('test/test.txt')).parent.currentFilePath).toBe(fromCWD('test'));
+                expect((new File('test/test.txt').parent.parent.currentFilePath)).toBe(fromCWD());
+                expect((new File('test.txt').parent.currentFilePath)).toBe(fromCWD());
             });
 
             it('should be constructed with a parent', () => {
@@ -106,22 +106,17 @@ describe(t(import.meta), function () {
             });
 
             it('should always have the current path', () => {
-                const f = new File('test/brol/a.txt');
-
-                const r = function (p) {
-                    return path.relative(process.cwd(), p);
-                };
-
-                expect(r(f.currentFilePath)).toBe('test/brol/a.txt');
+                const f = new File('test_rename/brol/a.txt');
+                expect(f.currentFilePath).toBe(fromCWD('test_rename/brol/a.txt'));
 
                 f.get(File.I_FILENAME).expect('b').fix();
-                expect(r(f.currentFilePath)).toBe('test/brol/b.txt');
+                expect(f.currentFilePath).toBe(fromCWD('test_rename/brol/b.txt'));
 
                 f.get(File.I_EXTENSION).expect('.jpg').fix();
-                expect(r(f.currentFilePath)).toBe('test/brol/b.jpg');
+                expect(f.currentFilePath).toBe(fromCWD('test_rename/brol/b.jpg'));
 
                 f.parent.get(File.I_FILENAME).expect('machin').fix();
-                expect(r(f.currentFilePath)).toBe('test/machin/b.jpg');
+                expect(f.currentFilePath).toBe(fromCWD('test_rename/machin/b.jpg'));
             });
 
         });

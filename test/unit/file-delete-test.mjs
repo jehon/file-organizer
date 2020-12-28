@@ -9,7 +9,7 @@ import {
 import FileDelete from '../../src/main/file-types/file-delete.js';
 import { fileExistsPhysically } from '../../src/main/fs-utils.js';
 import Item from '../../src/main/item.js';
-import { t } from '../test-helper.js';
+import { t } from './help-functions.mjs';
 import { createFileFrom, getStatusChangesForItem } from './help-functions.mjs';
 
 

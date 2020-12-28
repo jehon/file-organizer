@@ -1,4 +1,6 @@
 
+import { t } from './help-functions.mjs';
+
 import { FOError } from '../../src/main/file-types/file.js';
 import {
     canonizeTimestamp,
@@ -14,7 +16,6 @@ import {
     timestampMatchLithe,
     utc2localTime
 } from '../../src/main/time-helpers.js';
-import { t } from '../test-helper.js';
 
 describe(t(import.meta), function () {
     describe('conversion utilities', function () {

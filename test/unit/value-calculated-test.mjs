@@ -1,5 +1,5 @@
 
-import { t } from '../test-helper.js';
+import { t } from './help-functions.mjs';
 
 import ValueCalculated from '../../src/main/value-calculated.js';
 import Value from '../../src/main/value.js';

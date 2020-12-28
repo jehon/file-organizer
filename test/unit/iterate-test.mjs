@@ -1,4 +1,4 @@
-import { t } from '../test-helper.js';
+import { t } from './help-functions.mjs';
 
 import iterate from '../../src/main/iterate.js';
 

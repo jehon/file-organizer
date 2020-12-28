@@ -1,5 +1,5 @@
 
-import { dirname } from 'path';
+import path, { dirname } from 'path';
 
 /**
  * @param {object|string} meta from import.meta
@@ -28,3 +28,9 @@ export function __dirname(meta) {
     return dirname(new URL(url).pathname);
 }
 
+export const fromCWD = (...args) => path.join(process.cwd(), ...args);
+export const rootPath = (...args) => path.join((path.dirname(__dirname(import.meta))), ...args);
+
+// Test
+export const dataPath = (...args) => rootPath('test', 'data', ...args);
+export const tempPath = (...args) => rootPath('tmp', 'unit', ...args);

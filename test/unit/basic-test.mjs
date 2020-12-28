@@ -1,5 +1,5 @@
 
-import { t } from '../test-helper.js';
+import { t } from './help-functions.mjs';
 
 describe(t(import.meta), () => {
     it('should be true', () => {

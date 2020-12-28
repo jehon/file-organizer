@@ -1,5 +1,5 @@
 
-import { t } from '../test-helper.js';
+import { t } from './help-functions.mjs';
 import {
     buildFile, registerRegExp, glob2regExp,
     FallBackRegExp, _backup, _regExpMapForFolders, _regExpMapForFiles
