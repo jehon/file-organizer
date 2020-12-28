@@ -11,12 +11,14 @@ import { pad } from '../common/string-utilities.js';
 //
 
 //
-// Hypothesis: the timestamp string always refer to the local time of the element
+// Hypothesis: the timestamp string always refer to the LOCAL TIME of the element
 //   - in the filename, the timestamp is local
 //   - a picture? the local time at the place where the picture was taken (taken into account the timezone)
 //
 
 const yearRangeRegexp = /^(?<yearMin>(19|20)[0-9][0-9])-(?<yearMax>(19|20)[0-9][0-9])?$/;
+
+export const EMPTY_TS = '';
 
 /************************
  *
@@ -25,14 +27,39 @@ const yearRangeRegexp = /^(?<yearMin>(19|20)[0-9][0-9])-(?<yearMax>(19|20)[0-9][
  */
 
 /**
- * @param {string} string to be canonized
+ * @param {string} str to be canonized
  * @returns {string} canonized
  */
-export function canonizeTimestamp(string) {
-    return string
+export function canonizeTimestamp(str) {
+    return str
+        .replace('0000-00-00 00-00-00', EMPTY_TS)
         .replace('-01-01 01-01-01', '')
         .replace('-02 02-02-02', '')
         .replace(' 00-00-00', '');
+}
+
+/**
+ * @param {string} str to be canonized
+ * @returns {string} canonized
+ */
+export function fullTimestamp(str) {
+    if (str.length == 0) {
+        return '0000-00-00 00-00-00';
+    }
+
+    if (str.length == 4) {
+        return str + '-01-01 01-01-01';
+    }
+
+    if (str.length == 7) {
+        return str + '-02 02-02-02';
+    }
+
+    if (str.length == 10) {
+        return str + ' 00-00-00';
+    }
+
+    return str;
 }
 
 /**

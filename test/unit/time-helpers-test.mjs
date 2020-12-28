@@ -4,6 +4,7 @@ import {
     canonizeTimestamp,
     coordonate2tz,
     date2string,
+    fullTimestamp,
     isDateTime,
     isRange,
     localTime2utc,
@@ -18,11 +19,23 @@ import { t } from '../test-helper.js';
 describe(t(import.meta), function () {
     describe('conversion utilities', function () {
         it('canonize', function () {
+            expect(canonizeTimestamp('0000-00-00 00-00-00')).toBe('');
             expect(canonizeTimestamp('1980-01-01 01-01-01')).toBe('1980');
             expect(canonizeTimestamp('1980-01-02 02-02-02')).toBe('1980-01');
             expect(canonizeTimestamp('1980-02-02 02-02-02')).toBe('1980-02');
             expect(canonizeTimestamp('1980-01-01 00-00-00')).toBe('1980-01-01');
             expect(canonizeTimestamp('1980-02-03 00-00-00')).toBe('1980-02-03');
+            expect(canonizeTimestamp('1980-02-03 01-02-03')).toBe('1980-02-03 01-02-03');
+        });
+
+        it('fullTimestamp', function () {
+            expect(fullTimestamp('')).toBe('0000-00-00 00-00-00');
+            expect(fullTimestamp('1980')).toBe('1980-01-01 01-01-01');
+            expect(fullTimestamp('1980-01')).toBe('1980-01-02 02-02-02');
+            expect(fullTimestamp('1980-02')).toBe('1980-02-02 02-02-02');
+            expect(fullTimestamp('1980-01-01')).toBe('1980-01-01 00-00-00');
+            expect(fullTimestamp('1980-02-03')).toBe('1980-02-03 00-00-00');
+            expect(fullTimestamp('1980-02-03 01-02-03')).toBe('1980-02-03 01-02-03');
         });
 
         it('date2string', function () {
