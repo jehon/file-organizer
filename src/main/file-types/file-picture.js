@@ -33,8 +33,8 @@ async function exifRotatePicture(file) {
 }
 
 export default class FilePicture extends FileExif {
-    async loadData() {
-        await super.loadData();
+    prepare() {
+        super.prepare();
 
         if (this.get(File.I_EXTENSION).expected == '.jpeg') {
             this.get(File.I_EXTENSION).expect('.jpg', 'normalize to 3 letters extension');

@@ -41,6 +41,10 @@ export default class FileTimestamped extends File {
         this.get(FileTimestamped.I_ITS_TIME).onExpectedChanged(v => this.get(File.I_FN_TIME).expect(v.expected));
         this.get(FileTimestamped.I_ITS_TITLE).onExpectedChanged(v => this.get(File.I_FN_TITLE).expect(v.expected));
 
+        return this;
+    }
+
+    prepare() {
         /*
          * Let's go with calculations
          */
@@ -92,10 +96,6 @@ export default class FileTimestamped extends File {
             this.get(FileTimestamped.I_ITS_TITLE).expect(this.parent.get(File.I_FN_TITLE).current, 'guessing the title from the parent folder');
         }
 
-        return this;
-    }
-
-    prepare() {
         if (!this.get(File.I_FN_TIME).expected) {
             this.addProblem(FileTimestamped.P_NO_TIMESTAMP);
         }
@@ -115,5 +115,7 @@ export default class FileTimestamped extends File {
                 }
             }
         }
+
+        return this;
     }
 }

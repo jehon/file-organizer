@@ -11,6 +11,8 @@ export default class FileManual extends File {
         super.prepare();
 
         this.addProblem('Manual operation needed');
+
+        return this;
     }
 }
 

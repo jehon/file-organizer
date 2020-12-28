@@ -108,6 +108,13 @@ describe(t(import.meta), function () {
     it('should normalize extensions when necessary', async () => {
         const f = new FilePicture(dataPath('system_test/2019 test/1.jpeg'));
         await f.loadData();
+        try {
+            f.runPrepare();
+        } catch (e) {
+            if (!(e instanceof FOError)) {
+                throw e;
+            }
+        }
         expect(f.get(File.I_EXTENSION).expected).toBe('.jpg');
     });
 

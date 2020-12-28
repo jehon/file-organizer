@@ -8,6 +8,10 @@ export default class FileHidden extends File {
         return this;
     }
 
+    prepare() {
+        return this;
+    }
+
     async fix() {
         // Nothing to be done on an Hidden File
         return this;

@@ -283,8 +283,12 @@ export default class File extends Item {
      * Check if all informationas are consistent
      *
      * @protected
+     *
+     * @returns {File} this
      */
-    prepare() { }
+    prepare() {
+        return this;
+    }
 
     /**
      * Do the act based on .values

@@ -30,6 +30,8 @@ describe(t(import.meta), function () {
             });
 
             await f.loadData();
+            f.prepare();
+
             expect(f.get(File.I_FN_TITLE).expected).toBe('canon');
             expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('canon');
         });
@@ -43,6 +45,7 @@ describe(t(import.meta), function () {
             });
 
             await f.loadData();
+            f.prepare();
 
             expect(f.getCanonicalFilename()).toBe('1999-01-02 03-04-05 parent title');
         });
@@ -63,6 +66,7 @@ describe(t(import.meta), function () {
             });
 
             await f.loadData();
+            f.prepare();
             expect(f.get(File.I_FN_TITLE).expected).toBe('blablabla');
             expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('blablabla');
         });
@@ -79,6 +83,7 @@ describe(t(import.meta), function () {
             });
 
             await f.loadData();
+            f.prepare();
 
             expect(f.get(File.I_FN_TITLE).expected).toBe('parent title');
             expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('parent title');
@@ -95,6 +100,7 @@ describe(t(import.meta), function () {
             });
 
             await f.loadData();
+            f.prepare();
 
             expect(f.get(File.I_FN_TITLE).expected).toBe('blabla');
             expect(f.get(FileTimestamped.I_ITS_TITLE).expected).toBe('blabla');
@@ -111,6 +117,7 @@ describe(t(import.meta), function () {
             });
 
             await f.loadData();
+            f.prepare();
 
             expect(f.get(File.I_FN_TIME).expected.humanReadable()).toBe('1998-12-31 12-10-11');
             expect(f.get(FileTimestamped.I_ITS_TIME).expected.humanReadable()).toBe('1998-12-31 12-10-11');
@@ -125,6 +132,7 @@ describe(t(import.meta), function () {
             mkParentFolder(f);
             await f.parent.loadData();
             await f.loadData();
+
             expect(f.hasProblem(FileTimestamped.P_TS_INCOHERENT)).toBeFalse();
         });
 

@@ -7,20 +7,17 @@ export const _map = new Map();
 export default class FileUnsupported extends File {
     constructor(filePath) {
         super(filePath);
-    }
 
-    async loadData() {
-        await super.loadData();
         const ext = this.get(File.I_EXTENSION).current.toLowerCase();
         const i = _map.has(ext) ? _map.get(ext) : 0;
         _map.set(ext, i + 1);
-
-        return this;
     }
 
     prepare() {
         super.prepare();
         this.addProblem('File type is unsupported');
+
+        return this;
     }
 }
 
