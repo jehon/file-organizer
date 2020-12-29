@@ -8,6 +8,14 @@ import {
 } from '../common/constants.js';
 
 export default class Item {
+    /**
+     * If the file is given by arguments
+     * and thus the top of a hierarchy
+     *
+     * @type {boolean}
+     */
+    #isTop = false;
+
     /** @type {number} */
     _id
 
@@ -35,6 +43,10 @@ export default class Item {
 
     static getType() {
         return 'Item';
+    }
+
+    set isTop(v) {
+        this.#isTop = v;
     }
 
     get type() {
@@ -143,7 +155,7 @@ export default class Item {
     // ------------------------------------------
 
     static getNotifyProperties() {
-        return ['id', 'type', 'subType', 'status', 'title'];
+        return ['isTop', 'id', 'type', 'subType', 'status', 'title'];
     }
 
     /**
