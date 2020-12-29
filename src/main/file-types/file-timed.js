@@ -111,8 +111,12 @@ export default class FileTimed extends File {
             this.addProblem(FileTimed.P_NO_TIMESTAMP);
         } else {
             // Check filename according to parent folder TS
+            // TODO: look recursively for parent to parent
+            // TODO: check that folders are ok too => move this to file ?
+            // if (this.parent && this.parent.get(File.I_F_TIME).expected) {
             if (this.parent && this.parent.get(File.I_F_TIME).expected
                 || isRange(this.parent.get(File.I_F_TIME).expected)) {
+
                 if (!timestampMatchLithe(this.get(File.I_F_TIME).expected, this.parent.get(File.I_F_TIME).expected)) {
                     this.addProblem(FileTimed.P_TS_INCOHERENT);
                 }

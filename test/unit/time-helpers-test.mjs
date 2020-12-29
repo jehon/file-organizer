@@ -41,7 +41,7 @@ describe(t(import.meta), function () {
         });
 
         it('date2string', function () {
-            expect(date2string(new Date('2 May 1980'))).toBe('1980-05-02 00-00-00');
+            expect(date2string(new Date('2 May 1980'))).toBe('1980-05-02');
         });
 
         it('string2moment', function () {

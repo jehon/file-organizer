@@ -1,8 +1,5 @@
 
-// TODO(timestamp): refactor and remove momentjs from here
-
-import moment from 'moment';
-import { date2string } from './time-helpers.js';
+import { date2string, EMPTY_TIME } from './time-helpers.js';
 
 /**
  * @param {object} object where to look for the key
@@ -53,7 +50,7 @@ const whatsapp = /^(?<qualif>(VID|IMG)-(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day
 
 const screen = /^(?<qualif>(?<year>(19|20)[0-9]{2})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2}))(?<title>.*)?$/;
 
-const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})( (?<title>.*))?$`);
+const yearRange = new RegExp(`^(?<yearMin>${yearUnammed.source})-(?<yearMax>${yearUnammed.source})( (?<title>[^[]+))?( \\[(?<qualif>.+)\\])?$`);
 
 const minimal = new RegExp(`^(?!${ts.source})(?<title>(?!.* ${removeNames(ts)})[^[]+)( \\[(?<qualif>.+)\\])?$`);
 
@@ -72,124 +69,89 @@ const matchers = {
     invalid // Fallback
 };
 
-export const defaultValues = {
-    year: 0,
-    month: -1, // -> YYYY:01:01 01:01:01
-    day: -1, // -> YYYY:MM:02 02:02:02
-    hour: 0,
-    minute: 0,
-    second: 0,
-
-    qualif: '', // in the tag, the filename
-    title: '',  // in the tag, the rest (out of the filename)
-
-    yearMin: 0,
-    yearMax: 0
-};
-
-
-class Timestamp {
-    year = 0
-    month = -1 // -> YYYY:01:01 01:01:01
-    day = -1 // -> YYYY:MM:02 02:02:02
-    hour = 0
-    minute = 0
-    second = 0
-    moment = null
-
-    qualif = '' // in the tag, the filename
-    title = ''  // in the tag, the rest (out of the filename)
-
-    yearMin = 0
-    yearMax = 0
-
-    string = ''
-
-    constructor(str = '') {
-        this.string = str;
-
-        if (!str) {
-            return;
-        }
-
-        for (const k of Object.keys(matchers)) {
-            const re = new RegExp(matchers[k], 'gm');
-            const matches = re.exec(str);
-            if (matches && matches.groups) {
-                this.type = k;
-                const parsed = Object.assign({}, defaultValues);
-
-                for (const m of Object.keys(matches.groups)) {
-                    if (m[0] == '_') {
-                        continue;
-                    }
-                    parsed[m] = parseInfo(matches.groups, m, parsed[m]);
-                }
-
-                /** @type {string|number} */
-                this.qualif = parsed.qualif;
-                this.title = parsed.title;
-                this.yearMin = parsed.yearMin;
-                this.yearMax = parsed.yearMax;
-
-                if ((this.type != 'yearRange') && (parsed.year > 0)) {
-                    // // We hardcode a limit where the day has no meaning...
-                    if (parsed.month < 1
-                        || (parsed.year < 1998 && parsed.month < 2 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
-                    ) {
-                        this.moment = moment.utc([parsed.year]);
-                        this.yearOnly();
-                    } else {
-                        if (parsed.day < 0
-                            || (parsed.year < 1998 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
-                        ) {
-                            this.moment = moment.utc([parsed.year, parsed.month - 1]);
-                            this.yearMonthOnly();
-                        } else {
-                            this.moment = moment.utc([parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second]);
-                        }
-                    }
-                }
-                break;
-            }
-        }
-    }
-
-    yearMonthOnly() {
-        this.moment.date(2); // day of month
-        this.moment.hour(2);
-        this.moment.minute(2);
-        this.moment.second(2);
-    }
-
-    yearOnly() {
-        this.moment.month(0); // 0 based -> eq "1"
-        this.moment.date(1);  // day of month
-        this.moment.hour(1);
-        this.moment.minute(1);
-        this.moment.second(1);
-    }
-
-    isTimestamped() {
-        return this.moment != null;
-    }
-}
-
 /**
  * @param {string} str to be parsed
  * @returns {object} parsed
+ * @property {string} type of the string
  * @property {string} title of the string
  * @property {string} qualif of the string
- * @property {Timestamp} ts of the string
+ * @property {string} time of the string
  */
 export function parseFilename(str) {
-    const ts = new Timestamp(str);
     const res = {
-        type: ts.type,
-        time: date2string(ts.moment),
-        title: ts.title,
-        qualif: ts.qualif
+        string: str,
+        title: '',
+        qualif: '',
+        time: EMPTY_TIME,
+        type: 'invalid'
     };
+
+    if (!str) {
+        return res;
+    }
+
+    for (const k of Object.keys(matchers)) {
+        const re = new RegExp(matchers[k], 'gm');
+        const matches = re.exec(str);
+        if (matches && matches.groups) {
+            res.type = k;
+
+            const parsed = {
+                year: 0,
+                month: -1, // -> YYYY:01:01 01:01:01
+                day: -1, // -> YYYY:MM:02 02:02:02
+                hour: 0,
+                minute: 0,
+                second: 0,
+
+                qualif: '', // in the tag, the filename
+                title: '',  // in the tag, the rest (out of the filename)
+
+                yearMin: 0,
+                yearMax: 0
+            };
+
+            for (const m of Object.keys(matches.groups)) {
+                if (m[0] == '_') {
+                    continue;
+                }
+                parsed[m] = parseInfo(matches.groups, m, parsed[m]);
+            }
+
+            /** @type {string|number} */
+            res.qualif = parsed.qualif;
+            res.title = parsed.title;
+
+            if (res.type == 'yearRange') {
+                res.time = `${parsed.yearMin}-${parsed.yearMax}`;
+                break;
+            }
+
+            if (parsed.year > 0) {
+                if (parsed.month < 1
+                    // We hardcode a limit where the day has no meaning...
+                    || (parsed.year < 1998 && parsed.month < 2 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
+                ) {
+                    // Year only
+                    res.time = '' + parsed.year;
+                    break;
+                }
+
+                if (parsed.day < 0
+                    || (parsed.year < 1998 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
+                ) {
+                    // Year-month only
+                    res.time = date2string(new Date(parsed.year, parsed.month - 1, 2, 2, 2, 2));
+                    break;
+                }
+                res.time = date2string(new Date(parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second));
+                break;
+            }
+
+            res.time = EMPTY_TIME;
+            break;
+        }
+    }
 
     return res;
 }

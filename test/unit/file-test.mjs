@@ -92,6 +92,13 @@ describe(t(import.meta), function () {
                 expect(f.get(File.I_F_TIME).initial).toBe('');
             });
 
+            it('parse range folder', async () => {
+                const f = new File('2020-2021 Test [brol]');
+                expect(f.get(File.I_F_QUALIF).initial).toBe('brol');
+                expect(f.get(File.I_F_TITLE).initial).toBe('Test');
+                expect(f.get(File.I_F_TIME).initial).toBe('2020-2021');
+            });
+
             it('should give a parent', () => {
                 // We need real files here, since "buildFile" will check for folder existence
 

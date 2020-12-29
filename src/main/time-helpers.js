@@ -80,7 +80,7 @@ export function date2string(dateOrMoment) {
 
     let date = (/** @type {Date} */ /** @type {any} */ (dateOrMoment));
 
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}-${pad(date.getMinutes())}-${pad(date.getSeconds())}`;
+    return canonizeTimestamp(`${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}-${pad(date.getMinutes())}-${pad(date.getSeconds())}`);
 }
 
 /**

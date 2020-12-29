@@ -163,12 +163,17 @@ describe(t(import.meta), function () {
         });
 
         it('should parse "yearRange" elements', function () {
-            isA('2015-2016', 'yearRange', '', {
+            isA('2015-2016', 'yearRange', '2015-2016', {
                 title: ''
             });
 
-            isA('2015-2016 with title', 'yearRange', '', {
+            isA('2015-2016 with title', 'yearRange', '2015-2016', {
                 title: 'with title'
+            });
+
+            isA('2015-2016 with title [brol]', 'yearRange', '2015-2016', {
+                title: 'with title',
+                qualif: 'brol'
             });
         });
 
