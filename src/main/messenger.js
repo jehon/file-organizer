@@ -20,8 +20,6 @@ export function notify(data) {
     }
     list.push(data);
 
-    // console.info('> ', JSON.stringify(data));
-
     guiCallback(data);
 }
 

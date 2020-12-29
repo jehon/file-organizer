@@ -53,6 +53,13 @@ export class FOError extends Error { }
  *
  */
 export default class File extends Item {
+    /**
+     * @returns {Array<string>} the properties that will go to the browser
+     */
+    static getNotifyProperties() {
+        return [...super.getNotifyProperties(), 'initialPath', 'currentFilePath'];
+    }
+
     static getType() {
         return TYPE_FILE;
     }
@@ -91,7 +98,7 @@ export default class File extends Item {
     static I_F_TIME = 'File_time';
 
     /** @type {string} */
-    _path
+    _initialPath
 
     /**
      * cache
@@ -104,14 +111,14 @@ export default class File extends Item {
     constructor(filePath) {
         /* filepath is the title */
         super(filePath);
-        this._path = filePath;
+        this._initialPath = filePath;
 
         this.notify(STATUS_ANALYSING);
 
-        const vFn = new Value(path.parse(this._path).name);
+        const vFn = new Value(path.parse(this._initialPath).name);
         this.set(File.I_FILENAME, vFn);
 
-        this.set(File.I_EXTENSION, new Value(path.parse(this._path).ext));
+        this.set(File.I_EXTENSION, new Value(path.parse(this._initialPath).ext));
 
         let isFolder = false;
         try {
@@ -152,11 +159,11 @@ export default class File extends Item {
     get parent() {
         // A get parent is made before this initialization
         // by item.notify
-        if (!this._path) {
+        if (!this._initialPath) {
             return null;
         }
 
-        let parentDir = path.dirname(this._path);
+        let parentDir = path.dirname(this._initialPath);
         if (parentDir == '/') {
             return null;
         }
@@ -171,6 +178,10 @@ export default class File extends Item {
         return parentsMap.get(parentDir);
     }
 
+    get initialPath() {
+        return this._initialPath;
+    }
+
     /**
      * Get the current path from the file
      * based on "current" values
@@ -178,7 +189,7 @@ export default class File extends Item {
      * @returns {string} absolute path
      */
     get currentFilePath() {
-        if ((this.get(File.I_FILENAME).current == null) && (this.get(File.I_EXTENSION).current == null)) {
+        if (!this.get(File.I_FILENAME)?.current && !this.get(File.I_EXTENSION)?.current) {
             return null;
         }
         let v = path.join(
@@ -229,13 +240,6 @@ export default class File extends Item {
     // TO BE USED BY SPECIALIZED FILES
     //
     // ------------------------------------------------
-
-    /**
-     * @returns {Array<string>} the properties that will go to the browser
-     */
-    static getNotifyProperties() {
-        return [...super.getNotifyProperties(), 'path', 'problemsList', 'infos'];
-    }
 
     /**
      * [Tool for specialized classes]

@@ -87,7 +87,7 @@ demo: build
 start-test-gui: build
 	mkdir -p tmp/gui
 	cd tmp/gui && ../../reset.sh
-	cd tmp/gui && ../../file-organizer-gui.sh regularize -n
+	cd tmp/gui && ../../file-organizer-gui.sh dump --all --debug .
 
 start-test-dump: build
 	@echo "************** dump "

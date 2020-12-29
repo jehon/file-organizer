@@ -8,6 +8,20 @@ import {
 } from '../common/constants.js';
 
 export default class Item {
+    static getNotifyProperties() {
+        return [
+            'id',
+            'type',
+            'subType',
+            'status',
+            'isTop',
+            'title',
+            'parentId',
+            'problemsList',
+            // 'values'
+        ];
+    }
+
     /**
      * If the file is given by arguments
      * and thus the top of a hierarchy
@@ -49,6 +63,10 @@ export default class Item {
         this.#isTop = v;
     }
 
+    get isTop() {
+        return this.#isTop;
+    }
+
     get type() {
         return this.constructor.getType();
     }
@@ -67,6 +85,10 @@ export default class Item {
 
     get parent() {
         return this._parent;
+    }
+
+    get parentId() {
+        return this.parent?.id;
     }
 
     set parent(parent) {
@@ -140,6 +162,7 @@ export default class Item {
         }
         return this;
     }
+
     /**
      * @param {string} id of the problem
      * @returns {boolean} if it is present
@@ -153,10 +176,6 @@ export default class Item {
     // Public methods
     //
     // ------------------------------------------
-
-    static getNotifyProperties() {
-        return ['isTop', 'id', 'type', 'subType', 'status', 'title'];
-    }
 
     /**
      * Notify of a status change
@@ -174,7 +193,7 @@ export default class Item {
         }
         for (let i of this.constructor.getNotifyProperties()) {
             // data[i] = this[(i[0] == '#' ? i.substr(1) : i)];
-            data[i] = this[i];
+            data[i] = this[i]; // (typeof this[i] == 'function' ? this[i]() : this[i]);
         }
         notify(data);
         return this;

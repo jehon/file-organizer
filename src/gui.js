@@ -49,6 +49,7 @@ export async function guiStart() {
     });
 
     if (options.debug) {
+        console.info('Opening dev tools');
         mainWindow.webContents.openDevTools();
     }
 
