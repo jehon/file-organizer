@@ -8,9 +8,6 @@ import yargs from 'yargs';
 
 import options from '../common/options.js';
 
-// TODO: Fix problem in version < 4.1 coming from jsonfile 4.0.0 in fs-extra 8.1.0
-import 'graceful-fs';
-
 import importDirectory from './importDirectory.js';
 import loadFileTypes from './loadFileTypes.js';
 import { buildFile } from './register-file-types.js';
@@ -19,10 +16,6 @@ import { guiAvailable, guiStart } from '../gui.js';
 (async () => {
     try {
         await loadFileTypes();
-
-        if (guiAvailable()) {
-            await guiStart();
-        }
 
         let cmds = await importDirectory('src/main/commands');
 
@@ -79,11 +72,12 @@ import { guiAvailable, guiStart } from '../gui.js';
                     argv.files.push('.');
                 }
                 argv.files = argv.files.map(f => buildFile('' + f));
+
                 return argv;
             })
             .onFinishCommand(() => {
                 if (guiAvailable()) {
-                    process.exit(0);
+                    process.stdout.write('Parsing done\n');
                 }
             });
 
@@ -94,7 +88,12 @@ import { guiAvailable, guiStart } from '../gui.js';
                 c.handler ?? '');
         }
 
-        Object.assign(options, yparser.argv);
+        Object.assign(options, await yparser.argv);
+
+        if (guiAvailable()) {
+            await guiStart();
+        }
+
     } catch (e) {
         console.error(e);
         process.exit(1);
