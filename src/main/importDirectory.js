@@ -21,6 +21,7 @@ export default async function (folder, regExpMask = /[.]js/) {
         list.map(f => import(f)
             .catch(e => {
                 console.error(`Error loading: ${f}:`, e);
+                throw e;
             }))
     );
 }

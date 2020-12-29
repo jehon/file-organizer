@@ -80,16 +80,16 @@ describe(t(import.meta), function () {
             it('parse filename', async () => {
                 const f = new File('20150306_153340 Cable internet dans la rue.jpg');
                 // await f.loadData();
-                expect(f.get(File.I_FN_QUALIF).initial).toBe('20150306_153340');
-                expect(f.get(File.I_FN_TITLE).initial).toBe('Cable internet dans la rue');
-                expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('2015-03-06 15-33-40');
+                expect(f.get(File.I_F_QUALIF).initial).toBe('20150306_153340');
+                expect(f.get(File.I_F_TITLE).initial).toBe('Cable internet dans la rue');
+                expect(f.get(File.I_F_TIME).initial).toBe('2015-03-06 15-33-40');
             });
 
             it('parse invalid filename', async () => {
                 const f = new File('1913-14-75 Cable internet dans la rue.jpg');
-                expect(f.get(File.I_FN_QUALIF).initial).toBe('');
-                expect(f.get(File.I_FN_TITLE).initial).toBe('1913-14-75 Cable internet dans la rue');
-                expect(f.get(File.I_FN_TIME).initial.humanReadable()).toBe('');
+                expect(f.get(File.I_F_QUALIF).initial).toBe('');
+                expect(f.get(File.I_F_TITLE).initial).toBe('1913-14-75 Cable internet dans la rue');
+                expect(f.get(File.I_F_TIME).initial).toBe('');
             });
 
             it('should give a parent', () => {
@@ -125,15 +125,15 @@ describe(t(import.meta), function () {
             it('should parse filename qualif', async () => {
                 const f = new File('2015-05-26 11-37-24 vie de famille [VID_20120526_113724]');
                 await f.loadData();
-                expect(f.get(File.I_FN_TIME).expected.humanReadable().substr(0, 4)).toBe('2012');
-                expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
+                expect(f.get(File.I_F_TIME).expected.substr(0, 4)).toBe('2012');
+                expect(f.get(File.I_F_TITLE).expected).toBe('vie de famille');
             });
 
             it('should parse remove duplicate title/qualif', async () => {
                 const f = new File('vie de famille [vie de famille]');
                 await f.loadData();
-                expect(f.get(File.I_FN_QUALIF).expected).toBe('');
-                expect(f.get(File.I_FN_TITLE).expected).toBe('vie de famille');
+                expect(f.get(File.I_F_QUALIF).expected).toBe('');
+                expect(f.get(File.I_F_TITLE).expected).toBe('vie de famille');
             });
 
             it('should calculate a canonicalFilename', async () => {
@@ -149,7 +149,7 @@ describe(t(import.meta), function () {
             //         const n1 = new File(filename);
             //         await n1.check();
             //         expect(await n1.getIndexedFilename()).toBe('2018-02-04 13-17-50 canon');
-            //         const n2 = new FileTimestamped(n1.getPath());
+            //         const n2 = new FileTimed(n1.getPath());
 
             //         await n1.changeFilename('2018-02-04 13-17-50 canon [test]');
 
@@ -214,7 +214,7 @@ describe(t(import.meta), function () {
                 f.withPrepare(() => f.get(File.I_FILENAME).expect('go to need action'));
                 f.withFix(() => {
                     f.get(File.I_FILENAME).fix();
-                    f.get(File.I_FN_TITLE).fix();
+                    f.get(File.I_F_TITLE).fix();
                 });
             });
 

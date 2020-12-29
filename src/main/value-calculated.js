@@ -42,6 +42,14 @@ export default class ValueCalculated extends ValueConstant {
         this.#calculatedExpected = this.#formula(this.#basis.expected);
     }
 
+    get formula() {
+        return this.#formula;
+    }
+
+    get basis() {
+        return this.#basis;
+    }
+
     get initial() {
         return this.#formula(this.#basis.initial);
     }

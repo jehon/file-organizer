@@ -71,32 +71,24 @@ export default class File extends Item {
 
     /**
      * Format: .blabla (always have a dot)
-     *
-     * null mean the file has been deleted
+     *  null mean the file has been deleted
      */
     static I_EXTENSION = 'File_extension'
 
-    /**
-     * true if it is a folder
-     *
-     * this will be set by the build file factory (in register-file-types)
-     */
+    /** true if it is a folder */
     static I_IS_FOLDER = 'File_is_folder';
 
-    /**
-     * In the filename, the title part
-     */
-    static I_FN_TITLE = 'File_title';
+    /** In the filename parsing, the type of parsing applied */
+    static I_F_TYPE = 'File_type';
 
-    /**
-     * In the filename, the qualif filename part
-     */
-    static I_FN_QUALIF = 'File_qualif';
+    /** In the filename, the title part */
+    static I_F_TITLE = 'File_title';
 
-    /**
-     * In the filename, the timestamp part
-     */
-    static I_FN_TIME = 'File_time';
+    /** In the filename, the qualif filename part  */
+    static I_F_QUALIF = 'File_qualif';
+
+    /** In the filename, the timestamp part */
+    static I_F_TIME = 'File_time';
 
     /** @type {string} */
     _path
@@ -137,21 +129,24 @@ export default class File extends Item {
         /* Build up all informations and link them to I_FILENAME */
 
         // TODO: handle unparsable filenames ?
+        // TODO: handle I_F_TYPE
 
         /* auto update filename  */
         const updateFn = () => this.get(File.I_FILENAME).expect(this.getCanonicalFilename());
 
         // Handle initialization
 
-        this.set(File.I_FN_QUALIF, new ValueCalculated(vFn, fn => parseFilename(fn).qualif));
-        this.set(File.I_FN_TITLE, new ValueCalculated(vFn, fn => parseFilename(fn).title));
-        this.set(File.I_FN_TIME, new ValueCalculated(vFn, fn => parseFilename(fn).ts));
+        this.set(File.I_F_QUALIF, new ValueCalculated(vFn, fn => parseFilename(fn).qualif));
+        this.set(File.I_F_TITLE, new ValueCalculated(vFn, fn => parseFilename(fn).title));
+        this.set(File.I_F_TIME, new ValueCalculated(vFn, fn => parseFilename(fn).time));
+        // this.set(File.I_F_TYPE, new ValueCalculated(vFn, fn => parseFilename(fn).type));
 
         // Now that everything is intialized, let's handle change
 
-        this.get(File.I_FN_QUALIF).onExpectedChanged(updateFn);
-        this.get(File.I_FN_TITLE).onExpectedChanged(updateFn);
-        this.get(File.I_FN_TIME).onExpectedChanged(updateFn);
+        this.get(File.I_F_QUALIF).onExpectedChanged(updateFn);
+        this.get(File.I_F_TITLE).onExpectedChanged(updateFn);
+        this.get(File.I_F_TIME).onExpectedChanged(updateFn);
+        // this.get(File.I_F_TYPE).expect('')
     }
 
     get parent() {
@@ -211,14 +206,14 @@ export default class File extends Item {
         }
 
         let proposedFilename = '';
-        if (this.get(File.I_FN_TIME)?.expected.humanReadable()) {
-            proposedFilename += this.get(File.I_FN_TIME).expected.humanReadable();
+        if (this.get(File.I_F_TIME)?.expected) {
+            proposedFilename += this.get(File.I_F_TIME).expected;
         }
-        if (this.get(File.I_FN_TITLE)?.expected) {
-            proposedFilename += ' ' + this.get(File.I_FN_TITLE).expected;
+        if (this.get(File.I_F_TITLE)?.expected) {
+            proposedFilename += ' ' + this.get(File.I_F_TITLE).expected;
         }
-        if (this.get(File.I_FN_QUALIF)?.current) {
-            proposedFilename += ' [' + this.get(File.I_FN_QUALIF).current + ']';
+        if (this.get(File.I_F_QUALIF)?.current) {
+            proposedFilename += ' [' + this.get(File.I_F_QUALIF).current + ']';
         }
         if (!proposedFilename) {
             proposedFilename = this.get(File.I_FILENAME).expected;
@@ -265,17 +260,17 @@ export default class File extends Item {
 
         // Parse the qualif filename to see if it is a timestamp too
         // and take it as the source of thruth if applicable
-        // TODO: this should move into timestamp ?
-        if (this.get(File.I_FN_QUALIF).current) {
-            const ts2 = parseFilename(this.get(File.I_FN_QUALIF).current).ts;
-            if (ts2.isTimestamped()) {
-                this.get(File.I_FN_TIME).expect(ts2, 'parse the qualif instead of the timestamp');
+        // TODO(timestamp): this should move into timestamp ?
+        if (this.get(File.I_F_QUALIF).current) {
+            const ts2 = parseFilename(this.get(File.I_F_QUALIF).current).time;
+            if (ts2) {
+                this.get(File.I_F_TIME).expect(ts2, 'parse the qualif instead of the timestamp');
             }
         }
 
-        if (this.get(File.I_FN_QUALIF).expected && this.get(File.I_FN_TITLE).expected == this.get(File.I_FN_QUALIF).expected) {
+        if (this.get(File.I_F_QUALIF).expected && this.get(File.I_F_TITLE).expected == this.get(File.I_F_QUALIF).expected) {
             // 'remove duplicate title/original'
-            this.get(File.I_FN_QUALIF).expect('', 'Original is a duplicate of the title');
+            this.get(File.I_F_QUALIF).expect('', 'Original is a duplicate of the title');
         }
 
         return this;

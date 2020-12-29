@@ -1,12 +1,9 @@
 
-import { t } from './help-functions.mjs';
 import fs from 'fs';
-
 import FileMovie from '../../src/main/file-types/file-movie.js';
+import FileTimed from '../../src/main/file-types/file-timed.js';
+import { createFileFrom, t, tempPath } from './help-functions.mjs';
 
-import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
-import { createFileFrom, tempPath } from './help-functions.mjs';
-import { exif2ts } from '../../src/main/file-types/file-exif.js';
 
 /**
  * @param {string} title to describe the test
@@ -24,10 +21,10 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
                 const f = new FileMovie(filename);
                 await f.loadData();
 
-                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
+                expect(f.get(FileTimed.I_FT_TIME).initial)
                     .withContext(baseFilename)
                     .toBe(its_time);
-                expect(f.get(FileTimestamped.I_ITS_TITLE).initial)
+                expect(f.get(FileTimed.I_FT_TITLE).initial)
                     .withContext(baseFilename)
                     .toBe(its_title);
                 filename = f.currentFilePath;
@@ -53,8 +50,8 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
 
 
                     // Set some values
-                    f.get(FileTimestamped.I_ITS_TITLE).expect('new title');
-                    f.get(FileTimestamped.I_ITS_TIME).expect(exif2ts('2020:01:02 02:03:04'));
+                    f.get(FileTimed.I_FT_TITLE).expect('new title');
+                    f.get(FileTimed.I_FT_TIME).expect('2020-01-02 02-03-04');
 
                     await f.runFix();
                     filename = f.currentFilePath;
@@ -69,10 +66,10 @@ function testFullFlow(title, baseFilename, its_time, its_title) {
                     const f = new FileMovie(filename);
 
                     await f.loadData();
-                    expect(f.get(FileTimestamped.I_ITS_TITLE).initial)
+                    expect(f.get(FileTimed.I_FT_TITLE).initial)
                         .withContext(baseFilename)
                         .toBe('new title');
-                    expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
+                    expect(f.get(FileTimed.I_FT_TIME).initial)
                         .withContext(baseFilename)
                         .toBe('2020-01-02 02-03-04');
                 }

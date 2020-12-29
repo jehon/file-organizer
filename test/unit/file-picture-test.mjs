@@ -4,8 +4,8 @@ import fs from 'fs';
 
 import { createFileFrom, tempPath, dataPath } from './help-functions.mjs';
 import FilePicture from '../../src/main/file-types/file-picture.js';
-import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
-import FileExif, { exif2ts } from '../../src/main/file-types/file-exif.js';
+import FileTimed from '../../src/main/file-types/file-timed.js';
+import FileExif from '../../src/main/file-types/file-exif.js';
 
 import File, { FOError } from '../../src/main/file-types/file.js';
 
@@ -24,11 +24,11 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
                 let f;
                 f = new FilePicture(filename);
                 await f.loadData();
-                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable())
+                expect(f.get(FileTimed.I_FT_TIME).initial)
                     .withContext(baseFilename)
                     .toBe(its_time);
 
-                expect(f.get(FileTimestamped.I_ITS_TITLE).initial)
+                expect(f.get(FileTimed.I_FT_TITLE).initial)
                     .withContext(baseFilename)
                     .toBe(its_title);
 
@@ -65,8 +65,8 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
 
 
                     // Set some values
-                    f.get(FileTimestamped.I_ITS_TITLE).expect('new title');
-                    f.get(FileTimestamped.I_ITS_TIME).expect(exif2ts('2020:01:02 02:03:04'));
+                    f.get(FileTimed.I_FT_TITLE).expect('new title');
+                    f.get(FileTimed.I_FT_TIME).expect('2020-01-02 02-03-04');
 
                     await f.runFix();
                     filename = f.currentFilePath;
@@ -81,8 +81,8 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
 
                     await f.loadData();
                     filename = f.currentFilePath;
-                    expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('new title');
-                    expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 02-03-04');
+                    expect(f.get(FileTimed.I_FT_TITLE).initial).toBe('new title');
+                    expect(f.get(FileTimed.I_FT_TIME).initial).toBe('2020-01-02 02-03-04');
                     expect(f.get(FileExif.I_FE_ORIENTATION).initial).toBe(0);
                 }
             } catch (e) {

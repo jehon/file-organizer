@@ -99,7 +99,7 @@ start-test-info-all:
 
 start-test-info-ts:
 	@echo "************** info timestamp "
-	./file-organizer.sh info -k FileTimestamped_time test/data/canon.JPG
+	./file-organizer.sh info -k FileTimed_time test/data/canon.JPG
 
 start-test-fix-one:
 	@echo "************** fix one "

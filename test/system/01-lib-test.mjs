@@ -1,10 +1,10 @@
 
-import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
+import FileTimed from '../../src/main/file-types/file-timed.js';
 import { describeAndSetup, itRun, assert, getFileExifField } from './run-helper.js';
 
 describeAndSetup(import.meta.url, (ctx) => {
     it('get exif infos', async () => {
-        const exif = await getFileExifField(ctx, FileTimestamped.I_ITS_TIME, 'basic/DSC_2506.MOV');
+        const exif = await getFileExifField(ctx, FileTimed.I_FT_TIME, 'basic/DSC_2506.MOV');
         expect(exif).toBe('2019-09-19 07-48-25');
     });
 

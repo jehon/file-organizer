@@ -1,10 +1,8 @@
 
-// TODO(timestamp): refactor into string or dates????
-// TODO: remove momentjs
+// TODO(timestamp): refactor and remove momentjs from here
 
 import moment from 'moment';
-import 'moment-timezone';
-import { canonizeTimestamp, isRange } from './time-helpers.js';
+import { date2string } from './time-helpers.js';
 
 /**
  * @param {object} object where to look for the key
@@ -90,7 +88,7 @@ export const defaultValues = {
 };
 
 
-export default class Timestamp {
+class Timestamp {
     year = 0
     month = -1 // -> YYYY:01:01 01:01:01
     day = -1 // -> YYYY:MM:02 02:02:02
@@ -106,9 +104,8 @@ export default class Timestamp {
     yearMax = 0
 
     string = ''
-    tz = ''
 
-    constructor(str = '', tz = '') {
+    constructor(str = '') {
         this.string = str;
 
         if (!str) {
@@ -120,66 +117,42 @@ export default class Timestamp {
             const matches = re.exec(str);
             if (matches && matches.groups) {
                 this.type = k;
-                this.store(matches, tz);
+                const parsed = Object.assign({}, defaultValues);
+
+                for (const m of Object.keys(matches.groups)) {
+                    if (m[0] == '_') {
+                        continue;
+                    }
+                    parsed[m] = parseInfo(matches.groups, m, parsed[m]);
+                }
+
+                /** @type {string|number} */
+                this.qualif = parsed.qualif;
+                this.title = parsed.title;
+                this.yearMin = parsed.yearMin;
+                this.yearMax = parsed.yearMax;
+
+                if ((this.type != 'yearRange') && (parsed.year > 0)) {
+                    // // We hardcode a limit where the day has no meaning...
+                    if (parsed.month < 1
+                        || (parsed.year < 1998 && parsed.month < 2 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
+                    ) {
+                        this.moment = moment.utc([parsed.year]);
+                        this.yearOnly();
+                    } else {
+                        if (parsed.day < 0
+                            || (parsed.year < 1998 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
+                        ) {
+                            this.moment = moment.utc([parsed.year, parsed.month - 1]);
+                            this.yearMonthOnly();
+                        } else {
+                            this.moment = moment.utc([parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second]);
+                        }
+                    }
+                }
                 break;
             }
         }
-    }
-
-    store(matches, tz = '') {
-        const parsed = Object.assign({}, defaultValues);
-
-        for (const m of Object.keys(matches.groups)) {
-            if (m[0] == '_') {
-                continue;
-            }
-            parsed[m] = parseInfo(matches.groups, m, parsed[m]);
-        }
-
-        /** @type {string|number} */
-        this.qualif = parsed.qualif;
-        this.title = parsed.title;
-        this.yearMin = parsed.yearMin;
-        this.yearMax = parsed.yearMax;
-
-        if (!isRange(this.humanReadable()) && (parsed.year > 0)) {
-            // // We hardcode a limit where the day has no meaning...
-            if (parsed.month < 1
-                || (parsed.year < 1998 && parsed.month < 2 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
-            ) {
-                this.moment = moment.utc([parsed.year]);
-                this.yearOnly();
-            } else {
-                if (parsed.day < 0
-                    || (parsed.year < 1998 && parsed.day < 2 && parsed.hour < 1 && parsed.minute < 1 && parsed.second < 1)
-                ) {
-                    this.moment = moment.utc([parsed.year, parsed.month - 1]);
-                    this.yearMonthOnly();
-                } else {
-                    // Normal case
-                    this.moment = moment.utc([parsed.year, parsed.month - 1, parsed.day, parsed.hour, parsed.minute, parsed.second]);
-                    if (tz) {
-                        if (this.isTimestamped())
-                            this.moment = this.moment.tz(tz); // true: force to keep the initial value, false: convert
-                    }
-                }
-            }
-        }
-    }
-
-    clone() {
-        return Object.assign(new Timestamp(), this, {
-            moment: (this.moment ? this.moment.clone() : null)
-        });
-    }
-
-    /**
-     *
-     * @param {Timestamp} b to be compared to
-     * @returns {boolean} if equals
-     */
-    equals(b) {
-        return this.humanReadable() == b.humanReadable();
     }
 
     yearMonthOnly() {
@@ -200,14 +173,6 @@ export default class Timestamp {
     isTimestamped() {
         return this.moment != null;
     }
-
-    humanReadable() {
-        if (!this.isTimestamped()) {
-            return '';
-        }
-
-        return canonizeTimestamp(this.moment.format('YYYY-MM-DD HH-mm-ss'));
-    }
 }
 
 /**
@@ -220,12 +185,11 @@ export default class Timestamp {
 export function parseFilename(str) {
     const ts = new Timestamp(str);
     const res = {
-        ts,
+        type: ts.type,
+        time: date2string(ts.moment),
         title: ts.title,
         qualif: ts.qualif
     };
-    delete (res.ts.title);
-    delete (res.ts.qualif);
 
     return res;
 }

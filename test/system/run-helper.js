@@ -10,7 +10,7 @@ const pExecFile = promisify(execFile);
 import { t } from '../test-helper.js';
 
 import datas from './data.js';
-import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
+import FileTimed from '../../src/main/file-types/file-timed.js';
 
 const rootPath = (...args) => path.join((path.dirname(path.dirname(path.dirname(new URL(import.meta.url).pathname)))), ...args);
 
@@ -230,7 +230,7 @@ export const assert = {
         if (data === null) {
             data = datas[foriginal ? foriginal : f].ts;
         }
-        const res = await getFileExifField(ctx, FileTimestamped.I_ITS_TIME, f);
+        const res = await getFileExifField(ctx, FileTimed.I_FT_TIME, f);
         expect(res)
             .withContext(`File ${f} exif timestamp`)
             .toEqual(data);
@@ -240,7 +240,7 @@ export const assert = {
         if (data === null) {
             data = datas[foriginal ? foriginal : f].title;
         }
-        const res = await getFileExifField(ctx, FileTimestamped.I_ITS_TITLE, f);
+        const res = await getFileExifField(ctx, FileTimed.I_FT_TITLE, f);
         expect(res)
             .withContext(`File ${f} exif title`)
             .toEqual(data);

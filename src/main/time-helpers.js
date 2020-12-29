@@ -20,7 +20,7 @@ import { pad } from '../common/string-utilities.js';
 
 const yearRangeRegexp = /^(?<yearMin>(19|20)[0-9][0-9])-(?<yearMax>(19|20)[0-9][0-9])?$/;
 
-export const EMPTY_TS = '';
+export const EMPTY_TIME = '';
 
 /************************
  *
@@ -34,7 +34,8 @@ export const EMPTY_TS = '';
  */
 export function canonizeTimestamp(str) {
     return str
-        .replace('0000-00-00 00-00-00', EMPTY_TS)
+        .replace('0000-00-00 00-00-00', EMPTY_TIME)
+        .replace('-00-00 00-00-00', EMPTY_TIME) // Legacy exif
         .replace('-01-01 01-01-01', '')
         .replace('-02 02-02-02', '')
         .replace(' 00-00-00', '');
@@ -69,6 +70,10 @@ export function fullTimestamp(ts) {
  * @returns {string} formatted
  */
 export function date2string(dateOrMoment) {
+    if (!dateOrMoment) {
+        return EMPTY_TIME;
+    }
+
     if (moment.isMoment(dateOrMoment)) {
         return canonizeTimestamp(dateOrMoment.format('YYYY-MM-DD HH-mm-ss'));
     }

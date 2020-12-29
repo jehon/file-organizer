@@ -1,6 +1,6 @@
 
-import FileExif, { exif2ts, _exif2ts, _ts2exif } from '../../src/main/file-types/file-exif.js';
-import FileTimestamped from '../../src/main/file-types/file-timestamped.js';
+import FileExif, { _exif2ts, _ts2exif } from '../../src/main/file-types/file-exif.js';
+import FileTimed from '../../src/main/file-types/file-timed.js';
 import File, { FOError } from '../../src/main/file-types/file.js';
 import { t } from './help-functions.mjs';
 import { createFileFrom, dataPath } from './help-functions.mjs';
@@ -20,8 +20,8 @@ describe(t(import.meta), function () {
 
             expect(f.get(FileExif.I_FE_ORIENTATION).initial).toBe(0);
             expect(f.get(FileExif.I_FE_TZ).initial).toBe(null);
-            expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('');
-            expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('');
+            expect(f.get(FileTimed.I_FT_TITLE).initial).toBe('');
+            expect(f.get(FileTimed.I_FT_TIME).initial).toBe('');
 
             expect(f.get(FileExif.I_FE_ORIENTATION).expected).toBe(0);
         });
@@ -39,8 +39,8 @@ describe(t(import.meta), function () {
 
             expect(f.get(FileExif.I_FE_ORIENTATION).initial).toBe(0);
             expect(f.get(FileExif.I_FE_TZ).initial).toBe(null);
-            expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('');
-            expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('1998-12-31 12-10-11');
+            expect(f.get(FileTimed.I_FT_TITLE).initial).toBe('');
+            expect(f.get(FileTimed.I_FT_TIME).initial).toBe('1998-12-31 12-10-11');
         });
 
         it('title', async function () {
@@ -56,8 +56,8 @@ describe(t(import.meta), function () {
 
             expect(f.get(FileExif.I_FE_ORIENTATION).initial).toBe(90);
             expect(f.get(FileExif.I_FE_TZ).initial).toBe(null);
-            expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('User comments');
-            expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2015-03-06 15-33-40');
+            expect(f.get(FileTimed.I_FT_TITLE).initial).toBe('User comments');
+            expect(f.get(FileTimed.I_FT_TIME).initial).toBe('2015-03-06 15-33-40');
 
             expect(f.get(FileExif.I_FE_ORIENTATION).expected).toBe(0);
         });
@@ -75,8 +75,8 @@ describe(t(import.meta), function () {
 
             expect(f.get(FileExif.I_FE_ORIENTATION).initial).toBe(270);
             expect(f.get(FileExif.I_FE_TZ).initial).toBe(null);
-            expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('rotated-bottom-left');
-            expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2000');
+            expect(f.get(FileTimed.I_FT_TITLE).initial).toBe('rotated-bottom-left');
+            expect(f.get(FileTimed.I_FT_TIME).initial).toBe('2000');
 
             expect(f.get(FileExif.I_FE_ORIENTATION).expected).toBe(0);
         });
@@ -113,10 +113,10 @@ describe(t(import.meta), function () {
                     }
                 }
 
-                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('');
+                expect(f.get(FileTimed.I_FT_TIME).initial).toBe('');
 
-                f.get(FileTimestamped.I_ITS_TIME).expect(exif2ts('2020:01:02 03:05:06'));
-                expect(f.get(FileTimestamped.I_ITS_TIME).expected.humanReadable()).toBe('2020-01-02 03-05-06');
+                f.get(FileTimed.I_FT_TIME).expect('2020-01-02 03-05-06');
+                expect(f.get(FileTimed.I_FT_TIME).expected).toBe('2020-01-02 03-05-06');
                 expect(f.get(File.I_FILENAME).expected).toBe('2020-01-02 03-05-06 no_exif');
 
                 await f.fix();
@@ -128,8 +128,8 @@ describe(t(import.meta), function () {
                 const f = new FileExif(filename);
                 await f.loadData();
 
-                expect(f.get(FileTimestamped.I_ITS_TIME).initial.humanReadable()).toBe('2020-01-02 03-05-06');
-                expect(f.get(FileTimestamped.I_ITS_TITLE).initial).toBe('no_exif');
+                expect(f.get(FileTimed.I_FT_TIME).initial).toBe('2020-01-02 03-05-06');
+                expect(f.get(FileTimed.I_FT_TITLE).initial).toBe('no_exif');
                 filename = f.currentFilePath;
             }
         });

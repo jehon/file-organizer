@@ -21,6 +21,7 @@ describe(t(import.meta), function () {
     describe('conversion utilities', function () {
         it('canonize', function () {
             expect(canonizeTimestamp('0000-00-00 00-00-00')).toBe('');
+            expect(canonizeTimestamp('1980-00-00 00-00-00')).toBe('1980');
             expect(canonizeTimestamp('1980-01-01 01-01-01')).toBe('1980');
             expect(canonizeTimestamp('1980-01-02 02-02-02')).toBe('1980-01');
             expect(canonizeTimestamp('1980-02-02 02-02-02')).toBe('1980-02');

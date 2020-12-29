@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import path from 'path';
 import options from '../../common/options.js';
 import { IconFailure, IconSuccess } from '../console-utils.js';
-import FileTimestamped from '../file-types/file-timestamped.js';
+import FileTimed from '../file-types/file-timed.js';
 import { dumpDiscoveredExtension } from '../file-types/file-unsupported.js';
 import File from '../file-types/file.js';
 import iterate from '../iterate.js';
@@ -97,14 +97,14 @@ export async function handler(noptions) {
                     + sep
                     + l(fi.get(File.I_EXTENSION).initial, padExtension)
                     + sep
-                    + (fi.get(FileTimestamped.I_ITS_TIME)
-                        ? l(fi.get(FileTimestamped.I_ITS_TIME).initial.humanReadable(), padTimestamp)
-                        : IconFailure + ' ' + chalk.red(l(fi.get(File.I_FN_TIME).initial.humanReadable(), padTimestamp - 2))
+                    + (fi.get(FileTimed.I_FT_TIME)
+                        ? l(fi.get(FileTimed.I_FT_TIME).initial, padTimestamp)
+                        : IconFailure + ' ' + chalk.red(l(fi.get(File.I_F_TIME).initial, padTimestamp - 2))
                     )
                     + sep
-                    + (fi.get(FileTimestamped.I_ITS_TITLE)
-                        ? l(fi.get(FileTimestamped.I_ITS_TITLE).initial, padTitle)
-                        : IconFailure + ' ' + chalk.red(l(fi.get(File.I_FN_TITLE).initial, padTitle - 2))
+                    + (fi.get(FileTimed.I_FT_TITLE)
+                        ? l(fi.get(FileTimed.I_FT_TITLE).initial, padTitle)
+                        : IconFailure + ' ' + chalk.red(l(fi.get(File.I_F_TITLE).initial, padTitle - 2))
                     )
                     ;
 
