@@ -15,37 +15,37 @@ export default class XStatus extends HTMLElement {
 
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
         this.status = STATUS_CREATED;
+        this.innerHTML = `
+<span class='${this.status}'>
+    <img class='icon' src="" title="${this.status}">
+</span>`;
+        this.eImg = this.querySelector('img');
     }
 
-    attributeChangedCallback(attributeName, oldValue, newValue) {
-        if (newValue) {
-            this.status = newValue;
+    attributeChangedCallback(attributeName, _oldValue, newValue) {
+        switch (attributeName) {
+            case 'status':
+                if (newValue) {
+                    this.status = newValue;
+                }
+                this.adapt();
         }
-        this.adapt();
     }
 
     adapt() {
-        let img = '';
+        let ext = '.png';
         switch (this.status) {
             case STATUS_ANALYSING:
             case STATUS_ACTING:
-                img = this.status + '.gif';
+                ext = '.gif';
                 break;
 
             case STATUS_NEED_ACTION:
-                img = this.status + '.svg';
+                ext = '.svg';
                 break;
-            default:
-                img = this.status + '.png';
         }
-
-        this.shadowRoot.innerHTML = `
-        <css-inherit></css-inherit>
-        <span class='${this.status}'>
-            <img class='icon' src="img/${img}" title="${this.status}">${this.data ? this.data.title : this.id}
-        </span>`;
+        this.eImg.setAttribute('src', `img/${this.status}${ext}`);
     }
 }
 

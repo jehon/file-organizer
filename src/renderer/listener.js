@@ -15,70 +15,31 @@ function n(id) {
 ipcRenderer.setMaxListeners(1000 * 1000);
 
 /**
- * @param {function(string,string,object,*):any} cb to be called
+ * @param {function(object):any} cb to be called
  * @returns {function(void):void} to stop listening
  */
 export function listener(cb) {
-    /**
-     * Call a callback
-     *
-     * @param {function(string,string,object,*):any} cb to be called
-     * @param {*} data to be associated
-     */
-    function send(cb, data) {
-        // To have the same treatment in history and direct call
-        cb(data.type, data.id, data.status, data);
-    }
-
-    for (const data in history.values()) {
-        send(cb, data);
-    }
-
+    // Callback (to allow unregistering)
     const fn = (_event, data) => {
         history.set(n(data.id), data);
-        send(cb, data);
+        cb(data);
     };
 
+    // Register the callback
     ipcRenderer.on(CHANNEL_MAIN, fn);
+
+    // Call the cb for any value already received (history)
+    for (const data in history.values()) {
+        cb(data);
+    }
 
     return () => ipcRenderer.off(CHANNEL_MAIN, fn);
 }
 
 /**
  * @param {string} id to listen
- * @param {function(string, *): void} cb to be called
+ * @param {function(object): void} cb to be called
  * @returns {function(void):void} to stop listening
  */
-export function listenerForId(id, cb) {
-    return listener((_type, cb_id, status, data) => {
-        if (id == cb_id) {
-            cb(status, data);
-        }
-    });
-}
-
-/**
- * @param {string} type to listen for
- * @param {function(string,string,*):void} cb to be called
- * @returns {function(void):void} to stop listening
- */
-export function listenerForType(type, cb) {
-    return listener((cb_type, id, status, data) => {
-        if (type == cb_type) {
-            cb(id, status, data);
-        }
-    });
-}
-
-/**
- * @param {string} parent_id to listen for
- * @param {function(string,string,*):void} cb to be called
- * @returns {function(void):void} to stop listening
- */
-export function listenerForParent(parent_id, cb) {
-    return listener((_type, id, status, data) => {
-        if (data.parent == parent_id) {
-            cb(id, status, data);
-        }
-    });
-}
+export const listenerForId = (id, cb) => listener(data =>
+    (id == data.id) ? cb(data) : null);

@@ -16,8 +16,12 @@ import {
 } from '../common/constants.js';
 
 export default class XFilesList extends XList {
+    get refType() {
+        return TYPE_FILE;
+    }
+
     constructor() {
-        super(TYPE_FILE);
+        super();
 
         this.innerHTML = `
             <h2>Files</h2>
@@ -41,6 +45,7 @@ export default class XFilesList extends XList {
     }
 
     onCreate(id) {
+        // console.log('+', id);
         super.onCreate(id);
         this.createdElements.insertAdjacentHTML('beforeend', `<x-file id="${id}"></x-file>`);
     }
