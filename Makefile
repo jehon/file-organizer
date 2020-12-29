@@ -81,7 +81,7 @@ clean:
 # start: build
 # 	electron .
 
-start-demo: build
+demo: build
 	electron src/demo.cjs
 
 start-test-gui: build

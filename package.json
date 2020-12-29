@@ -11,8 +11,6 @@
     "css-inherit": "https://github.com/jehon/css-inherit.git",
     "debug": "4.3.1",
     "electron": "11.1.1",
-    "fs-extra": "9.0.1",
-    "graceful-fs": "4.2.4",
     "is-interactive": "1.0.0",
     "moment": "2.29.1",
     "moment-timezone": "0.5.32",
@@ -34,7 +32,6 @@
     "jasmine": "github:jasmine/jasmine-npm",
     "lint-staged": "10.5.3",
     "nyc": "15.1.0",
-    "spectron": "13.0.0",
     "watch": "1.0.2"
   },
   "scripts": {

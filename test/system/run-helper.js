@@ -1,7 +1,6 @@
 
 import path from 'path';
 import fs from 'fs';
-import fsExtra from 'fs-extra';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 
@@ -53,9 +52,8 @@ export async function describeAndSetup(url, fn) {
     describe(testName, () => {
         beforeEach(async () => {
             jasmine.DEFAULT_TIMEOUT_INTERVAL = 20 * 1000;
-            await fs.promises.rmdir(tPath(), { recursive: true });
             await fs.promises.mkdir(tPath(), { recursive: true });
-            await fsExtra.copy(dataPath(), tPath());
+            await promisify(execFile)('rsync', ['-a', '--no-perms', '--delete', dataPath() + '/', tPath()]);
         });
 
         /**
@@ -111,9 +109,9 @@ export class FORun {
             });
 
         await Promise.all([
-            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.cmd'), '"' + this.cmdLine.join('" "') + '"'),
-            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.log'), this.result.stdout || ''),
-            fsExtra.writeFile(tempPath(this.ctx.testName + '-output.err'), this.result.stderr || ''),
+            fs.promises.writeFile(tempPath(this.ctx.testName + '-output.cmd'), '"' + this.cmdLine.join('" "') + '"'),
+            fs.promises.writeFile(tempPath(this.ctx.testName + '-output.log'), this.result.stdout || ''),
+            fs.promises.writeFile(tempPath(this.ctx.testName + '-output.err'), this.result.stderr || ''),
         ]);
     }
 
@@ -187,8 +185,13 @@ export const assert = {
         const fpath = ctx.tempPath(f);
 
         /** @type {Promise<void>} */
-        let promise = fsExtra.pathExists(fpath)
-            .then((res) => { expect(res).withContext(`File '${f}' must exists but does not`).toBeTruthy(); });
+        let promise = fs.promises.access(fpath, fs.constants.R_OK)
+            .then(() => true, () => false)
+            .then((res) => {
+                expect(res)
+                    .withContext(`File '${f}' must exists but does not`)
+                    .toBeTruthy();
+            });
 
         let foriginal = f;
 
@@ -221,7 +224,8 @@ export const assert = {
     },
 
     fileDoesNotExists: async function (ctx, f) {
-        const exists = await fsExtra.pathExists(path.join(ctx.tempPath(), f));
+        const exists = await fs.promises.access(path.join(ctx.tempPath(), f), fs.constants.R_OK)
+            .then(() => true, () => false);
         expect(exists).toBeFalsy(`File ${f} must NOT exists but does`);
     },
 
