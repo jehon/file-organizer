@@ -72,7 +72,7 @@ import { guiAvailable, guiStart } from '../gui.js';
                     argv.files.push('.');
                 }
                 argv.files = argv.files.map(f => buildFile('' + f));
-                argv.files.map(f => { f.isRoot = true; });
+                argv.files.map(f => { f.isTop = true; });
 
                 return argv;
             })

@@ -12,10 +12,6 @@
 import ValueConstant from './value-constant.js';
 
 export default class ValueCalculated extends ValueConstant {
-    static getNotifyProperties() {
-        return ['currentValue', 'initialValue', 'expectedValue'];
-    }
-
     /** @type {*} */
     #calculatedExpected
 

@@ -8,20 +8,6 @@ import {
 } from '../common/constants.js';
 
 export default class Item {
-    static getNotifyProperties() {
-        return [
-            'id',
-            'type',
-            'subType',
-            'status',
-            'isTop',
-            'title',
-            'parentId',
-            'problemsList',
-            // 'values'
-        ];
-    }
-
     /**
      * If the file is given by arguments
      * and thus the top of a hierarchy
@@ -187,15 +173,7 @@ export default class Item {
         if (status !== '') {
             this._status = status;
         }
-        let data = {};
-        if (this.parent) {
-            data.parent = this.parent.id;
-        }
-        for (let i of this.constructor.getNotifyProperties()) {
-            // data[i] = this[(i[0] == '#' ? i.substr(1) : i)];
-            data[i] = this[i]; // (typeof this[i] == 'function' ? this[i]() : this[i]);
-        }
-        notify(data);
+        notify(this);
         return this;
     }
 
@@ -211,7 +189,12 @@ export default class Item {
     toJSON() {
         return {
             id: this.id,
-            _status: this._status,
+            type: this.type,
+            subType: this.subType,
+            isTop: this.isTop,
+            status: this._status,
+            title: this.title,
+            parentId: this.parentId,
             values: this.values,
             problemsList: this.problemsList
         };

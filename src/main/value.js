@@ -2,10 +2,6 @@
 import EventEmitter from '../../node_modules/eventemitter3/index.js';
 
 export default class Value extends EventEmitter {
-    static getNotifyProperties() {
-        return ['currentValue', 'initialValue', 'expectedValue'];
-    }
-
     /** @type {*} */
     #initial
 

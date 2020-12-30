@@ -53,13 +53,6 @@ export class FOError extends Error { }
  *
  */
 export default class File extends Item {
-    /**
-     * @returns {Array<string>} the properties that will go to the browser
-     */
-    static getNotifyProperties() {
-        return [...super.getNotifyProperties(), 'initialPath', 'currentFilePath'];
-    }
-
     static getType() {
         return TYPE_FILE;
     }
@@ -466,6 +459,14 @@ export default class File extends Item {
         );
 
         return list;
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            initialPath: this.initialPath,
+            currentFilePath: this.currentFilePath
+        };
     }
 }
 

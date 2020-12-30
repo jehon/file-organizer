@@ -2,7 +2,6 @@
 import ValueCalculated from './value-calculated.js';
 
 export default class ValueMirror extends ValueCalculated {
-
     fix(v) {
         this.basis.fix(v);
         return this;
