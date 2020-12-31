@@ -57,12 +57,12 @@ export default class XList extends XElement {
     <x-counter x-icon='${STATUS_ANALYSING}'></x-counter>
     <x-counter x-icon='${STATUS_SUCCESS}'></x-counter>
     <x-counter x-icon='${STATUS_FAILURE}'></x-counter>
-    (
+
     <x-counter x-icon='${STATUS_NEED_ACTION}'></x-counter>
     <x-counter x-icon='${STATUS_ACTING}'></x-counter>
     <x-counter x-icon='${STATUS_ACTED_SUCCESS}'></x-counter>
     <x-counter x-icon='${STATUS_ACTED_FAILURE}'></x-counter>
-    )
+
     <x-counter x-icon='total'></x-counter>
 </div>
 <div id='listing'></div>
