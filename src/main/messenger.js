@@ -72,6 +72,14 @@ function buildNotifyObject(obj) {
         obj = obj.toJSON();
     }
 
+    if (Array.isArray(obj)) {
+        let res = [];
+        for (const v of obj) {
+            res.push(buildNotifyObject(v));
+        }
+        return res;
+    }
+
     let res = {};
     for (let i of Object.keys(obj)) {
         if (obj[i] === null || obj[i] === undefined) {
