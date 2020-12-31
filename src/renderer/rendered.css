@@ -63,7 +63,6 @@ x-file {
 }
 */
 
-
 /** Tooltips */
 [data-tooltip] {
     position:relative;
@@ -72,12 +71,14 @@ x-file {
 [data-tooltip]:before {
     position : absolute;
     content : attr(data-tooltip);
-    background-color: rgb(248, 237, 191);
-    padding: 2px;
     left: 10px;
     top: 10px;
 
-    opacity : 0;
+    background-color: rgb(248, 237, 191);
+    padding: 2px;
+    font-size: 10px;
+
+    opacity: 0;
 }
 
 [data-tooltip]:hover:before {
