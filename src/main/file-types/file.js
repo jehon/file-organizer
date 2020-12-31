@@ -26,15 +26,12 @@ import { parseFilename } from '../timestamp.js';
 import ValueCalculated from '../value-calculated.js';
 import ValueConstant from '../value-constant.js';
 
-const parentsMap = new Map();
-
 export class FOError extends Error { }
-
 
 /**
  * How does this work?
  *
- * - new File()
+ * - buildFile()
  * - loadData()
  *      will make the full "readonly" analysis
  *      will build up info (and values-problems)
@@ -90,7 +87,11 @@ export default class File extends Item {
     /** In the filename, the timestamp part */
     static I_F_TIME = 'File_time';
 
-    /** @type {string} */
+    /**
+     * it is absolute
+     *
+     * @type {string}
+     */
     _initialPath
 
     /**
@@ -104,14 +105,20 @@ export default class File extends Item {
     constructor(filePath) {
         /* filepath is the title */
         super(filePath);
-        this._initialPath = filePath;
+        this._initialPath = path.resolve(filePath);
 
+        { // Calculate the parent
+            let parentDir = path.dirname(this.initialPath);
+            if (parentDir != '/') {
+                this.parent = buildFile(parentDir);
+            }
+        }
         this.notify(STATUS_ANALYSING);
 
-        const vFn = new Value(path.parse(this._initialPath).name);
+        const vFn = new Value(path.parse(this.initialPath).name);
         this.set(File.I_FILENAME, vFn);
 
-        this.set(File.I_EXTENSION, new Value(path.parse(this._initialPath).ext));
+        this.set(File.I_EXTENSION, new Value(path.parse(this.initialPath).ext));
 
         let isFolder = false;
         try {
@@ -147,28 +154,6 @@ export default class File extends Item {
         this.get(File.I_F_TITLE).onExpectedChanged(updateFn);
         this.get(File.I_F_TIME).onExpectedChanged(updateFn);
         // this.get(File.I_F_TYPE).expect('')
-    }
-
-    get parent() {
-        // A get parent is made before this initialization
-        // by item.notify
-        if (!this._initialPath) {
-            return null;
-        }
-
-        let parentDir = path.dirname(this._initialPath);
-        if (parentDir == '/') {
-            return null;
-        }
-
-        if (parentDir == '.') {
-            parentDir = process.cwd();
-        }
-
-        if (!parentsMap.has(parentDir)) {
-            parentsMap.set(parentDir, buildFile(parentDir));
-        }
-        return parentsMap.get(parentDir);
     }
 
     get initialPath() {

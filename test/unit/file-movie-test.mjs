@@ -2,6 +2,7 @@
 import fs from 'fs';
 import FileMovie from '../../src/main/file-types/file-movie.js';
 import FileTimed from '../../src/main/file-types/file-timed.js';
+import { _resetCache } from '../../src/main/register-file-types.js';
 import { createFileFrom, t, tempPath } from './help-functions.mjs';
 
 
@@ -12,6 +13,8 @@ import { createFileFrom, t, tempPath } from './help-functions.mjs';
  * @param {string} its_title - title to be checked
  */
 function testFullFlow(title, baseFilename, its_time, its_title) {
+    beforeEach(() => _resetCache());
+
     describe(`with ${title}`, function () {
 
         it('should read data', async () => {

@@ -8,6 +8,7 @@ import FileTimed from '../../src/main/file-types/file-timed.js';
 import FileExif from '../../src/main/file-types/file-exif.js';
 
 import File, { FOError } from '../../src/main/file-types/file.js';
+import { _resetCache } from '../../src/main/register-file-types.js';
 
 /**
  * @param {string} baseFilename to be tested
@@ -99,6 +100,8 @@ function testFullFlow(baseFilename, its_time, its_title, its_rotation = 0) {
 }
 
 describe(t(import.meta), function () {
+    beforeEach(() => _resetCache());
+
     testFullFlow('no_exif.jpg', '', '');
     testFullFlow('20150306_153340 Cable internet dans la rue.jpg', '2015-03-06 15-33-40', 'User comments', 90);
     testFullFlow('canon.JPG', '2018-02-04 13-17-50', '');

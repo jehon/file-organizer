@@ -10,8 +10,11 @@ import {
 } from '../../src/common/constants.js';
 
 import { getStatusChangesForItem } from './help-functions.mjs';
+import { _resetCache } from '../../src/main/register-file-types.js';
 
 describe(t(import.meta), function () {
+    beforeEach(() => _resetCache());
+
     beforeEach(() => {
         spyOn(Item.prototype, 'notify').and.callThrough();
     });

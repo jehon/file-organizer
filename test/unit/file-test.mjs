@@ -24,6 +24,7 @@ import {
     dataPath,
     fromCWD
 } from './help-functions.mjs';
+import { _resetCache } from '../../src/main/register-file-types.js';
 
 class DemoFile extends File {
     fnLoadData = () => { }
@@ -63,6 +64,8 @@ class DemoFile extends File {
 }
 
 describe(t(import.meta), function () {
+    beforeEach(() => _resetCache());
+
     describe('with attributes', () => {
         describe('initial', () => {
             it('should parse extension', () => {

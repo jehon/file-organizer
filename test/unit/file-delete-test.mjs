@@ -9,12 +9,15 @@ import {
 import FileDelete from '../../src/main/file-types/file-delete.js';
 import { fileExistsPhysically } from '../../src/main/fs-utils.js';
 import Item from '../../src/main/item.js';
+import { _resetCache } from '../../src/main/register-file-types.js';
 import { t } from './help-functions.mjs';
 import { createFileFrom, getStatusChangesForItem } from './help-functions.mjs';
 
 
 
 describe(t(import.meta), function () {
+    beforeEach(() => _resetCache());
+
     beforeEach(() => {
         spyOn(Item.prototype, 'notify').and.callThrough();
     });

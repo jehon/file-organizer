@@ -11,6 +11,7 @@ import options, { _resetToDefault } from '../../src/common/options.js';
 import {
     tempPath
 } from './help-functions.mjs';
+import { _resetCache } from '../../src/main/register-file-types.js';
 
 /**
  * @param {File} file whose parents need to be created
@@ -20,6 +21,8 @@ function mkParentFolder(file) {
 }
 
 describe(t(import.meta), function () {
+    beforeEach(() => _resetCache());
+
     describe('it should complete', function () {
         it('should take the new title from filename', async () => {
             const f = new FileTimed('2020-01-01 canon.JPG');

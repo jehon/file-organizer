@@ -1,11 +1,16 @@
 
 import { t } from './help-functions.mjs';
 import {
-    buildFile, registerRegExp, glob2regExp,
-    FallBackRegExp, _backup, _regExpMapForFolders, _regExpMapForFiles
+    buildFile,
+    registerRegExp,
+    glob2regExp,
+    FallBackRegExp,
+    _backup, _regExpMapForFolders, _regExpMapForFiles, _resetCache
 } from '../../src/main/register-file-types.js';
 import File from '../../src/main/file-types/file.js';
+import { getEntityId } from '../../src/main/messenger.js';
 
+class F extends File { }
 class A extends File { }
 class B extends File { }
 
@@ -20,12 +25,28 @@ describe(t(import.meta), function () {
         _restore();
     });
 
+    beforeEach(() => _resetCache());
+
     beforeEach(() => {
         _regExpMapForFiles.clear();
         _regExpMapForFolders.clear();
 
         // We need this one in the File.js to build up the parent
-        // registerRegExp(FallBackRegExp, A, { forFiles: false, forFolders: true });
+        registerRegExp(FallBackRegExp, F, { forFiles: false, forFolders: true });
+    });
+
+    it('should use cache', () => {
+        registerRegExp(FallBackRegExp, F, { forFiles: true, forFolders: true });
+
+        const i0 = getEntityId();
+
+        const f0 = buildFile('/etc/config');
+        const f1 = buildFile('/etc/config');
+        expect(f1.id).toBe(f0.id);
+        expect(f0.parent.id).toBe(f1.parent.id);
+
+        const i1 = getEntityId() - 1;
+        expect(i1 - i0).toBe(2);
     });
 
     it('should register and find it back', async () => {

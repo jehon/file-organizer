@@ -14,6 +14,27 @@ export const _regExpMapForFolders = new Map();
 
 export const FallBackRegExp = /.*/;
 
+const filesCache = new Map();
+/**
+ * Testing: reset the files cache
+ */
+export function _resetCache() {
+    filesCache.clear();
+}
+
+/**
+ *
+ */
+export function _dumpCache() {
+    process.stdout.write('*** cache ***\n');
+    for (const k of filesCache.keys()) {
+        const v = filesCache.get(k);
+        process.stdout.write(`- ${k.padEnd(20)} #${('' + v.id).padEnd(2)} ${v.initialPath.padEnd(20)} ${v.parentId ?? '/'}\n`);
+    }
+    process.stdout.write('***       ***\n');
+}
+
+
 // /**
 //  * Because regexp are object, == does not work
 //  * so we search for the initial object
@@ -108,15 +129,26 @@ export function buildFile(filepath, parent = null) {
         return filepath;
     }
 
+    filepath = path.resolve(filepath);
+
+    if (filesCache.has(filepath)) {
+        return filesCache.get(filepath);
+    }
+
+    let nf = null;
     try {
         if (fs.statSync(filepath).isDirectory()) {
-            return _getClassFromMap(_regExpMapForFolders, filepath, parent);
+            nf = _getClassFromMap(_regExpMapForFolders, filepath, parent);
         }
     } catch {
         // For testing purpose, if a file does not exists, it is not a folder
     }
 
-    return _getClassFromMap(_regExpMapForFiles, filepath, parent);
+    if (!nf) {
+        nf = _getClassFromMap(_regExpMapForFiles, filepath, parent);
+    }
+    filesCache.set(filepath, nf);
+    return nf;
 }
 
 /**
