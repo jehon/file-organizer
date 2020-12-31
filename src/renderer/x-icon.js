@@ -12,7 +12,7 @@ import {
 
 export default class XIcon extends HTMLElement {
     static get observedAttributes() {
-        return ['x-icon'];
+        return ['value'];
     }
 
     /** @type {HTMLElement} */
@@ -32,7 +32,7 @@ export default class XIcon extends HTMLElement {
     }
 
     render() {
-        const status = this.getAttribute('x-icon');
+        const status = this.getAttribute('value');
         let ext = 'png';
         switch (status) {
             case STATUS_ANALYSING:

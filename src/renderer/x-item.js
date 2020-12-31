@@ -27,7 +27,7 @@ export default class XItem extends XElement {
         super();
         this.innerHTML = `
     <h3 class='${STATUS_CREATED}'>
-        <x-icon icon='${STATUS_CREATED}'></x-icon>
+        <x-icon value='${STATUS_CREATED}'></x-icon>
         <span id='title'></span>
     </h3>
     <div class='details' id='details'></div>
@@ -49,7 +49,8 @@ export default class XItem extends XElement {
         this.setAttribute('status', item.status);
 
         this.elTitle.innerHTML = item.title;
-        this.elIcon.setAttribute('x-status', item.status);
+        this.elTitle.setAttribute('data-tooltip', item.id);
+        this.elIcon.setAttribute('value', item.status);
 
         this.elListing.innerHTML = this.getListingElement(item);
 

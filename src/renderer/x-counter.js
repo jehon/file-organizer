@@ -41,7 +41,7 @@ export default class XCounter extends HTMLElement {
                 this.#elText.innerHTML = newValue;
                 break;
             case 'x-icon':
-                this.#elIcon.setAttribute('x-icon', newValue);
+                this.#elIcon.setAttribute('value', newValue);
                 break;
         }
     }

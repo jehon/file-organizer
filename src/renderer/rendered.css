@@ -3,12 +3,6 @@ progress {
     width: 100%;
 }
 
-img.icon {
-   height: 16px;
-   padding-left: 10px;
-   padding-right: 10px;
-}
-
 .details {
     padding-left: 20px;
     font-size: smaller;
