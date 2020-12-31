@@ -10,6 +10,7 @@ import {
     STATUS_ACTED_FAILURE
 } from '../common/constants.js';
 import XElement from './x-element.js';
+import './x-counter.js';
 
 /**
  * Send back the def if val is undefined
@@ -43,21 +44,26 @@ export default class XList extends XElement {
 
     constructor() {
         super();
+        this.style.display = 'none';
 
         this.innerHTML = `
+<style>
+.counters {
+    height: 1em;
+}
+</style>
 <div class='counters'>
-    <div>
-        Created: <span x-counter='${STATUS_CREATED}'>0</span>
-        Analysing: <span x-counter='${STATUS_ANALYSING}'>0</span>
-        Success: <span x-counter='${STATUS_SUCCESS}'>0</span>
-        Failure: <span x-counter='${STATUS_FAILURE}'>0</span>
-    </div>
-    <div>
-        Need action: <span x-counter='${STATUS_NEED_ACTION}'>0</span>
-        Acting: <span x-counter='${STATUS_ACTING}'>0</span>
-        Action success: <span x-counter='${STATUS_ACTED_SUCCESS}'>0</span>
-        Action failure: <span x-counter='${STATUS_ACTED_FAILURE}'>0</span>
-    </div>
+    <x-counter x-icon='${STATUS_CREATED}'></x-counter>
+    <x-counter x-icon='${STATUS_ANALYSING}'></x-counter>
+    <x-counter x-icon='${STATUS_SUCCESS}'></x-counter>
+    <x-counter x-icon='${STATUS_FAILURE}'></x-counter>
+    (
+    <x-counter x-icon='${STATUS_NEED_ACTION}'></x-counter>
+    <x-counter x-icon='${STATUS_ACTING}'></x-counter>
+    <x-counter x-icon='${STATUS_ACTED_SUCCESS}'></x-counter>
+    <x-counter x-icon='${STATUS_ACTED_FAILURE}'></x-counter>
+    )
+    <x-counter x-icon='total'></x-counter>
 </div>
 <div id='listing'></div>
 `;
@@ -100,7 +106,7 @@ export default class XList extends XElement {
             // We had that value before...
             const oldStatus = this._history[item.id].status;
             this._counters[oldStatus]--;
-            this.#elCounters.querySelectorAll(`[x-counter="${oldStatus}"]`).forEach(el => el.innerHTML = '' + this._counters[oldStatus]);
+            this.#elCounters.querySelectorAll(`[x-icon="${oldStatus}"]`).forEach(el => el.setAttribute('value', this._counters[oldStatus]));
         } else {
             this.#elListing.insertAdjacentHTML('beforeend', this.getChildElement(item));
             this._total++;
@@ -109,7 +115,7 @@ export default class XList extends XElement {
         // We update
         this._history[item.id] = item;
         this._counters[item.status]++;
-        this.#elCounters.querySelectorAll(`[x-counter="${item.status}"]`).forEach(el => el.innerHTML = '' + this._counters[item.status]);
+        this.#elCounters.querySelectorAll(`[x-icon="${item.status}"]`).forEach(el => el.setAttribute('value', this._counters[item.status]));
 
         // We update the total
         this.#elCounters.querySelectorAll('progress[x-counter="total"]').forEach(e => {
@@ -121,6 +127,14 @@ export default class XList extends XElement {
             e.setAttribute('max', '' + Math.max(1, this._total));
             e.setAttribute('value', '' + p);
         });
+
+        this.#elCounters.querySelectorAll('[x-icon="total"]').forEach(el => el.setAttribute('value', '' + this._total));
+
+        if (this._total > 0) {
+            this.style.display = 'initial';
+        } else {
+            this.style.display = 'none';
+        }
     }
 
     /**

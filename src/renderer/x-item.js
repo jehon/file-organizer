@@ -1,12 +1,7 @@
 
 import XElement from './x-element.js';
-import {
-    STATUS_CREATED,
-    STATUS_ACTING,
-    STATUS_ANALYSING,
-    STATUS_NEED_ACTION
-} from '../common/constants.js';
-
+import './x-icon.js';
+import { STATUS_CREATED } from '../common/constants.js';
 
 export default class XItem extends XElement {
     static get observedAttributes() {
@@ -14,7 +9,7 @@ export default class XItem extends XElement {
     }
 
     /** @type {HTMLElement} */
-    elImg = null
+    elIcon = null
 
     /** @type {HTMLElement} */
     elTitle = null
@@ -32,14 +27,14 @@ export default class XItem extends XElement {
         super();
         this.innerHTML = `
     <h3 class='${STATUS_CREATED}'>
-        <img class='icon' src="">
+        <x-icon icon='${STATUS_CREATED}'></x-icon>
         <span id='title'></span>
     </h3>
     <div class='details' id='details'></div>
     <div id='listing'></div>
 `;
 
-        this.elImg = this.querySelector('h3 > img');
+        this.elIcon = this.querySelector('h3 > x-icon');
         this.elTitle = this.querySelector('h3 > #title');
 
         this.elDetails = this.querySelector('#details');
@@ -53,19 +48,8 @@ export default class XItem extends XElement {
     drawItem(item) {
         this.setAttribute('status', item.status);
 
-        this.elTitle.innerHTML = item.id + ' ' + item.title;
-        let ext = '.png';
-        switch (item.status) {
-            case STATUS_ANALYSING:
-            case STATUS_ACTING:
-                ext = '.gif';
-                break;
-
-            case STATUS_NEED_ACTION:
-                ext = '.svg';
-                break;
-        }
-        this.elImg.setAttribute('src', `img/${item.status}${ext}`);
+        this.elTitle.innerHTML = item.title;
+        this.elIcon.setAttribute('x-status', item.status);
 
         this.elListing.innerHTML = this.getListingElement(item);
 
