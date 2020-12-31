@@ -104,7 +104,7 @@ export default class File extends Item {
 
     constructor(filePath) {
         /* filepath is the title */
-        super(filePath);
+        super(path.basename(filePath));
         this._initialPath = path.resolve(filePath);
 
         { // Calculate the parent
