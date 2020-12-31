@@ -1,9 +1,27 @@
+/**
+ * Counter of items
+ *   To keep an unique id by item
+ *
+ * @see getEntityId()
+ *
+ * @type {number}
+ */
+let id = 1;
 
-// TODO: should it be a map ?
-const list = [];
+/**
+ * Hold the last state of each object
+ *
+ * @type {Map<number,object>}
+ */
+const history = new Map();
+
+/**
+ * To register the gui notify function
+ *
+ * @param {object} _data with the item notified
+ */
 let guiCallback = (_data) => { };
 
-let id = 1;
 
 /**
  * @returns {number} of the entity (unique id)
@@ -16,13 +34,13 @@ export function getEntityId() {
  * @param {object} data to notify
  */
 export function notify(data) {
-    if (!data.id || !data.type) {
-        throw `Invalid data: no id or no data: ${JSON.stringify(data)}`;
+    if (!data.id || !data.type || (typeof (data.id) != 'number')) {
+        throw `Invalid data: no id or no type: ${JSON.stringify(data)}`;
     }
 
     data = buildNotifyObject(data);
 
-    list.push(data);
+    history.set(data.id, data);
 
     guiCallback(data);
 }
@@ -32,7 +50,7 @@ export function notify(data) {
  */
 export async function registerGuiCallback(cb) {
     guiCallback = cb;
-    for (const data of list) {
+    for (const data of history.values()) {
         await cb(data);
     }
 }

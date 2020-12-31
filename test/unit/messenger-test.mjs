@@ -16,13 +16,14 @@ describe(t(import.meta), function () {
     it('should require some fields', () => {
         const id = getEntityId();
         expect(() => notify({})).toThrow();
-        expect(() => notify({ id: id })).toThrow();
+        expect(() => notify({ id })).toThrow();
         expect(() => notify({ type: 'messenger-test' })).toThrow();
-        expect(() => notify({ id: id, type: 'messenger-test' })).not.toThrow();
+        expect(() => notify({ id: '1', type: 'messenger-test' })).toThrow();
+        expect(() => notify({ id, type: 'messenger-test' })).not.toThrow();
     });
 
     it('should send data on registered callback', (done) => {
-        const id = getEntityId;
+        const id = getEntityId();
         registerGuiCallback((data) => {
             if (data.id != id) {
                 return;
