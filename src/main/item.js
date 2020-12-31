@@ -17,20 +17,20 @@ export default class Item {
     #isTop = false;
 
     /** @type {number} */
-    _id
+    #id
 
     /** @type {string} */
-    _title
+    #title
 
     /** @type {Item} */
-    _parent
+    #parent = null
 
     /** @type {string} */
-    _status
+    #status = STATUS_CREATED
 
     constructor(title) {
-        this._id = getEntityId();
-        this._title = title;
+        this.#id = getEntityId();
+        this.#title = title;
         this.notify(STATUS_CREATED);
     }
 
@@ -62,15 +62,15 @@ export default class Item {
     }
 
     get id() {
-        return this._id;
+        return this.#id;
     }
 
     get title() {
-        return this._title;
+        return this.#title;
     }
 
     get parent() {
-        return this._parent;
+        return this.#parent;
     }
 
     get parentId() {
@@ -78,10 +78,10 @@ export default class Item {
     }
 
     set parent(parent) {
-        if (parent?.id == this._parent?.id) {
+        if (parent?.id == this.#parent?.id) {
             return;
         }
-        this._parent = parent;
+        this.#parent = parent;
         this.notify();
     }
 
@@ -91,7 +91,7 @@ export default class Item {
     }
 
     get status() {
-        return this._status;
+        return this.#status;
     }
 
     /**
@@ -171,19 +171,19 @@ export default class Item {
      */
     notify(status = '') {
         if (status !== '') {
-            this._status = status;
+            this.#status = status;
         }
         notify(this);
         return this;
     }
 
     doesNeedAction() {
-        return this._status == STATUS_NEED_ACTION;
+        return this.#status == STATUS_NEED_ACTION;
     }
 
     isSuccessFull() {
-        return this._status == STATUS_SUCCESS
-            || this._status == STATUS_ACTED_SUCCESS;
+        return this.#status == STATUS_SUCCESS
+            || this.#status == STATUS_ACTED_SUCCESS;
     }
 
     toJSON() {
@@ -192,7 +192,7 @@ export default class Item {
             type: this.type,
             subType: this.subType,
             isTop: this.isTop,
-            status: this._status,
+            status: this.#status,
             title: this.title,
             parentId: this.parentId,
             values: this.values,
