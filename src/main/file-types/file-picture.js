@@ -25,7 +25,7 @@ async function exifRotatePicture(file) {
 
     await pExecFile('exiftran', ['-a', '-p', '-g', orig, '-o', temp]);
     await pExecFile('touch', ['-r', orig, temp]);
-    await fs.promises.unlink(new File(orig).currentFilePath);
+    await fs.promises.unlink(orig);
     await fs.promises.rename(temp, orig);
     await file.get(FileExif.I_FE_ORIENTATION).fix();
 
