@@ -1,16 +1,15 @@
 
-import { listener } from './listener.js';
-
 import {
-    // STATUS_CREATED,
-    // STATUS_ANALYSING,
+    STATUS_CREATED,
+    STATUS_ANALYSING,
     STATUS_SUCCESS,
     STATUS_FAILURE,
-    // STATUS_NEED_ACTION,
-    // STATUS_ACTING,
+    STATUS_NEED_ACTION,
+    STATUS_ACTING,
     STATUS_ACTED_SUCCESS,
     STATUS_ACTED_FAILURE
 } from '../common/constants.js';
+import XElement from './x-element.js';
 
 /**
  * Send back the def if val is undefined
@@ -27,108 +26,114 @@ function uz(val, def = 0) {
     return val;
 }
 
-export default class XList extends HTMLElement {
+export default class XList extends XElement {
     static get observedAttributes() {
-        return ['top', 'parent'];
+        return ['x-parent'];
     }
 
-    #isTop = false;
-    #parentId = '';
+    /** @type {HTMLElement} */
+    #elListing = null
 
-    #stopListener = () => { }
-    #counters = {}
-    #history = {}
-    #total = 0;
+    /** @type {HTMLElement} */
+    #elCounters = null
 
-    get refType() {
-        return '';
+    _counters = {}
+    _history = {}
+    _total = 0;
+
+    constructor() {
+        super();
+
+        this.innerHTML = `
+<div class='counters'>
+    <div>
+        Created: <span x-counter='${STATUS_CREATED}'>0</span>
+        Analysing: <span x-counter='${STATUS_ANALYSING}'>0</span>
+        Success: <span x-counter='${STATUS_SUCCESS}'>0</span>
+        Failure: <span x-counter='${STATUS_FAILURE}'>0</span>
+    </div>
+    <div>
+        Need action: <span x-counter='${STATUS_NEED_ACTION}'>0</span>
+        Acting: <span x-counter='${STATUS_ACTING}'>0</span>
+        Action success: <span x-counter='${STATUS_ACTED_SUCCESS}'>0</span>
+        Action failure: <span x-counter='${STATUS_ACTED_FAILURE}'>0</span>
+    </div>
+</div>
+<div id='listing'></div>
+`;
+
+        this.#elListing = this.querySelector('#listing');
+        this.#elCounters = this.querySelector('div.counters');
     }
 
-    attributeChangedCallback(attributeName, _oldValue, newValue) {
-        switch (attributeName) {
-            case 'parent':
-                this.#parentId = newValue;
-                this.reset();
-                break;
-            case 'top':
-                this.#isTop = this.hasAttribute('top');
-                this.reset();
-                break;
+    /**
+     * @override
+     */
+    listenerFilter(item) {
+        if (this.parentId <= 0) {
+            // Mode: top only
+            if (!item.isTop) {
+                // Don't take it
+                return false;
+            }
+        } else {
+            // Mode: from parent
+            if (this.parentId != item.parentId) {
+                // Don't take it
+                return false;
+            }
         }
+        return true;
     }
 
-    connectedCallback() {
-        this.reset();
-    }
-
-    disconnectedCallback() {
-        this.#stopListener();
-        this.#stopListener = () => { };
-    }
-
-    reset() {
-        if (!this.refType || (!this.#parentId && !this.#isTop)) {
-            return;
+    /**
+     * @override
+     */
+    drawItem(item) {
+        // Initialize this counter
+        if (!(item.status in this._counters)) {
+            this._counters[item.status] = 0;
         }
 
-        this.#stopListener();
-        this.#stopListener = listener((data) => {
+        // We update the counter change
+        if (item.id in this._history) {
+            // We had that value before...
+            const oldStatus = this._history[item.id].status;
+            this._counters[oldStatus]--;
+            this.#elCounters.querySelectorAll(`[x-counter="${oldStatus}"]`).forEach(el => el.innerHTML = '' + this._counters[oldStatus]);
+        } else {
+            this.#elListing.insertAdjacentHTML('beforeend', this.getChildElement(item));
+            this._total++;
+        }
 
-            if (this.refType != data.type) {
-                // Don't take it
-                return;
-            }
+        // We update
+        this._history[item.id] = item;
+        this._counters[item.status]++;
+        this.#elCounters.querySelectorAll(`[x-counter="${item.status}"]`).forEach(el => el.innerHTML = '' + this._counters[item.status]);
 
-            if ((this.#isTop && !data.isTop) || (!this.#isTop && data.isTop)) {
-                // Don't take it
-                return;
-            }
+        // We update the total
+        this.#elCounters.querySelectorAll('progress[x-counter="total"]').forEach(e => {
+            const p = uz(this._counters[STATUS_ACTED_SUCCESS])
+                + uz(this._counters[STATUS_ACTED_FAILURE])
+                + uz(this._counters[STATUS_SUCCESS])
+                + uz(this._counters[STATUS_FAILURE]);
 
-            if (!this.#isTop && (this.#parentId != data.parentId)) {
-                // Don't take it
-                return;
-            }
-
-            if (!(status in this.#counters)) {
-                this.#counters[status] = 0;
-            }
-
-            if (data.id in this.#history) {
-                // We had that value before...
-                const oldStatus = this.#history[data.id].status;
-                this.#counters[oldStatus]--;
-                this.updateCounter(oldStatus);
-            } else {
-                this.onCreate(data.id);
-                this.#total++;
-            }
-
-            // We update
-            this.#history[data.id] = data;
-            this.#counters[status]++;
-
-            this.updateCounter(status);
-        });
-
-    }
-
-    updateCounter(status) {
-        this.querySelectorAll(`[counter=${status}]`).forEach(
-            el => el.innerHTML = '' + this.#counters[status]
-        );
-
-        this.querySelectorAll('progress[category=total]').forEach(e => {
-            const p = uz(this.#counters[STATUS_ACTED_SUCCESS])
-                + uz(this.#counters[STATUS_ACTED_FAILURE])
-                + uz(this.#counters[STATUS_SUCCESS])
-                + uz(this.#counters[STATUS_FAILURE]);
-
-            e.setAttribute('max', '' + Math.max(1, this.#total));
+            e.setAttribute('max', '' + Math.max(1, this._total));
             e.setAttribute('value', '' + p);
         });
     }
 
-    onCreate(_id) { }
+    /**
+     * Get the child item
+     *
+     * @abstract
+     *
+     * @param {number} _id of the item
+     * @returns {string} the created node
+     */
+    getChildElement(_id) {
+        return '';
+    }
 }
 
 window.customElements.define('x-list', XList);

@@ -1,60 +1,84 @@
 
-import { listenerForId } from './listener.js';
-import { STATUS_CREATED } from '../common/constants.js';
+import XElement from './x-element.js';
+import {
+    STATUS_CREATED,
+    STATUS_ACTING,
+    STATUS_ANALYSING,
+    STATUS_NEED_ACTION
+} from '../common/constants.js';
 
-export default class XItem extends HTMLElement {
+
+export default class XItem extends XElement {
     static get observedAttributes() {
-        return ['id'];
+        return ['x-id'];
     }
 
-    #stopListener = () => { }
+    /** @type {HTMLElement} */
+    elImg = null
+
+    /** @type {HTMLElement} */
+    elTitle = null
+
+    /** @type {HTMLElement} */
+    elListing = null
+
+    /** @type {HTMLElement} */
+    elStatus = null
+
+    /** @type {HTMLElement} */
+    elDtails = null
 
     constructor() {
         super();
-        this.status = STATUS_CREATED;
-        this.data = {};
+        this.innerHTML = `
+    <h3 class='${STATUS_CREATED}'>
+        <img class='icon' src="">
+        <span id='title'></span>
+    </h3>
+    <div class='details' id='details'></div>
+    <div id='listing'></div>
+`;
+
+        this.elImg = this.querySelector('h3 > img');
+        this.elTitle = this.querySelector('h3 > #title');
+
+        this.elDetails = this.querySelector('#details');
+        this.elListing = this.querySelector('#listing');
     }
 
-    attributeChangedCallback(attributeName, _oldValue, newValue) {
-        switch (attributeName) {
-            case 'id':
-                if (!newValue) {
-                    return;
-                }
-                this._id = newValue;
+    listenerFilter(item) {
+        return item.id == this.itemId;
+    }
 
-                this.#stopListener();
-                this.#stopListener = listenerForId(this._id, (status, data) => {
-                    this.status = status;
-                    this.data = { ...this.data, ...data };
-                    if (data) {
-                        this.adapt(data);
-                    }
-                });
+    drawItem(item) {
+        this.setAttribute('status', item.status);
+
+        this.elTitle.innerHTML = item.id + ' ' + item.title;
+        let ext = '.png';
+        switch (item.status) {
+            case STATUS_ANALYSING:
+            case STATUS_ACTING:
+                ext = '.gif';
+                break;
+
+            case STATUS_NEED_ACTION:
+                ext = '.svg';
                 break;
         }
+        this.elImg.setAttribute('src', `img/${item.status}${ext}`);
+
+        this.elListing.innerHTML = this.getListingElement(item);
+
+        return true;
     }
 
-    connectectCallback() {
-        if (this.hasAttribute('id')) {
-            this.attributeChangedCallback('id', null, this.getAttribute('id'));
-        }
-    }
-
-    disconnectedCallback() {
-        this.#stopListener();
-        this.#stopListener = () => { };
-    }
-
-    adapt(data) {
-        this.setAttribute('status', this.status);
-        this.innerHTML = `<div>
-            <h3><x-status status='${data.status}'></x-status>${data.title ? data.title : data.id}</h3>
-            <div class='details'></div>
-        </div > `;
-
-        // <div class='messages'>${data.messages ? data.messages : ''}</div>
-        // <div class='details' >${data.details ? data.details : ''}</div>
+    /**
+     * @abstract
+     *
+     * @param {module:src/renderer/Item} _item basis of children
+     */
+    getListingElement(_item) {
+        return '';
     }
 }
 

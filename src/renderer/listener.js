@@ -4,14 +4,6 @@ const ipcRenderer = require('electron').ipcRenderer;
 const history = new Map();
 import { CHANNEL_MAIN } from '../common/constants.js';
 
-/**
- * @param {number} id to be stringified
- * @returns {string} id stringified
- */
-function n(id) {
-    return '' + id;
-}
-
 ipcRenderer.setMaxListeners(1000 * 1000);
 
 /**
@@ -21,7 +13,11 @@ ipcRenderer.setMaxListeners(1000 * 1000);
 export function listener(cb) {
     // Callback (to allow unregistering)
     const fn = (_event, data) => {
-        history.set(n(data.id), data);
+        if (!data.id || typeof (data.id) != 'number' || !data.type) {
+            throw `Invalid data: no id or no type: ${JSON.stringify(data)}`;
+        }
+
+        history.set(data.id, data);
         cb(data);
     };
 
@@ -29,17 +25,9 @@ export function listener(cb) {
     ipcRenderer.on(CHANNEL_MAIN, fn);
 
     // Call the cb for any value already received (history)
-    for (const data in history.values()) {
+    for (const data of history.values()) {
         cb(data);
     }
 
     return () => ipcRenderer.off(CHANNEL_MAIN, fn);
 }
-
-/**
- * @param {string} id to listen
- * @param {function(object): void} cb to be called
- * @returns {function(void):void} to stop listening
- */
-export const listenerForId = (id, cb) => listener(data =>
-    (id == data.id) ? cb(data) : null);

@@ -4,7 +4,7 @@ progress {
 }
 
 img.icon {
-   height: 16px; 
+   height: 16px;
    padding-left: 10px;
    padding-right: 10px;
 }
@@ -18,16 +18,16 @@ img.icon {
     padding-left: 20px;
 }
 
+.counters {
+    font-size: smaller;
+}
+
 [status='status_created'] {
     color: darkgray;
 }
 
 [status='status_analysing'] {
     color: darkgray;
-}
-
-[status='status_success'] {
-    display: none;
 }
 
 [status='status_failure'] {
@@ -46,10 +46,6 @@ img.icon {
     color: lightblue;
 }
 
-x-task[status='status_acted_success'] {
-    display: none;
-}
-
 [status='status_acted_failure'] {
     color: red;
 }
@@ -60,3 +56,9 @@ x-file {
     padding: 5px;
     margin: 5px;
 }
+
+/*
+[status='status_success'] {
+    display: none;
+}
+*/
