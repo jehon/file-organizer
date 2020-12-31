@@ -20,7 +20,7 @@ export default class XIcon extends HTMLElement {
 
     constructor() {
         super();
-        this.innerHTML = '<img style="height: 100%; vertical-align: middle; display: inline-block"/>';
+        this.innerHTML = '<img style="height: 1em; vertical-align: middle; display: inline-block"/>';
         this.#elImg = this.querySelector('img');
     }
 
