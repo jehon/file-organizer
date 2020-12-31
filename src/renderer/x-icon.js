@@ -42,6 +42,7 @@ export default class XIcon extends HTMLElement {
 
             case STATUS_NEED_ACTION:
             case 'total':
+            case 'problem':
                 ext = 'svg';
                 break;
         }

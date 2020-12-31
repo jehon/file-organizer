@@ -1,6 +1,7 @@
 
 import XElement from './x-element.js';
 import './x-icon.js';
+import './x-value.js';
 import { STATUS_CREATED } from '../common/constants.js';
 
 export default class XItem extends XElement {
@@ -9,19 +10,22 @@ export default class XItem extends XElement {
     }
 
     /** @type {HTMLElement} */
+    elHeader = null
+
+    /** @type {HTMLElement} */
     elIcon = null
 
     /** @type {HTMLElement} */
     elTitle = null
 
     /** @type {HTMLElement} */
-    elListing = null
-
-    /** @type {HTMLElement} */
     elStatus = null
 
     /** @type {HTMLElement} */
-    elDtails = null
+    elProblems = null
+
+    /** @type {HTMLElement} */
+    elValues = null
 
     constructor() {
         super();
@@ -30,15 +34,16 @@ export default class XItem extends XElement {
         <x-icon value='${STATUS_CREATED}'></x-icon>
         <span id='title'></span>
     </h3>
-    <div class='details' id='details'></div>
-    <div id='listing'></div>
+    <div id='problems' class='problems'></div>
+    <div id='values' class='values'></div>
 `;
 
+        this.elHeader = this.querySelector('h3');
         this.elIcon = this.querySelector('h3 > x-icon');
         this.elTitle = this.querySelector('h3 > #title');
 
-        this.elDetails = this.querySelector('#details');
-        this.elListing = this.querySelector('#listing');
+        this.elProblems = this.querySelector('#problems');
+        this.elValues = this.querySelector('#values');
     }
 
     listenerFilter(item) {
@@ -46,13 +51,36 @@ export default class XItem extends XElement {
     }
 
     drawItem(item) {
-        this.setAttribute('status', item.status);
+        this.elHeader.setAttribute('status', item.status);
 
         this.elTitle.innerHTML = item.title;
         this.elTitle.setAttribute('data-tooltip', item.id);
         this.elIcon.setAttribute('value', item.status);
 
-        this.elListing.innerHTML = this.getListingElement(item);
+        if (this.elListing) {
+            this.elListing.remove();
+        }
+        this.elListing = this.getListingElement(item);
+        this.elListing.id = 'listing';
+        this.insertAdjacentElement('beforeend', this.elListing);
+
+        this.elValues.innerHTML = '';
+        if (item.values) {
+            for (const p of Object.keys(item.values)) {
+                this.elValues.insertAdjacentHTML('beforeend',
+                    `<x-value x-id='${item.id}' x-value='${p}' >${item.id} ${p}</x-value>`
+                );
+            }
+        }
+
+        this.elProblems.innerHTML = '';
+        if (item.problemsList) {
+            for (const p of item.problemsList) {
+                this.elProblems.insertAdjacentHTML('beforeend',
+                    `<div class='problem'><x-icon value='problem'></x-icon>${p}</div>`
+                );
+            }
+        }
 
         return true;
     }
@@ -60,10 +88,10 @@ export default class XItem extends XElement {
     /**
      * @abstract
      *
-     * @param {module:src/renderer/Item} _item basis of children
+     * @param {HTMLElement} _item basis of children
      */
     getListingElement(_item) {
-        return '';
+        return null;
     }
 }
 
