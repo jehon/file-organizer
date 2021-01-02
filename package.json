@@ -26,7 +26,7 @@
     "babel-eslint": "10.1.0",
     "commitizen": "4.2.2",
     "depcheck": "1.3.1",
-    "eslint": "7.16.0",
+    "eslint": "7.17.0",
     "eslint-plugin-jsdoc": "30.7.9",
     "husky": "4.3.6",
     "jasmine": "github:jasmine/jasmine-npm",
