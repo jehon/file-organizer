@@ -27,7 +27,7 @@
     "commitizen": "4.2.2",
     "depcheck": "1.3.1",
     "eslint": "7.17.0",
-    "eslint-plugin-jsdoc": "30.7.11",
+    "eslint-plugin-jsdoc": "30.7.13",
     "husky": "4.3.6",
     "jasmine": "github:jasmine/jasmine-npm",
     "lint-staged": "10.5.3",
