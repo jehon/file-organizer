@@ -1,5 +1,6 @@
 
 
+import XFilesList from './x-files-list.js';
 import XItem from './x-item.js';
 
 export default class XFile extends XItem {
@@ -8,7 +9,9 @@ export default class XFile extends XItem {
      * @override
      */
     getListingElement(item) {
-        return `<x-files-list x-parent=${item.id}></x-files-list>`;
+        const el = new XFilesList();
+        el.setAttribute('x-parent', item.id);
+        return el;
     }
 }
 

@@ -1,20 +1,30 @@
 
+/***************************
+ *
+ * Elements
+ *
+ */
+
 progress {
     width: 100%;
 }
 
-.details {
-    padding-left: 20px;
-    font-size: smaller;
-}
-
-.messages {
-    padding-left: 20px;
+x-file {
+    display: block;
+    border: 1px black solid;
+    padding: 5px;
+    margin: 5px;
 }
 
 .counters {
     font-size: smaller;
 }
+
+/***************************
+ *
+ * Status
+ *
+ */
 
 [status='status_created'] {
     color: darkgray;
@@ -44,20 +54,18 @@ progress {
     color: red;
 }
 
-x-file {
-    display: block;
-    border: 1px black solid;
-    padding: 5px;
-    margin: 5px;
-}
-
 /*
 [status='status_success'] {
     display: none;
 }
 */
 
-/** Tooltips */
+/***************************
+ *
+ * Tooltips
+ *
+ */
+
 [data-tooltip] {
     position:relative;
 }
