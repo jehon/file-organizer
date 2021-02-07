@@ -84,6 +84,10 @@ clean:
 demo: build
 	electron src/demo.cjs
 
+setup-computer-test:
+	type exiftran
+	type exiv2
+
 start-test-gui: build
 	mkdir -p tmp/gui
 	cd tmp/gui && ../../reset.sh

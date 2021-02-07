@@ -8,7 +8,7 @@
   "dependencies": {
     "chalk": "4.1.0",
     "command-exists": "1.2.9",
-    "css-inherit": "https://github.com/jehon/css-inherit.git",
+    "css-inherit": "github:jehon/css-inherit",
     "debug": "4.3.1",
     "electron": "11.1.1",
     "is-interactive": "1.0.0",
@@ -26,10 +26,10 @@
     "babel-eslint": "10.1.0",
     "commitizen": "4.2.2",
     "depcheck": "1.3.1",
-    "eslint": "7.16.0",
-    "eslint-plugin-jsdoc": "30.7.9",
+    "eslint": "7.17.0",
+    "eslint-plugin-jsdoc": "30.7.13",
     "husky": "4.3.6",
-    "jasmine": "github:jasmine/jasmine-npm",
+    "jasmine": "3.6.4",
     "lint-staged": "10.5.3",
     "nyc": "15.1.0",
     "watch": "1.0.2"
