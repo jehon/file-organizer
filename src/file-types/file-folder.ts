@@ -87,15 +87,15 @@ export default class FileFolder extends File {
 
     const isAvailable = (qualif: string) =>
       !qualifAlreadyTaken.includes(qualif) &&
-      (!this.unmappedListing.has(
+      // Exclude unmapped files too
+      !this.unmappedListing.has(
         buildFilename(
           file.i_f_time.expected,
           file.i_f_title.expected,
           qualif,
           file.i_f_extension.expected
         )
-      ) ||
-        true);
+      );
 
     // We could take the currently expected qualif
     if (isAvailable(file.i_f_qualif.expected)) {

@@ -24,14 +24,19 @@ export const TestDefaultTitle = "Sources";
 const tempSourcePath = (...args: string[]) =>
   tempPathCommon("sources", ...args);
 
+let i = 0;
+
 function createFilepathFromDataSources(
   subPath: string, // Relative to data path
   mtime?: string
 ): string {
+  const np = "" + i++;
   const filepath = createFileFromTo(
-    tempSourcePath(),
+    tempSourcePath(np, "sources"),
     rootPath("test", "sources", "data", subPath)
   );
+  getParentOf(tempSourcePath())._addNewlyCreateFile(np);
+  getParentOf(tempSourcePath(np)).reset();
   if (mtime) {
     fs.utimesSync(filepath, new Date(mtime), new Date(mtime));
   }
