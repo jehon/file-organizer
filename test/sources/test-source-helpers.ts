@@ -1,5 +1,6 @@
 import assert from "node:assert";
 import fs from "node:fs";
+import path from "node:path";
 import File from "../../src/file-types/file";
 import { getParentOf } from "../../src/file-types/file-folder";
 import buildFile from "../../src/lib/buildFile";
@@ -24,13 +25,13 @@ export const TestDefaultTitle = "Sources";
 const tempSourcePath = (...args: string[]) =>
   tempPathCommon("sources", ...args);
 
-let i = 0;
-
 function createFilepathFromDataSources(
   subPath: string, // Relative to data path
   mtime?: string
 ): string {
-  const np = "" + i++;
+  // We need to be in a folder named "source"
+  // but different for each test
+  const np = path.parse(subPath).name;
   const filepath = createFileFromTo(
     tempSourcePath(np, "sources"),
     rootPath("test", "sources", "data", subPath)
