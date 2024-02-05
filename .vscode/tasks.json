@@ -1,0 +1,14 @@
+{
+  "tasks": [
+    {
+      "label": "clean_tmp",
+      "type": "shell",
+      "command": "rm -fr tmp/",
+      "presentation": {
+        "reveal": "silent",
+        "revealProblems": "onProblem",
+        "close": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+#
+# Not working for pcloud drive...
+#
+
+SRC_ROOT="$(dirname "$(dirname "$(realpath -P "${BASH_SOURCE[0]}")")")"
+
+exec node --import tsx/esm --harmony-temporal "${SRC_ROOT}/src/main.ts" "$@"

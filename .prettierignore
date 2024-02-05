@@ -1,0 +1,8 @@
+node_modules/
+test/data
+tmp/
+
+test/*/data
+
+package.json
+package-lock.json

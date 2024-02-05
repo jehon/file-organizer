@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+SRC_ROOT="$(dirname "$(dirname "$(realpath -P "${BASH_SOURCE[0]}")")")"
+
+if [ -n "${FO_NATIVE}" ]; then
+    exec "${SRC_ROOT}"/bin/fo-native "$@"
+fi
+
+exec "${SRC_ROOT}"/bin/fo-docker "$@"

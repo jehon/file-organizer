@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - main
+      - ci/*
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  TZ: Europe/Brussels
+
+jobs:
+  ga-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+
+      - run: sudo .devcontainer/setup.sh
+
+      - run: make dependencies
+
+      - run: make test
+
+      - run: make lint

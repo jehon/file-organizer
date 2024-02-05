@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+# shellcheck source=/usr/bin/jh-lib
+. jh-lib
+
+SRC_ROOT="$(dirname "$(dirname "$(realpath -P "${BASH_SOURCE[0]}")")")"
+
+PCLOUD="${HOME}/pCloudDrive"
+TARGET="${PCLOUD}/Workspaces/Famille/A ranger/"
+
+jh_value "PCLOUD" "${PCLOUD}"
+jh_value "TARGET" "${TARGET}"
+
+if [ ! -d "${TARGET}" ]; then
+    jh_fatal "Could not access target ${TARGET}"
+fi
+
+import() {
+    SOURCE="${PCLOUD}/$1"
+    shift
+
+    jh_info "Importing $1"
+    if [ ! -d "${SOURCE}" ]; then
+        jh_fatal "Could not read source ${SOURCE}"
+    fi
+    (
+    	"${SRC_ROOT}"/bin/fo-docker "import" "$@" --to "${TARGET}" "${SOURCE}"
+    ) | jh-tag-stdin "$1"
+}
+
+import "Workspaces/Jean/Automatic Upload J/" "$@"
+import "Workspaces/Marie-Line/Automatic Upload/" "$@"
+
+ok "Done"

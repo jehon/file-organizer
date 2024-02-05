@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+#
+# Required for pcloud drive...
+#
+
+SRC_ROOT="$(dirname "$(dirname "$(realpath -P "${BASH_SOURCE[0]}")")")"
+MNT_ROOT="/root"
+
+ARGS=()
+for A in "$@"; do
+    # We need to prepend absolute paths
+    if [[ "${A:0:1}" == "/" ]]; then
+        ARGS+=( "${MNT_ROOT}${A}" )
+        continue
+    fi
+    ARGS+=( "$A" )
+done
+
+exec docker run --rm \
+    --volume=/:/root \
+    --volume="$SRC_ROOT:/app" \
+    --env HOME="${MNT_ROOT}${HOME}" \
+    --env TZ="$TZ" \
+    --env FORCE_COLOR="${FORCE_COLOR}" \
+    --workdir="${MNT_ROOT}$(pwd)" \
+    jh-file-organizer \
+    "${ARGS[@]}"

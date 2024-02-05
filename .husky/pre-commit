@@ -1,0 +1,2 @@
+
+$(npm root)/.bin/eslint --cache
