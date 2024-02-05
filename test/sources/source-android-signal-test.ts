@@ -26,7 +26,6 @@ await test(source + ": image", async function (t) {
     t,
     path.join(source, "signal-2022-04-07-16-45-43-559.jpg"),
     {
-      type: FilePicture,
       initial: {
         i_f_time: "2022-04-07 16-45-43"
       },
@@ -40,7 +39,8 @@ await test(source + ": image", async function (t) {
         i_f_time: "2022-04-07 16-45-43",
         i_f_filename: `2022-04-07 16-45-43 ${TestDefaultTitle} [signal-2022-04-07-16-45-43-559].jpg`
       }
-    }
+    },
+    { type: FilePicture }
   );
 });
 
@@ -61,7 +61,6 @@ await test(source + ": video", async function (t) {
     t,
     path.join(source, "signal-2022-04-22-12-25-56-329.mp4"),
     {
-      type: FileMovieUTC,
       initial: {
         i_f_time: "2022-04-22 12-25-56",
         // The image is 2022-04-22 12:25:32
@@ -78,6 +77,7 @@ await test(source + ": video", async function (t) {
         i_f_time: "2022-04-22 12-25-36",
         i_f_filename: `2022-04-22 12-25-36 ${TestDefaultTitle} [signal-2022-04-22-12-25-56-329].mp4`
       }
-    }
+    },
+    { type: FileMovieUTC }
   );
 });

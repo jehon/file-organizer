@@ -1,6 +1,5 @@
 import assert from "node:assert";
 import fs from "node:fs";
-import { beforeEach } from "node:test";
 import File from "../../src/file-types/file";
 import { getParentOf } from "../../src/file-types/file-folder";
 import buildFile from "../../src/lib/buildFile";
@@ -25,22 +24,29 @@ export const TestDefaultTitle = "Sources";
 const tempSourcePath = (...args: string[]) =>
   tempPathCommon("sources", ...args);
 
-function createFileFromDataSources(
+function createFilepathFromDataSources(
   subPath: string, // Relative to data path
-  inFolderWithinTmp: string = ""
+  mtime?: string
 ): string {
-  return createFileFromTo(
-    tempSourcePath(inFolderWithinTmp),
+  const filepath = createFileFromTo(
+    tempSourcePath(),
     rootPath("test", "sources", "data", subPath)
   );
+  if (mtime) {
+    fs.utimesSync(filepath, new Date(mtime), new Date(mtime));
+  }
+  return filepath;
 }
 
-function getANewFile(filepath: string) {
+function getANewFileObject(filepath: string) {
   getParentOf(filepath).reset();
   return buildFile(filepath);
 }
 
-function testData(file: File, data: Record<Flavor, Record<string, string>>) {
+function testFileObjectHasData(
+  file: File,
+  data: Record<Flavor, Record<string, string>>
+) {
   for (const flavor of [Flavor.initial, Flavor.current, Flavor.expected]) {
     for (const k of Object.keys(data[flavor])) {
       assert.ok(k in file, `File should contain ${k}`);
@@ -53,105 +59,75 @@ function testData(file: File, data: Record<Flavor, Record<string, string>>) {
   }
 }
 
-async function testValueChange<U>(filepath: string, v: keyof File, nv: U) {
-  const file = getANewFile(filepath);
-  file.getValueByKey(v).expect(nv);
-  await file.runAllFixes();
-  file.assertIsFixed();
-  assert.equal(file.getValueByKey(v).current, nv);
-
-  const nfile = getANewFile(file.currentFilepath);
-  nfile.assertIsFixed();
-  if (nfile.getValueByKey(v).initial instanceof GenericTime) {
-    assertIsEqual(
-      nfile.getValueByKey(v).initial as GenericTime,
-      nv as GenericTime
-    );
-  } else {
-    assert.equal(nfile.getValueByKey(v).initial, nv);
-  }
-}
-
 export default async function fromTestSuite(
   t: TestContext,
   filename: string,
+  data: {
+    [Flavor.initial]: Record<string, string>;
+    [Flavor.current]: Record<string, string>;
+    [Flavor.expected]: Record<string, string>;
+  },
   options: {
-    [Flavor.initial]?: Record<string, string>;
-    [Flavor.current]?: Record<string, string>;
-    [Flavor.expected]?: Record<string, string>;
+    type: typeof File;
     mtime?: string;
-    type?: typeof File;
-    build?: {
-      inFolderWithinTmp?: string;
-    };
   }
 ) {
-  const inFolderWithinTmp = options.build?.inFolderWithinTmp;
-
   await t.test(filename, async (t: TestContext) => {
-    let filepath: string;
-    let file: File;
-
-    /*
-     * Helpers
-     */
-    /*
-     * Tests
-     */
-    beforeEach(() => {
-      filepath = createFileFromDataSources(filename, inFolderWithinTmp);
-      if (options.mtime) {
-        fs.utimesSync(
-          filepath,
-          new Date(options.mtime),
-          new Date(options.mtime)
-        );
-      }
-    });
-
     await t.test("should load the file", () => {
-      file = getANewFile(filepath);
+      const filepath = createFilepathFromDataSources(filename, options.mtime);
+      const file = getANewFileObject(filepath);
       assert.ok(file instanceof File);
-      if ("type" in options) {
-        assert.ok(
-          file instanceof options.type!,
-          `It should be a ${options.type!.name} but it is a ${
-            file.constructor.name
-          } `
-        );
-      }
-      testData(file, {
-        [Flavor.initial]: options[Flavor.initial] ?? {},
-        [Flavor.current]: options[Flavor.current] ?? {},
-        [Flavor.expected]: options[Flavor.expected] ?? {}
-      });
+      assert.ok(
+        file instanceof options.type,
+        `It should be a ${options.type.name} but it is a ${file.constructor.name} `
+      );
+      testFileObjectHasData(file, data);
     });
 
     await t.test("should fix", async () => {
-      file = getANewFile(filepath);
+      const filepath = createFilepathFromDataSources(filename, options.mtime);
+      const file = getANewFileObject(filepath);
       await file.runAllFixes();
       file.assertIsFixed();
 
       getParentOf(file.currentFilepath).reset();
       const nfile = buildFile(file.currentFilepath);
       nfile.assertIsFixed();
-      testData(nfile, {
+      testFileObjectHasData(nfile, {
         [Flavor.initial]: {},
-        [Flavor.current]: options[Flavor.expected] ?? {},
+        [Flavor.current]: data[Flavor.expected],
         [Flavor.expected]: {}
       });
     });
 
     await t.test("should set a title", async () => {
-      await testValueChange<string>(filepath, "i_f_title", "Test title");
+      const filepath = createFilepathFromDataSources(filename, options.mtime);
+      const file = getANewFileObject(filepath);
+
+      const newValue = "Test title";
+      file.i_f_title.expect(newValue);
+      await file.runAllFixes();
+      file.assertIsFixed();
+      assertIsEqual(file.i_f_title.current, newValue);
+
+      const nfile = getANewFileObject(file.currentFilepath);
+      nfile.assertIsFixed();
+      assertIsEqual(nfile.i_f_title.initial, newValue);
     });
 
     await t.test("should set a time", async () => {
-      await testValueChange<GenericTime>(
-        filepath,
-        "i_f_time",
-        GenericTime.from2x3String("2020-01-02 03-04-05")
-      );
+      const filepath = createFilepathFromDataSources(filename, options.mtime);
+      const file = getANewFileObject(filepath);
+
+      const newValue = GenericTime.from2x3String("2020-01-02 03-04-05");
+      file.i_f_time.expect(newValue);
+      await file.runAllFixes();
+      file.assertIsFixed();
+      assertIsEqual(file.i_f_time.current, newValue);
+
+      const nfile = getANewFileObject(file.currentFilepath);
+      nfile.assertIsFixed();
+      assertIsEqual(nfile.i_f_time.initial, newValue);
     });
   });
 }

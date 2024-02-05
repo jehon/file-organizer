@@ -16,19 +16,24 @@ await test(source + ": image", async function (t) {
     });
   });
 
-  await fromTestSuite(t, path.join(source, "DJI_20231128_105205_30.jpg"), {
-    type: FilePicture,
-    current: {
-      i_f_title: "",
-      // The image is 2023-11-28 10:52
-      i_f_time: "2023-11-28 10-52-05"
+  await fromTestSuite(
+    t,
+    path.join(source, "DJI_20231128_105205_30.jpg"),
+    {
+      initial: {},
+      current: {
+        i_f_title: "",
+        // The image is 2023-11-28 10:52
+        i_f_time: "2023-11-28 10-52-05"
+      },
+      expected: {
+        i_f_title: TestDefaultTitle,
+        i_f_time: "2023-11-28 10-52-05",
+        i_f_filename: `2023-11-28 10-52-05 ${TestDefaultTitle} [DJI_20231128_105205_30].jpg`
+      }
     },
-    expected: {
-      i_f_title: TestDefaultTitle,
-      i_f_time: "2023-11-28 10-52-05",
-      i_f_filename: `2023-11-28 10-52-05 ${TestDefaultTitle} [DJI_20231128_105205_30].jpg`
-    }
-  });
+    { type: FilePicture }
+  );
 });
 
 await test.todo(source + ": video", async function (_t) {

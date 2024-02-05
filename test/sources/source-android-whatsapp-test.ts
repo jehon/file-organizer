@@ -21,20 +21,24 @@ await test(source + ": image", async function (t) {
     });
   });
 
-  await fromTestSuite(t, path.join(source, "IMG-20211226-WA0001.jpeg"), {
-    type: FilePicture,
-    mtime: "2019-01-02 03:04:05",
-    current: {
-      i_f_title: "",
-      // The image is 2021-12-26 13:13:02 (winter time)
-      i_f_time: "2021-12-26"
+  await fromTestSuite(
+    t,
+    path.join(source, "IMG-20211226-WA0001.jpeg"),
+    {
+      initial: {},
+      current: {
+        i_f_title: "",
+        // The image is 2021-12-26 13:13:02 (winter time)
+        i_f_time: "2021-12-26"
+      },
+      expected: {
+        i_f_title: TestDefaultTitle,
+        i_f_time: "2021-12-26 13-13-02",
+        i_f_filename: `2021-12-26 13-13-02 ${TestDefaultTitle} [IMG-20211226-WA0001].jpg`
+      }
     },
-    expected: {
-      i_f_title: TestDefaultTitle,
-      i_f_time: "2021-12-26 13-13-02",
-      i_f_filename: `2021-12-26 13-13-02 ${TestDefaultTitle} [IMG-20211226-WA0001].jpg`
-    }
-  });
+    { type: FilePicture, mtime: "2019-01-02 03:04:05" }
+  );
 });
 
 await test(source + ": video", async function (t) {
@@ -45,20 +49,24 @@ await test(source + ": video", async function (t) {
     });
   });
 
-  await fromTestSuite(t, path.join(source, "VID-20211226-WA0003.mp4"), {
-    type: FileMovieUTC,
-    mtime: "2019-01-02 03:04:05",
-    current: {
-      i_fe_time: "2021:12:26 12:13:17", // UTC
-      i_f_title: "",
-      // The image is 2021-12-26 13:13:15 (winter time)
-      i_f_time: "2021-12-26"
+  await fromTestSuite(
+    t,
+    path.join(source, "VID-20211226-WA0003.mp4"),
+    {
+      initial: {},
+      current: {
+        i_fe_time: "2021:12:26 12:13:17", // UTC
+        i_f_title: "",
+        // The image is 2021-12-26 13:13:15 (winter time)
+        i_f_time: "2021-12-26"
+      },
+      expected: {
+        i_fe_time: "2021:12:26 12:13:17", // UTC
+        i_f_title: TestDefaultTitle,
+        i_f_time: "2021-12-26 13-13-17",
+        i_f_filename: `2021-12-26 13-13-17 ${TestDefaultTitle} [VID-20211226-WA0003].mp4`
+      }
     },
-    expected: {
-      i_fe_time: "2021:12:26 12:13:17", // UTC
-      i_f_title: TestDefaultTitle,
-      i_f_time: "2021-12-26 13-13-17",
-      i_f_filename: `2021-12-26 13-13-17 ${TestDefaultTitle} [VID-20211226-WA0003].mp4`
-    }
-  });
+    { type: FileMovieUTC, mtime: "2019-01-02 03:04:05" }
+  );
 });

@@ -14,17 +14,21 @@ await test("should parse", () => {
 });
 
 await test(source + ": image", async function (t) {
-  await fromTestSuite(t, path.join(source, "2021-12 scanned.jpg"), {
-    type: FilePicture,
-    mtime: "2019-01-02 03:04:05",
-    current: {
-      i_f_title: "scanned",
-      i_f_time: "2021-12"
+  await fromTestSuite(
+    t,
+    path.join(source, "2021-12 scanned.jpg"),
+    {
+      initial: {},
+      current: {
+        i_f_title: "scanned",
+        i_f_time: "2021-12"
+      },
+      expected: {
+        i_f_title: "Scanned",
+        i_f_time: "2021-12",
+        i_f_filename: "2021-12 Scanned.jpg"
+      }
     },
-    expected: {
-      i_f_title: "Scanned",
-      i_f_time: "2021-12",
-      i_f_filename: "2021-12 Scanned.jpg"
-    }
-  });
+    { type: FilePicture, mtime: "2019-01-02 03:04:05" }
+  );
 });

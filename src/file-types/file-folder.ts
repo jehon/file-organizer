@@ -116,14 +116,17 @@ export default class FileFolder extends File {
   }
 
   throwError(message: string, filename: string, flavor: Flavor) {
-    throw new Error(
-      `[Reservations/${flavor}] ${message}: ${filename} in ${
-        this.i_f_path_full.initial
-      }
-      U[${Array.from(this.unmappedListing).join(",")}]
-      C[${Array.from(this.listOfFiles.current.keys()).join(",")}]
-      E[${Array.from(this.listOfFiles.expected.keys()).join(",")}]`
-    );
+    throw new Error(`[Reservations/${flavor}] ${message}: ${filename} in ${
+      this.i_f_path_full.initial
+    }
+    ${this.getReservationsDump()}`);
+  }
+
+  getReservationsDump() {
+    return `
+    U[${Array.from(this.unmappedListing).join(",")}]
+    C[${Array.from(this.listOfFiles.current.keys()).join(",")}]
+    E[${Array.from(this.listOfFiles.expected.keys()).join(",")}]`;
   }
 }
 

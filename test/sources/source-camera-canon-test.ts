@@ -24,18 +24,23 @@ await test(source + ": image", async function (t) {
     });
   });
 
-  await fromTestSuite(t, path.join(source, "DSC_5747.JPG"), {
-    type: FilePicture,
-    current: {
-      i_f_title: "",
-      i_f_time: GenericTime.EMPTY_MESSAGE
+  await fromTestSuite(
+    t,
+    path.join(source, "DSC_5747.JPG"),
+    {
+      initial: {},
+      current: {
+        i_f_title: "",
+        i_f_time: GenericTime.EMPTY_MESSAGE
+      },
+      expected: {
+        i_f_title: TestDefaultTitle,
+        i_f_time: "2021-12-25 20-22-23",
+        i_f_filename: `2021-12-25 20-22-23 ${TestDefaultTitle} [DSC_5747].jpg`
+      }
     },
-    expected: {
-      i_f_title: TestDefaultTitle,
-      i_f_time: "2021-12-25 20-22-23",
-      i_f_filename: `2021-12-25 20-22-23 ${TestDefaultTitle} [DSC_5747].jpg`
-    }
-  });
+    { type: FilePicture }
+  );
 });
 
 await test(source + ": video", async function (t) {
@@ -46,17 +51,22 @@ await test(source + ": video", async function (t) {
     });
   });
 
-  await fromTestSuite(t, path.join(source, "DSC_5749.MOV"), {
-    type: FileMovie,
-    current: {
-      i_f_title: "",
-      i_f_time: GenericTime.EMPTY_MESSAGE
+  await fromTestSuite(
+    t,
+    path.join(source, "DSC_5749.MOV"),
+    {
+      initial: {},
+      current: {
+        i_f_title: "",
+        i_f_time: GenericTime.EMPTY_MESSAGE
+      },
+      expected: {
+        i_f_title: TestDefaultTitle,
+        // The image is 2021-12-25 20:22:24 (winter time)
+        i_f_time: "2021-12-25 20-22-48",
+        i_f_filename: `2021-12-25 20-22-48 ${TestDefaultTitle} [DSC_5749].mov`
+      }
     },
-    expected: {
-      i_f_title: TestDefaultTitle,
-      // The image is 2021-12-25 20:22:24 (winter time)
-      i_f_time: "2021-12-25 20-22-48",
-      i_f_filename: `2021-12-25 20-22-48 ${TestDefaultTitle} [DSC_5749].mov`
-    }
-  });
+    { type: FileMovie }
+  );
 });
