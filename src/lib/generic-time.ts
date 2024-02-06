@@ -275,12 +275,12 @@ export class GenericTime extends Equalable {
   }
 
   isAfter(ts: GenericTime): boolean {
-    if (this.isEmpty()) {
-      return false;
-    }
-
     if (ts.isEmpty()) {
       return true;
+    }
+
+    if (this.isEmpty()) {
+      return false;
     }
 
     if (this.isRange()) {

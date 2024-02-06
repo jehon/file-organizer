@@ -129,6 +129,7 @@ await test("isAfter", function () {
       GenericTime.empty()
     )
   );
+  assert.ok(GenericTime.empty().isAfter(GenericTime.empty()));
 });
 
 await test("should isMorePreciseThan", function () {
