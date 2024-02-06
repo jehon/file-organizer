@@ -18,16 +18,15 @@ if [ ! -d "${TARGET}" ]; then
 fi
 
 import() {
+    NAME="$1"
     SOURCE="${PCLOUD}/$1"
     shift
 
-    jh_info "Importing $1"
+    jh_info "Importing $NAME"
     if [ ! -d "${SOURCE}" ]; then
         jh_fatal "Could not read source ${SOURCE}"
     fi
-    (
-    	"${SRC_ROOT}"/bin/fo-docker "import" "$@" --to "${TARGET}" "${SOURCE}"
-    ) | jh-tag-stdin "$1"
+    "${SRC_ROOT}"/bin/fo-docker "import" "$@" --to "${TARGET}" "${SOURCE}"
 }
 
 import "Workspaces/Jean/Automatic Upload J/" "$@"
