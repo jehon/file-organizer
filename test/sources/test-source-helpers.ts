@@ -33,7 +33,7 @@ function createFilepathFromDataSources(
   // but different for each test
   const np = path.parse(subPath).name;
   const filepath = createFileFromTo(
-    tempSourcePath(np, "sources"),
+    tempSourcePath(np, TestDefaultTitle.toLowerCase()),
     rootPath("test", "sources", "data", subPath)
   );
   getParentOf(tempSourcePath())._addNewlyCreateFile(np);
