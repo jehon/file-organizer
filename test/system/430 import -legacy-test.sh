@@ -18,12 +18,14 @@ mv -v "${TO}" "${FROM}"
 mkdir "${TO}"
 
 # Create a target file
-touch "${TO}/2019-01-02 03-04-05.jpg"
+touch "${TO}/2019-06-01 03-04-05.jpg"
 
 fo_run import --to "${TO}" "${FROM}"
 
 cd "${TO}"
-assert_equals "Number of files" "8" "$( find "." -type f | wc -l )"
+assert_equals "Number of files imported" "5" "$( find "." -maxdepth 1 -type f | wc -l )"
+assert_equals "Number of files legacy" "3"   "$( find "legacy" -type f | wc -l )"
 
-assert_exists "2019-09-19 07-48-25 [DSC_2506].mov"
+( ! assert_exists "2019-01-02 03-04-05.jpg" )
+assert_exists "legacy/2019-01-02 03-04-05.jpg"
 assert_exists "2018-01-02 03-04-05 My title [my original name].jpg"

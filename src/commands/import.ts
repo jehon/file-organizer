@@ -1,5 +1,6 @@
 import chalk from "chalk";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import File from "../file-types/file";
 import { getFolderByName } from "../file-types/file-folder";
 import FileTimed from "../file-types/file-timed";
@@ -29,7 +30,13 @@ export const builder = {
 export function handler(
   globalOptions: OptionsHandleAllFiles & { from: string; to: string }
 ) {
+  const legacyFoldername = path.join(globalOptions.to, "legacy");
+  // Create before instanciating the targetFolder!
+  fs.mkdirSync(legacyFoldername, { recursive: true });
   const targetFolder = getFolderByName(globalOptions.to);
+  const targetFolderLegacy = getFolderByName(
+    path.join(globalOptions.to, "legacy")
+  );
 
   const olderFile = targetFolder
     .listContentAsStrings()
@@ -52,9 +59,6 @@ export function handler(
         return true;
       }
 
-      // Move the file to the import folder
-      f.getParentValue().expect(targetFolder, "Import: move to folder");
-
       if (f instanceof FileTimed) {
         f.i_f_title.revert();
 
@@ -62,6 +66,15 @@ export function handler(
           f.i_f_time.expect(f.getMTime());
           f.i_f_qualif.expect("ts-guessed");
         }
+      }
+
+      if (f.i_f_time.expected.isAfter(minimalTS)) {
+        // Move the file to the import folder
+        f.getParentValue().expect(targetFolder, "Import: move to folder");
+      } else {
+        // Legacy
+        console.log({ ts: f.i_f_time.expected.to2x3StringForHuman() });
+        f.getParentValue().expect(targetFolderLegacy, "Import: move to legacy");
       }
 
       if (f.isFixed()) {
