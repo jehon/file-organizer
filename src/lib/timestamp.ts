@@ -27,7 +27,7 @@ const tsOnly = /^${ts.source}$/;
 
 const raw8_3 = new RegExp("^(?<qualif>[A-Z0-9_]{8})$");
 
-const final = new RegExp(
+export const final = new RegExp(
   `^${ts.source}( (?<title>[^[]*))?( \\[(?<qualif>.+)\\])?$`
 );
 
@@ -165,4 +165,5 @@ export function parseFilename(str: string): TimeInfo {
   return res;
 }
 
+// For testing purposes
 export const regexps = { androidCamera };
