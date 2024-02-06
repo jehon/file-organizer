@@ -22,3 +22,8 @@ touch "${TO}/2019-01-02 03-04-05.jpg"
 
 fo_run import --to "${TO}" "${FROM}"
 
+cd "${TO}"
+assert_equals "Number of files" "8" "$( find "." -type f | wc -l )"
+
+assert_exists "2019-09-19 07-48-25 [DSC_2506].mov"
+assert_exists "2018-01-02 03-04-05 My title [my original name].jpg"
