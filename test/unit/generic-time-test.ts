@@ -113,6 +113,24 @@ await test("toTemporalPlainYearMonth", function () {
   );
 });
 
+await test("isAfter", function () {
+  assert.ok(
+    GenericTime.from2x3String("2022-01-02 03-04-05").isAfter(
+      GenericTime.from2x3String("2020-01-02 03-04-05")
+    )
+  );
+  assert.ok(
+    !GenericTime.from2x3String("2020-01-02 03-04-05").isAfter(
+      GenericTime.from2x3String("2022-01-02 03-04-05")
+    )
+  );
+  assert.ok(
+    GenericTime.from2x3String("2020-01-02 03-04-05").isAfter(
+      GenericTime.empty()
+    )
+  );
+});
+
 await test("should isMorePreciseThan", function () {
   assert.ok(
     GenericTime.from2x3String("2018-01-02").isMorePreciseThan(

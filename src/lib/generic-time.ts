@@ -274,6 +274,28 @@ export class GenericTime extends Equalable {
     return new Temporal.PlainYearMonth(this.#year, this.#month ?? 1);
   }
 
+  isAfter(ts: GenericTime): boolean {
+    if (this.isEmpty()) {
+      return false;
+    }
+
+    if (ts.isEmpty()) {
+      return true;
+    }
+
+    if (this.isRange()) {
+      if (ts.isRange()) {
+        return this.#yearMin! > ts.#yearMin!;
+      } else {
+        return this.#year! > ts.#year!;
+      }
+    } else if (ts.isRange()) {
+      return this.#year! > ts.#yearMin!;
+    }
+
+    return this.to2x3String() > ts.to2x3String();
+  }
+
   isMorePreciseThan(
     gtLarger: GenericTime,
     allowMonthBeforeOrAfter: boolean = false
