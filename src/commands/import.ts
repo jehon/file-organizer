@@ -10,6 +10,9 @@ import {
   handleAllFiles
 } from "../helpers/command-helper";
 import { writeLine } from "../helpers/tui-helpers";
+import { buildFileAs } from "../lib/buildFile";
+import { GenericTime } from "../lib/generic-time";
+import { final } from "../lib/timestamp";
 
 export const command = ["import [files...]"];
 
@@ -27,6 +30,19 @@ export function handler(
   globalOptions: OptionsHandleAllFiles & { from: string; to: string }
 ) {
   const targetFolder = getFolderByName(globalOptions.to);
+
+  const olderFile = targetFolder
+    .listContentAsStrings()
+    .filter((v) => path.parse(v).name.match(final))[0];
+
+  const minimalTS: GenericTime = olderFile
+    ? buildFileAs(
+        path.join(targetFolder.i_f_path_full.current, olderFile),
+        File
+      ).i_f_time.initial
+    : GenericTime.empty();
+
+  writeLine(`Minimal TS: ${minimalTS.to2x3StringForHuman()}`);
 
   return handleAllFiles(
     globalOptions,
