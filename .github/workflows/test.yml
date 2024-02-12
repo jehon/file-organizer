@@ -16,7 +16,14 @@ env:
 jobs:
   ga-test:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        target:
+          - lint
+          - test-unit
+          - test-sources
+          - test-cmd
+          - test-system
     steps:
       - uses: actions/checkout@v4
 
@@ -28,11 +35,4 @@ jobs:
 
       - run: ./setup.sh
 
-      - run: make dependencies
-
-      - run: make test-unit
-      - run: make test-sources
-      - run: make test-cmd
-      - run: make test-system
-
-      - run: make lint
+      - run: make "${{ matrix.target }}"
