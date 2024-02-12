@@ -31,7 +31,7 @@ export function handler(
   globalOptions: OptionsHandleAllFiles & { from: string; to: string }
 ) {
   const legacyFoldername = path.join(globalOptions.to, "legacy");
-  // Create before instanciating the targetFolder!
+  // Create before instantiating the targetFolder!
   fs.mkdirSync(legacyFoldername, { recursive: true });
   const targetFolder = getFolderByName(globalOptions.to);
   const targetFolderLegacy = getFolderByName(
@@ -73,7 +73,6 @@ export function handler(
         f.getParentValue().expect(targetFolder, "Import: move to folder");
       } else {
         // Legacy
-        console.log({ ts: f.i_f_time.expected.to2x3StringForHuman() });
         f.getParentValue().expect(targetFolderLegacy, "Import: move to legacy");
       }
 
