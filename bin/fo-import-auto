@@ -26,7 +26,7 @@ import() {
     if [ ! -d "${SOURCE}" ]; then
         jh_fatal "Could not read source ${SOURCE}"
     fi
-    "${SRC_ROOT}"/bin/fo-docker "import" "$@" --to "${TARGET}" "${SOURCE}"
+    "${SRC_ROOT}"/bin/fo "import" "$@" --to "${TARGET}" "${SOURCE}"
 }
 
 import "Workspaces/Jean/Automatic Upload J/" "$@"

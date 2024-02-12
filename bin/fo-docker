@@ -19,6 +19,14 @@ for A in "$@"; do
     ARGS+=( "$A" )
 done
 
+if [ -z "$( docker image ls -q jh-file-organizer )" ]; then
+    (
+        echo "** Need to build the docker image"
+        cd "${SRC_ROOT}"
+        make build
+    )
+fi
+
 exec docker run --rm \
     --volume=/:/root \
     --volume="$SRC_ROOT:/app" \

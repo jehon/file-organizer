@@ -8,4 +8,12 @@ set -o errexit
 
 SRC_ROOT="$(dirname "$(dirname "$(realpath -P "${BASH_SOURCE[0]}")")")"
 
+if [ ! -d "${SRC_ROOT}/node_modules" ]; then
+    (
+        echo "** Need to get dependencies"
+        cd "$SRC_ROOT"
+        make build
+    )
+fi
+
 exec node --import tsx/esm --harmony-temporal "${SRC_ROOT}/src/main.ts" "$@"
