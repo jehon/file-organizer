@@ -26,6 +26,5 @@ cd "${TO}"
 assert_equals "Number of files imported" "5" "$( find "." -maxdepth 1 -type f | wc -l )"
 assert_equals "Number of files legacy" "3"   "$( find "legacy" -type f | wc -l )"
 
-( ! assert_exists "2019-01-02 03-04-05.jpg" )
-assert_exists "legacy/2019-01-02 03-04-05.jpg"
-assert_exists "2018-01-02 03-04-05 My title [my original name].jpg"
+assert_exists "legacy/2018-01-02 03-04-05 My title [my original name].jpg"
+assert_exists "2024-02-08 22-15-50 1 [ts-guessed].jpg"
