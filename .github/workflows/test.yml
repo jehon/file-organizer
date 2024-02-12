@@ -30,6 +30,9 @@ jobs:
 
       - run: make dependencies
 
-      - run: make test
+      - run: make test-unit
+      - run: make test-sources
+      - run: make test-cmd
+      - run: make test-system
 
       - run: make lint
