@@ -2,6 +2,7 @@
 FROM node:lts
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PROD=1
 
 WORKDIR /app
 

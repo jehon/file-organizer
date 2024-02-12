@@ -21,3 +21,9 @@ root_or_sudo apt update
 
 root_or_sudo apt install --yes \
     git make libimage-exiftool-perl ffmpeg exiftran rsync
+
+if [ -z "$PROD" ]; then
+    # In the prod container, no need to have this
+    curl -fsSL https://jehon.github.io/packages/jehon.deb --output jehon.deb
+    root_or_sudo apt install --yes ./jehon.deb
+fi
