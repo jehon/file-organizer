@@ -93,9 +93,13 @@ endef
 ######################
 
 .PHONY: clean
-clean:
+clean: clean-docker
 	rm -fr node_modules
 	rm -fr tmp
+
+.PHONY: clean-docker
+clean-docker:
+	docker image rm -f jh-file-organizer
 
 .PHONY: build
 # For docker:
@@ -106,7 +110,7 @@ build: dependencies
 tmp/.dockerbuild: dependencies \
 	$(shell find src -type d)
 
-	docker image rm -f jh-file-organizer
+	make clean-docker
 	docker build --tag jh-file-organizer .
 	docker builder prune --filter until=48h --force
 	mkdir -p "$(dir $@)"

@@ -2,12 +2,11 @@
 FROM node:lts
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PROD=1
 
 WORKDIR /app
 
 # Enhance caching
-ADD .devcontainer/setup.sh /setup.sh
+ADD setup.sh /setup.sh
 RUN /setup.sh
 
 ## Add real app --> moved to volune
