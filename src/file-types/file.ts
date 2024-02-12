@@ -384,7 +384,7 @@ export default class File extends Item {
       keyList.delete(k);
     }
 
-    const strs = Array.from(keyList)
+    const infosToDisplay = Array.from(keyList)
       .filter((k) => k in this)
       .filter(
         (k) => opts.includesCalculated || !this.getValueByKey(k).isCalculated()
@@ -394,11 +394,11 @@ export default class File extends Item {
         (k: string) => "  * " + k + ":\n" + this.getValueByKey(k).toString(true)
       );
 
-    if (strs.length > 0) {
+    if (infosToDisplay.length > 0) {
       writeLine(
         path.relative(process.cwd(), chalk.yellow(this.i_f_path_full.initial))
       );
-      writeLine(strs.join(""));
+      writeLine(infosToDisplay.join(""));
     }
 
     return this;

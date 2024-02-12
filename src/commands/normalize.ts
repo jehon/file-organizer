@@ -9,7 +9,7 @@ import { GenericTime } from "../lib/generic-time";
 
 export const command = ["$0 [files..]", "normalize [files..]"];
 
-export const describe = "Normalize based on present informations";
+export const describe = "Normalize based on present information";
 
 export const builder = {
   title: {
@@ -148,7 +148,7 @@ export function handler(
           );
           if (!f.i_f_title.expected) {
             // We take the initial value, which is the one at startup time
-            f.i_f_title.expect(f.i_f_title.initial, "fallbck to initial");
+            f.i_f_title.expect(f.i_f_title.initial, "fallback to initial");
           }
         }
 
