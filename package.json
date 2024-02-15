@@ -15,8 +15,8 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "18.6.0",
-    "@commitlint/config-conventional": "18.6.0",
+    "@commitlint/cli": "18.6.1",
+    "@commitlint/config-conventional": "18.6.2",
     "@types/callsite": "1.0.34",
     "@types/debug": "4.1.12",
     "@types/node": "20.11.17",
