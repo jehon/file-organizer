@@ -383,10 +383,16 @@ export default class File extends Item {
     const infosToDisplay = Array.from(keyList)
       .filter((k) => k in this)
       .filter(
-        (k) => !opts.excludes || !opts.excludes.includes(k) || !this.getValueByKey(k).isDone()
+        (k) =>
+          !opts.excludes ||
+          !opts.excludes.includes(k) ||
+          !this.getValueByKey(k).isDone()
       )
       .filter(
-        (k) => opts.includesCalculated || !this.getValueByKey(k).isCalculated() || !this.getValueByKey(k).isDone()
+        (k) =>
+          opts.includesCalculated ||
+          !this.getValueByKey(k).isCalculated() ||
+          !this.getValueByKey(k).isDone()
       )
       .sort()
       .map(
