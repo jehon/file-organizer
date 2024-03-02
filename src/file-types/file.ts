@@ -380,12 +380,11 @@ export default class File extends Item {
       this.getAllValuesKeys().forEach((k) => keyList.add(k));
     }
 
-    for (const k of opts.excludes ?? []) {
-      keyList.delete(k);
-    }
-
     const infosToDisplay = Array.from(keyList)
       .filter((k) => k in this)
+      .filter(
+        (k) => !opts.excludes || !opts.excludes.includes(k) || !this.getValueByKey(k).isDone()
+      )
       .filter(
         (k) => opts.includesCalculated || !this.getValueByKey(k).isCalculated() || !this.getValueByKey(k).isDone()
       )

@@ -24,6 +24,6 @@ root_or_sudo apt install --yes \
 
 if [ -z "$PROD" ]; then
     # In the prod container, no need to have this
-    curl -fsSL https://jehon.github.io/packages/jehon.deb --output jehon.deb
+    curl -fsSL https://jehon.github.io/infrastructure/packages/jehon.deb --output jehon.deb
     root_or_sudo apt install --yes ./jehon.deb
 fi
