@@ -176,7 +176,7 @@ export function handler(
       includesInfos: options.verbose,
       includesCalculated: options.verbose,
       includes: options.verbose ? ["i_fe_title", "i_fe_time"] : [],
-      excludes: ["i_fe_synced", "i_reservation"]
+      excludes: options.verbose ? [] : ["i_fe_synced", "i_reservation"]
     });
 
     return options.dryRun || f.isFixed();
