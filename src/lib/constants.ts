@@ -15,6 +15,7 @@ export const AUTO_TITLES: string[] = [
   // Legacy
   "Vie de famille",
   "Vie famille",
+  "Photos en vrac",
 
   // Actuals
   "a trier",
