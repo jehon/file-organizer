@@ -10,7 +10,7 @@
     "debug": "4.3.4",
     "fastest-levenshtein": "1.0.16",
     "p-queue": "8.0.1",
-    "tsx": "4.7.1",
+    "tsx": "4.7.2",
     "tz-lookup": "6.1.25",
     "yargs": "17.7.2"
   },
